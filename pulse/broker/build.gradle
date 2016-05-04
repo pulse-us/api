@@ -10,6 +10,10 @@ buildscript {
   }
 }
 
+configurations {
+ compile.exclude group:'ch.qos.logback'
+}
+
 apply plugin: 'spring-boot'
 
 jar {
@@ -22,6 +26,8 @@ targetCompatibility = 1.8
 
 dependencies {
   compile('org.springframework.boot:spring-boot-starter-web')
+  compile('org.postgresql:postgresql:9.4-1200-jdbc41')
+  compile('org.springframework.boot:spring-boot-starter-jdbc')
   compile('io.springfox:springfox-swagger2:2.4.0')
   compile('io.springfox:springfox-spring-web:2.4.0')
   compile('io.springfox:springfox-core:2.4.0')
