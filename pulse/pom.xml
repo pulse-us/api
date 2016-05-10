@@ -8,6 +8,10 @@
   <name>pulse</name>
   <url>http://maven.apache.org</url>
 
+  <properties>
+    <java.version>1.8</java.version>
+  </properties>
+  
   <modules>
     <module>pulse-auth</module>
     <module>pulse-broker</module>
