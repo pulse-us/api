@@ -9,4 +9,3 @@ The PULSE API
 ```sh
 $ git clone https://git.ainq.com/pulse/api.git
 ```
-
