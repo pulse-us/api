@@ -26,11 +26,15 @@ targetCompatibility = 1.8
 
 dependencies {
   compile('org.springframework.boot:spring-boot-starter-web')
+  compile('org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final')
   compile('org.postgresql:postgresql:9.4-1200-jdbc41')
   compile('org.springframework.boot:spring-boot-starter-jdbc')
   compile('io.springfox:springfox-swagger2:2.4.0')
   compile('io.springfox:springfox-spring-web:2.4.0')
   compile('io.springfox:springfox-core:2.4.0')
+  compile('org.springframework:spring-orm:4.2.6.RELEASE')
+  compile('org.hibernate:hibernate-core:4.2.6.Final')
+  compile('org.hibernate:hibernate-entitymanager:4.2.6.Final')
   testCompile('org.springframework.boot:spring-boot-starter-test')
   testCompile('junit:junit')
 }
