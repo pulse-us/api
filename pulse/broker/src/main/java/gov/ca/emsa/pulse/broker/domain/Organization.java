@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Organization {
 	
 	private String name;
+	private Long id;
 	
 	public Organization(){}
 	
@@ -13,6 +14,14 @@ public class Organization {
 		this.name = name;
 	}
 	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public String getName(){
 		return name;
 	}

@@ -25,7 +25,7 @@ public class OrganizationManagerImpl implements OrganizationManager {
 		for(Organization org: orgs){
 			OrganizationDTO orgdto = new OrganizationDTO();
 			orgdto.setName(org.getName());
-			orgdto.setId(null);
+			orgdto.setId(org.getId());
 			orgdto.setCreationDate(new Date());
 			orgdto.setLastModifiedDate(new Date());
 			try{
