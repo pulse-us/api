@@ -1,7 +1,6 @@
 package gov.ca.emsa.pulse.broker;
 
 import static org.junit.Assert.*;
-import gov.ca.emsa.pulse.broker.app.BrokerApplication;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,11 +11,10 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import gov.ca.emsa.pulse.broker.app.BrokerApplication;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = BrokerApplication.class)
-@WebAppConfiguration
-@EnableAutoConfiguration
-@PropertySource("classpath:application.properties")
 public class BrokerApplicationTests extends AbstractTransactionalJUnit4SpringContextTests {
 
 	@Test
@@ -25,7 +23,7 @@ public class BrokerApplicationTests extends AbstractTransactionalJUnit4SpringCon
 	
 	@Test
 	public void getDirectoriesTest(){
-		assertEquals(super.countRowsInTable("organization"), 3);
+		assertEquals(1, super.countRowsInTable("organization"));
 	}
 
 }
