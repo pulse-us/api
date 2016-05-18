@@ -8,7 +8,19 @@
       <property name="hibernate.show_sql" value="false"/>
       <property name="hibernate.connection.username" value="postgres"/>
       <property name="hibernate.connection.password" value=""/>
-      <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/postgres?currentSchema=pulse"/>
+      <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/pulse"/>
+    </properties>
+  </persistence-unit>
+  <persistence-unit name="pulse-test" transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <class>gov.ca.emsa.pulse.broker.entity.OrganizationEntity</class>
+    <properties>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+      <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
+      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.connection.username" value="postgres"/>
+      <property name="hibernate.connection.password" value=""/>
+      <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/pulse_test"/>
     </properties>
   </persistence-unit>
 </persistence>

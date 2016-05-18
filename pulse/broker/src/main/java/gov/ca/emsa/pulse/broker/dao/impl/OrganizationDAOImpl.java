@@ -1,10 +1,14 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.EntityExistsException;
 import javax.persistence.TypedQuery;
+
 import org.springframework.stereotype.Repository;
+
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.entity.OrganizationEntity;
@@ -53,7 +57,19 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 			return dto;
 		}
 
-
+	}
+	
+	@Override
+	public List<OrganizationDTO> findAll() {
+		
+		List<OrganizationEntity> entities = getAllEntities();
+		List<OrganizationDTO> dtos = new ArrayList<>();
+		
+		for (OrganizationEntity entity : entities) {
+			OrganizationDTO dto = new OrganizationDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
 	}
 	
 	private void create(OrganizationEntity entity) {
@@ -91,6 +107,18 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 			return null;
 		}
 		return org;
+	}
+	
+	@Override
+	public List<OrganizationEntity> getAllEntities() {
+		OrganizationEntity org = null;
+		TypedQuery<OrganizationEntity> query = null;
+		
+		query = entityManager.createQuery("from OrganizationEntity", OrganizationEntity.class);
+		
+		List<OrganizationEntity> result = query.getResultList();
+		
+		return result;
 	}
 	
 }
