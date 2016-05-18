@@ -13,7 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="patient")
+@Table(name="patient", schema="pulse")
 public class PatientEntity {
 	
 	@Id 
