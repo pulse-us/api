@@ -13,7 +13,7 @@ public class DirectoryRefresh {
 	@Autowired
 	private OrganizationManager organizationManager;
 	
-	@Scheduled(fixedDelay=5000)
+	@Scheduled(fixedDelay=20000)
 	public void getDirectories(){
 		System.out.println("Updating the directories...");
 		RestTemplate restTemplate = new RestTemplate();

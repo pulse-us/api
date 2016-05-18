@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityExistsException;
 
@@ -25,7 +26,7 @@ public class OrganizationManagerImpl implements OrganizationManager {
 		for(Organization org: orgs){
 			OrganizationDTO orgdto = new OrganizationDTO();
 			orgdto.setName(org.getName());
-			orgdto.setId(null);
+			orgdto.setId(org.getId());
 			orgdto.setCreationDate(new Date());
 			orgdto.setLastModifiedDate(new Date());
 			try{
@@ -34,6 +35,13 @@ public class OrganizationManagerImpl implements OrganizationManager {
 				organizationDAO.update(orgdto);
 			}
 		}
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<OrganizationDTO> getAll() {
+		List<OrganizationDTO> allOrganizations = organizationDAO.findAll();
+		return allOrganizations;
 	}
 
 }

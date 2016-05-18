@@ -1,12 +1,10 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityExistsException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
@@ -22,7 +20,7 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 		OrganizationEntity entity = null;
 		OrganizationDTO result = null;
-		if(dto.getId() != null){
+		if(this.getOrganizationById(dto.getId()) != null){
 			throw new EntityExistsException();
 		}else{
 
@@ -40,22 +38,38 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	}
 	
 	public OrganizationDTO update(OrganizationDTO dto){
-		
+
 		OrganizationEntity entity =  this.getOrganizationById(dto.getId());
-		
-		entity.setId(dto.getId());
-		entity.setName(dto.getName());
-		entity.setCreationDate(new Date());
-		entity.setLastModifiedDate(new Date());
-		
-		update(entity);
-		
-		OrganizationDTO result = null;
-		if (entity != null){
-			result = new OrganizationDTO(entity);
+
+		if(!entity.getName().equals(dto.getName())){
+			entity.setName(dto.getName());
+			entity.setLastModifiedDate(new Date());
+
+			update(entity);
+
+			OrganizationDTO result = null;
+			if (entity != null){
+				result = new OrganizationDTO(entity);
+			}
+
+			return result;
+		}else{
+			return dto;
 		}
+
+	}
+	
+	@Override
+	public List<OrganizationDTO> findAll() {
 		
-		return result;
+		List<OrganizationEntity> entities = getAllEntities();
+		List<OrganizationDTO> dtos = new ArrayList<>();
+		
+		for (OrganizationEntity entity : entities) {
+			OrganizationDTO dto = new OrganizationDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
 	}
 	
 	private void create(OrganizationEntity entity) {
@@ -93,6 +107,18 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 			return null;
 		}
 		return org;
+	}
+	
+	@Override
+	public List<OrganizationEntity> getAllEntities() {
+		OrganizationEntity org = null;
+		TypedQuery<OrganizationEntity> query = null;
+		
+		query = entityManager.createQuery("from OrganizationEntity", OrganizationEntity.class);
+		
+		List<OrganizationEntity> result = query.getResultList();
+		
+		return result;
 	}
 	
 }

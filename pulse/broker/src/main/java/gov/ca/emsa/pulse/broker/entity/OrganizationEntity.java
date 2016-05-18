@@ -1,20 +1,17 @@
 package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="organization")
+@Table(name="organization", schema="pulse")
 public class OrganizationEntity {
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
+	@Id
 	@Basic( optional = false )
 	@Column( name = "id", nullable = false )
 	private Long id;
