@@ -1,27 +1,17 @@
 package gov.ca.emsa.pulse.broker;
 
-import static org.junit.Assert.*;
-
 import java.util.List;
-
-import junit.framework.TestCase;
-import gov.ca.emsa.pulse.broker.app.BrokerApplication;
-import gov.ca.emsa.pulse.broker.app.BrokerApplicationConfig;
-import gov.ca.emsa.pulse.broker.domain.Organization;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.github.springtestdbunit.annotation.DatabaseSetup;
+import gov.ca.emsa.pulse.broker.domain.Organization;
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
@@ -54,5 +44,4 @@ public class BrokerApplicationTests extends TestCase {
 		List<OrganizationDTO> orgDTO = organizationManager.getAll();
 		assertEquals(3, orgDTO.size());
 	}
-
 }
