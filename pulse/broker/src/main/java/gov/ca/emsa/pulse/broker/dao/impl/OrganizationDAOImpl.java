@@ -27,6 +27,18 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 			entity = new OrganizationEntity();
 			entity.setId(dto.getId());
 			entity.setName(dto.getName());
+			entity.setActive(dto.isActive());
+			entity.setAdapter(dto.getAdapter());
+			entity.setIpAddress(dto.getIpAddress());
+			if(dto.getUsername() != null){
+				entity.setUsername(dto.getUsername());
+			}
+			if(dto.getPassword() != null){
+				entity.setPassword(dto.getPassword());
+			}
+			if(dto.getCertificationKey() != null){
+				entity.setCertificationKey(dto.getCertificationKey());
+			}
 			entity.setCreationDate(new Date());
 			entity.setLastModifiedDate(new Date());
 
@@ -41,12 +53,34 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 		OrganizationEntity entity =  this.getOrganizationById(dto.getId());
 
+		boolean changed = false;
+
 		if(!entity.getName().equals(dto.getName())){
 			entity.setName(dto.getName());
+			changed = true;
+		}else if(!entity.isActive() == equals(dto.isActive())){
+			entity.setActive(dto.isActive());
+			changed = true;
+		}else if(!entity.getAdapter().equals(dto.getAdapter())){
+			entity.setName(dto.getAdapter());
+			changed = true;
+		}else if(!entity.getIpAddress().equals(dto.getIpAddress())){
+			entity.setName(dto.getIpAddress());
+			changed = true;
+		}else if(!entity.getUsername().equals(dto.getUsername())){
+			entity.setName(dto.getUsername());
+			changed = true;
+		}else if(!entity.getPassword().equals(dto.getPassword())){
+			entity.setName(dto.getPassword());
+			changed = true;
+		}else if(!entity.getCertificationKey().equals(dto.getCertificationKey())){
+			entity.setName(dto.getCertificationKey());
+			changed = true;
+		}
+
+		if(changed){
 			entity.setLastModifiedDate(new Date());
-
 			update(entity);
-
 			OrganizationDTO result = null;
 			if (entity != null){
 				result = new OrganizationDTO(entity);
@@ -56,7 +90,7 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 		}else{
 			return dto;
 		}
-
+		
 	}
 	
 	@Override
@@ -86,8 +120,6 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 	}
 	
-	
-	
 	@Override
 	public OrganizationEntity getOrganizationById(Long id) {
 		OrganizationEntity org = null;
@@ -111,7 +143,6 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	
 	@Override
 	public List<OrganizationEntity> getAllEntities() {
-		OrganizationEntity org = null;
 		TypedQuery<OrganizationEntity> query = null;
 		
 		query = entityManager.createQuery("from OrganizationEntity", OrganizationEntity.class);
