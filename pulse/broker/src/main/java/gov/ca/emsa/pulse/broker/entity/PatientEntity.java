@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,7 +43,7 @@ public class PatientEntity {
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "address_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private AddressEntity address;
 	
@@ -56,6 +57,9 @@ public class PatientEntity {
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
 
+	@Column( name = "last_read_date", nullable = false  )
+	private Date lastReadDate;
+	
 	public Long getId() {
 		return id;
 	}
@@ -150,5 +154,13 @@ public class PatientEntity {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public Date getLastReadDate() {
+		return lastReadDate;
+	}
+
+	public void setLastReadDate(Date lastReadDate) {
+		this.lastReadDate = lastReadDate;
 	}
 }

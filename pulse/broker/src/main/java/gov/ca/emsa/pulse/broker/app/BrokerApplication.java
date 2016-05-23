@@ -13,8 +13,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import gov.ca.emsa.pulse.broker.cache.QueryCacheManager;
+import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientDAO;
+import gov.ca.emsa.pulse.broker.manager.DocumentManager;
+import gov.ca.emsa.pulse.broker.manager.PatientManager;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages= {"gov.ca.emsa.pulse.broker.**",
+		"gov.ca.emsa.pulse.service.**"})
 @PropertySource("classpath:application.properties")
 @EnableTransactionManagement(proxyTargetClass=true)
 @EnableScheduling
@@ -24,12 +29,20 @@ public class BrokerApplication implements EnvironmentAware {
 		SpringApplication.run(BrokerApplication.class, args);
 	}
 	
+	@Autowired private PatientManager patientManager;
+	@Autowired private DocumentManager docManager;
 	@Autowired private Environment env;
 	@Override
     public void setEnvironment(final Environment environment) {
         this.env = environment;
     }
 	
+//	@Bean
+//	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
+//		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
+//		bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
+//		return bean;
+//	}
 	@Bean
 	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
 		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
@@ -56,6 +69,8 @@ public class BrokerApplication implements EnvironmentAware {
 		if(queryCacheExpirationMinutes > 0) {
 			qcTask = new QueryCacheManager();
 			qcTask.setExpirationMillis(queryCacheExpirationMillis);
+			qcTask.setPatientManager(patientManager);
+			qcTask.setDocManager(docManager);
 			
 			Timer timer = new Timer();
 			//timer.scheduleAtFixedRate(qcTask, queryCacheCleanupMinutes, queryCacheCleanupMinutes);
