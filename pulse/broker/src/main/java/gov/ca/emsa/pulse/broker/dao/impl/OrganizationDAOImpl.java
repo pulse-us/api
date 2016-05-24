@@ -58,23 +58,26 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 		if(!entity.getName().equals(dto.getName())){
 			entity.setName(dto.getName());
 			changed = true;
-		}else if(!entity.isActive() == equals(dto.isActive())){
+		}else if(!entity.isActive() != dto.isActive()){
 			entity.setActive(dto.isActive());
 			changed = true;
 		}else if(!entity.getAdapter().equals(dto.getAdapter())){
-			entity.setName(dto.getAdapter());
+			entity.setAdapter(dto.getAdapter());
 			changed = true;
 		}else if(!entity.getIpAddress().equals(dto.getIpAddress())){
-			entity.setName(dto.getIpAddress());
+			entity.setIpAddress(dto.getIpAddress());
 			changed = true;
-		}else if(!entity.getUsername().equals(dto.getUsername())){
-			entity.setName(dto.getUsername());
+		}else if(entity.getUsername() == null ? dto.getUsername() == null :
+							!entity.getUsername().equals(dto.getUsername())){
+			entity.setUsername(dto.getUsername());
 			changed = true;
-		}else if(!entity.getPassword().equals(dto.getPassword())){
-			entity.setName(dto.getPassword());
+		}else if(entity.getPassword() == null ? dto.getPassword() == null :
+								!entity.getPassword().equals(dto.getPassword())){
+			entity.setPassword(dto.getPassword());
 			changed = true;
-		}else if(!entity.getCertificationKey().equals(dto.getCertificationKey())){
-			entity.setName(dto.getCertificationKey());
+		}else if(entity.getCertificationKey() == null ? dto.getCertificationKey() == null :
+				!entity.getCertificationKey().equals(dto.getCertificationKey())){
+			entity.setCertificationKey(dto.getCertificationKey());
 			changed = true;
 		}
 

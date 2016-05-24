@@ -46,6 +46,18 @@ public class OrganizationManagerImpl implements OrganizationManager {
 			OrganizationDTO orgdto = new OrganizationDTO();
 			orgdto.setName(org.getName());
 			orgdto.setId(org.getId());
+			orgdto.setActive(org.isActive());
+			orgdto.setAdapter(org.getAdapter());
+			orgdto.setIpAddress(org.getIpAddress());
+			if(org.getUsername() != null){
+				orgdto.setUsername(org.getUsername());
+			}
+			if(org.getPassword() != null){
+				orgdto.setPassword(org.getPassword());
+			}
+			if(org.getCertificationKey() != null){
+				orgdto.setCertificationKey(org.getCertificationKey());
+			}
 			orgdto.setCreationDate(new Date());
 			orgdto.setLastModifiedDate(new Date());
 			try{
