@@ -23,6 +23,8 @@ public class DocumentManagerImpl implements DocumentManager {
 	@Autowired private DocumentDAO docDao;
 	@Autowired private Environment env;
 	
+	@Override
+	@Transactional
 	public List<DocumentDTO> queryDocumentsForPatient(PatientDTO patient) throws Exception {
 		//look in the cache
 		List<DocumentDTO> results = new ArrayList<DocumentDTO>();
@@ -36,11 +38,11 @@ public class DocumentManagerImpl implements DocumentManager {
 				orgToQuery.setName("mock/ehealthexchange");
 				String url = env.getProperty("mockBaseUrl") + "/ehealthexchange/documents?patientId=" + patient.getId();
 				RestTemplate restTemplate = new RestTemplate();
-				List<Document> searchResults = restTemplate.getForObject(url, List.class);
+				Document[] searchResults = restTemplate.getForObject(url, Document[].class);
 				
 				//cache the patients returned so we can 
 				//pull them out of the cache again
-				if(searchResults != null && searchResults.size() > 0) {
+				if(searchResults != null && searchResults.length > 0) {
 					for(Document doc : searchResults) {
 						DocumentDTO toCache = DomainToDtoConverter.convert(doc);
 						//TODO: should we really be caching the search results?

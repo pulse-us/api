@@ -36,10 +36,10 @@ public class AddressEntity {
 	@Column(name = "country")
 	private String country;
 	
-	@Column( name = "creation_date", nullable = false  )
+	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
-	@Column( name = "last_modified_date", nullable = false  )
+	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
 	
 	public Long getId() {

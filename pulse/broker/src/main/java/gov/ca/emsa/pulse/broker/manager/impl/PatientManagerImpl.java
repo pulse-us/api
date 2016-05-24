@@ -25,6 +25,8 @@ public class PatientManagerImpl implements PatientManager {
 	@Autowired OrganizationManager orgManager;
 	@Autowired PatientDAO patientDao;
 	
+	@Override
+	@Transactional
 	public List<PatientDTO> queryPatients(String firstName, String lastName) {
 		PatientDTO toSearch = new PatientDTO();
 		toSearch.setFirstName(firstName);
@@ -53,16 +55,17 @@ public class PatientManagerImpl implements PatientManager {
 			toSearch.setPatientId(url);
 			toSearch.setOrganization(org);
 			List<PatientDTO> patientMatches = patientDao.getByPatientIdAndOrg(toSearch);
+			//TODO: update the lastReadDate of each patient cache hit
 			
 			//if no cache hit
 			if(patientMatches == null || patientMatches.size() == 0) {
 				//query this organization directly for patient matches
 				RestTemplate restTemplate = new RestTemplate();
-				List<Patient> searchResults = restTemplate.getForObject(url, List.class);
+				Patient[] searchResults = restTemplate.getForObject(url, Patient[].class);
 				
 				//cache the patients returned so we can 
 				//pull them out of the cache again
-				if(searchResults != null && searchResults.size() > 0) {
+				if(searchResults != null && searchResults.length > 0) {
 					for(Patient patient : searchResults) {
 						PatientDTO toCache = DomainToDtoConverter.convert(patient);
 						toCache.setPatientId(url);
