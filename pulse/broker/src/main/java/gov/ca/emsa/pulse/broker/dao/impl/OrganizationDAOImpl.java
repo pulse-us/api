@@ -61,6 +61,11 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 	}
 	
+	public void delete(OrganizationDTO organizationDTO) {
+		OrganizationEntity toDelete = getOrganizationById(organizationDTO.getId());
+		deleteOrganization(toDelete);
+	}
+	
 	@Override
 	public List<OrganizationDTO> findAll() {
 		
@@ -115,7 +120,6 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 	}
 	
-		
 	private OrganizationEntity getOrganizationById(Long id) {
 		OrganizationEntity org = null;
 		TypedQuery<OrganizationEntity> query = null;
@@ -138,7 +142,6 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	
 	@Override
 	public List<OrganizationEntity> getAllEntities() {
-		OrganizationEntity org = null;
 		TypedQuery<OrganizationEntity> query = null;
 		
 		query = entityManager.createQuery("from OrganizationEntity", OrganizationEntity.class);
@@ -146,6 +149,10 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 		List<OrganizationEntity> result = query.getResultList();
 		
 		return result;
+	}
+
+	public void deleteOrganization(OrganizationEntity org){
+		entityManager.remove(org);
 	}
 	
 }

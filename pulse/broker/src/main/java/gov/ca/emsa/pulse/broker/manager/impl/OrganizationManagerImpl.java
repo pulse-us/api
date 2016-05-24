@@ -1,12 +1,13 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityExistsException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +23,25 @@ public class OrganizationManagerImpl implements OrganizationManager {
 	private OrganizationDAO organizationDAO;
 	
 	@Transactional
-	public void updateOrganizations(Organization[] orgs){
+	public void updateOrganizations(ArrayList<Organization> orgs){
+		List<OrganizationDTO> currentOrgs = getAll();
+		HashMap<Long,OrganizationDTO> currentOrgsHash = new HashMap<Long,OrganizationDTO>();
+		for(OrganizationDTO currentOrg : currentOrgs){
+			currentOrgsHash.put(currentOrg.getId(), currentOrg);
+		}
+		List<Long> currentOrgIds = new ArrayList<Long>();
+		List<Long> updatedOrgIds = new ArrayList<Long>();
+		for(OrganizationDTO orgdto : currentOrgs){
+			currentOrgIds.add(orgdto.getId());
+		}
+		for(Organization org: orgs){
+			updatedOrgIds.add(org.getId());
+		}
+		for(Long currentId : currentOrgIds){
+			if(!updatedOrgIds.contains(currentId)){
+				organizationDAO.delete(currentOrgsHash.get(currentId));
+			}
+		}
 		for(Organization org: orgs){
 			OrganizationDTO orgdto = new OrganizationDTO();
 			orgdto.setName(org.getName());

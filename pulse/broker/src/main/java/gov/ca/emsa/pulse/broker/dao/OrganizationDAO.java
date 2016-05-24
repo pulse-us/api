@@ -13,5 +13,6 @@ public interface OrganizationDAO {
 	public List<OrganizationDTO> findAll();
 	public OrganizationDTO findById(Long id);
 	public List<OrganizationDTO> findByName(String name);
+	public void delete(OrganizationDTO organizationDTO);
 
 }
