@@ -8,6 +8,12 @@ public class OrganizationDTO {
 	
 	private Long id;
 	private String name;
+	private boolean isActive;
+	private String adapter;
+	private String ipAddress;
+	private String username;
+	private String password;
+	private String certificationKey;
 	private Date creationDate;
 	private Date lastModifiedDate;
 	
@@ -50,6 +56,54 @@ public class OrganizationDTO {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public String getAdapter() {
+		return adapter;
+	}
+
+	public void setAdapter(String adapter) {
+		this.adapter = adapter;
+	}
+
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getCertificationKey() {
+		return certificationKey;
+	}
+
+	public void setCertificationKey(String certificationKey) {
+		this.certificationKey = certificationKey;
 	}
 	
 	

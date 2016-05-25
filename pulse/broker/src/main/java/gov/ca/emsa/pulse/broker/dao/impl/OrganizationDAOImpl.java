@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.entity.OrganizationEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientEntity;
 
 @Repository
 public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO {
