@@ -39,6 +39,9 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 			if(dto.getCertificationKey() != null){
 				entity.setCertificationKey(dto.getCertificationKey());
 			}
+			if(dto.getEndpointUrl() != null){
+				entity.setEndpointUrl(dto.getEndpointUrl());
+			}
 			entity.setCreationDate(new Date());
 			entity.setLastModifiedDate(new Date());
 
@@ -79,7 +82,11 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 				!entity.getCertificationKey().equals(dto.getCertificationKey())){
 			entity.setCertificationKey(dto.getCertificationKey());
 			changed = true;
-		}
+		}else if(entity.getEndpointUrl() == null ? dto.getEndpointUrl() == null :
+			!entity.getEndpointUrl().equals(dto.getEndpointUrl())){
+		entity.setEndpointUrl(dto.getEndpointUrl());
+		changed = true;
+	}
 
 		if(changed){
 			entity.setLastModifiedDate(new Date());

@@ -58,6 +58,9 @@ public class OrganizationManagerImpl implements OrganizationManager {
 			if(org.getCertificationKey() != null){
 				orgdto.setCertificationKey(org.getCertificationKey());
 			}
+			if(org.getEndpointUrl() != null){
+				orgdto.setEndpointUrl(org.getEndpointUrl());
+			}
 			orgdto.setCreationDate(new Date());
 			orgdto.setLastModifiedDate(new Date());
 			try{

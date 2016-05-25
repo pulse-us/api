@@ -14,6 +14,7 @@ public class OrganizationDTO {
 	private String username;
 	private String password;
 	private String certificationKey;
+	private String endpointUrl;
 	private Date creationDate;
 	private Date lastModifiedDate;
 	
@@ -28,6 +29,7 @@ public class OrganizationDTO {
 		this.username = org.getUsername();
 		this.password = org.getPassword();
 		this.certificationKey = org.getCertificationKey();
+		this.endpointUrl = org.getEndpointUrl();
 		this.creationDate = org.getCreationDate();
 		this.lastModifiedDate = org.getLastModifiedDate();
 	}
@@ -94,6 +96,14 @@ public class OrganizationDTO {
 
 	public void setCertificationKey(String certificationKey) {
 		this.certificationKey = certificationKey;
+	}
+
+	public String getEndpointUrl() {
+		return endpointUrl;
+	}
+
+	public void setEndpointUrl(String endpointUrl) {
+		this.endpointUrl = endpointUrl;
 	}
 
 	public Date getCreationDate() {

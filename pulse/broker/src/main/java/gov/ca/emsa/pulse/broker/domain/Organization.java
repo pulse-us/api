@@ -10,6 +10,7 @@ public class Organization {
 	private String username;
 	private String password;
 	private String certificationKey;
+	private String endpointUrl;
 	
 	public Organization(){}
 	
@@ -63,6 +64,14 @@ public class Organization {
 
 	public void setCertificationKey(String certificationKey) {
 		this.certificationKey = certificationKey;
+	}
+
+	public String getEndpointUrl() {
+		return endpointUrl;
+	}
+
+	public void setEndpointUrl(String endpointUrl) {
+		this.endpointUrl = endpointUrl;
 	}
 
 	public Long getId() {

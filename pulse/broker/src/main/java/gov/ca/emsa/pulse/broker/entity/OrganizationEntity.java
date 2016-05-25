@@ -42,6 +42,9 @@ public class OrganizationEntity {
 	@Column( name = "certification_key", nullable = true )
 	private String certificationKey;
 	
+	@Column( name = "endpoint_url", nullable = true )
+	private String endpointUrl;
+	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false )
 	private Date creationDate;
@@ -112,6 +115,14 @@ public class OrganizationEntity {
 
 	public void setCertificationKey(String certificationKey) {
 		this.certificationKey = certificationKey;
+	}
+
+	public String getEndpointUrl() {
+		return endpointUrl;
+	}
+
+	public void setEndpointUrl(String endpointUrl) {
+		this.endpointUrl = endpointUrl;
 	}
 
 	public Date getCreationDate() {
