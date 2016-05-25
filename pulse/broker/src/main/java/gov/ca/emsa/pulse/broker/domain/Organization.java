@@ -4,6 +4,7 @@ public class Organization {
 	
 	private String name;
 	private Long id;
+	private Long organizationId;
 	private boolean isActive;
 	private String adapter;
 	private String ipAddress;
@@ -80,6 +81,14 @@ public class Organization {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(Long organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	public String getName(){

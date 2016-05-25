@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
@@ -20,12 +21,12 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 		OrganizationEntity entity = null;
 		OrganizationDTO result = null;
-		if(this.getOrganizationById(dto.getId()) != null){
+		if(this.getOrganizationById(dto.getOrganizationId()) != null){
 			throw new EntityExistsException();
 		}else{
 
 			entity = new OrganizationEntity();
-			entity.setId(dto.getId());
+			entity.setOrganizationId(dto.getOrganizationId());
 			entity.setName(dto.getName());
 			entity.setActive(dto.isActive());
 			entity.setAdapter(dto.getAdapter());
@@ -54,7 +55,7 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	
 	public OrganizationDTO update(OrganizationDTO dto){
 
-		OrganizationEntity entity =  this.getOrganizationById(dto.getId());
+		OrganizationEntity entity =  this.getOrganizationById(dto.getOrganizationId());
 
 		boolean changed = false;
 
@@ -104,7 +105,7 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	}
 	
 	public void delete(OrganizationDTO organizationDTO) {
-		OrganizationEntity toDelete = getOrganizationById(organizationDTO.getId());
+		OrganizationEntity toDelete = getOrganizationById(organizationDTO.getOrganizationId());
 		deleteOrganization(toDelete);
 	}
 	
@@ -121,6 +122,33 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 		return dtos;
 	}
 	
+	@Override
+	public List<OrganizationDTO> findByName(String name) {
+		
+		Query query = entityManager.createQuery( "SELECT org from OrganizationEntity org "
+				+ "where org.name LIKE :name", 
+				OrganizationEntity.class );
+		
+		query.setParameter("name", name);
+		List<OrganizationEntity> entities = query.getResultList();
+		
+		List<OrganizationDTO> dtos = new ArrayList<>();
+		for (OrganizationEntity entity : entities) {
+			OrganizationDTO dto = new OrganizationDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	@Override
+	public OrganizationDTO findById(Long id) {
+		OrganizationEntity org = getOrganizationById(id);
+		if(org == null) {
+			return null;
+		}
+		return new OrganizationDTO(org);
+	}
+	
 	private void create(OrganizationEntity entity) {
 		
 		entityManager.persist(entity);
@@ -135,12 +163,12 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 	}
 	
-	@Override
-	public OrganizationEntity getOrganizationById(Long id) {
+		
+	private OrganizationEntity getOrganizationById(Long id) {
 		OrganizationEntity org = null;
 		TypedQuery<OrganizationEntity> query = null;
 		
-		query = entityManager.createQuery("from OrganizationEntity where (id = :id) ", OrganizationEntity.class);
+		query = entityManager.createQuery("from OrganizationEntity where (organization_id = :id) ", OrganizationEntity.class);
 		
 		query.setParameter("id", id);
 		

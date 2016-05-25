@@ -35,7 +35,7 @@ public class BrokerApplicationTests extends TestCase {
 	public void createDirectoryCacheTest(){
 		ArrayList<Organization> orgs = new ArrayList<Organization>();
 		Organization org1 = new Organization();
-		org1.setId((long) 1);
+		org1.setOrganizationId((long) 1);
 		org1.setName("OrganizationOne");
 		org1.setAdapter("eHealth");
 		org1.setIpAddress("127.0.0.1");
@@ -44,7 +44,7 @@ public class BrokerApplicationTests extends TestCase {
 		org1.setPassword("password1");
 		orgs.add(org1);
 		Organization org2 = new Organization();
-		org2.setId((long) 2);
+		org2.setOrganizationId((long) 2);
 		org2.setName("OrganizationTwo");
 		org2.setAdapter("eHealth");
 		org2.setIpAddress("127.0.0.1");
@@ -52,7 +52,7 @@ public class BrokerApplicationTests extends TestCase {
 		org2.setCertificationKey("1234567");
 		orgs.add(org2);
 		Organization org3 = new Organization();
-		org3.setId((long) 3);
+		org3.setOrganizationId((long) 3);
 		org3.setName("OrganizationThree");
 		org3.setAdapter("eHealth");
 		org3.setIpAddress("127.0.0.1");
@@ -69,7 +69,7 @@ public class BrokerApplicationTests extends TestCase {
 	public void removeOrgDirectoryCacheTest(){
 		ArrayList<Organization> orgs = new ArrayList<Organization>();
 		Organization org1 = new Organization();
-		org1.setId((long) 1);
+		org1.setOrganizationId((long) 1);
 		org1.setName("OrganizationOne");
 		org1.setAdapter("eHealth");
 		org1.setIpAddress("127.0.0.1");
@@ -78,7 +78,7 @@ public class BrokerApplicationTests extends TestCase {
 		org1.setPassword("password1");
 		orgs.add(org1);
 		Organization org2 = new Organization();
-		org2.setId((long) 2);
+		org2.setOrganizationId((long) 2);
 		org2.setName("OrganizationTwo");
 		org2.setAdapter("eHealth");
 		org2.setIpAddress("127.0.0.1");
@@ -86,7 +86,7 @@ public class BrokerApplicationTests extends TestCase {
 		org2.setCertificationKey("1234567");
 		orgs.add(org2);
 		Organization org3 = new Organization();
-		org3.setId((long) 3);
+		org3.setOrganizationId((long) 3);
 		org3.setName("OrganizationThree");
 		org3.setAdapter("eHealth");
 		org3.setIpAddress("127.0.0.1");
@@ -107,7 +107,7 @@ public class BrokerApplicationTests extends TestCase {
 	public void updateOrgDirectoryCacheTest(){
 		ArrayList<Organization> orgs = new ArrayList<Organization>();
 		Organization org1 = new Organization();
-		org1.setId((long) 1);
+		org1.setOrganizationId((long) 1);
 		org1.setName("OrganizationOne");
 		org1.setAdapter("eHealth");
 		org1.setIpAddress("127.0.0.1");
@@ -116,7 +116,7 @@ public class BrokerApplicationTests extends TestCase {
 		org1.setPassword("password1");
 		orgs.add(org1);
 		Organization org2 = new Organization();
-		org2.setId((long) 2);
+		org2.setOrganizationId((long) 2);
 		org2.setName("OrganizationTwo");
 		org2.setAdapter("eHealth");
 		org2.setIpAddress("127.0.0.1");
@@ -124,7 +124,7 @@ public class BrokerApplicationTests extends TestCase {
 		org2.setCertificationKey("1234567");
 		orgs.add(org2);
 		Organization org3 = new Organization();
-		org3.setId((long) 3);
+		org3.setOrganizationId((long) 3);
 		org3.setName("OrganizationThree");
 		org3.setAdapter("eHealth");
 		org3.setIpAddress("127.0.0.1");

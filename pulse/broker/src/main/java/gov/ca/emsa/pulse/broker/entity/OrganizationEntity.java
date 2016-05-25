@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -13,9 +15,13 @@ import javax.persistence.Table;
 public class OrganizationEntity {
 	
 	@Id
-	@Basic( optional = false )
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false )
 	private Long id;
+	
+	@Basic( optional = false )
+	@Column( name = "organization_id", nullable = false )
+	private Long organizationId;
 	
 	@Basic( optional = false )
 	@Column( name = "name", nullable = false )
@@ -45,12 +51,10 @@ public class OrganizationEntity {
 	@Column( name = "endpoint_url", nullable = true )
 	private String endpointUrl;
 	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false )
+	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false )
+	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
 	
 	public Long getId() {
@@ -59,6 +63,14 @@ public class OrganizationEntity {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(Long organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	public String getName() {

@@ -7,6 +7,7 @@ import java.util.Date;
 public class OrganizationDTO {
 	
 	private Long id;
+	private Long organizationId;
 	private String name;
 	private boolean isActive;
 	private String adapter;
@@ -22,6 +23,7 @@ public class OrganizationDTO {
 	
 	public OrganizationDTO(OrganizationEntity org){
 		this.id = org.getId();
+		this.organizationId = org.getOrganizationId();
 		this.name = org.getName();
 		this.isActive = org.isActive();
 		this.adapter = org.getAdapter();
@@ -40,6 +42,14 @@ public class OrganizationDTO {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(Long organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	public String getName(){
