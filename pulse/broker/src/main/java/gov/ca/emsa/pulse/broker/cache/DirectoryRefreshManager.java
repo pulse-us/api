@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
 
 public class DirectoryRefreshManager extends TimerTask {
 	
-	@Autowired
 	private OrganizationManager organizationManager;
 	
 	private long expirationMillis;
@@ -36,5 +35,9 @@ public class DirectoryRefreshManager extends TimerTask {
 	
 	public long getExpirationMillis() {
 		return expirationMillis;
+	}
+	
+	public void setManager(OrganizationManager orgMan){
+		this.organizationManager = orgMan;
 	}
 }

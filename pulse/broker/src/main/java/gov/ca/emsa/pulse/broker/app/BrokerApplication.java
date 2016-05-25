@@ -14,8 +14,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.cache.QueryCacheManager;
+import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages= {"gov.ca.emsa.pulse.broker.manager.**",
+											"gov.ca.emsa.pulse.broker.**",
+											"gov.ca.emsa.pulse.broker.dao.**",
+											"gov.ca.emsa.pulse.broker.entity.**"})
 @PropertySource("classpath:application.properties")
 @EnableTransactionManagement(proxyTargetClass=true)
 @EnableScheduling
@@ -24,6 +28,9 @@ public class BrokerApplication implements EnvironmentAware {
 	public static void main(String[] args) {
 		SpringApplication.run(BrokerApplication.class, args);
 	}
+	
+	@Autowired
+	private OrganizationManager organizationManager;
 	
 	@Autowired private Environment env;
 	@Override
@@ -76,6 +83,7 @@ public class BrokerApplication implements EnvironmentAware {
 
 		if(directoryRefresh > 0) {
 			qcTask = new DirectoryRefreshManager();
+			qcTask.setManager(organizationManager);
 			qcTask.setExpirationMillis(directoryRefreshExpirationMillis);
 			
 			Timer timer = new Timer();
