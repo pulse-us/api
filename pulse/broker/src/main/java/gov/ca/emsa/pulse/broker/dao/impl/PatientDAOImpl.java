@@ -51,13 +51,16 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 			
 			OrganizationEntity org = new OrganizationEntity();
 			org.setName(dto.getOrganization().getName());
-			patient.setOrganization(org);
+			org.setAdapter(dto.getOrganization().getAdapter());
+			org.setOrganizationId(dto.getOrganization().getOrganizationId());
 			if(foundOrg != null) {
 				org.setId(foundOrg.getId());
 			} else {
 				entityManager.persist(org);
 				entityManager.flush();
 			}
+			patient.setOrganizationId(org.getId());
+			patient.setOrganization(org);
 		}
 		
 		if(dto.getAddress() != null) {
@@ -69,9 +72,11 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 			add.setState(dto.getAddress().getState());
 			add.setZipcode(dto.getAddress().getZipcode());
 			add.setCountry("US");
-			patient.setAddress(add);
 			entityManager.persist(add);
 			entityManager.flush();
+			
+			patient.setAddressId(add.getId());
+			patient.setAddress(add);
 		}
 		
 		entityManager.persist(patient);

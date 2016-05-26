@@ -43,9 +43,15 @@ public class PatientEntity {
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
+	@Column(name = "address_id")
+	private Long addressId;
+	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "address_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private AddressEntity address;
+	
+	@Column(name = "organization_id")
+	private Long organizationId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "organization_id", unique=true, nullable = true, insertable=false, updatable= false)
@@ -162,5 +168,21 @@ public class PatientEntity {
 
 	public void setLastReadDate(Date lastReadDate) {
 		this.lastReadDate = lastReadDate;
+	}
+
+	public Long getAddressId() {
+		return addressId;
+	}
+
+	public void setAddressId(Long addressId) {
+		this.addressId = addressId;
+	}
+
+	public Long getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(Long organizationId) {
+		this.organizationId = organizationId;
 	}
 }

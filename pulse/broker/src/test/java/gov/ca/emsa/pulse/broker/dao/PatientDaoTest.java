@@ -46,6 +46,8 @@ public class PatientDaoTest extends TestCase {
 		
 		OrganizationDTO org = new OrganizationDTO();
 		org.setName("Test Org");
+		org.setAdapter("eHealth");
+		org.setOrganizationId(1L);
 		toInsert.setOrganization(org);
 		
 		PatientDTO created = patientDao.create(toInsert);
@@ -162,6 +164,8 @@ public class PatientDaoTest extends TestCase {
 		
 		OrganizationDTO org = new OrganizationDTO();
 		org.setName("Test Org5");
+		org.setAdapter("eHealth");
+		org.setOrganizationId(1L);
 		toInsert.setOrganization(org);
 		
 		PatientDTO created = patientDao.create(toInsert);
