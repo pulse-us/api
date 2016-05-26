@@ -12,7 +12,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.cache.QueryCacheManager;
+import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+
 import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
@@ -29,6 +32,8 @@ public class BrokerApplication implements EnvironmentAware {
 		SpringApplication.run(BrokerApplication.class, args);
 	}
 	
+	@Autowired
+	private OrganizationManager organizationManager;
 	@Autowired private PatientManager patientManager;
 	@Autowired private DocumentManager docManager;
 	@Autowired private Environment env;
@@ -77,6 +82,26 @@ public class BrokerApplication implements EnvironmentAware {
 			timer.scheduleAtFixedRate(qcTask, 0, queryCacheCleanupMillis);
 
 		} //TODO: 0 and -1 mean different things?
+		
+		return qcTask;
+	}
+	
+	@Bean
+	public DirectoryRefreshManager directoryRefreshManager() {
+		int directoryRefresh = new Integer(env.getProperty("directoryRefreshSeconds").trim());
+		long directoryRefreshExpirationMillis = directoryRefresh * 1000;
+		
+		DirectoryRefreshManager qcTask = null;
+
+		if(directoryRefresh > 0) {
+			qcTask = new DirectoryRefreshManager();
+			qcTask.setManager(organizationManager);
+			qcTask.setExpirationMillis(directoryRefreshExpirationMillis);
+			
+			Timer timer = new Timer();
+			timer.scheduleAtFixedRate(qcTask, 0, directoryRefreshExpirationMillis);
+
+		}
 		
 		return qcTask;
 	}

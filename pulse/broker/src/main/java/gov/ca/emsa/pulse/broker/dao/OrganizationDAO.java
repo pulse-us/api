@@ -11,8 +11,7 @@ public interface OrganizationDAO {
 	public OrganizationDTO update(OrganizationDTO org);
 	public List<OrganizationEntity> getAllEntities();
 	public List<OrganizationDTO> findAll();
+	public void delete(OrganizationDTO organizationDTO);
 	public OrganizationDTO findById(Long id);
 	public List<OrganizationDTO> findByName(String name);
-	public void delete(OrganizationDTO organizationDTO);
-
 }

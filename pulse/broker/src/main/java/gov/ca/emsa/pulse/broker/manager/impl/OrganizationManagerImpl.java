@@ -27,15 +27,15 @@ public class OrganizationManagerImpl implements OrganizationManager {
 		List<OrganizationDTO> currentOrgs = getAll();
 		HashMap<Long,OrganizationDTO> currentOrgsHash = new HashMap<Long,OrganizationDTO>();
 		for(OrganizationDTO currentOrg : currentOrgs){
-			currentOrgsHash.put(currentOrg.getId(), currentOrg);
+			currentOrgsHash.put(currentOrg.getOrganizationId(), currentOrg);
 		}
 		List<Long> currentOrgIds = new ArrayList<Long>();
 		List<Long> updatedOrgIds = new ArrayList<Long>();
 		for(OrganizationDTO orgdto : currentOrgs){
-			currentOrgIds.add(orgdto.getId());
+			currentOrgIds.add(orgdto.getOrganizationId());
 		}
 		for(Organization org: orgs){
-			updatedOrgIds.add(org.getId());
+			updatedOrgIds.add(org.getOrganizationId());
 		}
 		for(Long currentId : currentOrgIds){
 			if(!updatedOrgIds.contains(currentId)){
@@ -45,7 +45,22 @@ public class OrganizationManagerImpl implements OrganizationManager {
 		for(Organization org: orgs){
 			OrganizationDTO orgdto = new OrganizationDTO();
 			orgdto.setName(org.getName());
-			orgdto.setId(org.getId());
+			orgdto.setOrganizationId(org.getOrganizationId());
+			orgdto.setActive(org.isActive());
+			orgdto.setAdapter(org.getAdapter());
+			orgdto.setIpAddress(org.getIpAddress());
+			if(org.getUsername() != null){
+				orgdto.setUsername(org.getUsername());
+			}
+			if(org.getPassword() != null){
+				orgdto.setPassword(org.getPassword());
+			}
+			if(org.getCertificationKey() != null){
+				orgdto.setCertificationKey(org.getCertificationKey());
+			}
+			if(org.getEndpointUrl() != null){
+				orgdto.setEndpointUrl(org.getEndpointUrl());
+			}
 			orgdto.setCreationDate(new Date());
 			orgdto.setLastModifiedDate(new Date());
 			try{

@@ -1,18 +1,17 @@
 package gov.ca.emsa.pulse.broker.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Organization {
 	
 	private String name;
 	private Long id;
+	private Long organizationId;
 	private boolean isActive;
 	private String adapter;
 	private String ipAddress;
 	private String username;
 	private String password;
 	private String certificationKey;
+	private String endpointUrl;
 	
 	public Organization(){}
 	
@@ -20,12 +19,28 @@ public class Organization {
 		this.name = name;
 	}
 	
+	public String getEndpointUrl() {
+		return endpointUrl;
+	}
+
+	public void setEndpointUrl(String endpointUrl) {
+		this.endpointUrl = endpointUrl;
+	}
+
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(Long organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	public String getName(){

@@ -7,6 +7,7 @@ import java.util.Date;
 public class OrganizationDTO {
 	
 	private Long id;
+	private Long organizationId;
 	private String name;
 	private boolean isActive;
 	private String adapter;
@@ -14,6 +15,7 @@ public class OrganizationDTO {
 	private String username;
 	private String password;
 	private String certificationKey;
+	private String endpointUrl;
 	private Date creationDate;
 	private Date lastModifiedDate;
 	
@@ -21,7 +23,15 @@ public class OrganizationDTO {
 	
 	public OrganizationDTO(OrganizationEntity org){
 		this.id = org.getId();
+		this.organizationId = org.getOrganizationId();
 		this.name = org.getName();
+		this.isActive = org.isActive();
+		this.adapter = org.getAdapter();
+		this.ipAddress = org.getIpAddress();
+		this.username = org.getUsername();
+		this.password = org.getPassword();
+		this.certificationKey = org.getCertificationKey();
+		this.endpointUrl = org.getEndpointUrl();
 		this.creationDate = org.getCreationDate();
 		this.lastModifiedDate = org.getLastModifiedDate();
 	}
@@ -34,28 +44,20 @@ public class OrganizationDTO {
 		this.id = id;
 	}
 
+	public Long getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(Long organizationId) {
+		this.organizationId = organizationId;
+	}
+
 	public String getName(){
 		return name;
 	}
 	
 	public void setName(String name){
 		this.name = name;
-	}
-
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
 	}
 
 	public boolean isActive() {
@@ -105,7 +107,28 @@ public class OrganizationDTO {
 	public void setCertificationKey(String certificationKey) {
 		this.certificationKey = certificationKey;
 	}
-	
-	
 
+	public String getEndpointUrl() {
+		return endpointUrl;
+	}
+
+	public void setEndpointUrl(String endpointUrl) {
+		this.endpointUrl = endpointUrl;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
 }
