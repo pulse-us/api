@@ -10,7 +10,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
@@ -81,7 +80,6 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	@Transactional
 	public PatientDTO update(PatientDTO dto) {
 		PatientEntity patient = this.getEntityById(dto.getId());
 		patient.setFirstName(dto.getFirstName());
