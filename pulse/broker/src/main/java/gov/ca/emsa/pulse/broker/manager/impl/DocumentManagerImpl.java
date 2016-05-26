@@ -31,12 +31,8 @@ public class DocumentManagerImpl implements DocumentManager {
 		results = docDao.getByPatientId(patient.getId());
 		
 		if(results == null || results.size() == 0) {
-			//TODO: make sure we know how to query the organization - may need to look up connection details
 			if(patient.getOrganization() != null) {
-				//TODO: use the org from the patient object
-				OrganizationDTO orgToQuery = new OrganizationDTO();
-				orgToQuery.setName("mock/ehealthexchange");
-				String url = env.getProperty("mockBaseUrl") + "/ehealthexchange/documents?patientId=" + patient.getId();
+				String url = patient.getOrganization().getEndpointUrl() + "/documents?patientId=" + patient.getId();
 				RestTemplate restTemplate = new RestTemplate();
 				Document[] searchResults = restTemplate.getForObject(url, Document[].class);
 				
@@ -64,7 +60,7 @@ public class DocumentManagerImpl implements DocumentManager {
 		
 		OrganizationDTO orgToQuery = new OrganizationDTO();
 		orgToQuery.setName("mock/ehealthexchange");
-		String url = env.getProperty("mockBaseUrl") + "/ehealthexchange/document/" + documentId;
+		String url = "http://localhost:8080/mock/mock/ehealthexchange/document/" + documentId;
 		RestTemplate restTemplate = new RestTemplate();
 		String docContents = restTemplate.getForObject(url, String.class);
 		

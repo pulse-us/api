@@ -1,6 +1,5 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
