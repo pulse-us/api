@@ -32,7 +32,7 @@ public class DocumentManagerImpl implements DocumentManager {
 		
 		if(results == null || results.size() == 0) {
 			if(patient.getOrganization() != null) {
-				String url = patient.getOrganization().getEndpointUrl() + "/documents?patientId=" + patient.getId();
+				String url = patient.getOrganization().getEndpointUrl() + "/documents?patientId=" + patient.getOrgPatientId();
 				RestTemplate restTemplate = new RestTemplate();
 				Document[] searchResults = restTemplate.getForObject(url, Document[].class);
 				
@@ -41,6 +41,9 @@ public class DocumentManagerImpl implements DocumentManager {
 				if(searchResults != null && searchResults.length > 0) {
 					for(Document doc : searchResults) {
 						DocumentDTO toCache = DomainToDtoConverter.convert(doc);
+						if(toCache.getPatient() == null || toCache.getPatient().getId() == null) {
+							toCache.setPatient(patient);
+						}
 						//TODO: should we really be caching the search results?
 						//or only caching the document(s) that someone selects in the UI?
 						DocumentDTO cachedDocument = docDao.create(toCache);
@@ -50,21 +53,33 @@ public class DocumentManagerImpl implements DocumentManager {
 			} else {
 				throw new Exception("An organization to query must be specified.");
 			}
+		} else {
+			//update the lastReadDate of each patient cache hit
+			for(DocumentDTO cacheDoc : results) {
+				docDao.update(cacheDoc);
+			}
 		}
 		return results;
 	}
-	
-	public String getDocumentById(PatientDTO patient, String documentId) {
+	@Override
+	public String getDocumentById(Long documentId) {
+		String docContents = "";
 		//TODO: look in the cache (what is the document id and how does it get created?)
 		// if it's not there, query the organization present in the patient object
-		
-		OrganizationDTO orgToQuery = new OrganizationDTO();
-		orgToQuery.setName("mock/ehealthexchange");
-		String url = "http://localhost:8080/mock/mock/ehealthexchange/document/" + documentId;
-		RestTemplate restTemplate = new RestTemplate();
-		String docContents = restTemplate.getForObject(url, String.class);
-		
-		//TODO: insert or replace this item in the cache
+		DocumentDTO doc = docDao.getById(documentId);
+		if(doc != null) {
+			PatientDTO patient = doc.getPatient();
+			if(patient != null) {
+				OrganizationDTO org = patient.getOrganization();
+				if(org != null && org.getEndpointUrl() != null) {
+					String url = org.getEndpointUrl() + "/document/" + documentId;
+					RestTemplate restTemplate = new RestTemplate();
+					docContents = restTemplate.getForObject(url, String.class);
+					//TODO: insert or replace this item in the cache
+
+				}
+			}
+		}
 		return docContents;
 	}
 	

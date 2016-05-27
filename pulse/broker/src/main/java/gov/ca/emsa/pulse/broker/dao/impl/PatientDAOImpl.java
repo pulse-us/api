@@ -35,7 +35,8 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setPatientId(dto.getPatientId());
+		patient.setPulsePatientId(dto.getPulsePatientId());
+		patient.setOrgPatientId(dto.getOrgPatientId());
 		patient.setLastReadDate(new Date());
 		
 		if(dto.getOrganization() != null) {
@@ -93,7 +94,8 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setPatientId(dto.getPatientId());
+		patient.setPulsePatientId(dto.getPulsePatientId());
+		patient.setOrgPatientId(dto.getOrgPatientId());
 		patient.setLastReadDate(new Date());
 		patient.setLastModifiedDate(new Date());
 		if(dto.getOrganization() != null) {
@@ -155,7 +157,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	
 	public void deleteItemsOlderThan(Date oldestDate) {			
 		Query query = entityManager.createQuery( "DELETE from PatientEntity pe "
-				+ " WHERE pe.lastReadDate >= :cacheDate");
+				+ " WHERE pe.lastReadDate <= :cacheDate");
 		
 		query.setParameter("cacheDate", oldestDate);
 		int deletedCount = query.executeUpdate();
@@ -189,11 +191,11 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		Query query = entityManager.createQuery( "SELECT pat from PatientEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.address "
 				+ "LEFT OUTER JOIN FETCH pat.organization "
-				+ "where pat.patientId LIKE :patientId "
+				+ "where pat.pulsePatientId LIKE :pulsePatientId "
 				+ "and pat.organization.id = :orgId) ", 
 				PatientEntity.class );
 		
-		query.setParameter("patientId", patient.getPatientId());
+		query.setParameter("pulsePatientId", patient.getPulsePatientId());
 		query.setParameter("orgId", patient.getOrganization().getId());
 		return query.getResultList();
 	}

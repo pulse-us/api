@@ -23,7 +23,10 @@ public class PatientEntity {
 	private Long id;
 	
 	@Column(name="patient_id")
-	private String patientId;
+	private String pulsePatientId;
+	
+	@Column(name = "organization_patient_id")
+	private String orgPatientId;
 	
 	@Column(name="first_name")
 	private String firstName;
@@ -74,12 +77,12 @@ public class PatientEntity {
 		this.id = id;
 	}
 
-	public String getPatientId() {
-		return patientId;
+	public String getPulsePatientId() {
+		return pulsePatientId;
 	}
 
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
+	public void setPulsePatientId(String patientId) {
+		this.pulsePatientId = patientId;
 	}
 
 	public String getFirstName() {
@@ -184,5 +187,13 @@ public class PatientEntity {
 
 	public void setOrganizationId(Long organizationId) {
 		this.organizationId = organizationId;
+	}
+
+	public String getOrgPatientId() {
+		return orgPatientId;
+	}
+
+	public void setOrgPatientId(String orgPatientId) {
+		this.orgPatientId = orgPatientId;
 	}
 }

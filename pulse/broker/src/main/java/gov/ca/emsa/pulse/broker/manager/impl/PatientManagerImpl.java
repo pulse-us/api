@@ -26,6 +26,11 @@ public class PatientManagerImpl implements PatientManager {
 	@Autowired PatientDAO patientDao;
 	
 	@Override
+	public PatientDTO getPatientById(Long patientId) {
+		return patientDao.getById(patientId);
+	}
+	
+	@Override
 	@Transactional
 	public List<PatientDTO> queryPatients(String firstName, String lastName) {
 		PatientDTO toSearch = new PatientDTO();
@@ -49,7 +54,7 @@ public class PatientManagerImpl implements PatientManager {
 					url += "?lastName=" + lastName;
 				}
 			}
-			toSearch.setPatientId(url);
+			toSearch.setPulsePatientId(url);
 			toSearch.setOrganization(org);
 			List<PatientDTO> patientMatches = patientDao.getByPatientIdAndOrg(toSearch);
 			
@@ -64,7 +69,7 @@ public class PatientManagerImpl implements PatientManager {
 				if(searchResults != null && searchResults.length > 0) {
 					for(Patient patient : searchResults) {
 						PatientDTO toCache = DomainToDtoConverter.convert(patient);
-						toCache.setPatientId(url);
+						toCache.setPulsePatientId(url);
 						toCache.setOrganization(org);
 						//TODO: should we really be caching the search results?
 						//or only caching the patient(s) that someone selects in the UI?

@@ -5,8 +5,9 @@ import java.util.Date;
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
 
 public class PatientDTO {
-	private long id;
-	private String patientId;
+	private Long id;
+	private String pulsePatientId;
+	private String orgPatientId;
 	private String firstName;
 	private String lastName;
 	private Date dateOfBirth;
@@ -21,7 +22,8 @@ public class PatientDTO {
 	
 	public PatientDTO(PatientEntity entity) {
 		this.id = entity.getId();
-		this.patientId = entity.getPatientId();
+		this.pulsePatientId = entity.getPulsePatientId();
+		this.orgPatientId = entity.getOrgPatientId();
 		this.firstName = entity.getFirstName();
 		this.lastName = entity.getLastName();
 		this.dateOfBirth = entity.getDateOfBirth();
@@ -36,17 +38,11 @@ public class PatientDTO {
 		}
 	}
 	
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
-	}
-	public String getPatientId() {
-		return patientId;
-	}
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
 	}
 	public String getFirstName() {
 		return firstName;
@@ -95,5 +91,21 @@ public class PatientDTO {
 	}
 	public void setOrganization(OrganizationDTO organization) {
 		this.organization = organization;
+	}
+
+	public String getPulsePatientId() {
+		return pulsePatientId;
+	}
+
+	public void setPulsePatientId(String pulsePatientId) {
+		this.pulsePatientId = pulsePatientId;
+	}
+
+	public String getOrgPatientId() {
+		return orgPatientId;
+	}
+
+	public void setOrgPatientId(String orgPatientId) {
+		this.orgPatientId = orgPatientId;
 	}
 }

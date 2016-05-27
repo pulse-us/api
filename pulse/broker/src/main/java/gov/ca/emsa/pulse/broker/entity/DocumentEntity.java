@@ -35,10 +35,10 @@ public class DocumentEntity {
 	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private PatientEntity patient;
 	
-	@Column( name = "creation_date")
+	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
-	@Column( name = "last_modified_date")
+	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
 
 	@Column( name = "last_read_date")
