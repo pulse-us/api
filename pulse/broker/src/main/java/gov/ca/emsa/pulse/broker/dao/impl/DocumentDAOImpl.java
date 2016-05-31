@@ -26,6 +26,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		DocumentEntity doc = new DocumentEntity();
 		doc.setName(dto.getName());
 		doc.setFormat(dto.getFormat());
+		doc.setContents(dto.getContents());
 		doc.setLastReadDate(new Date());
 		if(dto.getPatient() != null && dto.getPatient().getId() != null) {
 			doc.setPatientId(dto.getPatient().getId());
@@ -42,12 +43,14 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		DocumentEntity doc = this.getEntityById(dto.getId());		
 		doc.setName(dto.getName());
 		doc.setFormat(dto.getFormat());
+		doc.setContents(dto.getContents());
 		doc.setLastReadDate(new Date());
 		if(dto.getPatient() != null && dto.getPatient().getId() != null) {
 			doc.setPatientId(dto.getPatient().getId());
 		}
 		
 		doc = entityManager.merge(doc);
+		entityManager.flush();
 		return new DocumentDTO(doc);
 	}
 
@@ -56,6 +59,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	public void delete(Long id) {
 		DocumentEntity toDelete = getEntityById(id);
 		entityManager.remove(toDelete);
+		entityManager.flush();
 	}
 
 	@Override

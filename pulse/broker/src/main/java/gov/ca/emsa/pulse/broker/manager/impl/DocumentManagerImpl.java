@@ -64,19 +64,24 @@ public class DocumentManagerImpl implements DocumentManager {
 	@Override
 	public String getDocumentById(Long documentId) {
 		String docContents = "";
-		//TODO: look in the cache (what is the document id and how does it get created?)
+		//look in the cache (what is the document id and how does it get created?)
 		// if it's not there, query the organization present in the patient object
-		DocumentDTO doc = docDao.getById(documentId);
-		if(doc != null) {
-			PatientDTO patient = doc.getPatient();
+		DocumentDTO cachedDoc = docDao.getById(documentId);
+		if(cachedDoc != null && cachedDoc.getContents() != null && cachedDoc.getContents().length > 0) {
+			docContents = new String(cachedDoc.getContents());
+		} else if(cachedDoc != null) {
+			PatientDTO patient = cachedDoc.getPatient();
 			if(patient != null) {
 				OrganizationDTO org = patient.getOrganization();
 				if(org != null && org.getEndpointUrl() != null) {
 					String url = org.getEndpointUrl() + "/document/" + documentId;
 					RestTemplate restTemplate = new RestTemplate();
-					docContents = restTemplate.getForObject(url, String.class);
-					//TODO: insert or replace this item in the cache
-
+					String remoteDocContents = restTemplate.getForObject(url, String.class);
+					if(cachedDoc != null) {
+						cachedDoc.setContents(remoteDocContents.getBytes());
+						docDao.update(cachedDoc);
+					}
+					docContents = remoteDocContents;
 				}
 			}
 		}

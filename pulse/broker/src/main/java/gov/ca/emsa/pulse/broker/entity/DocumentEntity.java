@@ -31,6 +31,9 @@ public class DocumentEntity {
 	@Column(name = "format")
 	private String format;
 	
+	@Column(name = "contents")
+	private byte[] contents;
+	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private PatientEntity patient;
@@ -106,5 +109,13 @@ public class DocumentEntity {
 
 	public void setFormat(String format) {
 		this.format = format;
+	}
+
+	public byte[] getContents() {
+		return contents;
+	}
+
+	public void setContents(byte[] contents) {
+		this.contents = contents;
 	}
 }
