@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 public class PatientDaoTest extends TestCase {
 
 	@Autowired PatientDAO patientDao;
-	
+
 	@Test
 	@Transactional
 	public void testInsertPatientWithEverything() {
@@ -183,4 +183,5 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(found.getAddress().getId());
 		assertTrue(found.getAddress().getId().longValue() > 0);
 	}
+	
 }

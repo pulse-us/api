@@ -11,15 +11,11 @@ import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
 import org.springframework.security.saml.metadata.MetadataManager;
 import org.springframework.security.saml.processor.SAMLProcessorImpl;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-
 import org.joda.time.DateTime;
 import org.opensaml.Configuration;
 import org.opensaml.DefaultBootstrap;
-import org.opensaml.common.SAMLObjectBuilder;
 import org.opensaml.common.SAMLVersion;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Attribute;
@@ -36,14 +32,9 @@ import org.opensaml.saml2.core.OneTimeUse;
 import org.opensaml.saml2.core.Subject;
 import org.opensaml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml2.core.SubjectConfirmationData;
-import org.opensaml.saml2.core.impl.AssertionMarshaller;
 import org.opensaml.xml.ConfigurationException;
-import org.opensaml.xml.XMLObjectBuilder;
 import org.opensaml.xml.XMLObjectBuilderFactory;
-import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.schema.XSString;
-import org.opensaml.xml.util.XMLHelper;
-import org.w3c.dom.Element;
 
 public class SamlGenerator {
 
@@ -56,10 +47,6 @@ public class SamlGenerator {
 	@Autowired private MetadataManager metadataManager;
 	@Autowired private XMLObjectBuilder xmlObjectBuilder;
 	@Autowired private SAMLObjectBuilder samlObjectBuilder;
-
-	/**
-	 * This is a demo class which creates a valid SAML 2.0 Assertion.
-	 */
 
 	private static XMLObjectBuilderFactory builderFactory;
 
@@ -136,7 +123,7 @@ public class SamlGenerator {
 			SAMLObjectBuilder authStatementBuilder = (SAMLObjectBuilder) SamlGenerator.getSAMLBuilder().getBuilder(AuthnStatement.DEFAULT_ELEMENT_NAME);
 			AuthnStatement authnStatement = (AuthnStatement) authStatementBuilder.buildObject();
 			//authnStatement.setSubject(subject);
-			//authnStatement.setAuthenticationMethod(strAuthMethod);
+			authnStatement.setAuthenticationMethod(input.setStrAuthMethod(strAuthMethod));
 			DateTime now2 = new DateTime();
 			authnStatement.setAuthnInstant(now2);
 			authnStatement.setSessionIndex(input.getSessionId());
@@ -208,6 +195,7 @@ public class SamlGenerator {
 		private String strNameID;
 		private String strNameQualifier;
 		private String sessionId;
+		private String strAuthMethod;
 		private int maxSessionTimeoutInMinutes = 15; // default is 15 minutes
 
 		private Map attributes;
@@ -330,6 +318,14 @@ public class SamlGenerator {
 		public int getMaxSessionTimeoutInMinutes()
 		{
 			return maxSessionTimeoutInMinutes;
+		}
+
+		public String getStrAuthMethod() {
+			return strAuthMethod;
+		}
+
+		public void setStrAuthMethod(String strAuthMethod) {
+			this.strAuthMethod = strAuthMethod;
 		}
 
 	}
