@@ -9,6 +9,7 @@ public class DocumentDTO {
 	private long id;
 	private String name;
 	private String format;
+	private byte[] contents;
 	private PatientDTO patient;
 	
 	public DocumentDTO() {
@@ -18,6 +19,7 @@ public class DocumentDTO {
 		this.id = entity.getId();
 		this.name = entity.getName();
 		this.format = entity.getFormat();
+		this.contents = entity.getContents();
 		if(entity.getPatient() != null) {
 			this.patient = new PatientDTO(entity.getPatient());
 		}
@@ -52,5 +54,13 @@ public class DocumentDTO {
 
 	public void setPatient(PatientDTO patient) {
 		this.patient = patient;
+	}
+
+	public byte[] getContents() {
+		return contents;
+	}
+
+	public void setContents(byte[] contents) {
+		this.contents = contents;
 	}
 }

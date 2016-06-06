@@ -8,5 +8,6 @@ import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 
 public interface DocumentManager {
 	public List<DocumentDTO> queryDocumentsForPatient(PatientDTO patient) throws Exception;
+	public String getDocumentById(Long documentId);
 	public void cleanupDocumentCache(Date oldestAllowedDocument);
 }

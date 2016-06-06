@@ -7,19 +7,17 @@ import java.util.TimerTask;
 import gov.ca.emsa.pulse.broker.domain.Organization;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestTemplate;
 
 public class DirectoryRefreshManager extends TimerTask {
-	
 	private OrganizationManager organizationManager;
-	
+	private String directoryServicesUrl;
 	private long expirationMillis;
 	
 	public void getDirectories(){
 		System.out.println("Updating the directories...");
 		RestTemplate restTemplate = new RestTemplate();
-		Organization[] orgs = restTemplate.getForObject("http://localhost:8090/mock/directory", Organization[].class);
+		Organization[] orgs = restTemplate.getForObject(directoryServicesUrl, Organization[].class);
 		ArrayList<Organization> orgList = new ArrayList<Organization>(Arrays.asList(orgs));
 		organizationManager.updateOrganizations(orgList);
 	}
@@ -39,5 +37,13 @@ public class DirectoryRefreshManager extends TimerTask {
 	
 	public void setManager(OrganizationManager orgMan){
 		this.organizationManager = orgMan;
+	}
+
+	public String getDirectoryServicesUrl() {
+		return directoryServicesUrl;
+	}
+
+	public void setDirectoryServicesUrl(String directoryServicesUrl) {
+		this.directoryServicesUrl = directoryServicesUrl;
 	}
 }

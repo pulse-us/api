@@ -10,7 +10,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
@@ -36,7 +35,8 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setPatientId(dto.getPatientId());
+		patient.setPulsePatientId(dto.getPulsePatientId());
+		patient.setOrgPatientId(dto.getOrgPatientId());
 		patient.setLastReadDate(new Date());
 		
 		if(dto.getOrganization() != null) {
@@ -52,13 +52,16 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 			
 			OrganizationEntity org = new OrganizationEntity();
 			org.setName(dto.getOrganization().getName());
-			patient.setOrganization(org);
+			org.setAdapter(dto.getOrganization().getAdapter());
+			org.setOrganizationId(dto.getOrganization().getOrganizationId());
 			if(foundOrg != null) {
 				org.setId(foundOrg.getId());
 			} else {
 				entityManager.persist(org);
 				entityManager.flush();
 			}
+			patient.setOrganizationId(org.getId());
+			patient.setOrganization(org);
 		}
 		
 		if(dto.getAddress() != null) {
@@ -70,9 +73,11 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 			add.setState(dto.getAddress().getState());
 			add.setZipcode(dto.getAddress().getZipcode());
 			add.setCountry("US");
-			patient.setAddress(add);
 			entityManager.persist(add);
 			entityManager.flush();
+			
+			patient.setAddressId(add.getId());
+			patient.setAddress(add);
 		}
 		
 		entityManager.persist(patient);
@@ -81,7 +86,6 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	@Transactional
 	public PatientDTO update(PatientDTO dto) {
 		PatientEntity patient = this.getEntityById(dto.getId());
 		patient.setFirstName(dto.getFirstName());
@@ -90,7 +94,8 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setPatientId(dto.getPatientId());
+		patient.setPulsePatientId(dto.getPulsePatientId());
+		patient.setOrgPatientId(dto.getOrgPatientId());
 		patient.setLastReadDate(new Date());
 		patient.setLastModifiedDate(new Date());
 		if(dto.getOrganization() != null) {
@@ -152,7 +157,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	
 	public void deleteItemsOlderThan(Date oldestDate) {			
 		Query query = entityManager.createQuery( "DELETE from PatientEntity pe "
-				+ " WHERE pe.lastReadDate >= :cacheDate");
+				+ " WHERE pe.lastReadDate <= :cacheDate");
 		
 		query.setParameter("cacheDate", oldestDate);
 		int deletedCount = query.executeUpdate();
@@ -186,11 +191,11 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		Query query = entityManager.createQuery( "SELECT pat from PatientEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.address "
 				+ "LEFT OUTER JOIN FETCH pat.organization "
-				+ "where pat.patientId LIKE :patientId "
+				+ "where pat.pulsePatientId LIKE :pulsePatientId "
 				+ "and pat.organization.id = :orgId) ", 
 				PatientEntity.class );
 		
-		query.setParameter("patientId", patient.getPatientId());
+		query.setParameter("pulsePatientId", patient.getPulsePatientId());
 		query.setParameter("orgId", patient.getOrganization().getId());
 		return query.getResultList();
 	}

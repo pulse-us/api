@@ -23,7 +23,10 @@ public class PatientEntity {
 	private Long id;
 	
 	@Column(name="patient_id")
-	private String patientId;
+	private String pulsePatientId;
+	
+	@Column(name = "organization_patient_id")
+	private String orgPatientId;
 	
 	@Column(name="first_name")
 	private String firstName;
@@ -43,9 +46,15 @@ public class PatientEntity {
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
+	@Column(name = "address_id")
+	private Long addressId;
+	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "address_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private AddressEntity address;
+	
+	@Column(name = "organization_id")
+	private Long organizationId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "organization_id", unique=true, nullable = true, insertable=false, updatable= false)
@@ -68,12 +77,12 @@ public class PatientEntity {
 		this.id = id;
 	}
 
-	public String getPatientId() {
-		return patientId;
+	public String getPulsePatientId() {
+		return pulsePatientId;
 	}
 
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
+	public void setPulsePatientId(String patientId) {
+		this.pulsePatientId = patientId;
 	}
 
 	public String getFirstName() {
@@ -162,5 +171,29 @@ public class PatientEntity {
 
 	public void setLastReadDate(Date lastReadDate) {
 		this.lastReadDate = lastReadDate;
+	}
+
+	public Long getAddressId() {
+		return addressId;
+	}
+
+	public void setAddressId(Long addressId) {
+		this.addressId = addressId;
+	}
+
+	public Long getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(Long organizationId) {
+		this.organizationId = organizationId;
+	}
+
+	public String getOrgPatientId() {
+		return orgPatientId;
+	}
+
+	public void setOrgPatientId(String orgPatientId) {
+		this.orgPatientId = orgPatientId;
 	}
 }

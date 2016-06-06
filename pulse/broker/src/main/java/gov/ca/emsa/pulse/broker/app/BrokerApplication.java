@@ -137,6 +137,7 @@ public class BrokerApplication implements EnvironmentAware {
 			qcTask = new DirectoryRefreshManager();
 			qcTask.setManager(organizationManager);
 			qcTask.setExpirationMillis(directoryRefreshExpirationMillis);
+			qcTask.setDirectoryServicesUrl(env.getProperty("directoryServicesUrl"));
 			
 			Timer timer = new Timer();
 			timer.scheduleAtFixedRate(qcTask, 0, directoryRefreshExpirationMillis);

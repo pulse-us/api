@@ -162,8 +162,7 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 		entityManager.flush();
 
 	}
-	
-		
+
 	private OrganizationEntity getOrganizationById(Long id) {
 		OrganizationEntity org = null;
 		TypedQuery<OrganizationEntity> query = null;
