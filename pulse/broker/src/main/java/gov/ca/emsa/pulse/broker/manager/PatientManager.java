@@ -7,6 +7,6 @@ import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 
 public interface PatientManager {
 	public PatientDTO getPatientById(Long patientId);
-	public List<PatientDTO> queryPatients(String firstName, String lastName);
+	public List<PatientDTO> queryPatients(String firstName, String lastName, String lastName2);
 	public void cleanupPatientCache(Date oldestAllowedPatient);
 }

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
@@ -25,16 +27,20 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	@Transactional
-	public List<DocumentDTO> queryDocumentsForPatient(PatientDTO patient) throws Exception {
+	public List<DocumentDTO> queryDocumentsForPatient(String samlMessage, PatientDTO patient) throws Exception {
 		//look in the cache
 		List<DocumentDTO> results = new ArrayList<DocumentDTO>();
 		results = docDao.getByPatientId(patient.getId());
 		
 		if(results == null || results.size() == 0) {
 			if(patient.getOrganization() != null) {
-				String url = patient.getOrganization().getEndpointUrl() + "/documents?patientId=" + patient.getOrgPatientId();
+				String url = patient.getOrganization().getEndpointUrl();
+				//+ "/documents?patientId=" + patient.getOrgPatientId();
+				MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
+				parameters.add("patientId", patient.getOrgPatientId());
+				parameters.add("samlMessage", samlMessage);
 				RestTemplate restTemplate = new RestTemplate();
-				Document[] searchResults = restTemplate.getForObject(url, Document[].class);
+				Document[] searchResults = restTemplate.postForObject(url, parameters, Document[].class);
 				
 				//cache the patients returned so we can 
 				//pull them out of the cache again
@@ -62,7 +68,7 @@ public class DocumentManagerImpl implements DocumentManager {
 		return results;
 	}
 	@Override
-	public String getDocumentById(Long documentId) {
+	public String getDocumentById(String samlMessage, Long documentId) {
 		String docContents = "";
 		//look in the cache (what is the document id and how does it get created?)
 		// if it's not there, query the organization present in the patient object
@@ -75,8 +81,10 @@ public class DocumentManagerImpl implements DocumentManager {
 				OrganizationDTO org = patient.getOrganization();
 				if(org != null && org.getEndpointUrl() != null) {
 					String url = org.getEndpointUrl() + "/document/" + documentId;
+					MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
+					parameters.add("samlMessage", samlMessage);
 					RestTemplate restTemplate = new RestTemplate();
-					String remoteDocContents = restTemplate.getForObject(url, String.class);
+					String remoteDocContents = restTemplate.postForObject(url, parameters, String.class);
 					if(cachedDoc != null) {
 						cachedDoc.setContents(remoteDocContents.getBytes());
 						docDao.update(cachedDoc);

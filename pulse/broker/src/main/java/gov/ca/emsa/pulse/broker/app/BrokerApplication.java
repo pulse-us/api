@@ -1,15 +1,7 @@
 package gov.ca.emsa.pulse.broker.app;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
 
-import javax.xml.bind.Element;
-
-import org.opensaml.saml2.core.Assertion;
-import org.opensaml.saml2.core.impl.AssertionMarshaller;
-import org.opensaml.xml.io.MarshallingException;
-import org.opensaml.xml.util.XMLHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,12 +15,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.cache.QueryCacheManager;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
-import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
-import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
-import gov.ca.emsa.pulse.broker.saml.SamlGenerator.SAMLInputContainer;
 
 @SpringBootApplication(scanBasePackages= {"gov.ca.emsa.pulse.broker.**",
 		"gov.ca.emsa.pulse.service.**"})
@@ -39,37 +27,6 @@ public class BrokerApplication implements EnvironmentAware {
 	
 	public static void main(String[] args) {
 		SpringApplication.run(BrokerApplication.class, args);
-		try {
-			createSAML();
-		} catch (MarshallingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public static void createSAML() throws MarshallingException{
-		SAMLInputContainer input = new SAMLInputContainer();
-		input.setStrIssuer("https://idp.dhv.gov");
-		input.setStrNameID("UserBrianLindsey");
-		input.setStrNameQualifier("My Website");
-		input.setSessionId("abcdedf1234567");
-
-		HashMap<String, String> customAttributes = new HashMap<String,String>();
-		customAttributes.put("RequesterFirstName", "John");
-		customAttributes.put("RequesterLastName", "Smith");
-		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientFirstName", "Hodor");
-		customAttributes.put("PatientLastName", "Guy");
-		customAttributes.put("PatientSSN", "123456789");
-
-		input.setAttributes(customAttributes);
-
-		Assertion assertion = SamlGenerator.buildDefaultAssertion(input);
-		AssertionMarshaller marshaller = new AssertionMarshaller();
-		org.w3c.dom.Element plaintextElement = marshaller.marshall(assertion);
-		String originalAssertionString = XMLHelper.nodeToString(plaintextElement);
-
-		System.out.println("Assertion String: " + originalAssertionString);
 	}
 	
 	@Autowired
