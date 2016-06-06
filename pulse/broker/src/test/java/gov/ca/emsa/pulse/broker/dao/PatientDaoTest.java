@@ -34,7 +34,7 @@ public class PatientDaoTest extends TestCase {
 		toInsert.setGender("Male");
 		toInsert.setPhoneNumber("410-444-4444");
 		toInsert.setSsn("xxx-xx-xxxx");
-		toInsert.setPatientId("testpatientuniqueid");
+		toInsert.setPulsePatientId("testpatientuniqueid");
 		
 		AddressDTO address = new AddressDTO();
 		address.setStreetLineOne("1000 Hilltop Circle");
@@ -46,6 +46,8 @@ public class PatientDaoTest extends TestCase {
 		
 		OrganizationDTO org = new OrganizationDTO();
 		org.setName("Test Org");
+		org.setAdapter("eHealth");
+		org.setOrganizationId(1L);
 		toInsert.setOrganization(org);
 		
 		PatientDTO created = patientDao.create(toInsert);
@@ -70,7 +72,7 @@ public class PatientDaoTest extends TestCase {
 		toInsert.setGender("Female");
 		toInsert.setPhoneNumber("410-444-4444");
 		toInsert.setSsn("xxx-xx-xxxx");
-		toInsert.setPatientId("testpatient2uniqueid");
+		toInsert.setPulsePatientId("testpatient2uniqueid");
 		
 		AddressDTO address = new AddressDTO();
 		address.setStreetLineOne("1001 Hilltop Circle");
@@ -100,7 +102,7 @@ public class PatientDaoTest extends TestCase {
 		toInsert.setGender("Female");
 		toInsert.setPhoneNumber("410-444-4444");
 		toInsert.setSsn("xxx-xx-xxxx");
-		toInsert.setPatientId("testpatient3uniqueid");
+		toInsert.setPulsePatientId("testpatient3uniqueid");
 		
 		PatientDTO created = patientDao.create(toInsert);
 		assertNotNull(created);
@@ -120,7 +122,7 @@ public class PatientDaoTest extends TestCase {
 		toInsert.setGender("Male");
 		toInsert.setPhoneNumber("410-444-4444");
 		toInsert.setSsn("xxx-xx-xxxx");
-		toInsert.setPatientId("testpatient4uniqueid");
+		toInsert.setPulsePatientId("testpatient4uniqueid");
 		
 		AddressDTO address = new AddressDTO();
 		address.setStreetLineOne("1001 Hilltop Circle");
@@ -150,7 +152,7 @@ public class PatientDaoTest extends TestCase {
 		toInsert.setGender("Male");
 		toInsert.setPhoneNumber("410-444-4444");
 		toInsert.setSsn("xxx-xx-xxxx");
-		toInsert.setPatientId("testpatient5uniqueid");
+		toInsert.setPulsePatientId("testpatient5uniqueid");
 		
 		AddressDTO address = new AddressDTO();
 		address.setStreetLineOne("1005 Hilltop Circle");
@@ -162,10 +164,12 @@ public class PatientDaoTest extends TestCase {
 		
 		OrganizationDTO org = new OrganizationDTO();
 		org.setName("Test Org5");
+		org.setAdapter("eHealth");
+		org.setOrganizationId(1L);
 		toInsert.setOrganization(org);
 		
 		PatientDTO created = patientDao.create(toInsert);
-		System.out.println(created.getPatientId());
+		System.out.println(created.getPulsePatientId());
 		System.out.println(created.getOrganization().getId());
 		
 		List<PatientDTO> foundPatients = patientDao.getByPatientIdAndOrg(created);

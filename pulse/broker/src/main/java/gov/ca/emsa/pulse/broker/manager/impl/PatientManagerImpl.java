@@ -26,6 +26,11 @@ public class PatientManagerImpl implements PatientManager {
 	@Autowired PatientDAO patientDao;
 	
 	@Override
+	public PatientDTO getPatientById(Long patientId) {
+		return patientDao.getById(patientId);
+	}
+	
+	@Override
 	@Transactional
 	public List<PatientDTO> queryPatients(String firstName, String lastName) {
 		PatientDTO toSearch = new PatientDTO();
@@ -37,11 +42,8 @@ public class PatientManagerImpl implements PatientManager {
 		//get the list of organizations
 		List<OrganizationDTO> orgsToQuery = orgManager.getAll();
 		for(OrganizationDTO org : orgsToQuery) {
-			//look for cache hits for this organization/patientID combo
-			OrganizationDTO orgToQuery = new OrganizationDTO();
-			orgToQuery.setName("mock/ehealthexchange");
-			
-			String url = env.getProperty("mockBaseUrl") + "/ehealthexchange/patients";
+			//look for cache hits for this organization/patientID combo			
+			String url = org.getEndpointUrl() + "/patients";
 			if(!StringUtils.isEmpty(firstName)) {
 				url += "?firstName=" + firstName;
 			}
@@ -52,10 +54,9 @@ public class PatientManagerImpl implements PatientManager {
 					url += "?lastName=" + lastName;
 				}
 			}
-			toSearch.setPatientId(url);
+			toSearch.setPulsePatientId(url);
 			toSearch.setOrganization(org);
 			List<PatientDTO> patientMatches = patientDao.getByPatientIdAndOrg(toSearch);
-			//TODO: update the lastReadDate of each patient cache hit
 			
 			//if no cache hit
 			if(patientMatches == null || patientMatches.size() == 0) {
@@ -68,8 +69,8 @@ public class PatientManagerImpl implements PatientManager {
 				if(searchResults != null && searchResults.length > 0) {
 					for(Patient patient : searchResults) {
 						PatientDTO toCache = DomainToDtoConverter.convert(patient);
-						toCache.setPatientId(url);
-						toCache.setOrganization(orgToQuery);
+						toCache.setPulsePatientId(url);
+						toCache.setOrganization(org);
 						//TODO: should we really be caching the search results?
 						//or only caching the patient(s) that someone selects in the UI?
 						PatientDTO cachedPatient = patientDao.create(toCache);
@@ -77,6 +78,11 @@ public class PatientManagerImpl implements PatientManager {
 					}
 				} 
 			} else {
+				//update the lastReadDate of each patient cache hit
+				for(PatientDTO cachePatient : patientMatches) {
+					patientDao.update(cachePatient);
+				}
+				//add all matches to the result list
 				results.addAll(patientMatches);
 			}
 		}

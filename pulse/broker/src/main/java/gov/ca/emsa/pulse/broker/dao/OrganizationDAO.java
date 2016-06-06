@@ -14,6 +14,4 @@ public interface OrganizationDAO {
 	public void delete(OrganizationDTO organizationDTO);
 	public OrganizationDTO findById(Long id);
 	public List<OrganizationDTO> findByName(String name);
-
-
 }

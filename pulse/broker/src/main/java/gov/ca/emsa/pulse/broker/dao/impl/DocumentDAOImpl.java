@@ -26,10 +26,9 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		DocumentEntity doc = new DocumentEntity();
 		doc.setName(dto.getName());
 		doc.setFormat(dto.getFormat());
-		if(dto.getPatient() != null) {
-			PatientEntity pat = new PatientEntity();
-			pat.setId(dto.getPatient().getId());
-			doc.setPatient(pat);
+		doc.setContents(dto.getContents());
+		doc.setLastReadDate(new Date());
+		if(dto.getPatient() != null && dto.getPatient().getId() != null) {
 			doc.setPatientId(dto.getPatient().getId());
 		}
 		
@@ -44,14 +43,14 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		DocumentEntity doc = this.getEntityById(dto.getId());		
 		doc.setName(dto.getName());
 		doc.setFormat(dto.getFormat());
-		if(dto.getPatient() != null) {
-			PatientEntity pat = new PatientEntity();
-			pat.setId(dto.getPatient().getId());
-			doc.setPatient(pat);
+		doc.setContents(dto.getContents());
+		doc.setLastReadDate(new Date());
+		if(dto.getPatient() != null && dto.getPatient().getId() != null) {
 			doc.setPatientId(dto.getPatient().getId());
 		}
 		
 		doc = entityManager.merge(doc);
+		entityManager.flush();
 		return new DocumentDTO(doc);
 	}
 
@@ -60,6 +59,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	public void delete(Long id) {
 		DocumentEntity toDelete = getEntityById(id);
 		entityManager.remove(toDelete);
+		entityManager.flush();
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	
 	public void deleteItemsOlderThan(Date oldestDate) {			
 		Query query = entityManager.createQuery( "DELETE from DocumentEntity doc "
-				+ " WHERE doc.lastReadDate >= :cacheDate");
+				+ " WHERE doc.lastReadDate <= :cacheDate");
 		
 		query.setParameter("cacheDate", oldestDate);
 		int deletedCount = query.executeUpdate();
@@ -130,7 +130,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	private List<DocumentEntity> getEntityByPatientId(Long patientId) {		
 		Query query = entityManager.createQuery( "SELECT doc from DocumentEntity doc "
 				+ "LEFT OUTER JOIN FETCH doc.patient "
-				+ "where doc.patientId LIKE :patientId", 
+				+ "where doc.patientId = :patientId", 
 				DocumentEntity.class );
 		
 		query.setParameter("patientId", patientId);

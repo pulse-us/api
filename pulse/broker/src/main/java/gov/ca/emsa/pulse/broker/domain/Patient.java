@@ -4,6 +4,8 @@ import java.util.Date;
 
 public class Patient {
 	private String id;
+	private String pulsePatientId;
+	private String orgPatientId;
 	private String firstName;
 	private String lastName;
 	private Date dateOfBirth;
@@ -87,5 +89,17 @@ public class Patient {
 	}
 	public void setCity(String city) {
 		this.city = city;
+	}
+	public String getPulsePatientId() {
+		return pulsePatientId;
+	}
+	public void setPulsePatientId(String pulsePatientId) {
+		this.pulsePatientId = pulsePatientId;
+	}
+	public String getOrgPatientId() {
+		return orgPatientId;
+	}
+	public void setOrgPatientId(String orgPatientId) {
+		this.orgPatientId = orgPatientId;
 	}
 }

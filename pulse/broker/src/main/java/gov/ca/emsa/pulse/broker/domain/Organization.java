@@ -19,6 +19,38 @@ public class Organization {
 		this.name = name;
 	}
 	
+	public String getEndpointUrl() {
+		return endpointUrl;
+	}
+
+	public void setEndpointUrl(String endpointUrl) {
+		this.endpointUrl = endpointUrl;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(Long organizationId) {
+		this.organizationId = organizationId;
+	}
+
+	public String getName(){
+		return name;
+	}
+	
+	public void setName(String name){
+		this.name = name;
+	}
+
 	public boolean isActive() {
 		return isActive;
 	}
@@ -66,44 +98,4 @@ public class Organization {
 	public void setCertificationKey(String certificationKey) {
 		this.certificationKey = certificationKey;
 	}
-
-	public String getEndpointUrl() {
-		return endpointUrl;
-	}
-
-	public void setEndpointUrl(String endpointUrl) {
-		this.endpointUrl = endpointUrl;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Long getOrganizationId() {
-		return organizationId;
-	}
-
-	public void setOrganizationId(Long organizationId) {
-		this.organizationId = organizationId;
-	}
-
-	public String getName(){
-		return name;
-	}
-	
-	public void setName(String name){
-		this.name = name;
-	}
-	
-	@Override
-    public String toString() {
-        return "Organization{" +
-                "name=" + name +
-                '}';
-    }
-
 }

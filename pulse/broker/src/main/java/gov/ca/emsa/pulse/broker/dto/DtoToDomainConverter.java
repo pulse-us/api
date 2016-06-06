@@ -7,6 +7,9 @@ public class DtoToDomainConverter {
 	
 	public static Patient convert(PatientDTO dtoObj) {
 		Patient result = new Patient();
+		result.setId(dtoObj.getId().toString());
+		result.setPulsePatientId(dtoObj.getPulsePatientId());
+		result.setOrgPatientId(dtoObj.getOrgPatientId());
 		result.setFirstName(dtoObj.getFirstName());
 		result.setLastName(dtoObj.getLastName());
 		result.setGender(dtoObj.getGender());
@@ -20,7 +23,6 @@ public class DtoToDomainConverter {
 			result.setCity(dtoObj.getAddress().getCity());
 			result.setState(dtoObj.getAddress().getState());
 			result.setZipcode(dtoObj.getAddress().getZipcode());
-			
 		}
 		
 		return result;

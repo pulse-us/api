@@ -1,3 +1,6 @@
+#Custom project ignores
+*.properties
+
 # Created by https://www.gitignore.io/api/linux,windows,eclipse,emacs,java,gradle
 ########################################
 ### Linux ###

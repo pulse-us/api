@@ -9,6 +9,11 @@ public class DomainToDtoConverter {
 	
 	public static PatientDTO convert(Patient domainObj) {
 		PatientDTO result = new PatientDTO();
+		if(domainObj.getId() != null) {
+			result.setId(new Long(domainObj.getId()));
+		}
+		result.setPulsePatientId(domainObj.getPulsePatientId());
+		result.setOrgPatientId(domainObj.getOrgPatientId());
 		result.setFirstName(domainObj.getFirstName());
 		result.setLastName(domainObj.getLastName());
 		result.setGender(domainObj.getGender());
