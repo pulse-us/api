@@ -1,37 +1,34 @@
-package gov.ca.emsa.pulse.broker.dto;
+package gov.ca.emsa.pulse.broker.domain;
 
-import java.util.Date;
+import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 
-import gov.ca.emsa.pulse.broker.entity.QueryOrganizationStatusMap;
-
-public class QueryOrganizationDTO {
-
+public class OrganizationStatus {
 	private Long id;
 	private Long queryId;
 	private Long orgId;
 	private String status;
-	private Date startDate;
-	private Date endDate;
+	private Long startDate;
+	private Long endDate;
 	private Boolean fromCache;
 	
-	public QueryOrganizationDTO(){}
-	
-	public QueryOrganizationDTO(QueryOrganizationStatusMap entity)
-	{
-		if(entity != null) {
-			this.id = entity.getId();
-			this.queryId = entity.getQueryId();
-			this.orgId = entity.getOrganizationId();
-			this.status = entity.getStatus();
-			this.startDate = entity.getStartDate();
-			this.endDate = entity.getEndDate();
-			this.fromCache = entity.getFromCache();
+	public OrganizationStatus(QueryOrganizationDTO dto) {
+		this.id = dto.getId();
+		this.queryId = dto.getQueryId();
+		this.orgId = dto.getOrgId();
+		this.status = dto.getStatus();
+		this.fromCache = dto.getFromCache();
+		if(dto.getStartDate() != null) {
+			this.startDate = dto.getStartDate().getTime();
+		}
+		if(dto.getEndDate() != null) {
+			this.endDate = dto.getEndDate().getTime();
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -60,19 +57,19 @@ public class QueryOrganizationDTO {
 		this.status = status;
 	}
 
-	public Date getStartDate() {
+	public Long getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(Long startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public Long getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(Long endDate) {
 		this.endDate = endDate;
 	}
 

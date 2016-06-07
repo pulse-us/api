@@ -20,7 +20,7 @@ public class QueryDTO {
 	
 	public QueryDTO(QueryEntity entity)
 	{
-		super();
+		this();
 		if(entity != null) {
 			this.id = entity.getId();
 			this.userToken = entity.getUserToken();

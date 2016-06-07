@@ -9,4 +9,6 @@ public interface QueryManager {
 	public List<QueryDTO> getActiveQueriesForUser(String userKey);
 	public String getQueryStatus(Long queryId);
 	public QueryDTO getQueryStatusDetails(Long queryId);
+	public QueryDTO updateQuery(QueryDTO toUpdate);
+	public QueryDTO createQuery(QueryDTO toCreate);
 }

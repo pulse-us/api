@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -13,7 +14,6 @@ import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryStatus;
-import gov.ca.emsa.pulse.broker.entity.PatientEntity;
 import gov.ca.emsa.pulse.broker.entity.QueryEntity;
 import gov.ca.emsa.pulse.broker.entity.QueryOrganizationStatusMap;
 
@@ -37,6 +37,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 				orgMap.setQueryId(query.getId());
 				orgMap.setStatus(QueryStatus.ACTIVE.name());
 				entityManager.persist(orgMap);
+				query.getOrgStatuses().add(orgMap);
 			}
 		}
 		
@@ -48,23 +49,36 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	public QueryDTO update(QueryDTO dto) {
 		QueryEntity query = this.getEntityById(dto.getId());
 		//terms and user wouldn't change
-		if(dto.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
-			query.setStatus(QueryStatus.COMPLETE.name());
-		} else {
-			query.setStatus(QueryStatus.ACTIVE.name());
-		}
-		query = entityManager.merge(query);
 		
+		//check the org statuses
 		if(dto.getOrgStatuses() != null && dto.getOrgStatuses().size() > 0) {
+			int completeCount = 0;
 			for(QueryOrganizationDTO orgStatus : dto.getOrgStatuses()) {
 				QueryOrganizationStatusMap orgMap = this.getQueryStatusById(orgStatus.getId());
-				//org and query wouldn't change
-				if(dto.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
-					orgMap.setStatus(QueryStatus.COMPLETE.name());
-				} else {
+				if(orgMap == null || orgMap.getId() == null) {
+					//create 
+					orgMap = new QueryOrganizationStatusMap();
+					orgMap.setOrganizationId(orgStatus.getOrgId());
+					orgMap.setQueryId(query.getId());
 					orgMap.setStatus(QueryStatus.ACTIVE.name());
+					query.getOrgStatuses().add(orgMap);
+					entityManager.persist(orgMap);
+				} else {
+					//update - org and query wouldn't change
+					if(orgStatus.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
+						orgMap.setEndDate(new Date());
+						orgMap.setStatus(QueryStatus.COMPLETE.name());
+						completeCount++;
+					} else {
+						orgMap.setStatus(QueryStatus.ACTIVE.name());
+					}
+					orgMap = entityManager.merge(orgMap);
 				}
-				orgMap = entityManager.merge(orgMap);
+			}
+			
+			if(completeCount == dto.getOrgStatuses().size()) {
+				query.setStatus(QueryStatus.COMPLETE.name());
+				query = entityManager.merge(query);
 			}
 		}
 		
@@ -111,7 +125,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return dto;
 	}
 	
-	private List<PatientEntity> findAllEntities() {
+	private List<QueryEntity> findAllEntities() {
 		Query query = entityManager.createQuery("from QueryEntity");
 		return query.getResultList();
 	}
@@ -125,11 +139,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 				QueryEntity.class );
 		
 		query.setParameter("entityid", id);
-		List<QueryEntity> result = query.getResultList();
-		if(result.size() == 1) {
-			entity = result.get(0);
-		}
-		
+		entity = (QueryEntity)query.getSingleResult();
 		return entity;
 	}
 	

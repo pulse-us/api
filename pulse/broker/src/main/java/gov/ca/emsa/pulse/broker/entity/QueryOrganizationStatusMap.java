@@ -2,11 +2,15 @@ package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -21,11 +25,30 @@ public class QueryOrganizationStatusMap {
 	@Column(name="query_id")
 	private Long queryId;
 	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "query_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private QueryEntity query;
+	
 	@Column(name = "organization_id")
 	private Long organizationId;
 	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "organization_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private OrganizationEntity org;
+	
 	@Column(name="status")
 	private String status;
+	
+	@Column(name = "start_date", insertable = false, updatable = false)
+	private Date startDate;
+	
+	@Column(name = "end_date")
+	private Date endDate;
+	
+	@Column(name = "from_cache")
+	private Boolean fromCache;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -79,5 +102,45 @@ public class QueryOrganizationStatusMap {
 
 	public void setOrganizationId(Long organizationId) {
 		this.organizationId = organizationId;
+	}
+
+	public QueryEntity getQuery() {
+		return query;
+	}
+
+	public void setQuery(QueryEntity query) {
+		this.query = query;
+	}
+
+	public OrganizationEntity getOrg() {
+		return org;
+	}
+
+	public void setOrg(OrganizationEntity org) {
+		this.org = org;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public Boolean getFromCache() {
+		return fromCache;
+	}
+
+	public void setFromCache(Boolean fromCache) {
+		this.fromCache = fromCache;
 	}
 }

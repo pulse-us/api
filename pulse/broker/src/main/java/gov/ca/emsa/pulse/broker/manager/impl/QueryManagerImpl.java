@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
@@ -35,4 +36,15 @@ public class QueryManagerImpl implements QueryManager{
 		return query.getStatus();
 	}
 	
+	@Override
+	@Transactional
+	public QueryDTO updateQuery(QueryDTO toUpdate) {
+		return queryDao.update(toUpdate);
+	}
+	
+	@Override
+	@Transactional
+	public QueryDTO createQuery(QueryDTO toCreate) {
+		return queryDao.create(toCreate);
+	}
 }

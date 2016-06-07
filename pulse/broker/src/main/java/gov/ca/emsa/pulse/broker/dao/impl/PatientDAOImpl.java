@@ -16,9 +16,11 @@ import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientQueryResultDTO;
 import gov.ca.emsa.pulse.broker.entity.AddressEntity;
 import gov.ca.emsa.pulse.broker.entity.OrganizationEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientQueryResultEntity;
 
 @Repository
 public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
@@ -155,6 +157,35 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		return results;
 	}
 	
+	@Override
+	public List<PatientDTO> getPatientResultsForQuery(Long queryId) {
+		Query query = entityManager.createQuery( "SELECT p "
+				+ "from PatientEntity p, PatientQueryResultEntity r "
+				+ "where r.queryOrganizationId.queryId = :queryId "
+				+ "and r.patientId = p.id", 
+				PatientEntity.class );
+		query.setParameter("queryId", queryId);
+		List<PatientEntity> patients = query.getResultList();
+		List<PatientDTO> results = new ArrayList<PatientDTO>();
+		for(PatientEntity patient : patients) {
+			PatientDTO result = new PatientDTO(patient);
+			results.add(result);
+		}
+		return results;
+	}
+	
+	@Override
+	public PatientQueryResultDTO addPatientResultForQuery(PatientQueryResultDTO toCreate) {
+		PatientQueryResultEntity entity = new PatientQueryResultEntity();
+		entity.setPatientId(toCreate.getPatientId());
+		entity.setQueryOrganizationId(toCreate.getQueryOrgId());
+		
+		entityManager.persist(entity);
+		entityManager.flush();
+		return new PatientQueryResultDTO(entity);
+	}
+	
+	@Override
 	public void deleteItemsOlderThan(Date oldestDate) {			
 		Query query = entityManager.createQuery( "DELETE from PatientEntity pe "
 				+ " WHERE pe.lastReadDate <= :cacheDate");
