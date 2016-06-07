@@ -34,8 +34,8 @@ public class DocumentManagerImpl implements DocumentManager {
 		
 		if(results == null || results.size() == 0) {
 			if(patient.getOrganization() != null) {
-				String url = patient.getOrganization().getEndpointUrl();
-				//+ "/documents?patientId=" + patient.getOrgPatientId();
+				String url = patient.getOrganization().getEndpointUrl() + "/documents";
+				// ?patientId=" + patient.getOrgPatientId();
 				MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
 				parameters.add("patientId", patient.getOrgPatientId());
 				parameters.add("samlMessage", samlMessage);
