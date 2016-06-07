@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,7 +34,7 @@ public class PatientManagerImpl implements PatientManager {
 	
 	@Override
 	@Transactional
-	public List<PatientDTO> queryPatients(String firstName, String lastName) {
+	public List<PatientDTO> queryPatients(String samlMessage, String firstName, String lastName) {
 		PatientDTO toSearch = new PatientDTO();
 		toSearch.setFirstName(firstName);
 		toSearch.setLastName(lastName);
@@ -42,16 +44,20 @@ public class PatientManagerImpl implements PatientManager {
 		//get the list of organizations
 		List<OrganizationDTO> orgsToQuery = orgManager.getAll();
 		for(OrganizationDTO org : orgsToQuery) {
+			MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
 			//look for cache hits for this organization/patientID combo			
 			String url = org.getEndpointUrl() + "/patients";
 			if(!StringUtils.isEmpty(firstName)) {
-				url += "?firstName=" + firstName;
+				//url += "?firstName=" + firstName;
+				parameters.add("firstName", firstName);
 			}
 			if(!StringUtils.isEmpty(lastName)) {
 				if(url.contains("?")) {
-					url += "&lastName=" + lastName;
+					//url += "&lastName=" + lastName;
+					parameters.add("lastName", lastName);
 				} else {
-					url += "?lastName=" + lastName;
+					//url += "?lastName=" + lastName;
+					parameters.add("lastName", lastName);
 				}
 			}
 			toSearch.setPulsePatientId(url);
@@ -62,7 +68,8 @@ public class PatientManagerImpl implements PatientManager {
 			if(patientMatches == null || patientMatches.size() == 0) {
 				//query this organization directly for patient matches
 				RestTemplate restTemplate = new RestTemplate();
-				Patient[] searchResults = restTemplate.getForObject(url, Patient[].class);
+				parameters.add("samlMessage", samlMessage);
+				Patient[] searchResults = restTemplate.postForObject(url, parameters, Patient[].class);
 				
 				//cache the patients returned so we can 
 				//pull them out of the cache again
