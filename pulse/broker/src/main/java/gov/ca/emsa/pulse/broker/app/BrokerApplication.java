@@ -3,11 +3,13 @@ package gov.ca.emsa.pulse.broker.app;
 import java.util.Timer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -20,6 +22,7 @@ import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 
 @SpringBootApplication(scanBasePackages= {"gov.ca.emsa.pulse.broker.**",
 		"gov.ca.emsa.pulse.service.**"})
@@ -106,4 +109,10 @@ public class BrokerApplication implements EnvironmentAware {
 		
 		return qcTask;
 	}
+	
+	@Bean
+    @Scope(scopeName=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public PatientQueryService prototypeQueryService() {
+        return new PatientQueryService();
+    }
 }

@@ -1,8 +1,10 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -19,7 +21,7 @@ import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryStatus;
 
-@Service
+@Component
 public class PatientQueryService implements Runnable {
 	private QueryDTO query;
 	private OrganizationDTO org;
@@ -27,7 +29,9 @@ public class PatientQueryService implements Runnable {
 	@Autowired private PatientDAO patientDao;
 	private PatientDTO toSearch;
 	
-	public PatientQueryService() {}
+	public PatientQueryService() {
+		System.out.println("CREATED NEW PATIENT QUERY SERVICE");
+	}
 	
 	@Override
 	@Transactional
@@ -93,8 +97,9 @@ public class PatientQueryService implements Runnable {
 		for(QueryOrganizationDTO orgStatus : currQuery.getOrgStatuses()) {
 			if(orgStatus.getOrgId().longValue() == org.getId().longValue()) {
 				orgStatus.setStatus(QueryStatus.COMPLETE.name());
-				orgStatus.setFromCache(cached);
-				queryDao.update(query);		
+				orgStatus.setEndDate(new Date());
+				orgStatus.setFromCache(new Boolean(cached));
+				queryDao.update(currQuery);		
 			}
 		}
 	}

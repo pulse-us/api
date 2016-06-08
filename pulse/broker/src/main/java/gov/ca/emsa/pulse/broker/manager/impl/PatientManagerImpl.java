@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.Environment;
@@ -29,10 +30,10 @@ import gov.ca.emsa.pulse.broker.manager.QueryManager;
 
 @Service
 public class PatientManagerImpl implements PatientManager, ApplicationContextAware {
-	@Autowired Environment env;
-	@Autowired OrganizationManager orgManager;
-	@Autowired PatientDAO patientDao;
-	@Autowired QueryManager queryManager;
+	@Autowired private Environment env;
+	@Autowired private OrganizationManager orgManager;
+	@Autowired private PatientDAO patientDao;
+	@Autowired private QueryManager queryManager;
 	private ApplicationContext context;
 	private final ExecutorService pool;
 	
@@ -44,7 +45,13 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
 	public PatientDTO getPatientById(Long patientId) {
 		return patientDao.getById(patientId);
 	}
-	
+
+    @Lookup
+    public PatientQueryService getPrototypeQueryService(){
+        //spring will override this method
+        return null;
+    }
+    
 	@Override
 	public QueryDTO queryPatients(String firstName, String lastName) throws JsonProcessingException {
 		PatientDTO toSearch = new PatientDTO();
@@ -72,7 +79,7 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
 			query.getOrgStatuses().add(queryOrg);
 			query = queryManager.updateQuery(query);
 			
-			PatientQueryService service = (PatientQueryService) context.getBean("patientQueryService");
+			PatientQueryService service = getPrototypeQueryService();
 			service.setToSearch(toSearch);
 			service.setQuery(query);
 			service.setOrg(org);

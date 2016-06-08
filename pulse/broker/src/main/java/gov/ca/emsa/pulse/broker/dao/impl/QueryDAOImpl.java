@@ -36,6 +36,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 				orgMap.setOrganizationId(orgStatus.getOrgId());
 				orgMap.setQueryId(query.getId());
 				orgMap.setStatus(QueryStatus.ACTIVE.name());
+				orgMap.setStartDate(new Date());
 				entityManager.persist(orgMap);
 				query.getOrgStatuses().add(orgMap);
 			}
@@ -61,15 +62,18 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 					orgMap.setOrganizationId(orgStatus.getOrgId());
 					orgMap.setQueryId(query.getId());
 					orgMap.setStatus(QueryStatus.ACTIVE.name());
+					orgMap.setStartDate(new Date());
 					query.getOrgStatuses().add(orgMap);
 					entityManager.persist(orgMap);
 				} else {
 					//update - org and query wouldn't change
 					if(orgStatus.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
 						orgMap.setEndDate(new Date());
+						orgMap.setFromCache(orgStatus.getFromCache());
 						orgMap.setStatus(QueryStatus.COMPLETE.name());
 						completeCount++;
 					} else {
+						orgMap.setFromCache(orgStatus.getFromCache());
 						orgMap.setStatus(QueryStatus.ACTIVE.name());
 					}
 					orgMap = entityManager.merge(orgMap);
