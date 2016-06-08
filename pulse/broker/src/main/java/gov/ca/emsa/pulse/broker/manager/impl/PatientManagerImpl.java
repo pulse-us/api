@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
@@ -53,6 +57,7 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
     }
     
 	@Override
+	@Transactional	
 	public QueryDTO queryPatients(String firstName, String lastName) throws JsonProcessingException {
 		PatientDTO toSearch = new PatientDTO();
 		toSearch.setFirstName(firstName);
@@ -85,7 +90,6 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
 			service.setOrg(org);
 			pool.execute(service);
 		}
-		
 		return queryManager.getQueryStatusDetails(query.getId());
 	}
 	

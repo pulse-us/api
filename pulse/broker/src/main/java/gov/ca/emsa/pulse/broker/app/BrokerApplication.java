@@ -17,9 +17,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.cache.QueryCacheManager;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
-
-import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
