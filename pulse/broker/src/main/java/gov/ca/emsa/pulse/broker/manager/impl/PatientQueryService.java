@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,27 +29,27 @@ public class PatientQueryService implements Runnable {
 	@Autowired private QueryDAO queryDao;
 	@Autowired private PatientDAO patientDao;
 	private PatientDTO toSearch;
+	private String samlMessage;
 	
 	@Override
 	@Transactional
 	public void run() {
-		System.out.println("Query with id " + query.getId());		
-		String queryUrl = "";
+		String pulsePatientId = "";
 		if(!StringUtils.isEmpty(toSearch.getFirstName())) {
-			queryUrl += "?firstName=" + toSearch.getFirstName();
+			pulsePatientId += "?firstName=" + toSearch.getFirstName();
 		}
 		if(!StringUtils.isEmpty(toSearch.getLastName())) {
-			if(queryUrl.contains("?")) {
-				queryUrl += "&";
+			if(pulsePatientId.contains("?")) {
+				pulsePatientId += "&";
 			} else {
-				queryUrl += "?";
+				pulsePatientId += "?";
 			}
-			queryUrl += "lastName=" + toSearch.getLastName();
+			pulsePatientId += "lastName=" + toSearch.getLastName();
 		}
 		
 		//look for cache hits for this organization/patientID combo			
-		String url = org.getEndpointUrl() + "/patients" + queryUrl;
-		toSearch.setPulsePatientId(url);
+		pulsePatientId = org.getEndpointUrl() + "/patients" + pulsePatientId;
+		toSearch.setPulsePatientId(pulsePatientId);
 		toSearch.setOrganization(org);
 		List<PatientDTO> patientMatches = patientDao.getByPatientIdAndOrg(toSearch);
 		
@@ -55,15 +57,20 @@ public class PatientQueryService implements Runnable {
 		//if no cache hit
 		if(patientMatches == null || patientMatches.size() == 0) {
 			//query this organization directly for patient matches
+			String postUrl = org.getEndpointUrl() + "/patients";
+			MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
+			parameters.add("firstName", toSearch.getFirstName());
+			parameters.add("lastName", toSearch.getLastName());
+			parameters.add("samlMessage", samlMessage);
 			RestTemplate restTemplate = new RestTemplate();
-			Patient[] searchResults = restTemplate.getForObject(url, Patient[].class);
+			Patient[] searchResults = restTemplate.postForObject(postUrl, parameters, Patient[].class);
 			
 			//cache the patients returned so we can 
 			//pull them out of the cache again
 			if(searchResults != null && searchResults.length > 0) {
 				for(Patient patient : searchResults) {
 					PatientDTO toCache = DomainToDtoConverter.convert(patient);
-					toCache.setPulsePatientId(url);
+					toCache.setPulsePatientId(pulsePatientId);
 					toCache.setOrganization(org);
 					
 					//cache the search results
@@ -139,4 +146,11 @@ public class PatientQueryService implements Runnable {
 		this.toSearch = toSearch;
 	}
 
+	public String getSamlMessage() {
+		return samlMessage;
+	}
+
+	public void setSamlMessage(String samlMessage) {
+		this.samlMessage = samlMessage;
+	}
 }

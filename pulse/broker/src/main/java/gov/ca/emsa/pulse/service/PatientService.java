@@ -62,7 +62,7 @@ public class PatientService {
 			e.printStackTrace();
 		}
 		
-       QueryDTO initiatedQuery = patientManager.queryPatients(firstName, lastName);
+       QueryDTO initiatedQuery = patientManager.queryPatients(samlMessage, firstName, lastName);
        return new Query(initiatedQuery);
     }
 		
