@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -28,10 +27,6 @@ public class PatientQueryService implements Runnable {
 	@Autowired private QueryDAO queryDao;
 	@Autowired private PatientDAO patientDao;
 	private PatientDTO toSearch;
-	
-	public PatientQueryService() {
-		System.out.println("CREATED NEW PATIENT QUERY SERVICE");
-	}
 	
 	@Override
 	@Transactional

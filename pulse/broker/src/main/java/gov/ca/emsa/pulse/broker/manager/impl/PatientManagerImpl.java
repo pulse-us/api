@@ -51,7 +51,7 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
 	}
 
     @Lookup
-    public PatientQueryService getPrototypeQueryService(){
+    public PatientQueryService getPatientQueryService(){
         //spring will override this method
         return null;
     }
@@ -84,7 +84,7 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
 			query.getOrgStatuses().add(queryOrg);
 			query = queryManager.updateQuery(query);
 			
-			PatientQueryService service = getPrototypeQueryService();
+			PatientQueryService service = getPatientQueryService();
 			service.setToSearch(toSearch);
 			service.setQuery(query);
 			service.setOrg(org);
