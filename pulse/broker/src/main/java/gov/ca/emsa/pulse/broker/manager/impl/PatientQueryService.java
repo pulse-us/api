@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,6 +30,7 @@ public class PatientQueryService implements Runnable {
 	@Autowired private QueryDAO queryDao;
 	@Autowired private PatientDAO patientDao;
 	private PatientDTO toSearch;
+	private String samlMessage;
 	
 	public PatientQueryService() {
 		System.out.println("CREATED NEW PATIENT QUERY SERVICE");
@@ -60,8 +63,13 @@ public class PatientQueryService implements Runnable {
 		//if no cache hit
 		if(patientMatches == null || patientMatches.size() == 0) {
 			//query this organization directly for patient matches
+			String postUrl = org.getEndpointUrl() + "/patients";
+			MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
+			parameters.add("firstName", toSearch.getFirstName());
+			parameters.add("lastName", toSearch.getLastName());
+			parameters.add("samlMessage", samlMessage);
 			RestTemplate restTemplate = new RestTemplate();
-			Patient[] searchResults = restTemplate.getForObject(url, Patient[].class);
+			Patient[] searchResults = restTemplate.postForObject(postUrl, parameters, Patient[].class);
 			
 			//cache the patients returned so we can 
 			//pull them out of the cache again
@@ -143,5 +151,15 @@ public class PatientQueryService implements Runnable {
 	public void setToSearch(PatientDTO toSearch) {
 		this.toSearch = toSearch;
 	}
+
+	public String getSamlMessage() {
+		return samlMessage;
+	}
+
+	public void setSamlMessage(String samlMessage) {
+		this.samlMessage = samlMessage;
+	}
+	
+	
 
 }
