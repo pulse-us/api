@@ -3,6 +3,8 @@ package gov.ca.emsa.pulse.broker.manager.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +13,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import gov.ca.emsa.pulse.broker.dao.impl.DocumentDAOImpl;
 import gov.ca.emsa.pulse.broker.domain.Patient;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
@@ -24,6 +27,8 @@ import gov.ca.emsa.pulse.broker.manager.QueryManager;
 
 @Component
 public class PatientQueryService implements Runnable {
+	private static final Logger logger = LogManager.getLogger(PatientQueryService.class);
+
 	private QueryOrganizationDTO query;
 	private OrganizationDTO org;
 	@Autowired private QueryManager queryManager;
@@ -56,7 +61,7 @@ public class PatientQueryService implements Runnable {
 		//if no cache hit
 		if(patientMatches == null || patientMatches.size() == 0) {
 			//query this organization directly for patient matches
-			System.out.println("Starting query " + query.getId() + ", org " + org.getAdapter());
+			logger.info("Starting query to " + org.getAdapter() + " for orgquery " + query.getId());
 			String postUrl = org.getEndpointUrl() + "/patients";
 			MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
 			parameters.add("firstName", toSearch.getFirstName());
@@ -96,11 +101,11 @@ public class PatientQueryService implements Runnable {
 			}
 		}
 		
-		System.out.println("Setting query " + query.getId() + ", org to " + org.getAdapter() + " to COMPLETE!");
 		query.setStatus(QueryStatus.COMPLETE.name());
 		query.setEndDate(new Date());
 		query.setFromCache(new Boolean(cached));
 		queryManager.createOrUpdateQueryOrganization(query);
+		logger.info("Completed query to " + org.getAdapter() + " for orgquery " + query.getId());
 	}
 
 	public QueryOrganizationDTO getQuery() {

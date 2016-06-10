@@ -88,7 +88,6 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
 			queryOrg.setOrgId(org.getId());
 			queryOrg.setQueryId(query.getId());
 			queryOrg.setStatus(QueryStatus.ACTIVE.name());
-			//query = queryManager.updateQuery(query);
 			queryOrg = queryManager.createOrUpdateQueryOrganization(queryOrg);
 			query.getOrgStatuses().add(queryOrg);
 			

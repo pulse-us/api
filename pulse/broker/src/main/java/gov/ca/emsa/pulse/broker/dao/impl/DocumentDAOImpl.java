@@ -19,7 +19,6 @@ import gov.ca.emsa.pulse.broker.entity.PatientEntity;
 @Repository
 public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	private static final Logger logger = LogManager.getLogger(DocumentDAOImpl.class);
-
 	
 	@Override
 	public DocumentDTO create(DocumentDTO dto) {
