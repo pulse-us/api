@@ -15,16 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
 
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
-import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.domain.Patient;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientQueryResultDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryStatus;
@@ -49,6 +45,11 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
 	public PatientDTO getPatientById(Long patientId) {
 		return patientDao.getById(patientId);
 	}
+	
+	@Override
+	public List<PatientDTO> searchPatients(PatientDTO toSearch) {
+		return patientDao.getByPatientIdAndOrg(toSearch);
+	}
 
     @Lookup
     public PatientQueryService getPatientQueryService(){
@@ -57,7 +58,13 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
     }
     
 	@Override
-	@Transactional	
+	public List<PatientDTO> getPatientsByQuery(Long queryId) {
+		List<PatientDTO> results = patientDao.getPatientResultsForQuery(queryId);
+		return results;
+	}
+	
+	@Override	
+	@Transactional
 	public QueryDTO queryPatients(String samlMessage, String firstName, String lastName) throws JsonProcessingException {
 		PatientDTO toSearch = new PatientDTO();
 		toSearch.setFirstName(firstName);
@@ -81,23 +88,36 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
 			queryOrg.setOrgId(org.getId());
 			queryOrg.setQueryId(query.getId());
 			queryOrg.setStatus(QueryStatus.ACTIVE.name());
+			//query = queryManager.updateQuery(query);
+			queryOrg = queryManager.createOrUpdateQueryOrganization(queryOrg);
 			query.getOrgStatuses().add(queryOrg);
-			query = queryManager.updateQuery(query);
 			
 			PatientQueryService service = getPatientQueryService();
 			service.setSamlMessage(samlMessage);
 			service.setToSearch(toSearch);
-			service.setQuery(query);
+			service.setQuery(queryOrg);
 			service.setOrg(org);
 			pool.execute(service);
 		}
-		return queryManager.getQueryStatusDetails(query.getId());
+		return query;
 	}
 	
 	@Override
-	public List<PatientDTO> getPatientsByQuery(Long queryId) {
-		List<PatientDTO> results = patientDao.getPatientResultsForQuery(queryId);
-		return results;
+	@Transactional
+	public PatientDTO create(PatientDTO toCreate) {
+		return patientDao.create(toCreate);
+	}
+	
+	@Override
+	@Transactional
+	public PatientDTO update(PatientDTO toUpdate) {
+		return patientDao.update(toUpdate);
+	}
+	
+	@Override
+	@Transactional
+	public PatientQueryResultDTO mapPatientToQuery(PatientQueryResultDTO toCreate) {
+		return patientDao.addPatientResultForQuery(toCreate);
 	}
 	
 	@Override

@@ -8,12 +8,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryStatus;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 
 @Service
 public class QueryManagerImpl implements QueryManager{
 	@Autowired QueryDAO queryDao;
+	
+	@Override
+	public QueryDTO getById(Long id) {
+		return queryDao.getById(id);
+	}
 	
 	@Override
 	public List<QueryDTO> getAllQueriesForUser(String userKey) {
@@ -40,6 +46,18 @@ public class QueryManagerImpl implements QueryManager{
 	@Transactional
 	public QueryDTO updateQuery(QueryDTO toUpdate) {
 		return queryDao.update(toUpdate);
+	}
+	
+	@Override
+	@Transactional
+	public QueryOrganizationDTO createOrUpdateQueryOrganization(QueryOrganizationDTO toUpdate) {
+		QueryOrganizationDTO updated = null;
+		if(toUpdate.getId() == null) {
+			updated = queryDao.createQueryOrganization(toUpdate);
+		} else {
+			updated = queryDao.updateQueryOrganization(toUpdate);
+		}
+		return updated;
 	}
 	
 	@Override
