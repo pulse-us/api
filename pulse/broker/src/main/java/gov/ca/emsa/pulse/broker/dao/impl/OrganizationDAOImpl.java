@@ -66,7 +66,7 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 			entity.setName(dto.getName());
 			changed = true;
 		}
-		if(!entity.isActive() != dto.isActive()){
+		if(entity.isActive() != dto.isActive()){
 			entity.setActive(dto.isActive());
 			changed = true;
 		}
