@@ -65,14 +65,16 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
 	
 	@Override	
 	@Transactional
-	public QueryDTO queryPatients(String samlMessage, String firstName, String lastName) throws JsonProcessingException {
-		PatientDTO toSearch = new PatientDTO();
-		toSearch.setFirstName(firstName);
-		toSearch.setLastName(lastName);
-		
+	public QueryDTO queryPatients(String samlMessage, PatientDTO searchParams) throws JsonProcessingException {
 		Patient queryTerms = new Patient();
-		queryTerms.setFirstName(firstName);
-		queryTerms.setLastName(lastName);
+		queryTerms.setFirstName(searchParams.getFirstName());
+		queryTerms.setLastName(searchParams.getLastName());
+		queryTerms.setDateOfBirth(searchParams.getDateOfBirth());
+		queryTerms.setSsn(searchParams.getSsn());
+		queryTerms.setGender(searchParams.getGender());
+		if(searchParams.getAddress() != null) {
+			queryTerms.setZipcode(searchParams.getAddress().getZipcode());
+		}
 		String queryTermsJson = JSONUtils.toJSON(queryTerms);
 		
 		QueryDTO query = new QueryDTO();
@@ -93,7 +95,7 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
 			
 			PatientQueryService service = getPatientQueryService();
 			service.setSamlMessage(samlMessage);
-			service.setToSearch(toSearch);
+			service.setToSearch(searchParams);
 			service.setQuery(queryOrg);
 			service.setOrg(org);
 			pool.execute(service);

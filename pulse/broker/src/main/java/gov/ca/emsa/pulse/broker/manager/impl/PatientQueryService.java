@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryStatus;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.service.PatientService;
 
 @Component
 public class PatientQueryService implements Runnable {
@@ -35,6 +38,11 @@ public class PatientQueryService implements Runnable {
 	@Autowired private PatientManager patientManager;
 	private PatientDTO toSearch;
 	private String samlMessage;
+	private DateFormat formatter;
+
+	public PatientQueryService() {
+		formatter = new SimpleDateFormat(PatientService.dobFormat);
+	}
 	
 	@Override
 	@Transactional
@@ -57,6 +65,7 @@ public class PatientQueryService implements Runnable {
 		toSearch.setOrganization(org);
 		List<PatientDTO> patientMatches = patientManager.searchPatients(toSearch);
 		
+		boolean queryError = false;
 		boolean cached = false;
 		//if no cache hit
 		if(patientMatches == null || patientMatches.size() == 0) {
@@ -66,9 +75,23 @@ public class PatientQueryService implements Runnable {
 			MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
 			parameters.add("firstName", toSearch.getFirstName());
 			parameters.add("lastName", toSearch.getLastName());
+			if(toSearch.getDateOfBirth() != null) {
+				parameters.add("dob", formatter.format(toSearch.getDateOfBirth()));
+			}
+			parameters.add("gender", toSearch.getGender());
+			parameters.add("ssn", toSearch.getSsn());
+			if(toSearch.getAddress() != null) {
+				parameters.add("zipcode", toSearch.getAddress().getZipcode());
+			}
 			parameters.add("samlMessage", samlMessage);
 			RestTemplate restTemplate = new RestTemplate();
-			Patient[] searchResults = restTemplate.postForObject(postUrl, parameters, Patient[].class);
+			Patient[] searchResults = null;
+			try {
+				searchResults = restTemplate.postForObject(postUrl, parameters, Patient[].class);
+			} catch(Exception ex) {
+				logger.error("Exception when querying " + postUrl, ex);
+				queryError = true;
+			}
 			
 			//cache the patients returned so we can 
 			//pull them out of the cache again
@@ -104,6 +127,7 @@ public class PatientQueryService implements Runnable {
 		query.setStatus(QueryStatus.COMPLETE.name());
 		query.setEndDate(new Date());
 		query.setFromCache(new Boolean(cached));
+		query.setSuccess(!queryError);
 		queryManager.createOrUpdateQueryOrganization(query);
 		logger.info("Completed query to " + org.getAdapter() + " for orgquery " + query.getId());
 	}

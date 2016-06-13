@@ -62,6 +62,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		if(orgStatus.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
 			orgMap.setEndDate(new Date());
 			orgMap.setFromCache(orgStatus.getFromCache());
+			orgMap.setSuccess(orgStatus.getSuccess());
 			orgMap.setStatus(QueryStatus.COMPLETE.name());
 		} else {
 			orgMap.setFromCache(orgStatus.getFromCache());
@@ -112,6 +113,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 					if(orgStatus.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
 						orgMap.setEndDate(new Date());
 						orgMap.setFromCache(orgStatus.getFromCache());
+						orgMap.setSuccess(orgStatus.getSuccess());
 						orgMap.setStatus(QueryStatus.COMPLETE.name());
 						completeCount++;
 					} else {
