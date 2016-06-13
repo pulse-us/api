@@ -50,8 +50,6 @@ public class DocumentManagerImpl implements DocumentManager {
 						if(toCache.getPatient() == null || toCache.getPatient().getId() == null) {
 							toCache.setPatient(patient);
 						}
-						//TODO: should we really be caching the search results?
-						//or only caching the document(s) that someone selects in the UI?
 						DocumentDTO cachedDocument = docDao.create(toCache);
 						results.add(cachedDocument);
 					}

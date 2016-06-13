@@ -76,7 +76,8 @@ public class DocumentService {
 		
 		@ApiOperation(value="Retrieve a specific document from an organization.")
 		@RequestMapping("/{documentId}")
-		public String getDocumentContents(@PathVariable("documentId") Long documentId) {
+		public String getDocumentContents(@PathVariable("documentId") Long documentId,
+				@RequestParam(value="cacheOnly", required= false, defaultValue="false") Boolean cacheOnly) {
 			
 			SAMLInput input = new SAMLInput();
 			input.setStrIssuer("https://idp.dhv.gov");
@@ -102,6 +103,13 @@ public class DocumentService {
 			} catch (MarshallingException e) {
 				e.printStackTrace();
 			}
-			return docManager.getDocumentById(samlMessage, documentId);
+			
+			String result = "";
+			if(cacheOnly == null || cacheOnly.booleanValue() == false) {
+				result = docManager.getDocumentById(samlMessage, documentId);
+			} else {
+				docManager.getDocumentById(samlMessage, documentId);
+			}
+			return result;
 		}
 }
