@@ -15,6 +15,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import gov.ca.emsa.pulse.broker.adapter.Adapter;
+import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.broker.dao.impl.DocumentDAOImpl;
 import gov.ca.emsa.pulse.broker.domain.Patient;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
@@ -36,13 +38,9 @@ public class PatientQueryService implements Runnable {
 	private OrganizationDTO org;
 	@Autowired private QueryManager queryManager;
 	@Autowired private PatientManager patientManager;
+	@Autowired private AdapterFactory adapterFactory;
 	private PatientDTO toSearch;
 	private String samlMessage;
-	private DateFormat formatter;
-
-	public PatientQueryService() {
-		formatter = new SimpleDateFormat(PatientService.dobFormat);
-	}
 	
 	@Override
 	@Transactional
@@ -70,29 +68,17 @@ public class PatientQueryService implements Runnable {
 		//if no cache hit
 		if(patientMatches == null || patientMatches.size() == 0) {
 			//query this organization directly for patient matches
-			logger.info("Starting query to " + org.getAdapter() + " for orgquery " + query.getId());
-			String postUrl = org.getEndpointUrl() + "/patients";
-			MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
-			parameters.add("firstName", toSearch.getFirstName());
-			parameters.add("lastName", toSearch.getLastName());
-			if(toSearch.getDateOfBirth() != null) {
-				parameters.add("dob", formatter.format(toSearch.getDateOfBirth()));
-			}
-			parameters.add("gender", toSearch.getGender());
-			parameters.add("ssn", toSearch.getSsn());
-			if(toSearch.getAddress() != null) {
-				parameters.add("zipcode", toSearch.getAddress().getZipcode());
-			}
-			parameters.add("samlMessage", samlMessage);
-			RestTemplate restTemplate = new RestTemplate();
 			Patient[] searchResults = null;
-			try {
-				searchResults = restTemplate.postForObject(postUrl, parameters, Patient[].class);
-			} catch(Exception ex) {
-				logger.error("Exception when querying " + postUrl, ex);
-				queryError = true;
+			Adapter adapter = adapterFactory.getAdapter(org);
+			if(adapter != null) {
+				logger.info("Starting query to " + org.getAdapter() + " for orgquery " + query.getId());
+				try {
+					searchResults = adapter.queryPatients(org, toSearch, samlMessage);
+				} catch(Exception ex) {
+					logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
+					queryError = true;
+				}
 			}
-			
 			//cache the patients returned so we can 
 			//pull them out of the cache again
 			if(searchResults != null && searchResults.length > 0) {
@@ -178,5 +164,13 @@ public class PatientQueryService implements Runnable {
 
 	public void setPatientManager(PatientManager patientManager) {
 		this.patientManager = patientManager;
+	}
+
+	public AdapterFactory getAdapterFactory() {
+		return adapterFactory;
+	}
+
+	public void setAdapterFactory(AdapterFactory adapterFactory) {
+		this.adapterFactory = adapterFactory;
 	}
 }
