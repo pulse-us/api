@@ -77,7 +77,7 @@ public class DocumentService {
 		@ApiOperation(value="Retrieve a specific document from an organization.")
 		@RequestMapping("/{documentId}")
 		public String getDocumentContents(@PathVariable("documentId") Long documentId,
-				@RequestParam(value="cacheOnly", required= false, defaultValue="false") Boolean cacheOnly) {
+				@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) {
 			
 			SAMLInput input = new SAMLInput();
 			input.setStrIssuer("https://idp.dhv.gov");
