@@ -1,0 +1,26 @@
+#for embedded gradle tomcat
+server.port = 8090 
+
+security.user.password=password
+springfox.documentation.swagger.v2.path=/api-docs
+basePath=/rest
+
+#spring boot properties
+spring.datasource.url= jdbc:postgresql://localhost:5432/pulse
+spring.datasource.driverClassName=org.postgresql.Driver
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.username= postgres
+spring.datasource.password= admin
+persistenceUnitName=pulse
+
+#the url where directory services are located
+directoryServicesUrl=http://localhost:8090/mock/mock/directory
+
+#refresh the list of organizations from directory services
+directoryRefreshSeconds = 20
+
+#how long is something valid in the cache
+queryCacheExpireMinutes=240
+
+#how often do we check the cache to clean up expired entries
+queryCacheCleanupMinutes=10
