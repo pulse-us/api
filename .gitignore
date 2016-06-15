@@ -129,3 +129,5 @@ gradle-app.setting
 .gradletasknamecache
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+/pulse/broker/src/main/resources/META-INF/persistence.xml
+/pulse/auth/src/main/resources/application.properties
