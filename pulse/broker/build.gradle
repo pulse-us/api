@@ -16,6 +16,10 @@ configurations {
 
 apply plugin: 'spring-boot'
 
+springBoot {
+    executable = true
+}
+
 jar {
   baseName = 'broker'
   version = '0.0.1-SNAPSHOT'
