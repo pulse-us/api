@@ -14,7 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="document", schema="pulse")
+@Table(name="document")
 public class DocumentEntity {
 	
 	@Id 

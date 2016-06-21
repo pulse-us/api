@@ -41,17 +41,11 @@ public class BrokerApplication implements EnvironmentAware {
     public void setEnvironment(final Environment environment) {
         this.env = environment;
     }
-	
-//	@Bean
-//	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
-//		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
-//		bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
-//		return bean;
-//	}
+
 	@Bean
 	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
 		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
-		bean.setPersistenceUnitName("pulse");
+		bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
 		return bean;
 	}
 
