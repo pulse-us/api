@@ -26,18 +26,23 @@ public class QueryDaoTest extends TestCase {
 	@Autowired QueryDAO queryDao;
 	@Autowired OrganizationDAO orgDao;
 	private OrganizationDTO queryOrg;
+	private static final Long queryOrgId = 1L;
 	
 	@Before
 	public void setup() {
-		queryOrg = new OrganizationDTO();
-		queryOrg.setActive(true);
-		queryOrg.setAdapter("eHealth");
-		queryOrg.setEndpointUrl("http://www.test.com");
-		queryOrg.setName("Test Org");
-		queryOrg.setUsername("ainq");
-		queryOrg.setOrganizationId(1L);
-		queryOrg.setId(1L);
-		queryOrg = orgDao.create(queryOrg);
+		queryOrg = orgDao.findById(queryOrgId);
+		
+		if(queryOrg == null) {
+			queryOrg = new OrganizationDTO();
+			queryOrg.setId(queryOrgId);
+			queryOrg.setOrganizationId(queryOrgId);
+			queryOrg.setActive(true);
+			queryOrg.setAdapter("eHealth");
+			queryOrg.setEndpointUrl("http://www.test.com");
+			queryOrg.setName("Test Org");
+			queryOrg.setUsername("ainq");
+			queryOrg = orgDao.create(queryOrg);
+		}
 	}
 	
 	@After
