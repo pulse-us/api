@@ -8,6 +8,7 @@ import org.opensaml.xml.io.MarshallingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,7 +34,7 @@ public class PatientService {
 	
 	@ApiOperation(value="Query all organizations for patients. This runs asynchronously and returns a query object"
 			+ "which can later be used to get the results.")
-	@RequestMapping("")
+	@RequestMapping(method = RequestMethod.POST)
     public Query searchPatients(
     		@RequestParam(value="firstName", defaultValue="") String firstName,
     		@RequestParam(value="lastName", defaultValue="") String lastName) throws JsonProcessingException {
