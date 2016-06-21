@@ -46,6 +46,49 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return new QueryDTO(query);
 	}
 
+	public QueryOrganizationDTO createQueryOrganization(QueryOrganizationDTO orgStatus) {
+		QueryOrganizationStatusMap orgMap = new QueryOrganizationStatusMap();
+		orgMap.setOrganizationId(orgStatus.getOrgId());
+		orgMap.setQueryId(orgStatus.getQueryId());
+		orgMap.setStatus(QueryStatus.ACTIVE.name());
+		orgMap.setStartDate(new Date());
+		entityManager.persist(orgMap);
+		return new QueryOrganizationDTO(orgMap);
+	}
+	
+	@Override
+	public synchronized QueryOrganizationDTO updateQueryOrganization(QueryOrganizationDTO orgStatus) {
+		QueryOrganizationStatusMap orgMap = this.getQueryStatusById(orgStatus.getId());
+		if(orgStatus.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
+			orgMap.setEndDate(new Date());
+			orgMap.setFromCache(orgStatus.getFromCache());
+			orgMap.setSuccess(orgStatus.getSuccess());
+			orgMap.setStatus(QueryStatus.COMPLETE.name());
+		} else {
+			orgMap.setFromCache(orgStatus.getFromCache());
+			orgMap.setStatus(QueryStatus.ACTIVE.name());
+		}
+		orgMap = entityManager.merge(orgMap);
+		
+		//see if the entire query is complete
+		QueryEntity query = this.getEntityById(orgStatus.getQueryId());
+		if(query.getOrgStatuses() != null && query.getOrgStatuses().size() > 0) {
+			int completeCount = 0;
+			for(QueryOrganizationStatusMap orgMapEntity : query.getOrgStatuses()) {
+				if(orgMapEntity.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
+					completeCount++;
+				} 
+			}
+			
+			if(completeCount == query.getOrgStatuses().size()) {
+				query.setStatus(QueryStatus.COMPLETE.name());
+				query = entityManager.merge(query);
+			}
+		}
+		
+		return new QueryOrganizationDTO(orgMap);
+	}
+	
 	@Override
 	public QueryDTO update(QueryDTO dto) {
 		QueryEntity query = this.getEntityById(dto.getId());
@@ -70,6 +113,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 					if(orgStatus.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
 						orgMap.setEndDate(new Date());
 						orgMap.setFromCache(orgStatus.getFromCache());
+						orgMap.setSuccess(orgStatus.getSuccess());
 						orgMap.setStatus(QueryStatus.COMPLETE.name());
 						completeCount++;
 					} else {

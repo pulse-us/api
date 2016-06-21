@@ -109,7 +109,7 @@ public class BrokerApplication implements EnvironmentAware {
 	
 	@Bean
     @Scope(scopeName=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public PatientQueryService prototypeQueryService() {
+    public PatientQueryService patientQueryService() {
         return new PatientQueryService();
     }
 }
