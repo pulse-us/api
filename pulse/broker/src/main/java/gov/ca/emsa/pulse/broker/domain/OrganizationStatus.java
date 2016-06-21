@@ -10,6 +10,7 @@ public class OrganizationStatus {
 	private Long startDate;
 	private Long endDate;
 	private Boolean fromCache;
+	private Boolean success;
 	
 	public OrganizationStatus(QueryOrganizationDTO dto) {
 		this.id = dto.getId();
@@ -17,6 +18,7 @@ public class OrganizationStatus {
 		this.orgId = dto.getOrgId();
 		this.status = dto.getStatus();
 		this.fromCache = dto.getFromCache();
+		this.success = dto.getSuccess();
 		if(dto.getStartDate() != null) {
 			this.startDate = dto.getStartDate().getTime();
 		}
@@ -79,5 +81,13 @@ public class OrganizationStatus {
 
 	public void setFromCache(Boolean fromCache) {
 		this.fromCache = fromCache;
+	}
+
+	public Boolean getSuccess() {
+		return success;
+	}
+
+	public void setSuccess(Boolean success) {
+		this.success = success;
 	}
 }

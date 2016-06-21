@@ -50,6 +50,9 @@ public class QueryOrganizationStatusMap {
 	@Column(name = "from_cache")
 	private Boolean fromCache;
 	
+	@Column(name = "success")
+	private Boolean success;
+	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
@@ -142,5 +145,13 @@ public class QueryOrganizationStatusMap {
 
 	public void setFromCache(Boolean fromCache) {
 		this.fromCache = fromCache;
+	}
+
+	public Boolean getSuccess() {
+		return success;
+	}
+
+	public void setSuccess(Boolean success) {
+		this.success = success;
 	}
 }

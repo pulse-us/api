@@ -161,7 +161,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	public List<PatientDTO> getPatientResultsForQuery(Long queryId) {
 		Query query = entityManager.createQuery( "SELECT p "
 				+ "from PatientEntity p, PatientQueryResultEntity r "
-				+ "where r.queryOrganizationId.queryId = :queryId "
+				+ "where r.queryOrg.queryId = :queryId "
 				+ "and r.patientId = p.id", 
 				PatientEntity.class );
 		query.setParameter("queryId", queryId);

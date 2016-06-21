@@ -13,6 +13,7 @@ public class QueryOrganizationDTO {
 	private Date startDate;
 	private Date endDate;
 	private Boolean fromCache;
+	private Boolean success;
 	
 	public QueryOrganizationDTO(){}
 	
@@ -26,6 +27,7 @@ public class QueryOrganizationDTO {
 			this.startDate = entity.getStartDate();
 			this.endDate = entity.getEndDate();
 			this.fromCache = entity.getFromCache();
+			this.success = entity.getSuccess();
 		}
 	}
 	
@@ -82,5 +84,13 @@ public class QueryOrganizationDTO {
 
 	public void setFromCache(Boolean fromCache) {
 		this.fromCache = fromCache;
+	}
+
+	public Boolean getSuccess() {
+		return success;
+	}
+
+	public void setSuccess(Boolean success) {
+		this.success = success;
 	}
 }
