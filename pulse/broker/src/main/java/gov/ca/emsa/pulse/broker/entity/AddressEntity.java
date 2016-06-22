@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="address", schema="pulse")
+@Table(name="address")
 public class AddressEntity {
 	
 	@Id 
