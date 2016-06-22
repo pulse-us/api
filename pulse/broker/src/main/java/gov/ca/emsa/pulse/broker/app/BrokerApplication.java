@@ -3,49 +3,55 @@ package gov.ca.emsa.pulse.broker.app;
 import java.util.Timer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.cache.QueryCacheManager;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
+import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 
+@PropertySource("classpath:/application.properties")
+@EnableTransactionManagement(proxyTargetClass=true)
 @SpringBootApplication(scanBasePackages= {"gov.ca.emsa.pulse.broker.**",
 		"gov.ca.emsa.pulse.service.**"})
-@PropertySource("classpath:application.properties")
-@EnableTransactionManagement(proxyTargetClass=true)
-@EnableScheduling
 public class BrokerApplication implements EnvironmentAware {
 	
 	public static void main(String[] args) {
 		SpringApplication.run(BrokerApplication.class, args);
 	}
 	
-	@Autowired
-	private OrganizationManager organizationManager;
+	@Autowired private OrganizationManager organizationManager;
 	@Autowired private PatientManager patientManager;
 	@Autowired private DocumentManager docManager;
 	@Autowired private Environment env;
+	
 	@Override
-    public void setEnvironment(final Environment environment) {
-        this.env = environment;
-    }
-
+	public void setEnvironment(final Environment e) {
+		this.env = e;
+	}
+	
+	//TODO: the env is still null when the entity manager bean gets called and 
+	//i really have no idea why. This is a short-term fix. The longer answer is that
+	//spring boot really does not need the persistence.xml and the db stuff should be
+	//configured in application.properties
 	@Bean
 	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
 		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
-		bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
+		//bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
+		bean.setPersistenceUnitName("pulse");
 		return bean;
 	}
 
