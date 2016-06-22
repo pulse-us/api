@@ -1,7 +1,5 @@
 package gov.ca.emsa.pulse.broker.dao;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +8,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryStatus;
@@ -18,37 +15,9 @@ import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
-//TODO: COULD NOT GET THE DBUNIT tests to work here. I thought I had all the configuration
-//the way it should be, but it just seemed like it was getting ignored. Even specifying
-//an invalid dbunit filename did not result in an error.
 public class QueryDaoTest extends TestCase {
 
 	@Autowired QueryDAO queryDao;
-	@Autowired OrganizationDAO orgDao;
-	private OrganizationDTO queryOrg;
-	private static final Long queryOrgId = 1L;
-	
-	@Before
-	public void setup() {
-		queryOrg = orgDao.findById(queryOrgId);
-		
-		if(queryOrg == null) {
-			queryOrg = new OrganizationDTO();
-			queryOrg.setId(queryOrgId);
-			queryOrg.setOrganizationId(queryOrgId);
-			queryOrg.setActive(true);
-			queryOrg.setAdapter("eHealth");
-			queryOrg.setEndpointUrl("http://www.test.com");
-			queryOrg.setName("Test Org");
-			queryOrg.setUsername("ainq");
-			queryOrg = orgDao.create(queryOrg);
-		}
-	}
-	
-	@After
-	public void teardown() {
-		orgDao.delete(queryOrg);
-	}
 	
 	@Test
 	@Transactional
@@ -72,7 +41,7 @@ public class QueryDaoTest extends TestCase {
 		toInsert.setTerms("terms");
 		toInsert.setUserToken("kekey");
 		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
-		orgQuery1.setOrgId(queryOrg.getId());
+		orgQuery1.setOrgId(1L);
 		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
 		toInsert.getOrgStatuses().add(orgQuery1);
 		
@@ -98,11 +67,11 @@ public class QueryDaoTest extends TestCase {
 		toInsert.setTerms("terms");
 		toInsert.setUserToken("kekey");
 		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
-		orgQuery1.setOrgId(queryOrg.getId());
+		orgQuery1.setOrgId(1L);
 		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
 		toInsert.getOrgStatuses().add(orgQuery1);
 		QueryOrganizationDTO orgQuery2 = new QueryOrganizationDTO();
-		orgQuery2.setOrgId(queryOrg.getId());
+		orgQuery2.setOrgId(1L);
 		orgQuery2.setStatus(QueryStatus.ACTIVE.name());
 		toInsert.getOrgStatuses().add(orgQuery2);
 		
@@ -139,7 +108,7 @@ public class QueryDaoTest extends TestCase {
 		assertEquals(0, selected.getOrgStatuses().size());
 		
 		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
-		orgQuery1.setOrgId(queryOrg.getId());
+		orgQuery1.setOrgId(1L);
 		orgQuery1.setQueryId(selected.getId());
 		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
 		selected.getOrgStatuses().add(orgQuery1);
