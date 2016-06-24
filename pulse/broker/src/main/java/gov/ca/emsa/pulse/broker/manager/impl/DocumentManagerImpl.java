@@ -63,6 +63,10 @@ public class DocumentManagerImpl implements DocumentManager {
 				docDao.update(cacheDoc);
 			}
 		}
+		
+		//TODO: asking for the documents means one patient from this query was selected
+		//delete all other patient results for this query and set this patient as being 
+		//at the ACF identified in the User object.
 		return results;
 	}
 	@Override
