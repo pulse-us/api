@@ -31,7 +31,7 @@ public class DirectoryRefreshManager extends TimerTask {
 		try {
 			getDirectories();
 		} catch(Exception ex) {
-			logger.error("Error pruning patient or document cache", ex);
+			logger.error("Error updating organization cache", ex);
 		}
 		}
 
