@@ -12,18 +12,22 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.opensaml.xml.io.MarshallingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.ca.emsa.pulse.broker.dao.impl.DocumentDAOImpl;
 import gov.ca.emsa.pulse.broker.domain.Patient;
 import gov.ca.emsa.pulse.broker.domain.Query;
+import gov.ca.emsa.pulse.broker.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
@@ -51,14 +55,16 @@ public class PatientService {
 	
 	@ApiOperation(value="Query all organizations for patients. This runs asynchronously and returns a query object"
 			+ "which can later be used to get the results.")
-	@RequestMapping(method = RequestMethod.POST)
-    public Query searchPatients(
+	@RequestMapping(method = RequestMethod.POST,produces="application/json; charset=utf-8",consumes="application/json")
+    public @ResponseBody Query searchPatients(
     		@RequestParam(value="firstName", defaultValue="") String firstName,
     		@RequestParam(value="lastName", defaultValue="") String lastName,
     		@RequestParam(value="dob", defaultValue="") String dob,
     		@RequestParam(value="ssn", defaultValue="") String ssn,
     		@RequestParam(value="gender", defaultValue="") String gender,
-    		@RequestParam(value="zipcode", defaultValue="") String zip) throws JsonProcessingException {
+    		@RequestParam(value="zipcode", defaultValue="") String zip,
+    		@RequestBody User user) throws JsonProcessingException {
+		
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID("UserBrianLindsey");
@@ -66,8 +72,7 @@ public class PatientService {
 		input.setSessionId("abcdedf1234567");
 		
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
-		customAttributes.put("RequesterFirstName", "John");
-		customAttributes.put("RequesterLastName", "Smith");
+		customAttributes.put("RequesterFirstName", user.getName());
 		customAttributes.put("RequestReason", "Patient is bleeding.");
 		customAttributes.put("PatientFirstName", firstName);
 		customAttributes.put("PatientLastName", lastName);
