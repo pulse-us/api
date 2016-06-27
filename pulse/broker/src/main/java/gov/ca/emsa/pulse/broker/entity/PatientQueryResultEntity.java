@@ -14,7 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="patient_query")
+@Table(name="patient_query", schema="pulse")
 public class PatientQueryResultEntity {
 	
 	@Id 
@@ -97,4 +97,5 @@ public class PatientQueryResultEntity {
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
+}
 }

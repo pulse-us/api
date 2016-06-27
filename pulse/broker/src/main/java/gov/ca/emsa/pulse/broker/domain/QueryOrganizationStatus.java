@@ -2,7 +2,7 @@ package gov.ca.emsa.pulse.broker.domain;
 
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 
-public class OrganizationStatus {
+public class QueryOrganizationStatus {
 	private Long id;
 	private Long queryId;
 	private Long orgId;
@@ -12,7 +12,7 @@ public class OrganizationStatus {
 	private Boolean fromCache;
 	private Boolean success;
 	
-	public OrganizationStatus(QueryOrganizationDTO dto) {
+	public QueryOrganizationStatus(QueryOrganizationDTO dto) {
 		this.id = dto.getId();
 		this.queryId = dto.getQueryId();
 		this.orgId = dto.getOrgId();

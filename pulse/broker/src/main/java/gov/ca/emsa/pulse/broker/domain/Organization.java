@@ -1,12 +1,7 @@
 package gov.ca.emsa.pulse.broker.domain;
 
-public class Organization {
+public class Organization extends OrganizationBase {
 	
-	private String name;
-	private Long id;
-	private Long organizationId;
-	private boolean isActive;
-	private String adapter;
 	private String ipAddress;
 	private String username;
 	private String password;
@@ -16,7 +11,7 @@ public class Organization {
 	public Organization(){}
 	
 	public Organization(String name){
-		this.name = name;
+		this.setName(name);
 	}
 	
 	public String getEndpointUrl() {
@@ -25,46 +20,6 @@ public class Organization {
 
 	public void setEndpointUrl(String endpointUrl) {
 		this.endpointUrl = endpointUrl;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Long getOrganizationId() {
-		return organizationId;
-	}
-
-	public void setOrganizationId(Long organizationId) {
-		this.organizationId = organizationId;
-	}
-
-	public String getName(){
-		return name;
-	}
-	
-	public void setName(String name){
-		this.name = name;
-	}
-
-	public boolean isActive() {
-		return isActive;
-	}
-
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-	}
-
-	public String getAdapter() {
-		return adapter;
-	}
-
-	public void setAdapter(String adapter) {
-		this.adapter = adapter;
 	}
 
 	public String getIpAddress() {
