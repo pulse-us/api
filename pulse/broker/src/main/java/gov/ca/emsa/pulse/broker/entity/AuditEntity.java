@@ -14,8 +14,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="patient_query", schema="pulse")
-public class PatientQueryResultEntity {
+@Table(name="audit")
+public class AuditEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,22 +25,27 @@ public class PatientQueryResultEntity {
 	@Column(name="patient_id")
 	private Long patientId;
 	
-	@Column(name = "query_organization_id")
-	private Long queryOrganizationId;
+	@Column(name="name")
+	private String name;
+	
+	@Column(name = "format")
+	private String format;
+	
+	@Column(name = "contents")
+	private byte[] contents;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private PatientEntity patient;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "query_organization_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private QueryOrganizationStatusMap queryOrg;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
 	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
+
+	@Column( name = "last_read_date")
+	private Date lastReadDate;
 	
 	public Long getId() {
 		return id;
@@ -58,12 +63,12 @@ public class PatientQueryResultEntity {
 		this.patientId = patientId;
 	}
 
-	public Long getQueryOrganizationId() {
-		return queryOrganizationId;
+	public String getName() {
+		return name;
 	}
 
-	public void setQueryOrganizationId(Long queryOrganizationId) {
-		this.queryOrganizationId = queryOrganizationId;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public PatientEntity getPatient() {
@@ -72,14 +77,6 @@ public class PatientQueryResultEntity {
 
 	public void setPatient(PatientEntity patient) {
 		this.patient = patient;
-	}
-
-	public QueryOrganizationStatusMap getQueryOrg() {
-		return queryOrg;
-	}
-
-	public void setQueryOrg(QueryOrganizationStatusMap queryOrg) {
-		this.queryOrg = queryOrg;
 	}
 
 	public Date getCreationDate() {
@@ -97,4 +94,27 @@ public class PatientQueryResultEntity {
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
-}
+
+	public Date getLastReadDate() {
+		return lastReadDate;
+	}
+
+	public void setLastReadDate(Date lastReadDate) {
+		this.lastReadDate = lastReadDate;
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	public byte[] getContents() {
+		return contents;
+	}
+
+	public void setContents(byte[] contents) {
+		this.contents = contents;
+	}

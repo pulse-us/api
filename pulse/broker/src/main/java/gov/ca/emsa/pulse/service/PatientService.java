@@ -107,7 +107,7 @@ public class PatientService {
 		AddressDTO toSearchAddress = new AddressDTO();
 		toSearchAddress.setZipcode(zip);
 		toSearch.setAddress(toSearchAddress);
-       QueryDTO initiatedQuery = patientManager.queryPatients(samlMessage, toSearch);
+       QueryDTO initiatedQuery = patientManager.queryPatients(user, samlMessage, toSearch);
        return new Query(initiatedQuery);
     }
 		

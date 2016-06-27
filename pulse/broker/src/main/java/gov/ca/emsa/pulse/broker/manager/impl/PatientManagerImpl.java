@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.domain.Patient;
+import gov.ca.emsa.pulse.broker.domain.User;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientQueryResultDTO;
@@ -63,9 +64,9 @@ public class PatientManagerImpl implements PatientManager, ApplicationContextAwa
 		return results;
 	}
 	
-	@Override	
+	@Override
 	@Transactional
-	public QueryDTO queryPatients(String samlMessage, PatientDTO searchParams) throws JsonProcessingException {
+	public QueryDTO queryPatients(User user, String samlMessage, PatientDTO searchParams) throws JsonProcessingException {
 		Patient queryTerms = new Patient();
 		queryTerms.setFirstName(searchParams.getFirstName());
 		queryTerms.setLastName(searchParams.getLastName());
