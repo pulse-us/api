@@ -1,68 +1,141 @@
 package gov.ca.emsa.pulse.service;
 
-import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
-import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
-
-import java.awt.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.junit.BeforeClass;
+import gov.ca.emsa.pulse.ServiceApplication;
+import gov.ca.emsa.pulse.auth.jwt.JWTAuthor;
+
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.twitter.finagle.http.Status;
+
+import static org.junit.Assert.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ServiceApplication.class)
+//@ContextConfiguration(classes = ServiceApplication.class)
+@SpringApplicationConfiguration(ServiceApplication.class)
+//@ComponentScan(basePackages = {"gov.ca.emsa.pulse.auth.**","gov.ca.emsa.pulse.auth.jwt.*"})
 @WebAppConfiguration
 public class ServiceApplicationTests {
 	
+	@Rule
+	public WireMockRule wireMockRule = new WireMockRule(8090);
+	
 	@Autowired
 	private WebApplicationContext context;
-
-	private MockMvc mvc;
-
-	private static JWTAuthenticatedUser adminUser;
 	
+	@Autowired
+	private JWTAuthor jwtAuthor;
+
+	private String jwt;
+	
+	private MockMvc mvc;
+	
+	@Before
 	public void setup() {
-		mvc = MockMvcBuilders.webAppContextSetup(context).build();
+		mvc = MockMvcBuilders.webAppContextSetup(context).apply(SecurityMockMvcConfigurers.springSecurity()).build();
+		Map<String, List<String>> claims = new HashMap<String, List<String>>();
+		List<String> roles = new ArrayList<String>();
+		roles.add("USER");
+		claims.put("Authorities", roles);
+		jwt = jwtAuthor.createJWT("user", claims);
+		
 	}
 
 	@Test
-	public void endpoint_accepts_request() throws Exception {
+	//@WithMockUser(roles={"USER"}, username = "user")
+	public void endpointAcceptsSearchPatient() throws Exception {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		stubFor(post(urlEqualTo("/patients"))
+				.withQueryParam("firstName", containing("John"))
+				.withRequestBody(equalToJson("{ \"name\": \"user\"}"))
+				.willReturn(aResponse()
+						.withStatus(200).withBody(mapper.writeValueAsString(new Query()))));
+
+		String tokenHeader = "Bearer " + jwt;		
+		//ResultActions ra = mvc.perform(get("/search/patient").with(user("user").roles("USER")).param("firstName","John"));
+		ResultActions ra = mvc.perform(post("/search/patient").param("firstName","John").header("Authorization", tokenHeader));
+		
+		assertEquals(Status.Ok().code(), ra.andReturn().getResponse().getStatus());
+		
+	}
+	/* 
+	@Test
+	public void endpointRejectsSearchPatient() throws Exception {
 		setup();
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFirstName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setLastName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_USER"));
-		
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
-		mvc.perform(get("/search/patient").param("firstName","John"))
+		mvc.perform(get("/search/patient"))
+		.andExpect(status().isUnauthorized());
+	}
+	
+	@Test
+	public void endpointAcceptsRequestQuery() throws Exception {
+		setup();
+	
+		mvc.perform(get("/search/patient/query/1").with(user("user").roles("USER")))
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
 	}
 	
 	@Test
-	public void endpoint_rejects_request() throws Exception {
+	public void endpointRejectsRequestQuery() throws Exception {
 		setup();
-		mvc.perform(get("/search/patient"))
+		mvc.perform(get("/search/patient/query/1"))
 		.andExpect(status().isUnauthorized());
 	}
-
+	
+	@Test
+	public void endpointAcceptsRequestSearchDocuments() throws Exception {
+		setup();
+		
+		mvc.perform(get("/search/documents").with(user("user").roles("USER")))
+		.andExpect(status().isOk())
+		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+	}
+	
+	@Test
+	public void endpointRejectsRequestSearchDocuments() throws Exception {
+		setup();
+		mvc.perform(get("/search/documents"))
+		.andExpect(status().isUnauthorized());
+	}
+	
+	@Test
+	public void endpointAcceptsRequestGetDocument() throws Exception {
+		setup();
+		
+		mvc.perform(get("/search/document/1").with(user("user").roles("USER")))
+		.andExpect(status().isOk())
+		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+	}
+	
+	@Test
+	public void endpointRejectsRequestGetDocument() throws Exception {
+		setup();
+		mvc.perform(get("/search/document/1"))
+		.andExpect(status().isUnauthorized());
+	}
+	*/
 }

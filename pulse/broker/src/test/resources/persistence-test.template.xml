@@ -1,0 +1,20 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
+  <persistence-unit name="pulse-test" transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <class>gov.ca.emsa.pulse.broker.entity.OrganizationEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.AddressEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.PatientEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.DocumentEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.QueryEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.QueryOrganizationStatusMap</class>
+    <class>gov.ca.emsa.pulse.broker.entity.PatientQueryResultEntity</class>
+    <properties>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+      <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.connection.username" value="pulse"/>
+      <property name="hibernate.connection.password" value="pulse"/>
+      <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/pulse_test"/>
+    </properties>
+  </persistence-unit>
+</persistence>

@@ -11,7 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="organization", schema="pulse")
+@Table(name="organization")
 public class OrganizationEntity {
 	
 	@Id

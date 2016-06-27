@@ -20,13 +20,19 @@ import org.jose4j.jwk.RsaJsonWebKey;
 import org.jose4j.keys.RsaKeyUtil;
 import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service("RsaJose4JWebKey")
 public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
 
+	
+	@Value("${keyLocation}")
+	private String keyLocation;
+	
 	@Autowired Environment env;
+	
 	RsaJsonWebKey rsaJsonWebKey = null;
 
 	Logger logger = LogManager.getLogger(JSONWebKeyRsaJoseJImpl.class.getName());
@@ -36,7 +42,6 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
 
 	@PostConstruct
 	public void createOrLoadKey(){
-		String keyLocation = env.getProperty("keyLocation");
 
 		if (rsaJsonWebKey == null){
 
@@ -118,7 +123,7 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
 
 		FileInputStream fileIn = new FileInputStream(keyPairPath);
 		ObjectInputStream is = new ObjectInputStream(fileIn);
-
+		
         try {
             rsaJsonWebKey = (RsaJsonWebKey) is.readObject();
         } finally {

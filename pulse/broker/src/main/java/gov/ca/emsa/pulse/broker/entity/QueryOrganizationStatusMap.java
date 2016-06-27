@@ -14,7 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="query_organization", schema="pulse")
+@Table(name="query_organization")
 public class QueryOrganizationStatusMap {
 	
 	@Id 

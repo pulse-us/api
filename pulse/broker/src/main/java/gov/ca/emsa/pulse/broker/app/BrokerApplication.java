@@ -36,18 +36,13 @@ public class BrokerApplication implements EnvironmentAware {
 	private OrganizationManager organizationManager;
 	@Autowired private PatientManager patientManager;
 	@Autowired private DocumentManager docManager;
-	@Autowired private Environment env;
+	private Environment env;
+	
 	@Override
     public void setEnvironment(final Environment environment) {
         this.env = environment;
     }
-	
-//	@Bean
-//	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
-//		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
-//		bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
-//		return bean;
-//	}
+
 	@Bean
 	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
 		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();

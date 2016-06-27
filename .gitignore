@@ -131,3 +131,5 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 /pulse/broker/src/main/resources/META-INF/persistence.xml
 /pulse/auth/src/main/resources/application.properties
+application-test.properties
+persistence-test.xml

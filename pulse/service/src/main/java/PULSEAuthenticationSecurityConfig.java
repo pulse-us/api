@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+
 import gov.ca.emsa.pulse.auth.authentication.JWTUserConverter;
 import gov.ca.emsa.pulse.auth.filter.JWTAuthenticationFilter;
 
@@ -18,10 +19,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebSecurity
-@ComponentScan(basePackages = {"gov.ca.emsa.pulse.auth.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
+@ComponentScan(basePackages = {"gov.ca.emsa.pulse.auth.**", "gov.ca.emsa.pulse.auth.jwt.*"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class PULSEAuthenticationSecurityConfig extends
 		WebSecurityConfigurerAdapter {
 	
@@ -31,37 +33,11 @@ public class PULSEAuthenticationSecurityConfig extends
 		super(true);
 	}
 	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+	@Autowired
+	protected void configureGlobal(HttpSecurity http) throws Exception {
 
-		http
-        		.sessionManagement()
-        		.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-		
-				.exceptionHandling().and()
-				.anonymous().and()
-				.servletApi().and()
-				//.headers().cacheControl().and()
-				.authorizeRequests()
-				.antMatchers("/favicon.ico").permitAll()
-				.antMatchers("/resources/**").permitAll()
-				
-				//allow anonymous resource requests
-				.antMatchers("/").permitAll().and()
-				// custom Token based authentication based on the header previously given to the client
-				.addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
-			.headers().cacheControl();
-		
-	}
-	
-	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder(){
-		return new BCryptPasswordEncoder();
-	}
-	
-	@Bean
-	public UserDetailsChecker userDetailsChecker(){
-		return new AccountStatusUserDetailsChecker();
+		http.authorizeRequests().antMatchers("/**").hasRole("USER").and()
+		.addFilter(new JWTAuthenticationFilter(userConverter)).headers();
 	}
 	
 	@Bean
