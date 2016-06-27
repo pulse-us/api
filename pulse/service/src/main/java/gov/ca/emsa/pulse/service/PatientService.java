@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "search")
 @RestController
 @RequestMapping("/search")
-public class PatientService implements EnvironmentAware{
+public class PatientService {
 	private static final Logger logger = LogManager.getLogger(PatientService.class);
 	@Autowired private Environment env;
 
@@ -41,8 +41,7 @@ public class PatientService implements EnvironmentAware{
     		@RequestParam(value="gender", defaultValue="") String gender,
     		@RequestParam(value="zipcode", defaultValue="") String zip) {
 
-		String patientUrl = "http://localhost:8090/patients";
-				//env.getProperty("brokerPatientUrl").trim();
+		String patientUrl = env.getProperty("brokerPatientUrl").trim();
 		
 		MultiValueMap<String,Object> parameters = new LinkedMultiValueMap<String,Object>();
 
@@ -83,17 +82,11 @@ public class PatientService implements EnvironmentAware{
 	@RequestMapping("patient/query/{queryId}")
 	public List<Patient> getPatientsForQuery(@PathVariable("queryId") Long queryId) {
 		
-		String patientUrl = "http://localhost:8090/patients/query/" + queryId;
+		String patientUrl = env.getProperty("brokerPatientUrl").trim() + "/query/" + queryId;
 		RestTemplate query = new RestTemplate();
 		Patient[] patientQueryResults = query.getForObject(patientUrl, Patient[].class);
 		ArrayList<Patient> patientResults = new ArrayList<Patient>(Arrays.asList(patientQueryResults));
         
         return patientResults;
-	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		// TODO Auto-generated method stub
-		
 	}
 }
