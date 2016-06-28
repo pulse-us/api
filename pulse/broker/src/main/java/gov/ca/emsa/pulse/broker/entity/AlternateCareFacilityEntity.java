@@ -2,11 +2,15 @@ package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -20,6 +24,13 @@ public class AlternateCareFacilityEntity {
 	
 	@Column(name="name")
 	private String name;
+	
+	@Column(name = "address_id")
+	private Long addressId;
+	
+	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@JoinColumn(name = "address_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private AddressEntity address;
 	
 	@Column(name = "last_read_date")
 	private Date lastReadDate;
@@ -68,5 +79,21 @@ public class AlternateCareFacilityEntity {
 
 	public void setLastReadDate(Date lastReadDate) {
 		this.lastReadDate = lastReadDate;
+	}
+
+	public Long getAddressId() {
+		return addressId;
+	}
+
+	public void setAddressId(Long addressId) {
+		this.addressId = addressId;
+	}
+
+	public AddressEntity getAddress() {
+		return address;
+	}
+
+	public void setAddress(AddressEntity address) {
+		this.address = address;
 	}
 }

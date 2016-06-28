@@ -1,8 +1,11 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import gov.ca.emsa.pulse.broker.entity.QueryOrganizationStatusMap;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
+import gov.ca.emsa.pulse.broker.entity.QueryOrganizationEntity;
 
 public class QueryOrganizationDTO {
 
@@ -12,13 +15,16 @@ public class QueryOrganizationDTO {
 	private String status;
 	private Date startDate;
 	private Date endDate;
-	private Boolean fromCache;
 	private Boolean success;
+	private List<PatientRecordDTO> results;
 	
-	public QueryOrganizationDTO(){}
+	public QueryOrganizationDTO(){
+		results = new ArrayList<PatientRecordDTO>();
+	}
 	
-	public QueryOrganizationDTO(QueryOrganizationStatusMap entity)
+	public QueryOrganizationDTO(QueryOrganizationEntity entity)
 	{
+		this();
 		if(entity != null) {
 			this.id = entity.getId();
 			this.queryId = entity.getQueryId();
@@ -26,8 +32,14 @@ public class QueryOrganizationDTO {
 			this.status = entity.getStatus();
 			this.startDate = entity.getStartDate();
 			this.endDate = entity.getEndDate();
-			this.fromCache = entity.getFromCache();
 			this.success = entity.getSuccess();
+			
+			if(entity.getResults() != null && entity.getResults().size() > 0) {
+				for(PatientRecordEntity pr : entity.getResults()) {
+					PatientRecordDTO dto = new PatientRecordDTO(pr);
+					this.results.add(dto);
+				}
+			}
 		}
 	}
 	
@@ -78,19 +90,19 @@ public class QueryOrganizationDTO {
 		this.endDate = endDate;
 	}
 
-	public Boolean getFromCache() {
-		return fromCache;
-	}
-
-	public void setFromCache(Boolean fromCache) {
-		this.fromCache = fromCache;
-	}
-
 	public Boolean getSuccess() {
 		return success;
 	}
 
 	public void setSuccess(Boolean success) {
 		this.success = success;
+	}
+
+	public List<PatientRecordDTO> getResults() {
+		return results;
+	}
+
+	public void setResults(List<PatientRecordDTO> results) {
+		this.results = results;
 	}
 }

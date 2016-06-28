@@ -19,7 +19,7 @@ import gov.ca.emsa.pulse.broker.domain.Document;
 import gov.ca.emsa.pulse.broker.domain.User;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
@@ -64,7 +64,7 @@ public class DocumentService {
 			} catch (MarshallingException e) {
 				e.printStackTrace();
 			}
-			PatientDTO toQuery = patientManager.getPatientById(new Long(patientId));
+			PatientRecordDTO toQuery = patientManager.getPatientById(new Long(patientId));
 			List<Document> results = new ArrayList<Document>();
 			if(toQuery != null) {
 				List<DocumentDTO> docResults = docManager.queryDocumentsForPatient(samlMessage, toQuery);

@@ -30,7 +30,7 @@ import gov.ca.emsa.pulse.broker.domain.Query;
 import gov.ca.emsa.pulse.broker.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
@@ -91,7 +91,7 @@ public class PatientService {
 			logger.error("Could not create SAML from input " + input, e);
 		}
 		
-		PatientDTO toSearch = new PatientDTO();
+		PatientRecordDTO toSearch = new PatientRecordDTO();
 		toSearch.setFirstName(firstName);
 		toSearch.setLastName(lastName);
 		if(!StringUtils.isEmpty(dob)) {
@@ -114,9 +114,9 @@ public class PatientService {
 	@ApiOperation(value="Get the stored results of the query")
 	@RequestMapping("/query/{queryId}")
 	public List<Patient> getPatientsForQuery(@PathVariable("queryId") Long queryId) {
-		List<PatientDTO> queryResults = patientManager.getPatientsByQuery(queryId);
+		List<PatientRecordDTO> queryResults = patientManager.getPatientsByQuery(queryId);
 		List<Patient> results = new ArrayList<Patient>(queryResults.size());
-        for(PatientDTO qr : queryResults) {
+        for(PatientRecordDTO qr : queryResults) {
         	Patient pat = DtoToDomainConverter.convert(qr);
         	results.add(pat);
         }

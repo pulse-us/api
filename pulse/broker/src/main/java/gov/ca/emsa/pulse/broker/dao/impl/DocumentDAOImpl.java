@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
 
 @Repository
 public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
@@ -93,15 +93,6 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 			results.add(docDto);
 		}
 		return results;
-	}
-	
-	public void deleteItemsOlderThan(Date oldestDate) {			
-		Query query = entityManager.createQuery( "DELETE from DocumentEntity doc "
-				+ " WHERE doc.lastReadDate <= :cacheDate");
-		
-		query.setParameter("cacheDate", oldestDate);
-		int deletedCount = query.executeUpdate();
-		logger.info("Deleted " + deletedCount + " documents from the cache.");
 	}
 	
 	private List<DocumentEntity> findAllEntities() {

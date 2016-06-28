@@ -4,19 +4,14 @@ import java.util.Date;
 
 public class Patient {
 	private String id;
-	private String pulsePatientId;
-	private String orgPatientId;
 	private String firstName;
 	private String lastName;
 	private Date dateOfBirth;
 	private String gender;
 	private String phoneNumber;
-	private String addressLine1;
-	private String addressLine2;
-	private String city;
-	private String state;
-	private String zipcode;
+	private Address address;
 	private String ssn;
+	private AlternateCareFacility acf;
 	
 	public String getId() {
 		return id;
@@ -54,29 +49,17 @@ public class Patient {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	public String getAddressLine1() {
-		return addressLine1;
+	public Address getAddress() {
+		return address;
 	}
-	public void setAddressLine1(String addressLine1) {
-		this.addressLine1 = addressLine1;
+	public void setAddress(Address address) {
+		this.address = address;
 	}
-	public String getAddressLine2() {
-		return addressLine2;
+	public AlternateCareFacility getAcf() {
+		return acf;
 	}
-	public void setAddressLine2(String addressLine2) {
-		this.addressLine2 = addressLine2;
-	}
-	public String getState() {
-		return state;
-	}
-	public void setState(String state) {
-		this.state = state;
-	}
-	public String getZipcode() {
-		return zipcode;
-	}
-	public void setZipcode(String zipcode) {
-		this.zipcode = zipcode;
+	public void setAcf(AlternateCareFacility acf) {
+		this.acf = acf;
 	}
 	public String getSsn() {
 		return ssn;
@@ -84,22 +67,5 @@ public class Patient {
 	public void setSsn(String ssn) {
 		this.ssn = ssn;
 	}
-	public String getCity() {
-		return city;
-	}
-	public void setCity(String city) {
-		this.city = city;
-	}
-	public String getPulsePatientId() {
-		return pulsePatientId;
-	}
-	public void setPulsePatientId(String pulsePatientId) {
-		this.pulsePatientId = pulsePatientId;
-	}
-	public String getOrgPatientId() {
-		return orgPatientId;
-	}
-	public void setOrgPatientId(String orgPatientId) {
-		this.orgPatientId = orgPatientId;
-	}
+	
 }

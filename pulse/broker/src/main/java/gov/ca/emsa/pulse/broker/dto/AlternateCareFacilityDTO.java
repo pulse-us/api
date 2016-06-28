@@ -2,13 +2,13 @@ package gov.ca.emsa.pulse.broker.dto;
 
 import java.util.Date;
 
-import gov.ca.emsa.pulse.broker.entity.AddressEntity;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
 
 public class AlternateCareFacilityDTO {
 
 	private Long id;
 	private String name;
+	private AddressDTO address;
 	private Date lastReadDate;
 	private Date creationDate;
 	private Date lastModifiedDate;
@@ -23,6 +23,10 @@ public class AlternateCareFacilityDTO {
 			this.lastReadDate = entity.getLastReadDate();
 			this.creationDate = entity.getCreationDate();
 			this.lastModifiedDate = entity.getLastModifiedDate();
+			
+			if(entity.getAddress() != null) {
+				this.address = new AddressDTO(entity.getAddress());
+			}
 		}
 	}
 	
@@ -63,5 +67,13 @@ public class AlternateCareFacilityDTO {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public AddressDTO getAddress() {
+		return address;
+	}
+
+	public void setAddress(AddressDTO address) {
+		this.address = address;
 	}
 }

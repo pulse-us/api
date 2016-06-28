@@ -1,15 +1,16 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import gov.ca.emsa.pulse.broker.domain.Address;
+import gov.ca.emsa.pulse.broker.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.broker.domain.Document;
 import gov.ca.emsa.pulse.broker.domain.Patient;
+import gov.ca.emsa.pulse.broker.domain.PatientRecord;
 
 public class DtoToDomainConverter {
 	
-	public static Patient convert(PatientDTO dtoObj) {
-		Patient result = new Patient();
+	public static PatientRecord convert(PatientRecordDTO dtoObj) {
+		PatientRecord result = new PatientRecord();
 		result.setId(dtoObj.getId().toString());
-		result.setPulsePatientId(dtoObj.getPulsePatientId());
-		result.setOrgPatientId(dtoObj.getOrgPatientId());
 		result.setFirstName(dtoObj.getFirstName());
 		result.setLastName(dtoObj.getLastName());
 		result.setGender(dtoObj.getGender());
@@ -18,11 +19,53 @@ public class DtoToDomainConverter {
 		result.setSsn(dtoObj.getSsn());
 		
 		if(dtoObj.getAddress() != null) {
-			result.setAddressLine1(dtoObj.getAddress().getStreetLineOne());
-			result.setAddressLine2(dtoObj.getAddress().getStreetLineTwo());
-			result.setCity(dtoObj.getAddress().getCity());
-			result.setState(dtoObj.getAddress().getState());
-			result.setZipcode(dtoObj.getAddress().getZipcode());
+			Address addr = new Address();
+			addr.setStreetLine1(dtoObj.getAddress().getStreetLineOne());
+			addr.setStreetLine1(dtoObj.getAddress().getStreetLineTwo());
+			addr.setCity(dtoObj.getAddress().getCity());
+			addr.setState(dtoObj.getAddress().getState());
+			addr.setZipcode(dtoObj.getAddress().getZipcode());
+			result.setAddress(addr);
+		}
+		
+		return result;
+	}
+	
+	public static Patient convert(PatientDTO dtoObj) {
+		Patient result = new Patient();
+		result.setId(dtoObj.getId().toString());
+		result.setFirstName(dtoObj.getFirstName());
+		result.setLastName(dtoObj.getLastName());
+		result.setGender(dtoObj.getGender());
+		result.setDateOfBirth(dtoObj.getDateOfBirth());
+		result.setPhoneNumber(dtoObj.getPhoneNumber());
+		result.setSsn(dtoObj.getSsn());
+		
+		if(dtoObj.getAcf() != null) {
+			AlternateCareFacility acf = new AlternateCareFacility();
+			acf.setId(dtoObj.getAcf().getId());
+			acf.setName(dtoObj.getAcf().getName());
+			if(dtoObj.getAcf().getAddress() != null)  {
+				AddressDTO acfAddrDto = dtoObj.getAcf().getAddress();
+				Address acfAddr = new Address();
+				acfAddr.setStreetLine1(acfAddrDto.getStreetLineOne());
+				acfAddr.setStreetLine1(acfAddrDto.getStreetLineTwo());
+				acfAddr.setCity(acfAddrDto.getCity());
+				acfAddr.setState(acfAddrDto.getState());
+				acfAddr.setZipcode(acfAddrDto.getZipcode());
+				acf.setAddress(acfAddr);
+			}
+			result.setAcf(acf);
+		}
+		
+		if(dtoObj.getAddress() != null) {
+			Address addr = new Address();
+			addr.setStreetLine1(dtoObj.getAddress().getStreetLineOne());
+			addr.setStreetLine1(dtoObj.getAddress().getStreetLineTwo());
+			addr.setCity(dtoObj.getAddress().getCity());
+			addr.setState(dtoObj.getAddress().getState());
+			addr.setZipcode(dtoObj.getAddress().getZipcode());
+			result.setAddress(addr);
 		}
 		
 		return result;

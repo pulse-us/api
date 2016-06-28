@@ -1,9 +1,6 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import java.util.Date;
-
 import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientEntity;
 
 public class DocumentDTO {
 	private long id;

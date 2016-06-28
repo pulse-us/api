@@ -21,19 +21,19 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
 public class PatientDaoTest extends TestCase {
 
-	@Autowired PatientDAO patientDao;
+	@Autowired PatientRecordDAO patientDao;
 
 	@Test
 	@Transactional
 	public void testInsertPatientWithEverything() {
-		PatientDTO toInsert = new PatientDTO();
+		PatientRecordDTO toInsert = new PatientRecordDTO();
 		toInsert.setFirstName("test");
 		toInsert.setLastName("patient");
 		toInsert.setOrgPatientId("EHR-PAT-1");
@@ -41,7 +41,6 @@ public class PatientDaoTest extends TestCase {
 		toInsert.setGender("Male");
 		toInsert.setPhoneNumber("410-444-4444");
 		toInsert.setSsn("xxx-xx-xxxx");
-		toInsert.setPulsePatientId("testpatientuniqueid");
 		
 		AddressDTO address = new AddressDTO();
 		address.setStreetLineOne("1000 Hilltop Circle");
@@ -57,7 +56,7 @@ public class PatientDaoTest extends TestCase {
 		org.setOrganizationId(1L);
 		toInsert.setOrganization(org);
 		
-		PatientDTO created = patientDao.create(toInsert);
+		PatientRecordDTO created = patientDao.create(toInsert);
 		assertNotNull(created);
 		assertNotNull(created.getId());
 		assertTrue(created.getId() > 0);
@@ -72,7 +71,7 @@ public class PatientDaoTest extends TestCase {
 	@Test
 	@Transactional
 	public void testPatientWithAddressOnly() {
-		PatientDTO toInsert = new PatientDTO();
+		PatientRecordDTO toInsert = new PatientRecordDTO();
 		toInsert.setFirstName("test");
 		toInsert.setLastName("patient2");
 		toInsert.setOrgPatientId("EHR-PAT-2");
@@ -80,7 +79,6 @@ public class PatientDaoTest extends TestCase {
 		toInsert.setGender("Female");
 		toInsert.setPhoneNumber("410-444-4444");
 		toInsert.setSsn("xxx-xx-xxxx");
-		toInsert.setPulsePatientId("testpatient2uniqueid");
 		
 		AddressDTO address = new AddressDTO();
 		address.setStreetLineOne("1001 Hilltop Circle");
@@ -90,7 +88,7 @@ public class PatientDaoTest extends TestCase {
 		address.setZipcode("21228");
 		toInsert.setAddress(address);
 		
-		PatientDTO created = patientDao.create(toInsert);
+		PatientRecordDTO created = patientDao.create(toInsert);
 		assertNotNull(created);
 		assertNotNull(created.getId());
 		assertTrue(created.getId() > 0);
@@ -103,7 +101,7 @@ public class PatientDaoTest extends TestCase {
 	@Test
 	@Transactional
 	public void testInsertPatientWithNothingElse() {
-		PatientDTO toInsert = new PatientDTO();
+		PatientRecordDTO toInsert = new PatientRecordDTO();
 		toInsert.setFirstName("test");
 		toInsert.setLastName("patient3");
 		toInsert.setOrgPatientId("EHR-PAT-3");
@@ -111,9 +109,8 @@ public class PatientDaoTest extends TestCase {
 		toInsert.setGender("Female");
 		toInsert.setPhoneNumber("410-444-4444");
 		toInsert.setSsn("xxx-xx-xxxx");
-		toInsert.setPulsePatientId("testpatient3uniqueid");
 		
-		PatientDTO created = patientDao.create(toInsert);
+		PatientRecordDTO created = patientDao.create(toInsert);
 		assertNotNull(created);
 		assertNotNull(created.getId());
 		assertTrue(created.getId() > 0);
@@ -124,7 +121,7 @@ public class PatientDaoTest extends TestCase {
 	@Test
 	@Transactional
 	public void testGetPatientById() {
-		PatientDTO toInsert = new PatientDTO();
+		PatientRecordDTO toInsert = new PatientRecordDTO();
 		toInsert.setFirstName("test");
 		toInsert.setLastName("patient4");
 		toInsert.setOrgPatientId("EHR-PAT-4");
@@ -132,7 +129,6 @@ public class PatientDaoTest extends TestCase {
 		toInsert.setGender("Male");
 		toInsert.setPhoneNumber("410-444-4444");
 		toInsert.setSsn("xxx-xx-xxxx");
-		toInsert.setPulsePatientId("testpatient4uniqueid");
 		
 		AddressDTO address = new AddressDTO();
 		address.setStreetLineOne("1001 Hilltop Circle");
@@ -142,61 +138,13 @@ public class PatientDaoTest extends TestCase {
 		address.setZipcode("21228");
 		toInsert.setAddress(address);
 		
-		PatientDTO created = patientDao.create(toInsert);
+		PatientRecordDTO created = patientDao.create(toInsert);
 		
-		PatientDTO found = patientDao.getById(created.getId());
+		PatientRecordDTO found = patientDao.getById(created.getId());
 		assertNotNull(found);
 		assertNull(found.getOrganization());
 		assertNotNull(found.getAddress());
 		assertNotNull(found.getAddress().getId());
 		assertNotNull(found.getAddress().getStreetLineOne());
 	}
-	
-	@Test
-	@Transactional
-	public void testsGetPatientByOrgAndId() {
-		PatientDTO toInsert = new PatientDTO();
-		toInsert.setFirstName("test5");
-		toInsert.setLastName("patient");
-		toInsert.setOrgPatientId("EHR-PAT-5");
-		toInsert.setDateOfBirth(new Date());
-		toInsert.setGender("Male");
-		toInsert.setPhoneNumber("410-444-4444");
-		toInsert.setSsn("xxx-xx-xxxx");
-		toInsert.setPulsePatientId("testpatient5uniqueid");
-		
-		AddressDTO address = new AddressDTO();
-		address.setStreetLineOne("1005 Hilltop Circle");
-		address.setStreetLineTwo("Suite 350");
-		address.setCity("Baltimore");
-		address.setState("MD");
-		address.setZipcode("21228");
-		toInsert.setAddress(address);
-		
-		OrganizationDTO org = new OrganizationDTO();
-		org.setName("Test Org5");
-		org.setAdapter("eHealth");
-		org.setOrganizationId(1L);
-		toInsert.setOrganization(org);
-		
-		PatientDTO created = patientDao.create(toInsert);
-		System.out.println(created.getPulsePatientId());
-		System.out.println(created.getOrganization().getId());
-		
-		List<PatientDTO> foundPatients = patientDao.getByPatientIdAndOrg(created);
-		assertNotNull(foundPatients);
-		assertEquals(1, foundPatients.size());
-		PatientDTO found = foundPatients.get(0);
-		assertNotNull(found);
-		assertNotNull(found.getId());
-		assertTrue(found.getId() > 0);
-		assertNotNull(found.getOrganization());
-		assertNotNull(found.getOrganization().getId());
-		System.out.println(found.getOrganization().getId());
-		assertTrue(found.getOrganization().getId().longValue() > 0);
-		assertNotNull(found.getAddress());
-		assertNotNull(found.getAddress().getId());
-		assertTrue(found.getAddress().getId().longValue() > 0);
-	}
-	
 }

@@ -6,36 +6,30 @@ import gov.ca.emsa.pulse.broker.entity.PatientEntity;
 
 public class PatientDTO {
 	private Long id;
-	private String pulsePatientId;
-	private String orgPatientId;
 	private String firstName;
 	private String lastName;
 	private Date dateOfBirth;
 	private String ssn;
 	private String gender;
 	private String phoneNumber;
+	private Date lastReadDate;
 	private AddressDTO address;
-	private OrganizationDTO organization;
+	private AlternateCareFacilityDTO acf;
 	
 	public PatientDTO() {
 	}
 	
 	public PatientDTO(PatientEntity entity) {
 		this.id = entity.getId();
-		this.pulsePatientId = entity.getPulsePatientId();
-		this.orgPatientId = entity.getOrgPatientId();
 		this.firstName = entity.getFirstName();
 		this.lastName = entity.getLastName();
 		this.dateOfBirth = entity.getDateOfBirth();
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
 		this.phoneNumber = entity.getPhoneNumber();
-		if(entity.getAddress() != null) {
-			this.address = new AddressDTO(entity.getAddress());
-		}
-		if(entity.getOrganization() != null) {
-			this.organization = new OrganizationDTO(entity.getOrganization());
-		}
+		this.lastReadDate = entity.getLastReadDate();
+		this.address = new AddressDTO(entity.getAddress());
+		this.acf = new AlternateCareFacilityDTO(entity.getAcf());
 	}
 	
 	public Long getId() {
@@ -86,26 +80,20 @@ public class PatientDTO {
 	public void setAddress(AddressDTO address) {
 		this.address = address;
 	}
-	public OrganizationDTO getOrganization() {
-		return organization;
-	}
-	public void setOrganization(OrganizationDTO organization) {
-		this.organization = organization;
+
+	public AlternateCareFacilityDTO getAcf() {
+		return acf;
 	}
 
-	public String getPulsePatientId() {
-		return pulsePatientId;
+	public void setAcf(AlternateCareFacilityDTO acf) {
+		this.acf = acf;
 	}
 
-	public void setPulsePatientId(String pulsePatientId) {
-		this.pulsePatientId = pulsePatientId;
+	public Date getLastReadDate() {
+		return lastReadDate;
 	}
 
-	public String getOrgPatientId() {
-		return orgPatientId;
-	}
-
-	public void setOrgPatientId(String orgPatientId) {
-		this.orgPatientId = orgPatientId;
+	public void setLastReadDate(Date lastReadDate) {
+		this.lastReadDate = lastReadDate;
 	}
 }

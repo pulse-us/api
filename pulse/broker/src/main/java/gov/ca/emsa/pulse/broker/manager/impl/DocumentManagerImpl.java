@@ -1,7 +1,6 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,28 +12,31 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
+import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.domain.Document;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 
 @Service
 public class DocumentManagerImpl implements DocumentManager {
 	@Autowired private DocumentDAO docDao;
+	@Autowired private OrganizationDAO orgDao;
 	@Autowired private Environment env;
 	
 	@Override
 	@Transactional
-	public List<DocumentDTO> queryDocumentsForPatient(String samlMessage, PatientDTO patient) throws Exception {
+	public List<DocumentDTO> queryDocumentsForPatient(String samlMessage, PatientRecordDTO patient) throws Exception {
 		//look in the cache
 		List<DocumentDTO> results = new ArrayList<DocumentDTO>();
 		results = docDao.getByPatientId(patient.getId());
 		
 		if(results == null || results.size() == 0) {
-			if(patient.getOrganization() != null) {
-				String url = patient.getOrganization().getEndpointUrl() + "/documents";
+			if(patient.getQueryOrganizationId() != null) {
+				OrganizationDTO org = orgDao.findById(patient.getQueryOrganizationId());
+				String url = org.getEndpointUrl() + "/documents";
 				// ?patientId=" + patient.getOrgPatientId();
 				MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
 				parameters.add("patientId", patient.getOrgPatientId());
@@ -78,7 +80,7 @@ public class DocumentManagerImpl implements DocumentManager {
 		if(cachedDoc != null && cachedDoc.getContents() != null && cachedDoc.getContents().length > 0) {
 			docContents = new String(cachedDoc.getContents());
 		} else if(cachedDoc != null) {
-			PatientDTO patient = cachedDoc.getPatient();
+			PatientRecordDTO patient = cachedDoc.getPatient();
 			if(patient != null) {
 				OrganizationDTO org = patient.getOrganization();
 				if(org != null && org.getEndpointUrl() != null) {
@@ -96,11 +98,5 @@ public class DocumentManagerImpl implements DocumentManager {
 			}
 		}
 		return docContents;
-	}
-	
-	@Override
-	@Transactional
-	public void cleanupDocumentCache(Date oldestAllowedDocument) {
-		docDao.deleteItemsOlderThan(oldestAllowedDocument);
 	}
 }
