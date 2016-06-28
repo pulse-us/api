@@ -1,3 +1,5 @@
+package gov.ca.emsa.pulse.config;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
@@ -19,13 +22,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@Configuration
 @EnableWebSecurity
-@ComponentScan(basePackages = {"gov.ca.emsa.pulse.auth.**", "gov.ca.emsa.pulse.auth.jwt.*"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
-public class PULSEAuthenticationSecurityConfig extends
-		WebSecurityConfigurerAdapter {
+@Configuration
+@ComponentScan({"gov.ca.emsa.pulse.auth.**"})
+public class PULSEAuthenticationSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired private JWTUserConverter userConverter;
 	
@@ -33,11 +36,11 @@ public class PULSEAuthenticationSecurityConfig extends
 		super(true);
 	}
 	
-	@Autowired
-	protected void configureGlobal(HttpSecurity http) throws Exception {
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
 
-		http.authorizeRequests().antMatchers("/**").hasRole("USER").and()
-		.addFilter(new JWTAuthenticationFilter(userConverter)).headers();
+		http.authorizeRequests().antMatchers("/**").hasRole("USER")
+		.and().addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class).headers();
 	}
 	
 	@Bean
