@@ -52,7 +52,7 @@ public class DocumentService {
 			@PathVariable("patientId") Long patientId,
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) {
 		
-		String url = "http://localhost:8090/patients/{patientId}/documents/{documentId}?cacheOnly=" + cacheOnly.toString();
+		String url = "http://localhost:8090/patients/" + patientId + "/documents/" + documentId + "?cacheOnly=" + cacheOnly.toString();
 		
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
 		User user = new User();
