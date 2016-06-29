@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -57,13 +58,19 @@ public class ServiceApplicationTests {
 		mvc = MockMvcBuilders.webAppContextSetup(context).apply(SecurityMockMvcConfigurers.springSecurity()).build();
 		Map<String, List<String>> claims = new HashMap<String, List<String>>();
 		List<String> roles = new ArrayList<String>();
-		roles.add("USER");
+		roles.add("ROLE_USER");
 		claims.put("Authorities", roles);
+		Map<String, List<String>> identity = new HashMap<String, List<String>>();
+		List<String> id = new ArrayList<String>();
+		id.add("brian");
+		id.add("lindsey");
+		id.add("blindsey@ainq.com");
+		claims.put("Identity", id);
 		jwt = jwtAuthor.createJWT("user", claims);
 		
 	}
 
-	@Test
+	//@Test
 	//@WithMockUser(roles={"USER"}, username = "user")
 	public void endpointAcceptsSearchPatient() throws Exception {
 		
@@ -77,7 +84,10 @@ public class ServiceApplicationTests {
 
 		String tokenHeader = "Bearer " + jwt;		
 		//ResultActions ra = mvc.perform(get("/search/patient").with(user("user").roles("USER")).param("firstName","John"));
-		ResultActions ra = mvc.perform(post("/search/patient").param("firstName","John").header("Authorization", tokenHeader));
+		PatientSearchTerms pst = new PatientSearchTerms();
+		pst.setFirstName("John");
+		ResultActions ra = mvc.perform(post("/search").contentType(MediaType.APPLICATION_JSON_UTF8)
+				.sessionAttr("pst", pst).header("Authorization", tokenHeader));
 		
 		assertEquals(Status.Ok().code(), ra.andReturn().getResponse().getStatus());
 		

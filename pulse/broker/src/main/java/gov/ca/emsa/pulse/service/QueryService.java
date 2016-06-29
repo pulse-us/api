@@ -21,7 +21,10 @@ import io.swagger.annotations.ApiOperation;
 
 @Api(value = "queryStatus")
 @RestController
+<<<<<<< HEAD
 @RequestMapping("/queries")
+=======
+>>>>>>> blindsey/development
 public class QueryService {
 	@Autowired QueryManager queryManager;
 	
@@ -37,6 +40,7 @@ public class QueryService {
 	}
 	
 	@ApiOperation(value="Get the status of a query")
+<<<<<<< HEAD
 	@RequestMapping(value="/{queryId}", method = RequestMethod.POST)
     public Query getQueryStatus(@PathVariable(value="queryId") Long queryId,
     		@RequestBody User user) {
@@ -51,5 +55,22 @@ public class QueryService {
     		@RequestBody Patient mergedPatient,
     		@RequestBody User user) {
        
+=======
+	@RequestMapping("/query/{queryId}")
+    public Query getStatus(@PathVariable(value="queryId") Long queryId) {
+       QueryDTO initiatedQuery = queryManager.getQueryStatusDetails(queryId); 
+       return new Query(initiatedQuery);
+    }
+	
+	@ApiOperation(value="Get all queries from current logged in user.")
+	@RequestMapping("/queries")
+    public ArrayList<Query> getStatus(@PathVariable(value="userToken") String userToken) {
+       List<QueryDTO> initiatedQuery = queryManager.getAllQueriesForUser(userToken);
+       ArrayList<Query> queryDomainList = new ArrayList<Query>();
+       for(QueryDTO qdto : initiatedQuery){
+    	   queryDomainList.add(new Query(qdto));
+       }
+       return queryDomainList;
+>>>>>>> blindsey/development
     }
 }
