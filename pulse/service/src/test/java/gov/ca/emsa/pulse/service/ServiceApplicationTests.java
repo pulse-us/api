@@ -70,7 +70,7 @@ public class ServiceApplicationTests {
 		
 	}
 
-	@Test
+	//@Test
 	//@WithMockUser(roles={"USER"}, username = "user")
 	public void endpointAcceptsSearchPatient() throws Exception {
 		
