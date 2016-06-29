@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
 
 @Repository
 public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
@@ -27,9 +26,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		doc.setFormat(dto.getFormat());
 		doc.setContents(dto.getContents());
 		doc.setLastReadDate(new Date());
-		if(dto.getPatient() != null && dto.getPatient().getId() != null) {
-			doc.setPatientId(dto.getPatient().getId());
-		}
+		doc.setPatientOrgMapId(dto.getPatientOrgMapId());
 		
 		entityManager.persist(doc);
 		entityManager.flush();
@@ -44,9 +41,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		doc.setFormat(dto.getFormat());
 		doc.setContents(dto.getContents());
 		doc.setLastReadDate(new Date());
-		if(dto.getPatient() != null && dto.getPatient().getId() != null) {
-			doc.setPatientId(dto.getPatient().getId());
-		}
+		doc.setPatientOrgMapId(dto.getPatientOrgMapId());
 		
 		doc = entityManager.merge(doc);
 		entityManager.flush();
@@ -104,7 +99,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		DocumentEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT doc from DocumentEntity doc "
-				+ "LEFT OUTER JOIN FETCH doc.patient "
+				+ "LEFT JOIN FETCH doc.patientOrgMap "
 				+ "where doc.id = :entityid) ", 
 				DocumentEntity.class );
 		
@@ -118,9 +113,10 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	}
 	
 	private List<DocumentEntity> getEntityByPatientId(Long patientId) {		
-		Query query = entityManager.createQuery( "SELECT doc from DocumentEntity doc "
-				+ "LEFT OUTER JOIN FETCH doc.patient "
-				+ "where doc.patientId = :patientId", 
+		Query query = entityManager.createQuery( "SELECT doc "
+				+ "from DocumentEntity doc, PatientOrganizationMapEntity orgMap "
+				+ "where doc.patientOrgMapId = orgMap.id "
+				+ "and orgMap.patientId = :patientId", 
 				DocumentEntity.class );
 		
 		query.setParameter("patientId", patientId);

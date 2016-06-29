@@ -1,6 +1,8 @@
 package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -62,6 +65,10 @@ public class PatientEntity {
 	
 	@Column(name = "last_read_date")
 	private Date lastReadDate;
+	
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientId"  )
+	@Column( name = "patient_id", nullable = false  )
+	private Set<PatientOrganizationMapEntity> orgMaps = new HashSet<PatientOrganizationMapEntity>();
 	
 	public Long getId() {
 		return id;
@@ -173,5 +180,13 @@ public class PatientEntity {
 
 	public void setLastReadDate(Date lastReadDate) {
 		this.lastReadDate = lastReadDate;
+	}
+
+	public Set<PatientOrganizationMapEntity> getOrgMaps() {
+		return orgMaps;
+	}
+
+	public void setOrgMaps(Set<PatientOrganizationMapEntity> orgMaps) {
+		this.orgMaps = orgMaps;
 	}
 }

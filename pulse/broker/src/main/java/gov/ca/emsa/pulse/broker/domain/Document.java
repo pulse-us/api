@@ -3,7 +3,7 @@ package gov.ca.emsa.pulse.broker.domain;
 public class Document {
 	private String id;
 	private String name;
-	private Patient patient;
+	private Long orgMapId;
 	
 	public String getId() {
 		return id;
@@ -17,10 +17,10 @@ public class Document {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Patient getPatient() {
-		return patient;
+	public Long getOrgMapId() {
+		return orgMapId;
 	}
-	public void setPatient(Patient patient) {
-		this.patient = patient;
+	public void setOrgMapId(Long orgMapId) {
+		this.orgMapId = orgMapId;
 	}
 }

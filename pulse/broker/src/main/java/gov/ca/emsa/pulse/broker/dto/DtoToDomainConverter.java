@@ -75,10 +75,7 @@ public class DtoToDomainConverter {
 		Document result = new Document();
 		result.setId(dtoObj.getId()+"");
 		result.setName(dtoObj.getName());
-		if(dtoObj.getPatient() != null) {
-			Patient patient = convert(dtoObj.getPatient());
-			result.setPatient(patient);
-		}
+		result.setOrgMapId(dtoObj.getPatientOrgMapId());
 		return result;
 	}
 }

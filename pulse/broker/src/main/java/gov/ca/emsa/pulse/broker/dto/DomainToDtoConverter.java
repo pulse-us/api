@@ -77,11 +77,8 @@ public class DomainToDtoConverter {
 	public static DocumentDTO convert(Document domainObj) {
 		DocumentDTO result = new DocumentDTO();
 		result.setName(domainObj.getName());
-		result.setFormat("CCDA"); //TODO:
-		if(domainObj.getPatient() != null) {
-			PatientDTO patient = convertToPatient(domainObj.getPatient());
-			result.setPatient(patient);
-		}
+		result.setFormat("TODO"); //TODO:
+		result.setPatientOrgMapId(domainObj.getOrgMapId());
 		return result;
 	}
 }

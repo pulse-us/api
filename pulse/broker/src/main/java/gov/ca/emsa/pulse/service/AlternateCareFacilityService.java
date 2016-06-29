@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.ca.emsa.pulse.broker.domain.AlternateCareFacility;
+import gov.ca.emsa.pulse.broker.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
@@ -25,7 +26,7 @@ public class AlternateCareFacilityService {
 	
 	@ApiOperation(value="Get the list of all alternate care facilities (ACFs)")
 	@RequestMapping(value="",  method = RequestMethod.POST)
-    public List<AlternateCareFacility> getAll() {
+    public List<AlternateCareFacility> getAll(@RequestBody User user) {
 		List<AlternateCareFacilityDTO> dtos = acfManager.getAll();
 		List<AlternateCareFacility> results = new ArrayList<AlternateCareFacility>();
 		for(AlternateCareFacilityDTO dto : dtos) {
@@ -37,14 +38,17 @@ public class AlternateCareFacilityService {
 	
 	@ApiOperation(value="Get information about a specific ACF")
 	@RequestMapping(value = "/{acfId}", method=RequestMethod.POST)
-    public AlternateCareFacility getById(@PathVariable("acfId") Long acfId) {
+    public AlternateCareFacility getById(@PathVariable("acfId") Long acfId,
+    		@RequestBody User user) {
 		AlternateCareFacilityDTO dto = acfManager.getById(acfId);
 		return new AlternateCareFacility(dto);
     }
 	
+	//TODO: WE CAN'T HAVE MULTIPLE REQUEST BODY PARAMETERS so this won't work
 	@ApiOperation(value = "Create a new ACF")
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public AlternateCareFacility create(@RequestBody(required=true) AlternateCareFacility toCreate) {
+	public AlternateCareFacility create(@RequestBody(required=true) AlternateCareFacility toCreate,
+			@RequestBody User user) {
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(toCreate.getName());
 		if(toCreate.getAddress() != null) {

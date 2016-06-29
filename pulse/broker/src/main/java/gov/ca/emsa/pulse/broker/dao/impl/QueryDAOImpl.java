@@ -174,12 +174,18 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	
 	@Override
 	public void deleteItemsOlderThan(Date oldestDate) {			
-		Query query = entityManager.createQuery( "DELETE from QueryEntity qe "
+		Query query = entityManager.createQuery( "from QueryEntity qe "
 				+ " WHERE qe.lastReadDate <= :cacheDate");
 		
 		query.setParameter("cacheDate", oldestDate);
-		int deletedCount = query.executeUpdate();		
-		logger.info("Deleted " + deletedCount + " queries from the cache.");
+		List<QueryEntity> oldQueries = query.getResultList();
+		
+		for(QueryEntity oldQuery : oldQueries) {
+			if(oldQuery.getOrgStatuses() == null || oldQuery.getOrgStatuses().size() == 0) {
+				delete(oldQuery.getId());
+				logger.info("Deleted query with id " + oldQuery.getId() +" from the cache.");
+			}
+		}
 	}
 	
 	private List<QueryEntity> findAllEntities() {

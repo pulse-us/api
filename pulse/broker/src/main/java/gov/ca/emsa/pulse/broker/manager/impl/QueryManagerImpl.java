@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.domain.Patient;
+import gov.ca.emsa.pulse.broker.domain.User;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
@@ -112,7 +113,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	}
 
 	@Override
-	public QueryDTO queryForPatientRecords(String samlMessage, PatientRecordDTO searchParams)
+	public QueryDTO queryForPatientRecords(String samlMessage, PatientRecordDTO searchParams, User user)
 			throws JsonProcessingException {
 		Patient queryTerms = new Patient();
 		queryTerms.setFirstName(searchParams.getFirstName());
@@ -126,7 +127,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		String queryTermsJson = JSONUtils.toJSON(queryTerms);
 		
 		QueryDTO query = new QueryDTO();
-		query.setUserId("TBD");
+		query.setUserId(user.getUserKey());
 		query.setTerms(queryTermsJson);
 		query.setStatus(QueryStatus.ACTIVE.name());
 		query = createQuery(query);

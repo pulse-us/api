@@ -1,8 +1,11 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 
 public class PatientDTO {
 	private Long id;
@@ -15,11 +18,14 @@ public class PatientDTO {
 	private Date lastReadDate;
 	private AddressDTO address;
 	private AlternateCareFacilityDTO acf;
+	private List<PatientOrganizationMapDTO> orgMaps;
 	
 	public PatientDTO() {
+		orgMaps = new ArrayList<PatientOrganizationMapDTO>();
 	}
 	
 	public PatientDTO(PatientEntity entity) {
+		this();
 		this.id = entity.getId();
 		this.firstName = entity.getFirstName();
 		this.lastName = entity.getLastName();
@@ -29,7 +35,16 @@ public class PatientDTO {
 		this.phoneNumber = entity.getPhoneNumber();
 		this.lastReadDate = entity.getLastReadDate();
 		this.address = new AddressDTO(entity.getAddress());
-		this.acf = new AlternateCareFacilityDTO(entity.getAcf());
+		if(entity.getAcf() != null) {
+			this.acf = new AlternateCareFacilityDTO(entity.getAcf());
+		}
+		if(entity.getOrgMaps() != null && entity.getOrgMaps().size() > 0) {
+			for(PatientOrganizationMapEntity orgMap : entity.getOrgMaps()) {
+				PatientOrganizationMapDTO orgMapDto = new PatientOrganizationMapDTO(orgMap);
+				this.orgMaps.add(orgMapDto);
+			}
+		}
+		
 	}
 	
 	public Long getId() {
@@ -95,5 +110,13 @@ public class PatientDTO {
 
 	public void setLastReadDate(Date lastReadDate) {
 		this.lastReadDate = lastReadDate;
+	}
+
+	public List<PatientOrganizationMapDTO> getOrgMaps() {
+		return orgMaps;
+	}
+
+	public void setOrgMaps(List<PatientOrganizationMapDTO> orgMaps) {
+		this.orgMaps = orgMaps;
 	}
 }
