@@ -1,6 +1,5 @@
 package gov.ca.emsa.pulse.broker.dao;
 
-import static org.junit.Assert.*;
 
 import java.util.Date;
 import java.util.List;
@@ -9,8 +8,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
@@ -30,6 +36,7 @@ public class PatientDaoTest extends TestCase {
 		PatientDTO toInsert = new PatientDTO();
 		toInsert.setFirstName("test");
 		toInsert.setLastName("patient");
+		toInsert.setOrgPatientId("EHR-PAT-1");
 		toInsert.setDateOfBirth(new Date());
 		toInsert.setGender("Male");
 		toInsert.setPhoneNumber("410-444-4444");
@@ -68,6 +75,7 @@ public class PatientDaoTest extends TestCase {
 		PatientDTO toInsert = new PatientDTO();
 		toInsert.setFirstName("test");
 		toInsert.setLastName("patient2");
+		toInsert.setOrgPatientId("EHR-PAT-2");
 		toInsert.setDateOfBirth(new Date());
 		toInsert.setGender("Female");
 		toInsert.setPhoneNumber("410-444-4444");
@@ -98,6 +106,7 @@ public class PatientDaoTest extends TestCase {
 		PatientDTO toInsert = new PatientDTO();
 		toInsert.setFirstName("test");
 		toInsert.setLastName("patient3");
+		toInsert.setOrgPatientId("EHR-PAT-3");
 		toInsert.setDateOfBirth(new Date());
 		toInsert.setGender("Female");
 		toInsert.setPhoneNumber("410-444-4444");
@@ -118,6 +127,7 @@ public class PatientDaoTest extends TestCase {
 		PatientDTO toInsert = new PatientDTO();
 		toInsert.setFirstName("test");
 		toInsert.setLastName("patient4");
+		toInsert.setOrgPatientId("EHR-PAT-4");
 		toInsert.setDateOfBirth(new Date());
 		toInsert.setGender("Male");
 		toInsert.setPhoneNumber("410-444-4444");
@@ -148,6 +158,7 @@ public class PatientDaoTest extends TestCase {
 		PatientDTO toInsert = new PatientDTO();
 		toInsert.setFirstName("test5");
 		toInsert.setLastName("patient");
+		toInsert.setOrgPatientId("EHR-PAT-5");
 		toInsert.setDateOfBirth(new Date());
 		toInsert.setGender("Male");
 		toInsert.setPhoneNumber("410-444-4444");

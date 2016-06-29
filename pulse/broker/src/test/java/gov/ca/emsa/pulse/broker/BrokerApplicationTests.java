@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import gov.ca.emsa.pulse.broker.domain.Organization;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
@@ -20,8 +21,6 @@ import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
-//@DatabaseSetup("classpath:data/testData.xml")
-
 public class BrokerApplicationTests extends TestCase {
 	
 	@Autowired

@@ -14,7 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="query", schema="pulse")
+@Table(name="query")
 public class QueryEntity {
 	
 	@Id 

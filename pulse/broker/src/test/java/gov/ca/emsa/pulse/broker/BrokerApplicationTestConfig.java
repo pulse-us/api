@@ -3,18 +3,20 @@ package gov.ca.emsa.pulse.broker;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@Configuration
-@PropertySource("classpath:/environment.test.properties")
+@PropertySource("classpath:/application-test.properties")
 @EnableTransactionManagement
-@SpringBootApplication(scanBasePackages= {"gov.ca.emsa.pulse.broker.manager.**",
-		"gov.ca.emsa.pulse.broker.**",
+@SpringBootApplication(scanBasePackages= {"gov.ca.emsa.pulse.broker.adapter",
 		"gov.ca.emsa.pulse.broker.dao.**",
-		"gov.ca.emsa.pulse.broker.entity.**"})
+		"gov.ca.emsa.pulse.broker.domain.**",
+		"gov.ca.emsa.pulse.broker.dto.**",
+		"gov.ca.emsa.pulse.broker.entity.**",
+		"gov.ca.emsa.pulse.broker.manager.**",
+		"gov.ca.emsa.pulse.broker.saml.**",
+		"gov.ca.emsa.pulse.service.**"})
 public class BrokerApplicationTestConfig implements EnvironmentAware {
 	
 	private Environment env;
@@ -28,6 +30,7 @@ public class BrokerApplicationTestConfig implements EnvironmentAware {
 	public org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean entityManagerFactory(){
 		org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
 		bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
+		bean.setPersistenceXmlLocation("classpath:persistence-test.xml");
 		return bean;
 	}
 	
@@ -37,7 +40,7 @@ public class BrokerApplicationTestConfig implements EnvironmentAware {
 		bean.setEntityManagerFactory(entityManagerFactory().getObject());
 		return bean;
 	}
-	
+
 	@Bean
 	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor(){
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
