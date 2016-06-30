@@ -1,0 +1,9 @@
+entityId=urn:test:ainq:baltimore:alarned
+portalUrl=http://localhost:3000
+keyLocation=C:\\Users\\blindsey\\dev\\pulse\\JSONPulseRsaJoseJWebKey.txt
+jwtAllowedClockSkew=30
+jwtIssuer=CALEMSA
+jwtAudience=CALEMSA
+jwtExpirationTimeMinutesInTheFuture=30
+jwtNotBeforeMinutesInThePast=4
+server.port = 8080

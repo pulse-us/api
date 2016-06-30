@@ -1,74 +1,69 @@
 package gov.ca.emsa.pulse.service;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.EnvironmentAware;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-public class PatientService implements EnvironmentAware{
+public class PatientService {
 	private static final Logger logger = LogManager.getLogger(PatientService.class);
 	@Autowired private Environment env;
+	
+	@Value("${getPatientsUrl}")
+	private String getPatientsUrl;
+	@Value("${patientSearchUrl}")
+	private String patientSearchUrl;
 
 	@ApiOperation(value="Search for patients that match the parameters.")
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
-	public void searchPatients(@RequestBody PatientSearchTerms patientSearchTerms) {
+	public void searchPatients(@RequestBody PatientSearchTerms patientSearchTerms) throws JsonProcessingException {
 
-		String patientUrl = env.getProperty("brokerPatientUrl").trim();
-		
-		MultiValueMap<String,Object> parameters = new LinkedMultiValueMap<String,Object>();
-
-		if(!StringUtils.isEmpty(patientSearchTerms.getFirstName())) {
-			parameters.add("firstName", patientSearchTerms.getFirstName());
-		}
-		if(!StringUtils.isEmpty(patientSearchTerms.getLastName())) {
-			parameters.add("lastName", patientSearchTerms.getLastName());
-		}
-		if(!StringUtils.isEmpty(patientSearchTerms.getDob())) {
-			parameters.add("dob", patientSearchTerms.getDob());
-		}
-		if(!StringUtils.isEmpty(patientSearchTerms.getSsn())) {
-			parameters.add("ssn", patientSearchTerms.getSsn());
-		}
-		if(!StringUtils.isEmpty(patientSearchTerms.getGender())) {
-			parameters.add("gender", patientSearchTerms.getGender());
-		}
-		if(!StringUtils.isEmpty(patientSearchTerms.getZipcode())) {
-			parameters.add("zip", patientSearchTerms.getZipcode());
-		}
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+		ObjectMapper mapper = new ObjectMapper();
 		
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
 		User user = new User();
 		if(auth != null){
 			user.setName(auth.getName());
-			parameters.add("user", user);
 		}else{
 			logger.error("Could not find a logged in user. ");
 		}
-
-		RestTemplate query = new RestTemplate();
-		query.postForObject(patientUrl, user, Query.class, parameters);
 		
+		headers.add("User", mapper.writeValueAsString(user));
+		HttpEntity<PatientSearchTerms> request = new HttpEntity<PatientSearchTerms>(patientSearchTerms, headers);
+		RestTemplate query = new RestTemplate();
+		query.postForObject(patientSearchUrl, request, Query.class);
+		logger.info("Request sent to broker from services REST.");
 	}
 
 	// get all patients from the logged in users ACF
 	@RequestMapping(value = "/patients")
-	public Query getAllPatientsAtACF() {
+	public ArrayList<Patient> getAllPatientsAtACF() throws JsonProcessingException {
 
-		String patientUrl = "http://localhost:8090/patients";
 		RestTemplate query = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
 
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
 		User user = new User();
@@ -78,14 +73,13 @@ public class PatientService implements EnvironmentAware{
 		}else{
 			logger.error("Could not find a logged in user. ");
 		}
+		
+		headers.set("User", mapper.writeValueAsString(user));
+		HttpEntity<Patient[]> entity = new HttpEntity<Patient[]>(headers);
+		HttpEntity<Patient[]> response = query.exchange(getPatientsUrl, HttpMethod.GET, entity, Patient[].class);
+		logger.info("Request sent to broker from services REST.");
+		ArrayList<Patient> patientList = new ArrayList<Patient>(Arrays.asList(response.getBody()));
 
-		Query queryRet = query.postForObject(patientUrl, user, Query.class);
-
-		return queryRet;
-	}
-	@Override
-	public void setEnvironment(Environment environment) {
-		// TODO Auto-generated method stub
-
+		return patientList;
 	}
 }
