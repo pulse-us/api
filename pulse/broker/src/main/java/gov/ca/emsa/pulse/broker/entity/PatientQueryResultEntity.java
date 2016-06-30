@@ -98,4 +98,3 @@ public class PatientQueryResultEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 }
-}
