@@ -18,9 +18,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.cache.QueryCacheManager;
+import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 
 @PropertySource("classpath:/application.properties")
@@ -34,8 +36,9 @@ public class BrokerApplication implements EnvironmentAware {
 	}
 	
 	@Autowired private OrganizationManager organizationManager;
+	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private PatientManager patientManager;
-	@Autowired private DocumentManager docManager;
+	@Autowired private QueryManager queryManager;
 	@Autowired private Environment env;
 	
 	@Override
@@ -74,8 +77,9 @@ public class BrokerApplication implements EnvironmentAware {
 		if(queryCacheExpirationMinutes > 0) {
 			qcTask = new QueryCacheManager();
 			qcTask.setExpirationMillis(queryCacheExpirationMillis);
+			qcTask.setAcfManager(acfManager);
 			qcTask.setPatientManager(patientManager);
-			qcTask.setDocManager(docManager);
+			qcTask.setQueryManager(queryManager);
 			
 			Timer timer = new Timer();
 			//timer.scheduleAtFixedRate(qcTask, queryCacheCleanupMinutes, queryCacheCleanupMinutes);

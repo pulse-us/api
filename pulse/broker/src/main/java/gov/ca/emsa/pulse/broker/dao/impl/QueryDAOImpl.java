@@ -15,7 +15,7 @@ import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryStatus;
 import gov.ca.emsa.pulse.broker.entity.QueryEntity;
-import gov.ca.emsa.pulse.broker.entity.QueryOrganizationStatusMap;
+import gov.ca.emsa.pulse.broker.entity.QueryOrganizationEntity;
 
 @Repository
 public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
@@ -25,14 +25,15 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	public QueryDTO create(QueryDTO dto) {
 		
 		QueryEntity query = new QueryEntity();
-		query.setUserToken(dto.getUserToken());
+		query.setUserId(dto.getUserId());
 		query.setStatus(QueryStatus.ACTIVE.name());
 		query.setTerms(dto.getTerms());
+		query.setLastReadDate(new Date());
 		entityManager.persist(query);
 		
 		if(dto.getOrgStatuses() != null && dto.getOrgStatuses().size() > 0) {
 			for(QueryOrganizationDTO orgStatus : dto.getOrgStatuses()) {
-				QueryOrganizationStatusMap orgMap = new QueryOrganizationStatusMap();
+				QueryOrganizationEntity orgMap = new QueryOrganizationEntity();
 				orgMap.setOrganizationId(orgStatus.getOrgId());
 				orgMap.setQueryId(query.getId());
 				orgMap.setStatus(QueryStatus.ACTIVE.name());
@@ -46,8 +47,21 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return new QueryDTO(query);
 	}
 
+	public QueryOrganizationDTO getQueryOrganizationById(Long queryOrgId) {
+		QueryOrganizationEntity entity = null;
+		
+		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
+				+ "LEFT JOIN FETCH q.query "
+				+ "where q.id = :entityid) ", 
+				QueryOrganizationEntity.class );
+		
+		query.setParameter("entityid", queryOrgId);
+		entity = (QueryOrganizationEntity)query.getSingleResult();
+		return new QueryOrganizationDTO(entity);
+	}
+	
 	public QueryOrganizationDTO createQueryOrganization(QueryOrganizationDTO orgStatus) {
-		QueryOrganizationStatusMap orgMap = new QueryOrganizationStatusMap();
+		QueryOrganizationEntity orgMap = new QueryOrganizationEntity();
 		orgMap.setOrganizationId(orgStatus.getOrgId());
 		orgMap.setQueryId(orgStatus.getQueryId());
 		orgMap.setStatus(QueryStatus.ACTIVE.name());
@@ -58,14 +72,12 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	
 	@Override
 	public synchronized QueryOrganizationDTO updateQueryOrganization(QueryOrganizationDTO orgStatus) {
-		QueryOrganizationStatusMap orgMap = this.getQueryStatusById(orgStatus.getId());
+		QueryOrganizationEntity orgMap = this.getQueryStatusById(orgStatus.getId());
 		if(orgStatus.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
 			orgMap.setEndDate(new Date());
-			orgMap.setFromCache(orgStatus.getFromCache());
 			orgMap.setSuccess(orgStatus.getSuccess());
 			orgMap.setStatus(QueryStatus.COMPLETE.name());
 		} else {
-			orgMap.setFromCache(orgStatus.getFromCache());
 			orgMap.setStatus(QueryStatus.ACTIVE.name());
 		}
 		orgMap = entityManager.merge(orgMap);
@@ -74,7 +86,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryEntity query = this.getEntityById(orgStatus.getQueryId());
 		if(query.getOrgStatuses() != null && query.getOrgStatuses().size() > 0) {
 			int completeCount = 0;
-			for(QueryOrganizationStatusMap orgMapEntity : query.getOrgStatuses()) {
+			for(QueryOrganizationEntity orgMapEntity : query.getOrgStatuses()) {
 				if(orgMapEntity.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
 					completeCount++;
 				} 
@@ -86,22 +98,24 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 			}
 		}
 		
+		entityManager.flush();
 		return new QueryOrganizationDTO(orgMap);
 	}
 	
 	@Override
 	public QueryDTO update(QueryDTO dto) {
 		QueryEntity query = this.getEntityById(dto.getId());
+		query.setLastReadDate(dto.getLastReadDate());
 		//terms and user wouldn't change
 		
 		//check the org statuses
 		if(dto.getOrgStatuses() != null && dto.getOrgStatuses().size() > 0) {
 			int completeCount = 0;
 			for(QueryOrganizationDTO orgStatus : dto.getOrgStatuses()) {
-				QueryOrganizationStatusMap orgMap = this.getQueryStatusById(orgStatus.getId());
+				QueryOrganizationEntity orgMap = this.getQueryStatusById(orgStatus.getId());
 				if(orgMap == null || orgMap.getId() == null) {
 					//create 
-					orgMap = new QueryOrganizationStatusMap();
+					orgMap = new QueryOrganizationEntity();
 					orgMap.setOrganizationId(orgStatus.getOrgId());
 					orgMap.setQueryId(query.getId());
 					orgMap.setStatus(QueryStatus.ACTIVE.name());
@@ -112,12 +126,10 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 					//update - org and query wouldn't change
 					if(orgStatus.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
 						orgMap.setEndDate(new Date());
-						orgMap.setFromCache(orgStatus.getFromCache());
 						orgMap.setSuccess(orgStatus.getSuccess());
 						orgMap.setStatus(QueryStatus.COMPLETE.name());
 						completeCount++;
 					} else {
-						orgMap.setFromCache(orgStatus.getFromCache());
 						orgMap.setStatus(QueryStatus.ACTIVE.name());
 					}
 					orgMap = entityManager.merge(orgMap);
@@ -173,6 +185,22 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return dto;
 	}
 	
+	@Override
+	public void deleteItemsOlderThan(Date oldestDate) {			
+		Query query = entityManager.createQuery( "from QueryEntity qe "
+				+ " WHERE qe.lastReadDate <= :cacheDate");
+		
+		query.setParameter("cacheDate", oldestDate);
+		List<QueryEntity> oldQueries = query.getResultList();
+		
+		for(QueryEntity oldQuery : oldQueries) {
+			if(oldQuery.getOrgStatuses() == null || oldQuery.getOrgStatuses().size() == 0) {
+				delete(oldQuery.getId());
+				logger.info("Deleted query with id " + oldQuery.getId() +" from the cache.");
+			}
+		}
+	}
+	
 	private List<QueryEntity> findAllEntities() {
 		Query query = entityManager.createQuery("from QueryEntity");
 		return query.getResultList();
@@ -191,15 +219,15 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return entity;
 	}
 	
-	private QueryOrganizationStatusMap getQueryStatusById(Long id) {
-		QueryOrganizationStatusMap entity = null;
+	private QueryOrganizationEntity getQueryStatusById(Long id) {
+		QueryOrganizationEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationStatusMap q "
+		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
 				+ "where q.id = :entityid) ", 
-				QueryOrganizationStatusMap.class );
+				QueryOrganizationEntity.class );
 		
 		query.setParameter("entityid", id);
-		List<QueryOrganizationStatusMap> result = query.getResultList();
+		List<QueryOrganizationEntity> result = query.getResultList();
 		if(result.size() == 1) {
 			entity = result.get(0);
 		}
@@ -210,10 +238,10 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	private List<QueryEntity> getEntitiesByUser(String user) {		
 		Query query = entityManager.createQuery( "SELECT q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
-				+ "where q.userToken = :userToken) ", 
+				+ "where q.userId = :userId) ", 
 				QueryEntity.class );
 		
-		query.setParameter("userToken", user);
+		query.setParameter("userId", user);
 		List<QueryEntity> result = query.getResultList();
 		return result;
 	}
@@ -221,11 +249,11 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	private List<QueryEntity> getEntitiesByUserAndStatus(String user, String status) {		
 		Query query = entityManager.createQuery( "SELECT q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
-				+ "where q.userToken = :userToken "
+				+ "where q.userId = :userId "
 				+ "and q.status = :status) ", 
 				QueryEntity.class );
 		
-		query.setParameter("userToken", user);
+		query.setParameter("userId", user);
 		query.setParameter("status", status);
 		List<QueryEntity> result = query.getResultList();
 		return result;

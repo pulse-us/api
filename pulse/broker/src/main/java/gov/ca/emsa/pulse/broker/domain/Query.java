@@ -11,17 +11,17 @@ public class Query {
 	private String userToken;
 	private String status;
 	private String terms;
-	private List<QueryOrganizationStatus> orgStatuses;
+	private List<QueryOrganization> orgStatuses;
 	
 	public Query(QueryDTO dto) {
 		this.id = dto.getId();
-		this.userToken = dto.getUserToken();
+		this.userToken = dto.getUserId();
 		this.status = dto.getStatus();
 		this.terms = dto.getTerms();
-		this.orgStatuses = new ArrayList<QueryOrganizationStatus>();
+		this.orgStatuses = new ArrayList<QueryOrganization>();
 		if(dto.getOrgStatuses() != null && dto.getOrgStatuses().size() > 0) {
 			for(QueryOrganizationDTO orgDto : dto.getOrgStatuses()) {
-				this.orgStatuses.add(new QueryOrganizationStatus(orgDto));
+				this.orgStatuses.add(new QueryOrganization(orgDto));
 			}
 		}
 	}
@@ -58,11 +58,11 @@ public class Query {
 		this.terms = terms;
 	}
 
-	public List<QueryOrganizationStatus> getOrgStatuses() {
+	public List<QueryOrganization> getOrgStatuses() {
 		return orgStatuses;
 	}
 
-	public void setOrgStatuses(List<QueryOrganizationStatus> orgStatuses) {
+	public void setOrgStatuses(List<QueryOrganization> orgStatuses) {
 		this.orgStatuses = orgStatuses;
 	}
 }
