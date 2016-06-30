@@ -15,5 +15,6 @@ public interface QueryDAO {
 	public List<QueryDTO> findAllForUser(String userToken);	
 	public List<QueryDTO> findAllForUserWithStatus(String userToken, String status);	
 	public QueryDTO getById(Long id);
+	public QueryOrganizationDTO getQueryOrganizationById(Long queryOrgId);
 	public void deleteItemsOlderThan(Date oldestDate);
 }

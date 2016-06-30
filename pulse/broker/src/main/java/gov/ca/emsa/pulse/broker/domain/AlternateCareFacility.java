@@ -13,12 +13,7 @@ public class AlternateCareFacility {
 		this.name = dto.getName();
 		
 		if(dto.getAddress() != null) {
-			this.address = new Address();
-			this.address.setStreetLine1(dto.getAddress().getStreetLineOne());
-			this.address.setStreetLine2(dto.getAddress().getStreetLineTwo());
-			this.address.setCity(dto.getAddress().getCity());
-			this.address.setState(dto.getAddress().getState());
-			this.address.setZipcode(dto.getAddress().getZipcode());
+			this.address = new Address(dto.getAddress());
 		}
 	}
 	public Long getId() {

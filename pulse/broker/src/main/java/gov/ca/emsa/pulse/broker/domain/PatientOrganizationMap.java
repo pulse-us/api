@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+
 public class PatientOrganizationMap {
-	private String id;
+	private Long id;
 	private Long patientId;
 	private Organization organization;
 	private String documentsQueryStatus;
@@ -18,10 +21,28 @@ public class PatientOrganizationMap {
 		this.documents = new ArrayList<Document>();
 	}
 	
-	public String getId() {
+	public PatientOrganizationMap(PatientOrganizationMapDTO dto) {
+		this();
+		this.id = dto.getId();
+		this.patientId = dto.getPatientId();
+		this.organization = new Organization(dto.getOrg());
+		this.documentsQueryStatus = dto.getDocumentsQueryStatus();
+		this.documentsQuerySuccess = dto.getDocumentsQuerySuccess();
+		this.documentsQueryStart = dto.getDocumentsQueryStart();
+		this.documentsQueryEnd = dto.getDocumentsQueryEnd();
+		
+		if(dto.getDocuments() != null && dto.getDocuments().size() > 0) { 
+			for(DocumentDTO docDto : dto.getDocuments()) {
+				Document doc = new Document(docDto);
+				this.documents.add(doc);
+			}
+		}
+	}
+	
+	public Long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

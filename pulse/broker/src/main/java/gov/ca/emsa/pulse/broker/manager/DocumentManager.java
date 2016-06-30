@@ -3,9 +3,11 @@ package gov.ca.emsa.pulse.broker.manager;
 import java.util.List;
 
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 
 public interface DocumentManager {
-	public List<DocumentDTO> queryDocumentsForPatient(String samlMessage, PatientRecordDTO patient) throws Exception;
+	public DocumentDTO create(DocumentDTO toCreate);
+	public void queryForDocuments(String samlMessage, PatientOrganizationMapDTO dto);
+	public List<DocumentDTO> getDocumentsForPatient(Long patientId);
 	public String getDocumentById(String samlMessage, Long documentId);
 }

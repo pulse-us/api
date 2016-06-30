@@ -12,7 +12,10 @@ import org.springframework.stereotype.Repository;
 
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryStatus;
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 
 @Repository
 public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
@@ -27,7 +30,9 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setAcfId(dto.getAcf().getId());
+		if(dto.getAcf() != null) {
+			patient.setAcfId(dto.getAcf().getId());
+		}
 		patient.setLastReadDate(new Date());
 		if(dto.getAddress() != null) {
 			patient.setAddressId(dto.getAddress().getId());
@@ -39,6 +44,22 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
+	public PatientOrganizationMapDTO createOrgMap(PatientOrganizationMapDTO toCreate) {
+		PatientOrganizationMapEntity orgMap = new PatientOrganizationMapEntity();
+		orgMap.setDocumentsQueryStatus(QueryStatus.ACTIVE.name());
+		orgMap.setDocumentsQuerySuccess(null);
+		orgMap.setDocumentsQueryStart(new Date());
+		orgMap.setDocumentsQueryEnd(null);
+		orgMap.setOrganizationId(toCreate.getOrganizationId());
+		orgMap.setOrganizationPatientId(toCreate.getOrgPatientId());
+		orgMap.setPatientId(toCreate.getPatientId());
+		
+		entityManager.persist(orgMap);
+		entityManager.flush();
+		return new PatientOrganizationMapDTO(orgMap);
+	}
+	
+	@Override
 	public PatientDTO update(PatientDTO dto) {
 		PatientEntity patient = this.getEntityById(dto.getId());
 		patient.setFirstName(dto.getFirstName());
@@ -47,7 +68,11 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setAcfId(dto.getAcf().getId());
+		if(dto.getAcf() != null) {
+			patient.setAcfId(dto.getAcf().getId());
+		} else {
+			patient.setAcfId(null);
+		}
 		patient.setLastReadDate(dto.getLastReadDate());
 		if(dto.getAddress() != null) {
 			patient.setAddressId(dto.getAddress().getId());
@@ -60,6 +85,23 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		return new PatientDTO(patient);
 	}
 
+	@Override
+	public PatientOrganizationMapDTO updateOrgMap(PatientOrganizationMapDTO toUpdate) {
+		PatientOrganizationMapEntity orgMap = getOrgMapById(toUpdate.getId());
+		
+		orgMap.setDocumentsQueryStatus(toUpdate.getDocumentsQueryStatus());
+		orgMap.setDocumentsQuerySuccess(toUpdate.getDocumentsQuerySuccess());
+		orgMap.setDocumentsQueryStart(toUpdate.getDocumentsQueryStart());
+		orgMap.setDocumentsQueryEnd(toUpdate.getDocumentsQueryEnd());
+		orgMap.setOrganizationId(toUpdate.getOrganizationId());
+		orgMap.setOrganizationPatientId(toUpdate.getOrgPatientId());
+		orgMap.setPatientId(toUpdate.getPatientId());
+		
+		entityManager.merge(orgMap);
+		entityManager.flush();
+		return new PatientOrganizationMapDTO(orgMap);
+	}
+	
 	@Override
 	public void delete(Long id) {
 		PatientEntity toDelete = getEntityById(id);
@@ -79,6 +121,25 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		return dto;
 	}
 	
+	@Override
+	public PatientOrganizationMapDTO getPatientOrgMapById(Long id) {
+		PatientOrganizationMapEntity entity = null;
+		
+		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "
+				+ "LEFT OUTER JOIN FETCH pat.patient "
+				+ "LEFT OUTER JOIN FETCH pat.organization "
+				+ "where pat.id = :entityid) ", 
+				PatientOrganizationMapEntity.class );
+		
+		query.setParameter("entityid", id);
+		List<PatientOrganizationMapEntity> result = query.getResultList();
+		if(result.size() == 1) {
+			entity = result.get(0);
+		}
+		
+		return new PatientOrganizationMapDTO(entity);
+	}
+		
 	@Override
 	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
 		Query query = entityManager.createQuery( "SELECT pat from PatientEntity pat "
@@ -119,6 +180,25 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		
 		query.setParameter("entityid", id);
 		List<PatientEntity> result = query.getResultList();
+		if(result.size() == 1) {
+			entity = result.get(0);
+		}
+		
+		return entity;
+	}
+	
+	private PatientOrganizationMapEntity getOrgMapById(Long id) {
+		PatientOrganizationMapEntity entity = null;
+		
+		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "
+				+ "LEFT OUTER JOIN FETCH pat.organization "
+				+ "LEFT OUTER JOIN FETCH pat.patient "
+				+ "LEFT OUTER JOIN FETCH pat.documents "
+				+ "where pat.id = :entityid) ", 
+				PatientOrganizationMapEntity.class );
+		
+		query.setParameter("entityid", id);
+		List<PatientOrganizationMapEntity> result = query.getResultList();
 		if(result.size() == 1) {
 			entity = result.get(0);
 		}

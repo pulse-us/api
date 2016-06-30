@@ -25,8 +25,8 @@ public class AlternateCareFacilityService {
 	@Autowired AlternateCareFacilityManager acfManager;
 	
 	@ApiOperation(value="Get the list of all alternate care facilities (ACFs)")
-	@RequestMapping(value="",  method = RequestMethod.POST)
-    public List<AlternateCareFacility> getAll(@RequestBody User user) {
+	@RequestMapping(value="",  method = RequestMethod.GET)
+    public List<AlternateCareFacility> getAll() {
 		List<AlternateCareFacilityDTO> dtos = acfManager.getAll();
 		List<AlternateCareFacility> results = new ArrayList<AlternateCareFacility>();
 		for(AlternateCareFacilityDTO dto : dtos) {
@@ -37,18 +37,15 @@ public class AlternateCareFacilityService {
     }
 	
 	@ApiOperation(value="Get information about a specific ACF")
-	@RequestMapping(value = "/{acfId}", method=RequestMethod.POST)
-    public AlternateCareFacility getById(@PathVariable("acfId") Long acfId,
-    		@RequestBody User user) {
+	@RequestMapping(value = "/{acfId}", method=RequestMethod.GET)
+    public AlternateCareFacility getById(@PathVariable("acfId") Long acfId) {
 		AlternateCareFacilityDTO dto = acfManager.getById(acfId);
 		return new AlternateCareFacility(dto);
     }
 	
-	//TODO: WE CAN'T HAVE MULTIPLE REQUEST BODY PARAMETERS so this won't work
 	@ApiOperation(value = "Create a new ACF")
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public AlternateCareFacility create(@RequestBody(required=true) AlternateCareFacility toCreate,
-			@RequestBody User user) {
+	public AlternateCareFacility create(@RequestBody(required=true) AlternateCareFacility toCreate) {
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(toCreate.getName());
 		if(toCreate.getAddress() != null) {

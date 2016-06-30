@@ -44,7 +44,6 @@ public class PatientDTO {
 				this.orgMaps.add(orgMapDto);
 			}
 		}
-		
 	}
 	
 	public Long getId() {

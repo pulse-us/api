@@ -10,10 +10,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import gov.ca.emsa.pulse.broker.domain.Document;
 import gov.ca.emsa.pulse.broker.domain.Patient;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.service.PatientService;
+import gov.ca.emsa.pulse.service.SearchService;
 
 @Component
 public class MockAdapter implements Adapter {
@@ -21,7 +23,7 @@ public class MockAdapter implements Adapter {
 	private DateFormat formatter;
 
 	public MockAdapter() {
-		formatter = new SimpleDateFormat(PatientService.dobFormat);
+		formatter = new SimpleDateFormat(SearchService.dobFormat);
 	}
 	
 	@Override
@@ -50,4 +52,20 @@ public class MockAdapter implements Adapter {
 		return searchResults;
 	}
 
+	@Override
+	public Document[] queryDocuments(OrganizationDTO org, PatientOrganizationMapDTO toSearch, String samlMessage) {
+		String postUrl = org.getEndpointUrl() + "/documents";
+		MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
+		parameters.add("patientId", toSearch.getOrgPatientId());
+		parameters.add("samlMessage", samlMessage);
+		RestTemplate restTemplate = new RestTemplate();
+		Document[] searchResults = null;
+		try {
+			searchResults = restTemplate.postForObject(postUrl, parameters, Document[].class);
+		} catch(Exception ex) {
+			logger.error("Exception when querying " + postUrl, ex);
+			throw ex;
+		}
+		return searchResults;
+	}
 }

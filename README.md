@@ -60,9 +60,6 @@ $ gradlew bootRun
 	* PostBody is a list of patient record ids that came back from a query AND a Patient object with what should be saved for that merged patient
 	* POST associates that new Patient with logged in user's ACF
 	* At this point, any other PatientRecords from that query can be deleted from the db
-- POST /queries/{id}/stage
-	* PostBody is a list of patient record ids that came back from a query
-	* POST converts PatientQuery object to actual Patient object, and associates that new Patient with logged in user's ACF
 			
 - GET /patients gets all patients at the logged-in user's ACF
 - GET /patients/{id}/documents search all patient records associated with that patient object and return a list of documents

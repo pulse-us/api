@@ -47,6 +47,19 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return new QueryDTO(query);
 	}
 
+	public QueryOrganizationDTO getQueryOrganizationById(Long queryOrgId) {
+		QueryOrganizationEntity entity = null;
+		
+		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
+				+ "LEFT JOIN FETCH q.query "
+				+ "where q.id = :entityid) ", 
+				QueryOrganizationEntity.class );
+		
+		query.setParameter("entityid", queryOrgId);
+		entity = (QueryOrganizationEntity)query.getSingleResult();
+		return new QueryOrganizationDTO(entity);
+	}
+	
 	public QueryOrganizationDTO createQueryOrganization(QueryOrganizationDTO orgStatus) {
 		QueryOrganizationEntity orgMap = new QueryOrganizationEntity();
 		orgMap.setOrganizationId(orgStatus.getOrgId());
@@ -209,7 +222,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	private QueryOrganizationEntity getQueryStatusById(Long id) {
 		QueryOrganizationEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationStatusMap q "
+		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
 				+ "where q.id = :entityid) ", 
 				QueryOrganizationEntity.class );
 		

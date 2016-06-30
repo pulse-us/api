@@ -91,6 +91,12 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	
 	@Override
 	@Transactional
+	public void delete(Long queryId) {
+		queryDao.delete(queryId);
+	}
+	
+	@Override
+	@Transactional
 	public QueryOrganizationDTO createOrUpdateQueryOrganization(QueryOrganizationDTO toUpdate) {		
 		QueryOrganizationDTO updated = null;
 		if(toUpdate.getId() == null) {
@@ -127,7 +133,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		String queryTermsJson = JSONUtils.toJSON(queryTerms);
 		
 		QueryDTO query = new QueryDTO();
-		query.setUserId(user.getUserKey());
+		query.setUserId(user.getSubjectName());
 		query.setTerms(queryTermsJson);
 		query.setStatus(QueryStatus.ACTIVE.name());
 		query = createQuery(query);
@@ -150,6 +156,22 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 			pool.execute(service);
 		}
 		return query;
+	}
+	
+	@Override
+	@Transactional
+	public PatientRecordDTO getPatientRecordById(Long patientRecordId) {
+		PatientRecordDTO prDto = patientRecordDao.getById(patientRecordId);
+		
+		//update last read date
+		Long queryOrgId = prDto.getQueryOrganizationId();
+		QueryOrganizationDTO queryOrgDto = queryDao.getQueryOrganizationById(queryOrgId);
+		if(queryOrgDto != null && queryOrgDto.getQueryId() != null) {
+			QueryDTO query = queryDao.getById(queryOrgDto.getQueryId());
+			query.setLastReadDate(new Date());
+			queryDao.update(query);
+		}
+		return prDto;
 	}
 	
 	@Override

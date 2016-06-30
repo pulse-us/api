@@ -25,7 +25,7 @@ public class QueryDaoTest extends TestCase {
 		QueryDTO toInsert = new QueryDTO();
 		toInsert.setStatus(QueryStatus.ACTIVE.name());
 		toInsert.setTerms("terms");
-		toInsert.setUserToken("kekey");
+		toInsert.setUserId("keekey");
 		QueryDTO inserted = queryDao.create(toInsert);
 		
 		assertNotNull(inserted);
@@ -39,7 +39,7 @@ public class QueryDaoTest extends TestCase {
 		QueryDTO toInsert = new QueryDTO();
 		toInsert.setStatus(QueryStatus.ACTIVE.name());
 		toInsert.setTerms("terms");
-		toInsert.setUserToken("kekey");
+		toInsert.setUserId("kekey");
 		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
 		orgQuery1.setOrgId(1L);
 		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
@@ -65,7 +65,7 @@ public class QueryDaoTest extends TestCase {
 		QueryDTO toInsert = new QueryDTO();
 		toInsert.setStatus(QueryStatus.ACTIVE.name());
 		toInsert.setTerms("terms");
-		toInsert.setUserToken("kekey");
+		toInsert.setUserId("kekey");
 		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
 		orgQuery1.setOrgId(1L);
 		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
@@ -98,7 +98,7 @@ public class QueryDaoTest extends TestCase {
 		QueryDTO toInsert = new QueryDTO();
 		toInsert.setStatus(QueryStatus.ACTIVE.name());
 		toInsert.setTerms("terms");
-		toInsert.setUserToken("kekey");
+		toInsert.setUserId("kekey");
 		QueryDTO inserted = queryDao.create(toInsert);
 		QueryDTO selected = queryDao.getById(inserted.getId());
 		

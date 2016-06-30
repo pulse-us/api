@@ -10,12 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
-import gov.ca.emsa.pulse.broker.domain.Patient;
+import gov.ca.emsa.pulse.broker.domain.Document;
+import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryStatus;
+import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 
@@ -23,54 +25,47 @@ import gov.ca.emsa.pulse.broker.manager.QueryManager;
 public class DocumentQueryService implements Runnable {
 	private static final Logger logger = LogManager.getLogger(DocumentQueryService.class);
 
-	private QueryOrganizationDTO query;
+	private PatientOrganizationMapDTO patientOrgMap;
 	private OrganizationDTO org;
 	@Autowired private QueryManager queryManager;
 	@Autowired private PatientManager patientManager;
+	@Autowired private DocumentManager docManager;
 	@Autowired private AdapterFactory adapterFactory;
-	private PatientRecordDTO toSearch;
+	private PatientDTO toSearch;
 	private String samlMessage;
 	
 	@Override
 	@Transactional
 	public void run() {
-		boolean queryError = false;
-		//query this organization directly for patient matches
-		Patient[] searchResults = null;
+		//query this organization directly for 
+		Document[] searchResults = null;
 		Adapter adapter = adapterFactory.getAdapter(org);
 		if(adapter != null) {
-			logger.info("Starting query to " + org.getAdapter() + " for orgquery " + query.getId());
+			logger.info("Starting query to " + org.getAdapter() + " for documents.");
 			try {
-				searchResults = adapter.queryPatients(org, toSearch, samlMessage);
+				searchResults = adapter.queryDocuments(org, patientOrgMap, samlMessage);
 			} catch(Exception ex) {
 				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
-				queryError = true;
+				patientOrgMap.setDocumentsQuerySuccess(Boolean.FALSE);
 			}
 		}
-		//store the patients returned so we can retrieve them later when all orgs have finished querying
+		//store the returned document info
 		if(searchResults != null && searchResults.length > 0) {
-			for(Patient patient : searchResults) {
-				PatientRecordDTO toSave = DomainToDtoConverter.convertToPatientRecord(patient);
-				toSave.setQueryOrganizationId(org.getId());
-					
-				//save the search results
-				queryManager.addPatientRecord(toSave);
+			for(Document doc : searchResults) {
+				DocumentDTO toSave = DomainToDtoConverter.convert(doc);
+				toSave.setPatientOrgMapId(patientOrgMap.getId());
+				//save document
+				docManager.create(toSave);
 			}
+			patientOrgMap.setDocumentsQuerySuccess(Boolean.TRUE);
 		} 
 		
-		query.setStatus(QueryStatus.COMPLETE.name());
-		query.setEndDate(new Date());
-		query.setSuccess(!queryError);
-		queryManager.createOrUpdateQueryOrganization(query);
-		logger.info("Completed query to " + org.getAdapter() + " for orgquery " + query.getId());
-	}
-
-	public QueryOrganizationDTO getQuery() {
-		return query;
-	}
-
-	public void setQuery(QueryOrganizationDTO query) {
-		this.query = query;
+		patientOrgMap.setDocumentsQueryEnd(new Date());
+		patientOrgMap.setDocumentsQueryStatus(QueryStatus.COMPLETE.name());
+		//update patient org map
+		patientManager.updateOrganizationMap(patientOrgMap);
+		
+		logger.info("Completed query to " + org.getAdapter() + " for documents for patient " + patientOrgMap.getPatientId());
 	}
 
 	public OrganizationDTO getOrg() {
@@ -79,14 +74,6 @@ public class DocumentQueryService implements Runnable {
 
 	public void setOrg(OrganizationDTO org) {
 		this.org = org;
-	}
-
-	public PatientRecordDTO getToSearch() {
-		return toSearch;
-	}
-
-	public void setToSearch(PatientRecordDTO toSearch) {
-		this.toSearch = toSearch;
 	}
 
 	public String getSamlMessage() {
@@ -119,5 +106,21 @@ public class DocumentQueryService implements Runnable {
 
 	public void setAdapterFactory(AdapterFactory adapterFactory) {
 		this.adapterFactory = adapterFactory;
+	}
+
+	public PatientOrganizationMapDTO getPatientOrgMap() {
+		return patientOrgMap;
+	}
+
+	public void setPatientOrgMap(PatientOrganizationMapDTO patientOrgMap) {
+		this.patientOrgMap = patientOrgMap;
+	}
+
+	public PatientDTO getToSearch() {
+		return toSearch;
+	}
+
+	public void setToSearch(PatientDTO toSearch) {
+		this.toSearch = toSearch;
 	}
 }

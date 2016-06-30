@@ -19,12 +19,7 @@ public class DtoToDomainConverter {
 		result.setSsn(dtoObj.getSsn());
 		
 		if(dtoObj.getAddress() != null) {
-			Address addr = new Address();
-			addr.setStreetLine1(dtoObj.getAddress().getStreetLineOne());
-			addr.setStreetLine1(dtoObj.getAddress().getStreetLineTwo());
-			addr.setCity(dtoObj.getAddress().getCity());
-			addr.setState(dtoObj.getAddress().getState());
-			addr.setZipcode(dtoObj.getAddress().getZipcode());
+			Address addr = new Address(dtoObj.getAddress());
 			result.setAddress(addr);
 		}
 		
@@ -33,7 +28,7 @@ public class DtoToDomainConverter {
 	
 	public static Patient convert(PatientDTO dtoObj) {
 		Patient result = new Patient();
-		result.setId(dtoObj.getId().toString());
+		result.setId(dtoObj.getId());
 		result.setFirstName(dtoObj.getFirstName());
 		result.setLastName(dtoObj.getLastName());
 		result.setGender(dtoObj.getGender());
@@ -47,24 +42,14 @@ public class DtoToDomainConverter {
 			acf.setName(dtoObj.getAcf().getName());
 			if(dtoObj.getAcf().getAddress() != null)  {
 				AddressDTO acfAddrDto = dtoObj.getAcf().getAddress();
-				Address acfAddr = new Address();
-				acfAddr.setStreetLine1(acfAddrDto.getStreetLineOne());
-				acfAddr.setStreetLine1(acfAddrDto.getStreetLineTwo());
-				acfAddr.setCity(acfAddrDto.getCity());
-				acfAddr.setState(acfAddrDto.getState());
-				acfAddr.setZipcode(acfAddrDto.getZipcode());
+				Address acfAddr = new Address(acfAddrDto);
 				acf.setAddress(acfAddr);
 			}
 			result.setAcf(acf);
 		}
 		
 		if(dtoObj.getAddress() != null) {
-			Address addr = new Address();
-			addr.setStreetLine1(dtoObj.getAddress().getStreetLineOne());
-			addr.setStreetLine1(dtoObj.getAddress().getStreetLineTwo());
-			addr.setCity(dtoObj.getAddress().getCity());
-			addr.setState(dtoObj.getAddress().getState());
-			addr.setZipcode(dtoObj.getAddress().getZipcode());
+			Address addr = new Address(dtoObj.getAddress());
 			result.setAddress(addr);
 		}
 		

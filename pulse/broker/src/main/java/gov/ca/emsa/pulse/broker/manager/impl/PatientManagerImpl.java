@@ -9,14 +9,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.dao.AddressDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
+import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.manager.QueryManager;
 
 @Service
 public class PatientManagerImpl implements PatientManager {
 	@Autowired private PatientDAO patientDao;
 	@Autowired private AddressDAO addressDao;
+	@Autowired private QueryManager queryManager;
+	@Autowired private QueryDAO queryDao;
 	
 	public PatientManagerImpl() {
 	}
@@ -73,5 +80,37 @@ public class PatientManagerImpl implements PatientManager {
 	@Transactional
 	public void cleanupPatientCache(Date oldestAllowedPatient) {
 		patientDao.deleteItemsOlderThan(oldestAllowedPatient);
+	}
+
+	@Override
+	@Transactional
+	public PatientOrganizationMapDTO updateOrganizationMap(PatientOrganizationMapDTO toUpdate) {
+		return patientDao.updateOrgMap(toUpdate);
+	}
+	
+	@Override
+	@Transactional
+	public PatientOrganizationMapDTO createOrganizationMap(PatientOrganizationMapDTO toCreate) {
+		return patientDao.createOrgMap(toCreate);
+	}
+
+	@Override
+	@Transactional
+	public PatientOrganizationMapDTO createOrganizationMapFromPatientRecord(PatientDTO patient, Long patientRecordId) {
+		PatientOrganizationMapDTO result = null;
+		PatientRecordDTO patientRecord = queryManager.getPatientRecordById(patientRecordId);
+		//used queryManager because this also updates the last read time of the query
+		
+		if(patientRecord != null) {
+			PatientOrganizationMapDTO orgMapToCreate = new PatientOrganizationMapDTO();
+			orgMapToCreate.setPatientId(patient.getId());
+			orgMapToCreate.setOrgPatientId(patientRecord.getOrgPatientId());
+			QueryOrganizationDTO queryOrgDto = queryDao.getQueryOrganizationById(patientRecord.getQueryOrganizationId());
+			if(queryOrgDto != null) {
+				orgMapToCreate.setOrganizationId(queryOrgDto.getOrgId());	
+			}
+			result = patientDao.createOrgMap(orgMapToCreate);
+		}
+		return result;
 	}
 }

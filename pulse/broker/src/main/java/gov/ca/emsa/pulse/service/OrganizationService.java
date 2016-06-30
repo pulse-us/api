@@ -21,7 +21,7 @@ public class OrganizationService {
 	@Autowired OrganizationManager orgManager;
 	
 	@ApiOperation(value="Get the list of organizations")
-	@RequestMapping(value="", method=RequestMethod.POST)
+	@RequestMapping(value="", method=RequestMethod.GET)
     public List<OrganizationBase> getAll() {
 		List<OrganizationDTO> orgDtos = orgManager.getAll();
 		List<OrganizationBase> orgs = new ArrayList<OrganizationBase>();

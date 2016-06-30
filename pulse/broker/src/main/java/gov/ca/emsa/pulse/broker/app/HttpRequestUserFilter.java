@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 import gov.ca.emsa.pulse.broker.domain.User;
 
@@ -32,7 +31,7 @@ public class HttpRequestUserFilter extends GenericFilterBean {
 		
 		if (userHeader == null){
 			SecurityContextHolder.getContext().setAuthentication(null);
-			//TODO: throw error
+			throw new ServletException("No header found with the name 'User'");
 		} else {
 			User authenticatedUser = jsonMapper.readValue(userHeader, User.class);
 			if (authenticatedUser != null){
@@ -41,7 +40,7 @@ public class HttpRequestUserFilter extends GenericFilterBean {
 				SecurityContextHolder.getContext().setAuthentication(null);
 			} else {
 				SecurityContextHolder.getContext().setAuthentication(null);
-				//TODO: throw error
+				throw new IOException("A JSON object could not created from the User header with value '" + userHeader + "'.");
 			}
 		}
 	}

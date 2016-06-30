@@ -1,32 +1,46 @@
 package gov.ca.emsa.pulse.broker.domain;
 
-public class User {
-	private String userKey;
-	private String name;
-	private Long acfId; 
-	
-	public String getName() {
-		return name;
-	}
+import java.util.Collection;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+public interface User extends UserDetails , Authentication {
 
-	public Long getAcfId() {
-		return acfId;
-	}
+	public Long getId();
+	public String getSubjectName();
+	public void setSubjectName(String subject);
 
-	public void setAcfId(Long acfId) {
-		this.acfId = acfId;
-	}
+	public void setFirstName(String firstName);
+	public String getFirstName();
+	public void setLastName(String lastName);
+	public String getLastName();
+    public void setEmail(String email);
+    public String getEmail();
+    public String getAcf();
+    public void setAcf(String acf);
 
-	public String getUserKey() {
-		return userKey;
-	}
+	// UserDetails interface
+	@Override
+	public String getUsername();
 
-	public void setUserKey(String userKey) {
-		this.userKey = userKey;
-	}
+	// Authentication Interface
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities();
+
+	@Override
+	public Object getDetails();
+
+	@Override
+	public Object getPrincipal();
+
+	@Override
+	public boolean isAuthenticated();
+
+	@Override
+	public void setAuthenticated(boolean arg0) throws IllegalArgumentException;
+
+	@Override
+	public String getName();
 
 }
