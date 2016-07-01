@@ -12,5 +12,4 @@ public interface DocumentDAO {
 	public List<DocumentDTO> findAll();	
 	public DocumentDTO getById(Long id);
 	public List<DocumentDTO> getByPatientId(Long patientId);
-	public void deleteItemsOlderThan(Date oldestItem);
 }

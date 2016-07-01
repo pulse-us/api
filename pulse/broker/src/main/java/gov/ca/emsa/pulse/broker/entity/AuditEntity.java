@@ -2,15 +2,11 @@ package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -22,30 +18,20 @@ public class AuditEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="patient_id")
-	private Long patientId;
+	@Column(name="query_type")
+	private String queryType;
 	
-	@Column(name="name")
-	private String name;
+	@Column(name="query")
+	private String query;
 	
-	@Column(name = "format")
-	private String format;
-	
-	@Column(name = "contents")
-	private byte[] contents;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private PatientEntity patient;
+	@Column(name="querent")
+	private String querent;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
 	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
-
-	@Column( name = "last_read_date")
-	private Date lastReadDate;
 	
 	public Long getId() {
 		return id;
@@ -53,30 +39,6 @@ public class AuditEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getPatientId() {
-		return patientId;
-	}
-
-	public void setPatientId(Long patientId) {
-		this.patientId = patientId;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public PatientEntity getPatient() {
-		return patient;
-	}
-
-	public void setPatient(PatientEntity patient) {
-		this.patient = patient;
 	}
 
 	public Date getCreationDate() {
@@ -95,26 +57,28 @@ public class AuditEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public Date getLastReadDate() {
-		return lastReadDate;
+	public String getQueryType() {
+		return queryType;
 	}
 
-	public void setLastReadDate(Date lastReadDate) {
-		this.lastReadDate = lastReadDate;
+	public void setQueryType(String queryType) {
+		this.queryType = queryType;
 	}
 
-	public String getFormat() {
-		return format;
+	public String getQuery() {
+		return query;
 	}
 
-	public void setFormat(String format) {
-		this.format = format;
+	public void setQuery(String query) {
+		this.query = query;
 	}
 
-	public byte[] getContents() {
-		return contents;
+	public String getQuerent() {
+		return querent;
 	}
 
-	public void setContents(byte[] contents) {
-		this.contents = contents;
+	public void setQuerent(String querent) {
+		this.querent = querent;
 	}
+
+}

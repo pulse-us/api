@@ -32,10 +32,6 @@ public class PatientQueryResultEntity {
 	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private PatientEntity patient;
 	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "query_organization_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private QueryOrganizationStatusMap queryOrg;
-	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
@@ -72,14 +68,6 @@ public class PatientQueryResultEntity {
 
 	public void setPatient(PatientEntity patient) {
 		this.patient = patient;
-	}
-
-	public QueryOrganizationStatusMap getQueryOrg() {
-		return queryOrg;
-	}
-
-	public void setQueryOrg(QueryOrganizationStatusMap queryOrg) {
-		this.queryOrg = queryOrg;
 	}
 
 	public Date getCreationDate() {
