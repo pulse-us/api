@@ -1,17 +1,19 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import gov.ca.emsa.pulse.broker.entity.QueryEntity;
-import gov.ca.emsa.pulse.broker.entity.QueryOrganizationStatusMap;
+import gov.ca.emsa.pulse.broker.entity.QueryOrganizationEntity;
 
 public class QueryDTO {
 
 	private Long id;
-	private String userToken;
+	private String userId;
 	private String status;
 	private String terms;
+	private Date lastReadDate;
 	private List<QueryOrganizationDTO> orgStatuses;
 	
 	public QueryDTO(){
@@ -23,12 +25,13 @@ public class QueryDTO {
 		this();
 		if(entity != null) {
 			this.id = entity.getId();
-			this.userToken = entity.getUserToken();
+			this.userId = entity.getUserId();
 			this.status = entity.getStatus();
 			this.terms = entity.getTerms();
+			this.lastReadDate = entity.getLastReadDate();
 			
 			if(entity.getOrgStatuses() != null && entity.getOrgStatuses().size() > 0) {
-				for(QueryOrganizationStatusMap orgStatus : entity.getOrgStatuses()) {
+				for(QueryOrganizationEntity orgStatus : entity.getOrgStatuses()) {
 					QueryOrganizationDTO dto = new QueryOrganizationDTO(orgStatus);
 					orgStatuses.add(dto);
 				}
@@ -43,12 +46,12 @@ public class QueryDTO {
 		this.id = id;
 	}
 
-	public String getUserToken() {
-		return userToken;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setUserToken(String userToken) {
-		this.userToken = userToken;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public String getStatus() {
@@ -73,5 +76,13 @@ public class QueryDTO {
 
 	public void setOrgStatuses(List<QueryOrganizationDTO> orgStatuses) {
 		this.orgStatuses = orgStatuses;
+	}
+
+	public Date getLastReadDate() {
+		return lastReadDate;
+	}
+
+	public void setLastReadDate(Date lastReadDate) {
+		this.lastReadDate = lastReadDate;
 	}
 }

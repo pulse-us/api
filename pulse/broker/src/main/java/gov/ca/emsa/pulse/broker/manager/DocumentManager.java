@@ -1,13 +1,13 @@
 package gov.ca.emsa.pulse.broker.manager;
 
-import java.util.Date;
 import java.util.List;
 
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 
 public interface DocumentManager {
-	public List<DocumentDTO> queryDocumentsForPatient(String samlMessage, PatientDTO patient) throws Exception;
+	public DocumentDTO create(DocumentDTO toCreate);
+	public void queryForDocuments(String samlMessage, PatientOrganizationMapDTO dto);
+	public List<DocumentDTO> getDocumentsForPatient(Long patientId);
 	public String getDocumentById(String samlMessage, Long documentId);
-	public void cleanupDocumentCache(Date oldestAllowedDocument);
 }

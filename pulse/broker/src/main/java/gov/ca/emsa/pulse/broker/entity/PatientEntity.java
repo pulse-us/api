@@ -1,6 +1,8 @@
 package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -21,12 +24,6 @@ public class PatientEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false )
 	private Long id;
-	
-	@Column(name="patient_id")
-	private String pulsePatientId;
-	
-	@Column(name = "organization_patient_id")
-	private String orgPatientId;
 	
 	@Column(name="first_name")
 	private String firstName;
@@ -53,21 +50,25 @@ public class PatientEntity {
 	@JoinColumn(name = "address_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private AddressEntity address;
 	
-	@Column(name = "organization_id")
-	private Long organizationId;
+	@Column(name = "alternate_care_facility_id")
+	private Long acfId;
 	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "organization_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private OrganizationEntity organization;
+	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@JoinColumn(name = "alternate_care_facility_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private AlternateCareFacilityEntity acf;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
 	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
-
-	@Column( name = "last_read_date")
+	
+	@Column(name = "last_read_date")
 	private Date lastReadDate;
+	
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientId"  )
+	@Column( name = "patient_id", nullable = false  )
+	private Set<PatientOrganizationMapEntity> orgMaps = new HashSet<PatientOrganizationMapEntity>();
 	
 	public Long getId() {
 		return id;
@@ -75,14 +76,6 @@ public class PatientEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getPulsePatientId() {
-		return pulsePatientId;
-	}
-
-	public void setPulsePatientId(String patientId) {
-		this.pulsePatientId = patientId;
 	}
 
 	public String getFirstName() {
@@ -133,22 +126,6 @@ public class PatientEntity {
 		this.phoneNumber = phoneNumber;
 	}
 
-	public AddressEntity getAddress() {
-		return address;
-	}
-
-	public void setAddress(AddressEntity address) {
-		this.address = address;
-	}
-
-	public OrganizationEntity getOrganization() {
-		return organization;
-	}
-
-	public void setOrganization(OrganizationEntity organization) {
-		this.organization = organization;
-	}
-
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -165,14 +142,6 @@ public class PatientEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public Date getLastReadDate() {
-		return lastReadDate;
-	}
-
-	public void setLastReadDate(Date lastReadDate) {
-		this.lastReadDate = lastReadDate;
-	}
-
 	public Long getAddressId() {
 		return addressId;
 	}
@@ -181,19 +150,43 @@ public class PatientEntity {
 		this.addressId = addressId;
 	}
 
-	public Long getOrganizationId() {
-		return organizationId;
+	public AddressEntity getAddress() {
+		return address;
 	}
 
-	public void setOrganizationId(Long organizationId) {
-		this.organizationId = organizationId;
+	public void setAddress(AddressEntity address) {
+		this.address = address;
 	}
 
-	public String getOrgPatientId() {
-		return orgPatientId;
+	public Long getAcfId() {
+		return acfId;
 	}
 
-	public void setOrgPatientId(String orgPatientId) {
-		this.orgPatientId = orgPatientId;
+	public void setAcfId(Long acfId) {
+		this.acfId = acfId;
+	}
+
+	public AlternateCareFacilityEntity getAcf() {
+		return acf;
+	}
+
+	public void setAcf(AlternateCareFacilityEntity acf) {
+		this.acf = acf;
+	}
+
+	public Date getLastReadDate() {
+		return lastReadDate;
+	}
+
+	public void setLastReadDate(Date lastReadDate) {
+		this.lastReadDate = lastReadDate;
+	}
+
+	public Set<PatientOrganizationMapEntity> getOrgMaps() {
+		return orgMaps;
+	}
+
+	public void setOrgMaps(Set<PatientOrganizationMapEntity> orgMaps) {
+		this.orgMaps = orgMaps;
 	}
 }

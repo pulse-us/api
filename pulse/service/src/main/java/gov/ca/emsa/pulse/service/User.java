@@ -29,7 +29,6 @@ public class User {
 	public void setAcf(String acf) {
 		this.acf = acf;
 	}
-	
-	
 
+	
 }

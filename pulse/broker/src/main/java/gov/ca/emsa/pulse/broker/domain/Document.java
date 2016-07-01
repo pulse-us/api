@@ -1,9 +1,19 @@
 package gov.ca.emsa.pulse.broker.domain;
 
+import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
+
 public class Document {
 	private String id;
 	private String name;
-	private Patient patient;
+	private Long orgMapId;
+	
+	public Document() {}
+	
+	public Document(DocumentDTO dto) {
+		this.id = dto.getId()+"";
+		this.name = dto.getName();
+		this.orgMapId = dto.getPatientOrgMapId();
+	}
 	
 	public String getId() {
 		return id;
@@ -17,10 +27,10 @@ public class Document {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Patient getPatient() {
-		return patient;
+	public Long getOrgMapId() {
+		return orgMapId;
 	}
-	public void setPatient(Patient patient) {
-		this.patient = patient;
+	public void setOrgMapId(Long orgMapId) {
+		this.orgMapId = orgMapId;
 	}
 }

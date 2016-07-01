@@ -42,3 +42,26 @@ $ gradlew build
 $ cd pulse/broker
 $ gradlew bootRun
 ```
+
+## API Methods 
+- POST /acfs/create  create a new ACF
+	* PostBody includes name and address objects
+- GET /acfs return a list of ACFS
+- GET /acfs/{id} get the info for one ACF
+
+- GET /organizations get all organizations
+
+- POST /search finds possible patient records
+	* PostBody has search parameters
+
+- GET /queries gets all queries for logged in user; query object includes organization query statues which include a list of patient record results
+- GET /queries/{id} gets info for one query; query object includes organization query statues which include a list of patient record results
+- POST /queries/{id}/stage
+	* PostBody is a list of patient record ids that came back from a query AND a Patient object with what should be saved for that merged patient
+	* POST associates that new Patient with logged in user's ACF
+	* At this point, any other PatientRecords from that query can be deleted from the db
+			
+- GET /patients gets all patients at the logged-in user's ACF
+- GET /patients/{id}/documents search all patient records associated with that patient object and return a list of documents
+- GET /patients/{id}/documents/{id}?cacheOnly=true/false cache and/or return a single document
+	* cacheOnly defaults to "true"

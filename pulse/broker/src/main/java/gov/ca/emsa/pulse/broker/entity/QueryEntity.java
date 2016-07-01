@@ -22,14 +22,17 @@ public class QueryEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="user_token")
-	private String userToken;
+	@Column(name="user_id")
+	private String userId;
 	
 	@Column(name="status")
 	private String status;
 	
 	@Column(name = "terms")
 	private String terms;
+	
+	@Column( name = "last_read_date")
+	private Date lastReadDate;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -39,7 +42,7 @@ public class QueryEntity {
 	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "queryId"  )
 	@Column( name = "query_id", nullable = false  )
-	private Set<QueryOrganizationStatusMap> orgStatuses = new HashSet<QueryOrganizationStatusMap>();
+	private Set<QueryOrganizationEntity> orgStatuses = new HashSet<QueryOrganizationEntity>();
 	
 	public Long getId() {
 		return id;
@@ -65,12 +68,12 @@ public class QueryEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public String getUserToken() {
-		return userToken;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setUserToken(String userToken) {
-		this.userToken = userToken;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public String getStatus() {
@@ -89,11 +92,19 @@ public class QueryEntity {
 		this.terms = terms;
 	}
 
-	public Set<QueryOrganizationStatusMap> getOrgStatuses() {
+	public Set<QueryOrganizationEntity> getOrgStatuses() {
 		return orgStatuses;
 	}
 
-	public void setOrgStatuses(Set<QueryOrganizationStatusMap> orgStatuses) {
+	public void setOrgStatuses(Set<QueryOrganizationEntity> orgStatuses) {
 		this.orgStatuses = orgStatuses;
+	}
+
+	public Date getLastReadDate() {
+		return lastReadDate;
+	}
+
+	public void setLastReadDate(Date lastReadDate) {
+		this.lastReadDate = lastReadDate;
 	}
 }

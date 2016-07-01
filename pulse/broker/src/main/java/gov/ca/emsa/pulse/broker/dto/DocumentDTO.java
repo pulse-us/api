@@ -1,16 +1,13 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import java.util.Date;
-
 import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientEntity;
 
 public class DocumentDTO {
 	private long id;
 	private String name;
 	private String format;
 	private byte[] contents;
-	private PatientDTO patient;
+	private Long patientOrgMapId;
 	
 	public DocumentDTO() {
 	}
@@ -20,9 +17,7 @@ public class DocumentDTO {
 		this.name = entity.getName();
 		this.format = entity.getFormat();
 		this.contents = entity.getContents();
-		if(entity.getPatient() != null) {
-			this.patient = new PatientDTO(entity.getPatient());
-		}
+		this.patientOrgMapId = entity.getPatientOrgMapId();
 	}
 	
 	public long getId() {
@@ -48,19 +43,19 @@ public class DocumentDTO {
 		this.format = format;
 	}
 
-	public PatientDTO getPatient() {
-		return patient;
-	}
-
-	public void setPatient(PatientDTO patient) {
-		this.patient = patient;
-	}
-
 	public byte[] getContents() {
 		return contents;
 	}
 
 	public void setContents(byte[] contents) {
 		this.contents = contents;
+	}
+
+	public Long getPatientOrgMapId() {
+		return patientOrgMapId;
+	}
+
+	public void setPatientOrgMapId(Long patientOrgMapId) {
+		this.patientOrgMapId = patientOrgMapId;
 	}
 }

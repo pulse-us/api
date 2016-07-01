@@ -1,6 +1,8 @@
 package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -10,12 +12,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="query_organization", schema="pulse")
-public class QueryOrganizationStatusMap {
+public class QueryOrganizationEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,9 +50,6 @@ public class QueryOrganizationStatusMap {
 	@Column(name = "end_date")
 	private Date endDate;
 	
-	@Column(name = "from_cache")
-	private Boolean fromCache;
-	
 	@Column(name = "success")
 	private Boolean success;
 	
@@ -58,6 +58,10 @@ public class QueryOrganizationStatusMap {
 	
 	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
+	
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "queryOrganizationId"  )
+	@Column( name = "query_organization_id", nullable = false  )
+	private Set<PatientRecordEntity> results = new HashSet<PatientRecordEntity>();
 	
 	public Long getId() {
 		return id;
@@ -139,19 +143,19 @@ public class QueryOrganizationStatusMap {
 		this.endDate = endDate;
 	}
 
-	public Boolean getFromCache() {
-		return fromCache;
-	}
-
-	public void setFromCache(Boolean fromCache) {
-		this.fromCache = fromCache;
-	}
-
 	public Boolean getSuccess() {
 		return success;
 	}
 
 	public void setSuccess(Boolean success) {
 		this.success = success;
+	}
+
+	public Set<PatientRecordEntity> getResults() {
+		return results;
+	}
+
+	public void setResults(Set<PatientRecordEntity> results) {
+		this.results = results;
 	}
 }

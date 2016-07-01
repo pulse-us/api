@@ -22,8 +22,8 @@ public class DocumentEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="patient_id")
-	private Long patientId;
+	@Column(name="patient_organization_map_id")
+	private Long patientOrgMapId;
 	
 	@Column(name="name")
 	private String name;
@@ -35,8 +35,8 @@ public class DocumentEntity {
 	private byte[] contents;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private PatientEntity patient;
+	@JoinColumn(name = "patient_organization_map_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private PatientOrganizationMapEntity patientOrgMap;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -55,28 +55,12 @@ public class DocumentEntity {
 		this.id = id;
 	}
 
-	public Long getPatientId() {
-		return patientId;
-	}
-
-	public void setPatientId(Long patientId) {
-		this.patientId = patientId;
-	}
-
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public PatientEntity getPatient() {
-		return patient;
-	}
-
-	public void setPatient(PatientEntity patient) {
-		this.patient = patient;
 	}
 
 	public Date getCreationDate() {
@@ -117,5 +101,21 @@ public class DocumentEntity {
 
 	public void setContents(byte[] contents) {
 		this.contents = contents;
+	}
+
+	public Long getPatientOrgMapId() {
+		return patientOrgMapId;
+	}
+
+	public void setPatientOrgMapId(Long patientOrgMapId) {
+		this.patientOrgMapId = patientOrgMapId;
+	}
+
+	public PatientOrganizationMapEntity getPatientOrgMap() {
+		return patientOrgMap;
+	}
+
+	public void setPatientOrgMap(PatientOrganizationMapEntity patientOrgMap) {
+		this.patientOrgMap = patientOrgMap;
 	}
 }
