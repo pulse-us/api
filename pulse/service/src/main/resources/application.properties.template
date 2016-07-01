@@ -1,11 +1,7 @@
-entityId=urn:test:ainq:state:name
-portalUrl=http://localhost:3000
-keyLocation=C:\\JSONPulseRsaJoseJWebKey.txt
-jwtAllowedClockSkew=30
-jwtIssuer=CALEMSA
-jwtAudience=CALEMSA
-jwtExpirationTimeMinutesInTheFuture=30
-jwtNotBeforeMinutesInThePast=4
+security.user.password=password
+springfox.documentation.swagger.v2.path=/api-docs
+basePath=/rest
+debug=true
 
 createAcfUrl=https://localhost:8090/acfs/create
 getAcfsUrl=https://localhost:8090/acfs
@@ -18,3 +14,11 @@ stage=/stage
 getPatientsUrl=https://localhost:8090/patients
 documents=/documents
 cacheOnly=?cacheOnly=
+
+keyLocation=C:\\JSONPulseRsaJoseJWebKeyTest.txt
+jwtAllowedClockSkew=30
+jwtIssuer=CALEMSA
+jwtAudience=CALEMSA
+jwtExpirationTimeMinutesInTheFuture=30
+jwtNotBeforeMinutesInThePast=4
+server.port=9090

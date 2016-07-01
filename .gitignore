@@ -133,3 +133,4 @@ gradle-app.setting
 /pulse/auth/src/main/resources/application.properties
 application-test.properties
 persistence-test.xml
+/pulse/service/src/main/resources/application.properties
