@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-
+@Entity
 @Table(name="alternate_care_facility")
 public class AlternateCareFacilityEntity {
 	
