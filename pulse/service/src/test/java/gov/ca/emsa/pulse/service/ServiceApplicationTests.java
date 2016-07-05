@@ -6,10 +6,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import junit.framework.TestCase;
 
-public class ServiceApplicationTests extends TestCase{
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.twitter.finagle.http.Status;
+
+import static org.junit.Assert.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+public class ServiceApplicationTests {
+	
 	/*@Rule
 	public WireMockRule wireMockRule = new WireMockRule(8090);
 	

@@ -32,8 +32,10 @@ public class AlternateCareFacilityService {
 	private String createAcfUrl;
 	@Value("${getAcfsUrl}")
 	private String getAcfUrl;
-	@Value("{getAcfByIdUrl")
+	@Value("${getAcfByIdUrl")
 	private String getAcfByIdUrl;
+	@Value("${edit}")
+	private String edit;
 	
 	// POST - create an alternate care facility
 	@RequestMapping(value = "/acfs/create", method = RequestMethod.POST)
@@ -104,7 +106,30 @@ public class AlternateCareFacilityService {
 		headers.set("User", mapper.writeValueAsString(user));
 		HttpEntity<AlternateCareFacility> entity = new HttpEntity<AlternateCareFacility>(headers);
 		HttpEntity<AlternateCareFacility> response = query.exchange(getAcfByIdUrl + id, HttpMethod.GET, entity, AlternateCareFacility.class);
-		
+		logger.info("Request sent to broker from services REST.");
 		return response.getBody();
 	}
+	
+		// edit an acf by its id
+		@RequestMapping(value = "/acfs/{acfId}/edit")
+		public AlternateCareFacility editACFById(@PathVariable Long acfId) throws JsonProcessingException {
+
+			RestTemplate query = new RestTemplate();
+			HttpHeaders headers = new HttpHeaders();
+			ObjectMapper mapper = new ObjectMapper();
+
+			Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
+			User user = new User();
+			if(auth != null){
+				user.setName(auth.getName());
+			}else{
+				logger.error("Could not find a logged in user. ");
+			}
+			
+			headers.set("User", mapper.writeValueAsString(user));
+			HttpEntity<AlternateCareFacility> request = new HttpEntity<AlternateCareFacility>(headers);
+			AlternateCareFacility returnAcf = query.postForObject(createAcfUrl + acfId + edit, request, AlternateCareFacility.class);
+			logger.info("Request sent to broker from services REST.");
+			return returnAcf;
+		}
 }
