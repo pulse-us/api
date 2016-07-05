@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.ca.emsa.pulse.broker.domain.Document;
 import gov.ca.emsa.pulse.broker.domain.Patient;
+import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
+import gov.ca.emsa.pulse.broker.manager.AuditManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
@@ -38,6 +40,7 @@ public class PatientService {
 	@Autowired private PatientManager patientManager;
 	@Autowired private DocumentManager docManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
+	@Autowired private AuditManager auditManager;
 	
 	public PatientService() {
 	}
@@ -46,6 +49,7 @@ public class PatientService {
 	@RequestMapping("/")
 	public List<Patient> getPatientsAtAcf() throws InvalidParameterException {
 		User user = UserUtil.getCurrentUser();
+		auditManager.addAuditEntry(QueryType.GET_ALL_PATIENTS, "/patients", user.getUsername());
 		AlternateCareFacilityDTO acfDto = acfManager.getByName(user.getAcf());
 		if(acfDto == null || acfDto.getId() == null) {
 			throw new InvalidParameterException("The ACF supplied, '" + user.getAcf() + "' was not found in the database.");
@@ -63,6 +67,8 @@ public class PatientService {
 	@ApiOperation(value="Get a list of documents associated with the given patient")
 	@RequestMapping("/{patientId}/documents")
 	public List<Document> getDocumentListForPatient(@PathVariable("patientId")Long patientId) {
+		User user = UserUtil.getCurrentUser();
+		auditManager.addAuditEntry(QueryType.SEARCH_DOCUMENT, "/" + patientId + "/documents", user.getUsername());
 		List<DocumentDTO> docDtos = docManager.getDocumentsForPatient(patientId);
 		List<Document> results = new ArrayList<Document>(docDtos.size());
 		for(DocumentDTO docDto : docDtos) {
@@ -78,6 +84,7 @@ public class PatientService {
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) {
 		
 		User user = UserUtil.getCurrentUser();
+		auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getUsername());
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID(user.getName());

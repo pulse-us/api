@@ -28,6 +28,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO dto) {
 		AlternateCareFacilityEntity toInsert = new AlternateCareFacilityEntity();
 		toInsert.setName(dto.getName());
+		toInsert.setPhoneNumber(dto.getPhoneNumber());
 		toInsert.setLastReadDate(new Date());
 		if(dto.getAddress() != null) {
 			toInsert.setAddressId(dto.getAddress().getId());
@@ -35,7 +36,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		
 		entityManager.persist(toInsert);
 		entityManager.flush();
-		return new AlternateCareFacilityDTO(toInsert);
+		return getById(toInsert.getId());
 	}
 
 	@Override
@@ -43,6 +44,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO dto) {
 		AlternateCareFacilityEntity entity = this.getEntityById(dto.getId());
 		entity.setName(dto.getName());
+		entity.setPhoneNumber(dto.getPhoneNumber());
 		entity.setLastReadDate(dto.getLastReadDate());
 		if(dto.getAddress() != null) {
 			entity.setAddressId(dto.getAddress().getId());
@@ -113,7 +115,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	}
 	
 	private List<AlternateCareFacilityEntity> findAllEntities() {
-		Query query = entityManager.createQuery("SELECT a from AlternateCareFacilityEntity "
+		Query query = entityManager.createQuery("SELECT a from AlternateCareFacilityEntity a "
 				+ "LEFT OUTER JOIN FETCH a.address");
 		return query.getResultList();
 	}
@@ -121,9 +123,9 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	private AlternateCareFacilityEntity getEntityById(Long id) {
 		AlternateCareFacilityEntity entity = null;
 		
-		Query query = entityManager.createQuery( "from AlternateCareFacilityEntity a "
+		Query query = entityManager.createQuery( "SELECT a from AlternateCareFacilityEntity a "
 				+ "LEFT OUTER JOIN FETCH a.address "
-				+ "where (id = :entityid) ", AlternateCareFacilityEntity.class );
+				+ "where (a.id = :entityid) ", AlternateCareFacilityEntity.class );
 		query.setParameter("entityid", id);
 		List<AlternateCareFacilityEntity> result = query.getResultList();
 		
@@ -139,7 +141,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		
 		Query query = entityManager.createQuery( "from AlternateCareFacilityEntity a "
 				+ "LEFT OUTER JOIN FETCH a.address "
-				+ "where (name LIKE :name) ", AlternateCareFacilityEntity.class );
+				+ "where (a.name LIKE :name) ", AlternateCareFacilityEntity.class );
 		query.setParameter("name", name);
 		return query.getResultList();
 	}

@@ -35,6 +35,9 @@ public class AlternateCareFacilityEntity {
 	@Column(name="name")
 	private String name;
 	
+	@Column(name = "phone_number")
+	private String phoneNumber;
+	
 	@Column(name = "address_id")
 	private Long addressId;
 	
@@ -106,5 +109,13 @@ public class AlternateCareFacilityEntity {
 
 	public void setAddress(AddressEntity address) {
 		this.address = address;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 }

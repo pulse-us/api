@@ -8,6 +8,7 @@ public class AlternateCareFacilityDTO {
 
 	private Long id;
 	private String name;
+	private String phoneNumber;
 	private AddressDTO address;
 	private Date lastReadDate;
 	private Date creationDate;
@@ -20,6 +21,7 @@ public class AlternateCareFacilityDTO {
 		if(entity != null) {
 			this.id = entity.getId();
 			this.name = entity.getName();
+			this.phoneNumber = entity.getPhoneNumber();
 			this.lastReadDate = entity.getLastReadDate();
 			this.creationDate = entity.getCreationDate();
 			this.lastModifiedDate = entity.getLastModifiedDate();
@@ -75,5 +77,13 @@ public class AlternateCareFacilityDTO {
 
 	public void setAddress(AddressDTO address) {
 		this.address = address;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 }

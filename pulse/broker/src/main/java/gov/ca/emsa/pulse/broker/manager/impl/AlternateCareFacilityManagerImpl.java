@@ -26,11 +26,14 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 	@Override
 	@Transactional
 	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO toCreate) {
+		AddressDTO createdAddress = null;
 		if(toCreate.getAddress() != null && toCreate.getAddress().getId() == null) {
-			AddressDTO createdAddress = addressDao.create(toCreate.getAddress());
+			createdAddress = addressDao.create(toCreate.getAddress());
 			toCreate.setAddress(createdAddress);
 		}
-		return acfDao.create(toCreate);
+		AlternateCareFacilityDTO created = acfDao.create(toCreate);
+		created.setAddress(createdAddress);
+		return created;
 	}
 
 	@Override

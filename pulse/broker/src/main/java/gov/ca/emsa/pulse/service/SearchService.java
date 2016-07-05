@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.broker.domain.Query;
+import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.manager.AuditManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
@@ -40,6 +42,7 @@ public class SearchService {
 	@Autowired private QueryManager searchManager;
 	public static String dobFormat = "yyyy-MM-dd";
 	private DateFormat formatter;
+	@Autowired private AuditManager auditManager;
 	
 	public SearchService() {
 		formatter = new SimpleDateFormat(dobFormat);
@@ -58,6 +61,7 @@ public class SearchService {
     		@RequestParam(value="zipcode", defaultValue="") String zip) throws JsonProcessingException {
 		
 		User user = UserUtil.getCurrentUser();
+		auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getUsername());
 
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");

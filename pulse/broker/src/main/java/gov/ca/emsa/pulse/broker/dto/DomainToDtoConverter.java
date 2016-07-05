@@ -5,6 +5,11 @@ import gov.ca.emsa.pulse.broker.domain.Document;
 import gov.ca.emsa.pulse.broker.domain.Patient;
 import gov.ca.emsa.pulse.broker.domain.PatientRecord;
 
+import gov.ca.emsa.pulse.broker.domain.Address;
+import gov.ca.emsa.pulse.broker.domain.Document;
+import gov.ca.emsa.pulse.broker.domain.Patient;
+import gov.ca.emsa.pulse.broker.domain.PatientRecord;
+
 public class DomainToDtoConverter {
 	
 	public static PatientRecordDTO convertToPatientRecord(Patient domainObj) {
@@ -21,8 +26,8 @@ public class DomainToDtoConverter {
 		
 		if(domainObj.getAddress() != null) {
 			AddressDTO address = new AddressDTO();
-			address.setStreetLineOne(domainObj.getAddress().getStreetLine1());
-			address.setStreetLineTwo(domainObj.getAddress().getStreetLine2());
+			address.setStreetLineOne(domainObj.getAddress().getStreet1());
+			address.setStreetLineTwo(domainObj.getAddress().getStreet2());
 			address.setCity(domainObj.getAddress().getCity());
 			address.setState(domainObj.getAddress().getState());
 			address.setZipcode(domainObj.getAddress().getZipcode());
@@ -51,8 +56,8 @@ public class DomainToDtoConverter {
 			if(domainObj.getAcf().getAddress() != null) {
 				Address acfAddress = domainObj.getAcf().getAddress();
 				AddressDTO acfAddrDto = new AddressDTO();
-				acfAddrDto.setStreetLineOne(acfAddress.getStreetLine1());
-				acfAddrDto.setStreetLineTwo(acfAddress.getStreetLine2());
+				acfAddrDto.setStreetLineOne(acfAddress.getStreet1());
+				acfAddrDto.setStreetLineTwo(acfAddress.getStreet2());
 				acfAddrDto.setCity(acfAddress.getCity());
 				acfAddrDto.setState(acfAddress.getState());
 				acfAddrDto.setZipcode(acfAddress.getZipcode());
@@ -63,8 +68,8 @@ public class DomainToDtoConverter {
 		
 		if(domainObj.getAddress() != null) {
 			AddressDTO address = new AddressDTO();
-			address.setStreetLineOne(domainObj.getAddress().getStreetLine1());
-			address.setStreetLineTwo(domainObj.getAddress().getStreetLine2());
+			address.setStreetLineOne(domainObj.getAddress().getStreet1());
+			address.setStreetLineTwo(domainObj.getAddress().getStreet2());
 			address.setCity(domainObj.getAddress().getCity());
 			address.setState(domainObj.getAddress().getState());
 			address.setZipcode(domainObj.getAddress().getZipcode());
