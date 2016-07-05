@@ -1,21 +1,24 @@
-package gov.ca.emsa.pulse.broker.app;
+package gov.ca.emsa.pulse.broker.auth;
 
 import java.io.IOException;
 
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.ca.emsa.pulse.broker.domain.User;
+import gov.ca.emsa.pulse.broker.domain.JWTAuthenticatedUser;
 
-public class HttpRequestUserFilter extends GenericFilterBean {
+@Component
+public class HttpRequestUserFilter implements Filter {
 	ObjectMapper jsonMapper;
 	
 	public HttpRequestUserFilter() {
@@ -23,9 +26,19 @@ public class HttpRequestUserFilter extends GenericFilterBean {
 	}
 	
 	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
-		
+
 		HttpServletRequest request = (HttpServletRequest) req;
 		String userHeader = request.getHeader("User");
 		
@@ -33,7 +46,7 @@ public class HttpRequestUserFilter extends GenericFilterBean {
 			SecurityContextHolder.getContext().setAuthentication(null);
 			throw new ServletException("No header found with the name 'User'");
 		} else {
-			User authenticatedUser = jsonMapper.readValue(userHeader, User.class);
+			JWTAuthenticatedUser authenticatedUser = jsonMapper.readValue(userHeader, JWTAuthenticatedUser.class);
 			if (authenticatedUser != null){
 				SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
 				chain.doFilter(req, res); //continue
