@@ -149,7 +149,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 				+ "where pat.acfId = :acfId) ", 
 				PatientEntity.class );
 		
-		query.setParameter("entityid", acfId);
+		query.setParameter("acfId", acfId);
 		List<PatientEntity> patients = query.getResultList();
 		List<PatientDTO> results = new ArrayList<PatientDTO>();
 		for(PatientEntity patient : patients) {

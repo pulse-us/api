@@ -179,8 +179,8 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryDTO dto = null;
 		QueryEntity qe = this.getEntityById(id);
 		
-		if (qe != null){
-			dto = new QueryDTO(qe); 
+		if (qe != null) {
+			dto = new QueryDTO(qe);
 		}
 		return dto;
 	}
@@ -210,7 +210,6 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryEntity q "
-				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
 				+ "where q.id = :entityid) ", 
 				QueryEntity.class );
 		
@@ -237,7 +236,6 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	
 	private List<QueryEntity> getEntitiesByUser(String user) {		
 		Query query = entityManager.createQuery( "SELECT q from QueryEntity q "
-				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
 				+ "where q.userId = :userId) ", 
 				QueryEntity.class );
 		
@@ -248,7 +246,6 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	
 	private List<QueryEntity> getEntitiesByUserAndStatus(String user, String status) {		
 		Query query = entityManager.createQuery( "SELECT q from QueryEntity q "
-				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
 				+ "where q.userId = :userId "
 				+ "and q.status = :status) ", 
 				QueryEntity.class );

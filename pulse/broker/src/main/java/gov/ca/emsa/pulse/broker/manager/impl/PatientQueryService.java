@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -10,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
-import gov.ca.emsa.pulse.broker.domain.Patient;
-import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
@@ -36,7 +35,7 @@ public class PatientQueryService implements Runnable {
 	public void run() {
 		boolean queryError = false;
 		//query this organization directly for patient matches
-		Patient[] searchResults = null;
+		List<PatientRecordDTO> searchResults = null;
 		Adapter adapter = adapterFactory.getAdapter(org);
 		if(adapter != null) {
 			logger.info("Starting query to " + org.getAdapter() + " for orgquery " + queryOrg.getId());
@@ -48,13 +47,12 @@ public class PatientQueryService implements Runnable {
 			}
 		}
 		//store the patients returned so we can retrieve them later when all orgs have finished querying
-		if(searchResults != null && searchResults.length > 0) {
-			for(Patient patient : searchResults) {
-				PatientRecordDTO toSave = DomainToDtoConverter.convertToPatientRecord(patient);
-				toSave.setQueryOrganizationId(org.getId());
+		if(searchResults != null && searchResults.size() > 0) {
+			for(PatientRecordDTO patient : searchResults) {
+				patient.setQueryOrganizationId(queryOrg.getId());
 					
 				//save the search results
-				queryManager.addPatientRecord(toSave);
+				queryManager.addPatientRecord(patient);
 			}
 		} 
 		

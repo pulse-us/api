@@ -102,9 +102,9 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 				+ " WHERE acf.lastReadDate <= :cacheDate");
 		
 		query.setParameter("cacheDate", oldestItem);
-		List<AlternateCareFacilityDTO> oldAcfs = query.getResultList();
+		List<AlternateCareFacilityEntity> oldAcfs = query.getResultList();
 		if(oldAcfs != null && oldAcfs.size() > 0) {
-			for(AlternateCareFacilityDTO oldAcf : oldAcfs) {
+			for(AlternateCareFacilityEntity oldAcf : oldAcfs) {
 				List<PatientDTO> patientsAtAcf = patientDao.getPatientsAtAcf(oldAcf.getId());
 				if(patientsAtAcf == null || patientsAtAcf.size() == 0) {
 					delete(oldAcf.getId());

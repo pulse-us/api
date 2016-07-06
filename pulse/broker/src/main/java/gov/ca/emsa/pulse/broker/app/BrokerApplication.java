@@ -2,13 +2,10 @@ package gov.ca.emsa.pulse.broker.app;
 
 import java.util.Timer;
 
-import javax.servlet.Filter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
@@ -16,7 +13,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import gov.ca.emsa.pulse.broker.auth.HttpRequestUserFilter;
 import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.cache.QueryCacheManager;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
@@ -64,22 +60,6 @@ public class BrokerApplication implements EnvironmentAware {
 		bean.setEntityManagerFactory(entityManagerFactory().getObject());
 		return bean;
 	}
-	
-//	@Bean
-//	public FilterRegistrationBean filterRegistration() {
-//
-//	    FilterRegistrationBean registration = new FilterRegistrationBean();
-//	    registration.setFilter(httpRequestFilter());
-//	    registration.addUrlPatterns("/**");
-//	    registration.setName("httpRequestFilter");
-//	    registration.setOrder(1);
-//	    return registration;
-//	} 
-//
-//	@Bean(name = "httpRequestFilter")
-//	public Filter httpRequestFilter() {
-//	    return new HttpRequestUserFilter();
-//	}
 	
 	@Bean
 	public QueryCacheManager queryCacheManager() {

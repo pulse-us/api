@@ -95,7 +95,6 @@ public class AlternateCareFacilityService {
 			dto.setAddress(null);
 		}
 		AlternateCareFacilityDTO updated = acfManager.update(dto);
-		updated = acfManager.getById(updated.getId());
 		return new AlternateCareFacility(updated);
 		
 	}

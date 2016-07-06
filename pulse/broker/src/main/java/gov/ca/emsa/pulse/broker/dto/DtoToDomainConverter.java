@@ -8,24 +8,6 @@ import gov.ca.emsa.pulse.broker.domain.PatientRecord;
 
 public class DtoToDomainConverter {
 	
-	public static PatientRecord convert(PatientRecordDTO dtoObj) {
-		PatientRecord result = new PatientRecord();
-		result.setId(dtoObj.getId().toString());
-		result.setFirstName(dtoObj.getFirstName());
-		result.setLastName(dtoObj.getLastName());
-		result.setGender(dtoObj.getGender());
-		result.setDateOfBirth(dtoObj.getDateOfBirth());
-		result.setPhoneNumber(dtoObj.getPhoneNumber());
-		result.setSsn(dtoObj.getSsn());
-		
-		if(dtoObj.getAddress() != null) {
-			Address addr = new Address(dtoObj.getAddress());
-			result.setAddress(addr);
-		}
-		
-		return result;
-	}
-	
 	public static Patient convert(PatientDTO dtoObj) {
 		Patient result = new Patient();
 		result.setId(dtoObj.getId());

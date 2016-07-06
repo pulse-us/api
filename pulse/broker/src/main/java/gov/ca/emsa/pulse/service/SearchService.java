@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.opensaml.xml.io.MarshallingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.ca.emsa.pulse.broker.domain.PatientSearch;
 import gov.ca.emsa.pulse.broker.domain.Query;
 import gov.ca.emsa.pulse.broker.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
@@ -49,13 +51,7 @@ public class SearchService {
 			+ "which can later be used to get the results.")
 	@RequestMapping(method = RequestMethod.POST,
 		produces="application/json; charset=utf-8",consumes="application/json")
-    public @ResponseBody Query searchPatients(
-    		@RequestParam(value="firstName", defaultValue="") String firstName,
-    		@RequestParam(value="lastName", defaultValue="") String lastName,
-    		@RequestParam(value="dob", defaultValue="") String dob,
-    		@RequestParam(value="ssn", defaultValue="") String ssn,
-    		@RequestParam(value="gender", defaultValue="") String gender,
-    		@RequestParam(value="zipcode", defaultValue="") String zip) throws JsonProcessingException {
+    public @ResponseBody Query searchPatients(@RequestBody(required=true) PatientSearch toSearch) throws JsonProcessingException {
 		
 		User user = UserUtil.getCurrentUser();
 
@@ -68,12 +64,12 @@ public class SearchService {
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
 		customAttributes.put("RequesterFirstName", user.getName());
 		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientFirstName", firstName);
-		customAttributes.put("PatientLastName", lastName);
-		customAttributes.put("PatientDOB", dob);
-		customAttributes.put("PatientGender", gender);
-		customAttributes.put("PatientHomeZip", zip);
-		customAttributes.put("PatientSSN", ssn);
+		customAttributes.put("PatientFirstName", toSearch.getFirstName());
+		customAttributes.put("PatientLastName", toSearch.getLastName());
+		customAttributes.put("PatientDOB", toSearch.getDob());
+		customAttributes.put("PatientGender", toSearch.getGender());
+		customAttributes.put("PatientHomeZip", toSearch.getZip());
+		customAttributes.put("PatientSSN", toSearch.getSsn());
 		
 		input.setAttributes(customAttributes);
 		
@@ -85,23 +81,23 @@ public class SearchService {
 			logger.error("Could not create SAML from input " + input, e);
 		}
 		
-		PatientRecordDTO toSearch = new PatientRecordDTO();
-		toSearch.setFirstName(firstName);
-		toSearch.setLastName(lastName);
-		if(!StringUtils.isEmpty(dob)) {
+		PatientRecordDTO patientSearch = new PatientRecordDTO();
+		patientSearch.setFirstName(toSearch.getFirstName());
+		patientSearch.setLastName(toSearch.getLastName());
+		if(!StringUtils.isEmpty(toSearch.getDob())) {
 			try {
-				Date dateOfBirth = formatter.parse(dob);
-				toSearch.setDateOfBirth(dateOfBirth);
+				Date dateOfBirth = formatter.parse(toSearch.getDob());
+				patientSearch.setDateOfBirth(dateOfBirth);
 			} catch(ParseException ex) {
-				logger.error("Could not parse date " + dob, ex);
+				logger.error("Could not parse date " + toSearch.getDob(), ex);
 			}
 		}
-		toSearch.setGender(gender);
-		toSearch.setSsn(ssn);
+		patientSearch.setGender(toSearch.getGender());
+		patientSearch.setSsn(toSearch.getSsn());
 		AddressDTO toSearchAddress = new AddressDTO();
-		toSearchAddress.setZipcode(zip);
-		toSearch.setAddress(toSearchAddress);
-       QueryDTO initiatedQuery = searchManager.queryForPatientRecords(samlMessage, toSearch, user);
+		toSearchAddress.setZipcode(toSearch.getZip());
+		patientSearch.setAddress(toSearchAddress);
+       QueryDTO initiatedQuery = searchManager.queryForPatientRecords(samlMessage, patientSearch, user);
        return new Query(initiatedQuery);
     }
 }
