@@ -22,8 +22,8 @@ public class OrganizationService {
 	
 	private static final Logger logger = LogManager.getLogger(OrganizationService.class);
 	
-	@Value("${getOrganizationsUrl}")
-	private String getOrganizationsUrl;
+	@Value("${brokerUrl}")
+	private String brokerUrl;
 	
 	// get all organizations
 	@RequestMapping(value = "/organizations")
@@ -43,7 +43,7 @@ public class OrganizationService {
 
 		headers.set("User", mapper.writeValueAsString(user));
 		HttpEntity<Organization[]> entity = new HttpEntity<Organization[]>(headers);
-		HttpEntity<Organization[]> response = query.exchange(getOrganizationsUrl, HttpMethod.GET, entity, Organization[].class);
+		HttpEntity<Organization[]> response = query.exchange(brokerUrl + "/organizations", HttpMethod.GET, entity, Organization[].class);
 		logger.info("Request sent to broker from services REST.");
 		ArrayList<Organization> orgList = new ArrayList<Organization>(Arrays.asList(response.getBody()));
 
