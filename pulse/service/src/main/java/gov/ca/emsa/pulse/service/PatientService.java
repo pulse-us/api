@@ -30,10 +30,8 @@ public class PatientService {
 	private static final Logger logger = LogManager.getLogger(PatientService.class);
 	@Autowired private Environment env;
 	
-	@Value("${getPatientsUrl}")
-	private String getPatientsUrl;
-	@Value("${patientSearchUrl}")
-	private String patientSearchUrl;
+	@Value("${brokerUrl}")
+	private String brokerUrl;
 
 	@ApiOperation(value="Search for patients that match the parameters.")
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
@@ -53,7 +51,7 @@ public class PatientService {
 		headers.add("User", mapper.writeValueAsString(user));
 		HttpEntity<PatientSearchTerms> request = new HttpEntity<PatientSearchTerms>(patientSearchTerms, headers);
 		RestTemplate query = new RestTemplate();
-		query.postForObject(patientSearchUrl, request, Query.class);
+		query.postForObject(brokerUrl + "/search", request, Query.class);
 		logger.info("Request sent to broker from services REST.");
 	}
 
@@ -76,7 +74,7 @@ public class PatientService {
 		
 		headers.set("User", mapper.writeValueAsString(user));
 		HttpEntity<Patient[]> entity = new HttpEntity<Patient[]>(headers);
-		HttpEntity<Patient[]> response = query.exchange(getPatientsUrl, HttpMethod.GET, entity, Patient[].class);
+		HttpEntity<Patient[]> response = query.exchange(brokerUrl + "/patients", HttpMethod.GET, entity, Patient[].class);
 		logger.info("Request sent to broker from services REST.");
 		ArrayList<Patient> patientList = new ArrayList<Patient>(Arrays.asList(response.getBody()));
 

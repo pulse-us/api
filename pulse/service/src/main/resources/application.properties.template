@@ -3,17 +3,7 @@ springfox.documentation.swagger.v2.path=/api-docs
 basePath=/rest
 debug=true
 
-createAcfUrl=https://localhost:8090/acfs/create
-getAcfsUrl=https://localhost:8090/acfs
-getAcfByIdUrl=https://localhost:8090/acfs/
-getOrganizationsUrl=https://localhost:8090/organizations
-patientSearchUrl=https://localhost:8090/search
-getQueriesUrl=https://localhost:8090/queries
-getQueriesByIdUrl=https://localhost:8090/queries/
-stage=/stage
-getPatientsUrl=https://localhost:8090/patients
-documents=/documents
-cacheOnly=?cacheOnly=
+brokerUrl=https://localhost:8090
 
 keyLocation=C:\\JSONPulseRsaJoseJWebKeyTest.txt
 jwtAllowedClockSkew=30

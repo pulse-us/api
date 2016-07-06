@@ -28,14 +28,8 @@ public class AlternateCareFacilityService {
 
 	private static final Logger logger = LogManager.getLogger(AlternateCareFacilityService.class);
 	
-	@Value("${createAcfUrl}")
-	private String createAcfUrl;
-	@Value("${getAcfsUrl}")
-	private String getAcfUrl;
-	@Value("${getAcfByIdUrl")
-	private String getAcfByIdUrl;
-	@Value("${edit}")
-	private String edit;
+	@Value("${brokerUrl}")
+	private String brokerUrl;
 	
 	// POST - create an alternate care facility
 	@RequestMapping(value = "/acfs/create", method = RequestMethod.POST)
@@ -56,7 +50,7 @@ public class AlternateCareFacilityService {
 		
 		headers.add("User", mapper.writeValueAsString(user));
 		HttpEntity<AlternateCareFacility> request = new HttpEntity<AlternateCareFacility>(acf, headers);
-		AlternateCareFacility returnAcf = query.postForObject(createAcfUrl, request, AlternateCareFacility.class);
+		AlternateCareFacility returnAcf = query.postForObject(brokerUrl + "/acfs/create", request, AlternateCareFacility.class);
 		
 		logger.info("Request sent to broker from services REST.");
 		return returnAcf;
@@ -80,7 +74,7 @@ public class AlternateCareFacilityService {
 		
 		headers.set("User", mapper.writeValueAsString(user));
 		HttpEntity<AlternateCareFacility[]> entity = new HttpEntity<AlternateCareFacility[]>(headers);
-		HttpEntity<AlternateCareFacility[]> response = query.exchange(getAcfUrl, HttpMethod.GET, entity, AlternateCareFacility[].class);
+		HttpEntity<AlternateCareFacility[]> response = query.exchange(brokerUrl + "/acfs", HttpMethod.GET, entity, AlternateCareFacility[].class);
 		logger.info("Request sent to broker from services REST.");
 		ArrayList<AlternateCareFacility> acfList = new ArrayList<AlternateCareFacility>(Arrays.asList(response.getBody()));
 
@@ -105,7 +99,7 @@ public class AlternateCareFacilityService {
 		
 		headers.set("User", mapper.writeValueAsString(user));
 		HttpEntity<AlternateCareFacility> entity = new HttpEntity<AlternateCareFacility>(headers);
-		HttpEntity<AlternateCareFacility> response = query.exchange(getAcfByIdUrl + id, HttpMethod.GET, entity, AlternateCareFacility.class);
+		HttpEntity<AlternateCareFacility> response = query.exchange(brokerUrl + "/acfs" + id, HttpMethod.GET, entity, AlternateCareFacility.class);
 		logger.info("Request sent to broker from services REST.");
 		return response.getBody();
 	}
@@ -128,7 +122,7 @@ public class AlternateCareFacilityService {
 			
 			headers.set("User", mapper.writeValueAsString(user));
 			HttpEntity<AlternateCareFacility> request = new HttpEntity<AlternateCareFacility>(headers);
-			AlternateCareFacility returnAcf = query.postForObject(createAcfUrl + acfId + edit, request, AlternateCareFacility.class);
+			AlternateCareFacility returnAcf = query.postForObject(brokerUrl + "/acfs/" + acfId + "/edit", request, AlternateCareFacility.class);
 			logger.info("Request sent to broker from services REST.");
 			return returnAcf;
 		}
