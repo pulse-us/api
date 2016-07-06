@@ -53,7 +53,6 @@ public class MockAdapter implements Adapter {
 			logger.error("Exception when querying " + postUrl, ex);
 			throw ex;
 		}
-		
 		List<PatientRecordDTO> records = new ArrayList<PatientRecordDTO>();
 		for(int i = 0; i < searchResults.length; i++) {
 			PatientRecordDTO record = SearchResultConverter.convertToPatientRecord(searchResults[i]);

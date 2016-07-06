@@ -30,7 +30,7 @@ public class BrokerApplicationTestConfig implements EnvironmentAware {
 	public org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean entityManagerFactory(){
 		org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
 		bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
-		bean.setPersistenceXmlLocation("classpath:persistence-test.xml");
+		bean.setPersistenceXmlLocation("classpath*:META-INF/persistence-test.xml");
 		return bean;
 	}
 	

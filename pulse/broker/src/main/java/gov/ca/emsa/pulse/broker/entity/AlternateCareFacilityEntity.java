@@ -22,6 +22,16 @@ public class AlternateCareFacilityEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
+	@Column(name="patient_id")
+	private Long patientId;
+	
+	@Column(name = "query_organization_id")
+	private Long queryOrganizationId;
+	
+	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private PatientEntity patient;
+
 	@Column(name="name")
 	private String name;
 	
@@ -37,6 +47,7 @@ public class AlternateCareFacilityEntity {
 	
 	@Column(name = "last_read_date")
 	private Date lastReadDate;
+
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -47,7 +58,7 @@ public class AlternateCareFacilityEntity {
 	public Long getId() {
 		return id;
 	}
-	
+
 	public void setId(Long long1) {
 		this.id = long1;
 	}

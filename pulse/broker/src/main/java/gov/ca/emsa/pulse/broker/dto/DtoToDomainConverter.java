@@ -4,7 +4,6 @@ import gov.ca.emsa.pulse.broker.domain.Address;
 import gov.ca.emsa.pulse.broker.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.broker.domain.Document;
 import gov.ca.emsa.pulse.broker.domain.Patient;
-import gov.ca.emsa.pulse.broker.domain.PatientRecord;
 
 public class DtoToDomainConverter {
 	

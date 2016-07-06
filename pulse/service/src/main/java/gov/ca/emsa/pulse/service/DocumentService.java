@@ -28,12 +28,8 @@ import io.swagger.annotations.ApiOperation;
 public class DocumentService {
 	private static final Logger logger = LogManager.getLogger(DocumentService.class);
 	
-	@Value("${getPatientsUrl}")
-	private String getPatientsUrl;
-	@Value("${documents}")
-	private String documents;
-	@Value("${cacheOnly}")
-	private String cacheOnly;
+	@Value("${brokerUrl}")
+	private String brokerUrl;
 
 	@ApiOperation(value="Search Documents for the given patient id.")
 	@RequestMapping("/patients/{id}/documents")
@@ -53,7 +49,7 @@ public class DocumentService {
 		
 		headers.set("User", mapper.writeValueAsString(user));
 		HttpEntity<Document[]> entity = new HttpEntity<Document[]>(headers);
-		HttpEntity<Document[]> response = query.exchange(getPatientsUrl + id + documents, HttpMethod.GET, entity, Document[].class);
+		HttpEntity<Document[]> response = query.exchange(brokerUrl + "/patients/" + id + "/documents", HttpMethod.GET, entity, Document[].class);
 		logger.info("Request sent to broker from services REST.");
 		ArrayList<Document> docList = new ArrayList<Document>(Arrays.asList(response.getBody()));
 
@@ -80,7 +76,7 @@ public class DocumentService {
 		
 		headers.set("User", mapper.writeValueAsString(user));
 		HttpEntity<Document> entity = new HttpEntity<Document>(headers);
-		HttpEntity<Document> response = query.exchange(getPatientsUrl + patientId + documents + documentId + cacheOnly + cacheOnly.toString(), HttpMethod.GET, entity, Document.class);
+		HttpEntity<Document> response = query.exchange(brokerUrl + "/patients/" + patientId + "/documents/" + documentId + "?cacheOnly=" + cacheOnly.toString(), HttpMethod.GET, entity, Document.class);
 		logger.info("Request sent to broker from services REST.");
         return response.getBody();
 	}

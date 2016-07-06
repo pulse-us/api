@@ -26,12 +26,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class QueryService {
 	private static final Logger logger = LogManager.getLogger(QueryService.class);
 	
-	@Value("${getQueriesUrl}")
-	private String getQueriesUrl;
-	@Value("${getQueriesByIdUrl}")
-	private String getQueriesByIdUrl;
-	@Value("{stage}")
-	private String stage;
+	@Value("${brokerUrl}")
+	private String brokerUrl;
 	
 	// get all queries that belong to the logged in user
 	@RequestMapping(value = "/queries")
@@ -52,7 +48,7 @@ public class QueryService {
 
 		headers.set("User", mapper.writeValueAsString(user));
 		HttpEntity<Query[]> entity = new HttpEntity<Query[]>(headers);
-		HttpEntity<Query[]> response = query.exchange(getQueriesUrl, HttpMethod.GET, entity, Query[].class);
+		HttpEntity<Query[]> response = query.exchange(brokerUrl + "/queries", HttpMethod.GET, entity, Query[].class);
 		logger.info("Request sent to broker from services REST.");
 		ArrayList<Query> queryList = new ArrayList<Query>(Arrays.asList(response.getBody()));
 
@@ -77,7 +73,7 @@ public class QueryService {
 
 		headers.set("User", mapper.writeValueAsString(user));
 		HttpEntity<Query> entity = new HttpEntity<Query>(headers);
-		HttpEntity<Query> response = query.exchange(getQueriesByIdUrl + queryId, HttpMethod.GET, entity, Query.class);
+		HttpEntity<Query> response = query.exchange(brokerUrl + "/queries/" + queryId, HttpMethod.GET, entity, Query.class);
 		logger.info("Request sent to broker from services REST.");
 		return response.getBody();
 	}
@@ -100,7 +96,7 @@ public class QueryService {
 
 		headers.add("User", mapper.writeValueAsString(user));
 		HttpEntity<ArrayList<Long>> request = new HttpEntity<ArrayList<Long>>(patientIds, headers);
-		Query queryRet = query.postForObject(getQueriesByIdUrl + queryId + stage, request, Query.class);
+		Query queryRet = query.postForObject(brokerUrl + "/queries/" + queryId + "/stage", request, Query.class);
 		logger.info("Request sent to broker from services REST.");
 		return queryRet;
 	}

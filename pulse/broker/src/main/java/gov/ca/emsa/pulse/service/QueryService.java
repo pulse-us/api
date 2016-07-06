@@ -82,7 +82,7 @@ public class QueryService {
 			throw new InvalidParameterException("The ACF supplied, '" + user.getAcf() + "' was not found in the database.");
 		}
 		patientToCreate.setAcf(acfDto);
-		
+
 		PatientDTO patient = patientManager.create(patientToCreate);
 		
 		//create patient organization mappings based on the patientrecords we are using

@@ -61,7 +61,7 @@ public class BrokerApplication implements EnvironmentAware {
 		bean.setEntityManagerFactory(entityManagerFactory().getObject());
 		return bean;
 	}
-	
+
 	@Bean
 	public QueryCacheManager queryCacheManager() {
 		int queryCacheExpirationMinutes = new Integer(env.getProperty("queryCacheExpireMinutes").trim());

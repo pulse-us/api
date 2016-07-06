@@ -1,7 +1,0 @@
-<dataset>
-	<bogusTable id="1"/>
-	
-	<organization name="OrganizationOne" id="1" organization_id="1" adapter="eHealth"/>
-	<organization name="OrganizationTwo" id="2" organization_id="2" adapter="eHealth"/>
-	<organization name="OrganizationThree" id="3" organization_id="3" adapter="eHealth"/>
-</dataset>

@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.ca.emsa.pulse.broker.domain.AlternateCareFacility;
+import gov.ca.emsa.pulse.broker.domain.Audit;
+import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
+import gov.ca.emsa.pulse.broker.manager.AuditManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -23,10 +26,13 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/acfs")
 public class AlternateCareFacilityService {
 	@Autowired AlternateCareFacilityManager acfManager;
+	@Autowired AuditManager auditManager;
 	
 	@ApiOperation(value="Get the list of all alternate care facilities (ACFs)")
 	@RequestMapping(value="",  method = RequestMethod.GET)
     public List<AlternateCareFacility> getAll() {
+		User user = UserUtil.getCurrentUser();
+		auditManager.addAuditEntry(QueryType.GET_ALL_ACFS, "/acfs", user.getUsername());
 		List<AlternateCareFacilityDTO> dtos = acfManager.getAll();
 		List<AlternateCareFacility> results = new ArrayList<AlternateCareFacility>();
 		for(AlternateCareFacilityDTO dto : dtos) {
@@ -39,6 +45,8 @@ public class AlternateCareFacilityService {
 	@ApiOperation(value="Get information about a specific ACF")
 	@RequestMapping(value = "/{acfId}", method=RequestMethod.GET)
     public AlternateCareFacility getById(@PathVariable("acfId") Long acfId) {
+		User user = UserUtil.getCurrentUser();
+		auditManager.addAuditEntry(QueryType.GET_ACF_BY_ID, "/acfs" + acfId, user.getUsername());
 		AlternateCareFacilityDTO dto = acfManager.getById(acfId);
 		return new AlternateCareFacility(dto);
     }
@@ -46,6 +54,8 @@ public class AlternateCareFacilityService {
 	@ApiOperation(value = "Create a new ACF")
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public AlternateCareFacility create(@RequestBody(required=true) AlternateCareFacility toCreate) {
+		User user = UserUtil.getCurrentUser();
+		auditManager.addAuditEntry(QueryType.CREATE_ACF, "/create", user.getUsername());
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(toCreate.getName());
 		dto.setPhoneNumber(toCreate.getPhoneNumber());
@@ -70,6 +80,7 @@ public class AlternateCareFacilityService {
 	public AlternateCareFacility update(@RequestBody(required=true) AlternateCareFacility toUpdate) 
 		throws Exception {
 		User user = UserUtil.getCurrentUser();
+		auditManager.addAuditEntry(QueryType.EDIT_ACF, user.getAcf() + "/edit", user.getUsername());
 		AlternateCareFacilityDTO userAcf = acfManager.getByName(user.getAcf());
 		if(userAcf == null) {
 			throw new Exception("The current user's ACF (" + user.getAcf() + ") was not found in the database.");

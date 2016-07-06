@@ -112,15 +112,19 @@ public class PatientQueryService implements Runnable {
 		this.adapterFactory = adapterFactory;
 	}
 
+	public Patient getToSearch() {
+		return toSearch;
+	}
+
+	public void setToSearch(Patient toSearch) {
+		this.toSearch = toSearch;
+	}
+
 	public OrganizationManager getOrgManager() {
 		return orgManager;
 	}
 
 	public void setOrgManager(OrganizationManager orgManager) {
 		this.orgManager = orgManager;
-	}
-
-	public void setToSearch(Patient toSearch) {
-		this.toSearch = toSearch;
 	}
 }
