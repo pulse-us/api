@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import gov.ca.emsa.pulse.broker.domain.Document;
 import gov.ca.emsa.pulse.broker.domain.MockPatient;
+import gov.ca.emsa.pulse.broker.domain.Patient;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
@@ -30,7 +31,7 @@ public class MockAdapter implements Adapter {
 	}
 	
 	@Override
-	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, PatientRecordDTO toSearch, String samlMessage) {
+	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, Patient toSearch, String samlMessage) {
 		String postUrl = org.getEndpointUrl() + "/patients";
 		MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
 		parameters.add("firstName", toSearch.getFirstName());

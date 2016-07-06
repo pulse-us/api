@@ -51,12 +51,14 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryOrganizationEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
-				+ "LEFT JOIN FETCH q.query "
 				+ "where q.id = :entityid) ", 
 				QueryOrganizationEntity.class );
 		
 		query.setParameter("entityid", queryOrgId);
-		entity = (QueryOrganizationEntity)query.getSingleResult();
+		List<QueryOrganizationEntity> results = query.getResultList();
+		if(results.size() != 0) {
+			entity = results.get(0);
+		}
 		return new QueryOrganizationDTO(entity);
 	}
 	
@@ -210,18 +212,24 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryEntity q "
+				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
 				+ "where q.id = :entityid) ", 
 				QueryEntity.class );
 		
 		query.setParameter("entityid", id);
-		entity = (QueryEntity)query.getSingleResult();
+		List<QueryEntity> results = query.getResultList();
+		if(results.size() != 0) {
+			entity = results.get(0);
+		}
 		return entity;
-	}
+		}
 	
 	private QueryOrganizationEntity getQueryStatusById(Long id) {
 		QueryOrganizationEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
+				+ "LEFT OUTER JOIN FETCH q.org " 
+				+ "LEFT OUTER JOIN FETCH q.results "
 				+ "where q.id = :entityid) ", 
 				QueryOrganizationEntity.class );
 		
@@ -236,6 +244,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	
 	private List<QueryEntity> getEntitiesByUser(String user) {		
 		Query query = entityManager.createQuery( "SELECT q from QueryEntity q "
+				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
 				+ "where q.userId = :userId) ", 
 				QueryEntity.class );
 		
@@ -246,6 +255,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	
 	private List<QueryEntity> getEntitiesByUserAndStatus(String user, String status) {		
 		Query query = entityManager.createQuery( "SELECT q from QueryEntity q "
+				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
 				+ "where q.userId = :userId "
 				+ "and q.status = :status) ", 
 				QueryEntity.class );

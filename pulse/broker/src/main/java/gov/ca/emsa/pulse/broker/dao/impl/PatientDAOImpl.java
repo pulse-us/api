@@ -87,7 +87,11 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 
 	@Override
 	public PatientOrganizationMapDTO updateOrgMap(PatientOrganizationMapDTO toUpdate) {
+		logger.debug("Looking up patient org map with id " + toUpdate.getId());
 		PatientOrganizationMapEntity orgMap = getOrgMapById(toUpdate.getId());
+		if(orgMap == null) {
+			logger.error("Could not find patient org map with id " + toUpdate.getId());
+		}
 		
 		orgMap.setDocumentsQueryStatus(toUpdate.getDocumentsQueryStatus());
 		orgMap.setDocumentsQuerySuccess(toUpdate.getDocumentsQuerySuccess());
@@ -143,9 +147,9 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	@Override
 	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
 		Query query = entityManager.createQuery( "SELECT pat from PatientEntity pat "
-				+ "LEFT OUTER JOIN FETCH pat.acf "
-				+ "LEFT OUTER JOIN FETCH pat.address "
-				+ "LEFT OUTER JOIN FETCH pat.orgMaps "
+//				+ "LEFT OUTER JOIN FETCH pat.acf "
+//				+ "LEFT OUTER JOIN FETCH pat.address "
+//				+ "LEFT OUTER JOIN FETCH pat.orgMaps "
 				+ "where pat.acfId = :acfId) ", 
 				PatientEntity.class );
 		
@@ -179,17 +183,14 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 				PatientEntity.class );
 		
 		query.setParameter("entityid", id);
-		List<PatientEntity> result = query.getResultList();
-		if(result.size() == 1) {
-			entity = result.get(0);
+		List<PatientEntity> patients = query.getResultList();
+		if(patients.size() != 0) {
+			entity = patients.get(0);
 		}
-		
 		return entity;
 	}
 	
-	private PatientOrganizationMapEntity getOrgMapById(Long id) {
-		PatientOrganizationMapEntity entity = null;
-		
+	private PatientOrganizationMapEntity getOrgMapById(Long id) {		
 		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.organization "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
@@ -198,11 +199,12 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 				PatientOrganizationMapEntity.class );
 		
 		query.setParameter("entityid", id);
-		List<PatientOrganizationMapEntity> result = query.getResultList();
-		if(result.size() == 1) {
-			entity = result.get(0);
-		}
 		
+		PatientOrganizationMapEntity entity = null;
+		List<PatientOrganizationMapEntity> orgMaps = query.getResultList();
+		if(orgMaps.size() != 0) {
+			entity = orgMaps.get(0);
+		}
 		return entity;
 	}
 }

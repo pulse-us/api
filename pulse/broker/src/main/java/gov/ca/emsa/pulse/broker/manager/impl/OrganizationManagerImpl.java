@@ -25,6 +25,10 @@ public class OrganizationManagerImpl implements OrganizationManager {
 	@Autowired
 	private OrganizationDAO organizationDAO;
 	
+	public OrganizationDTO getById(Long id) {
+		return organizationDAO.findById(id);
+	}
+	
 	@Transactional
 	public void updateOrganizations(ArrayList<Organization> orgs){
 		List<OrganizationDTO> currentOrgs = getAll();

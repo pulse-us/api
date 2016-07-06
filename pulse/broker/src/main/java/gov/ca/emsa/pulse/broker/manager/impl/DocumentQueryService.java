@@ -38,6 +38,7 @@ public class DocumentQueryService implements Runnable {
 	@Transactional
 	public void run() {
 		//query this organization directly for 
+		boolean querySuccess = true;
 		Document[] searchResults = null;
 		Adapter adapter = adapterFactory.getAdapter(org);
 		if(adapter != null) {
@@ -46,9 +47,10 @@ public class DocumentQueryService implements Runnable {
 				searchResults = adapter.queryDocuments(org, patientOrgMap, samlMessage);
 			} catch(Exception ex) {
 				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
-				patientOrgMap.setDocumentsQuerySuccess(Boolean.FALSE);
+				querySuccess = false;
 			}
 		}
+		
 		//store the returned document info
 		if(searchResults != null && searchResults.length > 0) {
 			for(Document doc : searchResults) {
@@ -57,9 +59,9 @@ public class DocumentQueryService implements Runnable {
 				//save document
 				docManager.create(toSave);
 			}
-			patientOrgMap.setDocumentsQuerySuccess(Boolean.TRUE);
 		} 
 		
+		patientOrgMap.setDocumentsQuerySuccess(querySuccess);
 		patientOrgMap.setDocumentsQueryEnd(new Date());
 		patientOrgMap.setDocumentsQueryStatus(QueryStatus.COMPLETE.name());
 		//update patient org map

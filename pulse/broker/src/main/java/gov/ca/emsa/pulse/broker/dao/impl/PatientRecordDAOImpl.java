@@ -95,7 +95,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 	private PatientRecordEntity getEntityById(Long id) {
 		PatientRecordEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT pat from PatientResultEntity pat "
+		Query query = entityManager.createQuery( "SELECT pat from PatientRecordEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.queryOrganization "
 				+ "where pat.id = :entityid) ", 
 				PatientRecordEntity.class );

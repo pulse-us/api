@@ -11,10 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
+import gov.ca.emsa.pulse.broker.domain.Patient;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryStatus;
+import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 
@@ -23,11 +25,11 @@ public class PatientQueryService implements Runnable {
 	private static final Logger logger = LogManager.getLogger(PatientQueryService.class);
 
 	private QueryOrganizationDTO queryOrg;
-	private OrganizationDTO org;
 	@Autowired private QueryManager queryManager;
 	@Autowired private PatientManager patientManager;
+	@Autowired private OrganizationManager orgManager;
 	@Autowired private AdapterFactory adapterFactory;
-	private PatientRecordDTO toSearch;
+	private Patient toSearch;
 	private String samlMessage;
 	
 	@Override
@@ -36,6 +38,13 @@ public class PatientQueryService implements Runnable {
 		boolean queryError = false;
 		//query this organization directly for patient matches
 		List<PatientRecordDTO> searchResults = null;
+		
+		OrganizationDTO org = orgManager.getById(queryOrg.getOrgId());
+		if(org == null) {
+			logger.error("Could not find org with id " + queryOrg.getOrgId());
+			return;
+		}
+		
 		Adapter adapter = adapterFactory.getAdapter(org);
 		if(adapter != null) {
 			logger.info("Starting query to " + org.getAdapter() + " for orgquery " + queryOrg.getId());
@@ -71,22 +80,6 @@ public class PatientQueryService implements Runnable {
 		this.queryOrg = queryOrg;
 	}
 
-	public OrganizationDTO getOrg() {
-		return org;
-	}
-
-	public void setOrg(OrganizationDTO org) {
-		this.org = org;
-	}
-
-	public PatientRecordDTO getToSearch() {
-		return toSearch;
-	}
-
-	public void setToSearch(PatientRecordDTO toSearch) {
-		this.toSearch = toSearch;
-	}
-
 	public String getSamlMessage() {
 		return samlMessage;
 	}
@@ -117,5 +110,17 @@ public class PatientQueryService implements Runnable {
 
 	public void setAdapterFactory(AdapterFactory adapterFactory) {
 		this.adapterFactory = adapterFactory;
+	}
+
+	public OrganizationManager getOrgManager() {
+		return orgManager;
+	}
+
+	public void setOrgManager(OrganizationManager orgManager) {
+		this.orgManager = orgManager;
+	}
+
+	public void setToSearch(Patient toSearch) {
+		this.toSearch = toSearch;
 	}
 }

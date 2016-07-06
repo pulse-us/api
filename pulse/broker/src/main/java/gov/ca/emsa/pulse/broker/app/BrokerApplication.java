@@ -19,6 +19,7 @@ import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.manager.impl.DocumentQueryService;
 import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 
 @PropertySource("classpath:/application.properties")
@@ -112,4 +113,10 @@ public class BrokerApplication implements EnvironmentAware {
     public PatientQueryService patientQueryService() {
         return new PatientQueryService();
     }
+	
+	@Bean
+    @Scope(scopeName=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	public DocumentQueryService documentQueryService() {
+		return new DocumentQueryService();
+	}
 }

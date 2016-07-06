@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,13 +21,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.ca.emsa.pulse.broker.domain.Address;
+import gov.ca.emsa.pulse.broker.domain.Patient;
 import gov.ca.emsa.pulse.broker.domain.PatientSearch;
 import gov.ca.emsa.pulse.broker.domain.Query;
 import gov.ca.emsa.pulse.broker.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryStatus;
+import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import io.swagger.annotations.Api;
@@ -40,6 +48,7 @@ public class SearchService {
 	private static final Logger logger = LogManager.getLogger(SearchService.class);
 	@Autowired private SamlGenerator samlGenerator;
 	@Autowired private QueryManager searchManager;
+	@Autowired private OrganizationManager orgManager;
 	public static String dobFormat = "yyyy-MM-dd";
 	private DateFormat formatter;
 	
@@ -80,24 +89,46 @@ public class SearchService {
 		} catch (MarshallingException e) {
 			logger.error("Could not create SAML from input " + input, e);
 		}
-		
-		PatientRecordDTO patientSearch = new PatientRecordDTO();
-		patientSearch.setFirstName(toSearch.getFirstName());
-		patientSearch.setLastName(toSearch.getLastName());
+
+		Patient queryTerms = new Patient();
+		queryTerms.setFirstName(toSearch.getFirstName());
+		queryTerms.setLastName(toSearch.getLastName());
 		if(!StringUtils.isEmpty(toSearch.getDob())) {
 			try {
 				Date dateOfBirth = formatter.parse(toSearch.getDob());
-				patientSearch.setDateOfBirth(dateOfBirth);
+				queryTerms.setDateOfBirth(dateOfBirth);
 			} catch(ParseException ex) {
 				logger.error("Could not parse date " + toSearch.getDob(), ex);
 			}
 		}
-		patientSearch.setGender(toSearch.getGender());
-		patientSearch.setSsn(toSearch.getSsn());
-		AddressDTO toSearchAddress = new AddressDTO();
-		toSearchAddress.setZipcode(toSearch.getZip());
-		patientSearch.setAddress(toSearchAddress);
-       QueryDTO initiatedQuery = searchManager.queryForPatientRecords(samlMessage, patientSearch, user);
+		
+		queryTerms.setSsn(toSearch.getSsn());
+		queryTerms.setGender(toSearch.getGender());
+		if(toSearch.getZip() != null) {
+			Address qtAddress = new Address();
+			qtAddress.setZipcode(toSearch.getZip());
+			queryTerms.setAddress(qtAddress);
+		}
+		String queryTermsJson = JSONUtils.toJSON(queryTerms);
+		
+		QueryDTO query = new QueryDTO();
+		query.setUserId(user.getSubjectName());
+		query.setTerms(queryTermsJson);
+		query.setStatus(QueryStatus.ACTIVE.name());
+		query = searchManager.createQuery(query);
+		
+		//get the list of organizations
+		List<OrganizationDTO> orgsToQuery = orgManager.getAll();
+		for(OrganizationDTO org : orgsToQuery) {
+			QueryOrganizationDTO queryOrg = new QueryOrganizationDTO();
+			queryOrg.setOrgId(org.getId());
+			queryOrg.setQueryId(query.getId());
+			queryOrg.setStatus(QueryStatus.ACTIVE.name());
+			queryOrg = searchManager.createOrUpdateQueryOrganization(queryOrg);
+			query.getOrgStatuses().add(queryOrg);
+		}
+		
+       QueryDTO initiatedQuery = searchManager.queryForPatientRecords(samlMessage, queryTerms, query, user);
        return new Query(initiatedQuery);
     }
 }
