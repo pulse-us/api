@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.broker.dao;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryStatus;
@@ -22,14 +25,15 @@ import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
-@DatabaseSetup("classpath:/testData.xml")
+//@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+//    DirtiesContextTestExecutionListener.class,
+//    TransactionalTestExecutionListener.class,
+//    DbUnitTestExecutionListener.class })
+//@DatabaseSetup("classpath:/testData.xml")
 public class QueryDaoTest extends TestCase {
 
 	@Autowired QueryDAO queryDao;
+	@Autowired OrganizationDAO orgDao;
 	
 	@Test
 	@Transactional
@@ -52,8 +56,16 @@ public class QueryDaoTest extends TestCase {
 //		toInsert.setStatus(QueryStatus.ACTIVE.name());
 //		toInsert.setTerms("terms");
 //		toInsert.setUserId("kekey");
+//		
+//		OrganizationDTO org = new OrganizationDTO();
+//		org.setAdapter("IHE");
+//		org.setEndpointUrl("http://www.localhost.com");
+//		org.setPassword("pwd");
+//		org.setUsername("kekey");
+//		org = orgDao.create(org);
+//		
 //		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
-//		orgQuery1.setOrgId(1L);
+//		orgQuery1.setOrgId(org.getId());
 //		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
 //		toInsert.getOrgStatuses().add(orgQuery1);
 //		
@@ -69,6 +81,8 @@ public class QueryDaoTest extends TestCase {
 //		orgQuery1 = selected.getOrgStatuses().get(0);
 //		assertNotNull(orgQuery1.getId());
 //		assertTrue(orgQuery1.getId().longValue() > 0);
+//		
+//		orgDao.delete(org);
 //	}
 //	
 //	@Test

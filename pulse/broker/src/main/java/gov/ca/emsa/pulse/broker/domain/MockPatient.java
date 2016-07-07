@@ -2,41 +2,20 @@ package gov.ca.emsa.pulse.broker.domain;
 
 import java.util.Date;
 
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-
-public class PatientRecord {
-	private Long id;
+public class MockPatient {
+	private String orgPatientId;
 	private String firstName;
 	private String lastName;
 	private Date dateOfBirth;
 	private String gender;
 	private String phoneNumber;
-	private Address address;
+	private String addressLine1;
+	private String addressLine2;
+	private String city;
+	private String state;
+	private String zipcode;
 	private String ssn;
 	
-	public PatientRecord() {
-		
-	}
-	
-	public PatientRecord(PatientRecordDTO dto) {
-		this.id = dto.getId();
-		this.firstName = dto.getFirstName();
-		this.lastName = dto.getLastName();
-		this.dateOfBirth = dto.getDateOfBirth();
-		this.gender = dto.getGender();
-		this.phoneNumber = dto.getPhoneNumber();
-		if(dto.getAddress() != null) {
-			this.address = new Address(dto.getAddress());
-		}
-		this.ssn = dto.getSsn();
-	}
-	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
 	public String getFirstName() {
 		return firstName;
 	}
@@ -67,11 +46,29 @@ public class PatientRecord {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	public Address getAddress() {
-		return address;
+	public String getAddressLine1() {
+		return addressLine1;
 	}
-	public void setAddress(Address address) {
-		this.address = address;
+	public void setAddressLine1(String addressLine1) {
+		this.addressLine1 = addressLine1;
+	}
+	public String getAddressLine2() {
+		return addressLine2;
+	}
+	public void setAddressLine2(String addressLine2) {
+		this.addressLine2 = addressLine2;
+	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	public String getZipcode() {
+		return zipcode;
+	}
+	public void setZipcode(String zipcode) {
+		this.zipcode = zipcode;
 	}
 	public String getSsn() {
 		return ssn;
@@ -79,5 +76,16 @@ public class PatientRecord {
 	public void setSsn(String ssn) {
 		this.ssn = ssn;
 	}
-	
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getOrgPatientId() {
+		return orgPatientId;
+	}
+	public void setOrgPatientId(String patientUniqueId) {
+		this.orgPatientId = patientUniqueId;
+	}
 }

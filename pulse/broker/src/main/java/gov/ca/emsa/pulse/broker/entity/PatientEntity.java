@@ -16,6 +16,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 @Entity
 @Table(name="patient")
 public class PatientEntity {
@@ -47,6 +50,7 @@ public class PatientEntity {
 	private Long addressId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@Fetch(FetchMode.JOIN)
 	@JoinColumn(name = "address_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private AddressEntity address;
 	
@@ -54,6 +58,7 @@ public class PatientEntity {
 	private Long acfId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@Fetch(FetchMode.JOIN)
 	@JoinColumn(name = "alternate_care_facility_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private AlternateCareFacilityEntity acf;
 	
@@ -67,6 +72,7 @@ public class PatientEntity {
 	private Date lastReadDate;
 	
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientId"  )
+	@Fetch(FetchMode.JOIN)
 	@Column( name = "patient_id", nullable = false  )
 	private Set<PatientOrganizationMapEntity> orgMaps = new HashSet<PatientOrganizationMapEntity>();
 	

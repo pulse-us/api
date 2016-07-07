@@ -1,6 +1,8 @@
 package gov.ca.emsa.pulse.broker.auth;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -19,9 +21,14 @@ import gov.ca.emsa.pulse.broker.domain.JWTAuthenticatedUser;
 
 @Component
 public class HttpRequestUserFilter implements Filter {
+	List<String> exemptions; 
 	ObjectMapper jsonMapper;
 	
 	public HttpRequestUserFilter() {
+		exemptions = new ArrayList<String>();
+		exemptions.add("/health");
+		//TODO: add others here
+		
 		jsonMapper = new ObjectMapper();
 	}
 	
@@ -40,20 +47,24 @@ public class HttpRequestUserFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 
 		HttpServletRequest request = (HttpServletRequest) req;
-		String userHeader = request.getHeader("User");
-		
-		if (userHeader == null){
-			SecurityContextHolder.getContext().setAuthentication(null);
-			throw new ServletException("No header found with the name 'User'");
+		if(exemptions.contains(request.getRequestURI().trim())) {
+			chain.doFilter(req, res);
 		} else {
-			JWTAuthenticatedUser authenticatedUser = jsonMapper.readValue(userHeader, JWTAuthenticatedUser.class);
-			if (authenticatedUser != null){
-				SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
-				chain.doFilter(req, res); //continue
+			String userHeader = request.getHeader("User");
+			
+			if (userHeader == null){
 				SecurityContextHolder.getContext().setAuthentication(null);
+				throw new ServletException("No header found with the name 'User'");
 			} else {
-				SecurityContextHolder.getContext().setAuthentication(null);
-				throw new IOException("A JSON object could not created from the User header with value '" + userHeader + "'.");
+				JWTAuthenticatedUser authenticatedUser = jsonMapper.readValue(userHeader, JWTAuthenticatedUser.class);
+				if (authenticatedUser != null){
+					SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
+					chain.doFilter(req, res); //continue
+					SecurityContextHolder.getContext().setAuthentication(null);
+				} else {
+					SecurityContextHolder.getContext().setAuthentication(null);
+					throw new IOException("A JSON object could not created from the User header with value '" + userHeader + "'.");
+				}
 			}
 		}
 	}

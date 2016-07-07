@@ -39,16 +39,20 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 	@Override
 	@Transactional
 	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO toUpdate) {
+		AddressDTO updatedAddress = null;
 		if(toUpdate.getAddress() != null) {
 			if(toUpdate.getAddress().getId() != null) {
-				addressDao.update(toUpdate.getAddress());
+				updatedAddress = addressDao.update(toUpdate.getAddress());
 			} else {
 				AddressDTO createdAddress = addressDao.create(toUpdate.getAddress());
+				updatedAddress = createdAddress;
 				toUpdate.setAddress(createdAddress);
 			}
 		}
 		toUpdate.setLastReadDate(new Date());
-		return acfDao.update(toUpdate);
+		AlternateCareFacilityDTO updated = acfDao.update(toUpdate);
+		updated.setAddress(updatedAddress);
+		return updated;
 	}
 
 	@Override

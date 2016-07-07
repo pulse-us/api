@@ -153,7 +153,10 @@ public class SamlGeneratorImpl implements SamlGenerator {
 				while (keySet.hasNext())
 				{
 					String key = keySet.next().toString();
-					String val = attributes.get(key).toString();
+					String val = "";
+					if(attributes.get(key) != null) {
+						val = attributes.get(key).toString();
+					}
 					Attribute attrFirstName = buildStringAttribute(key, val, getSAMLBuilder());
 					attrStatement.getAttributes().add(attrFirstName);
 				}

@@ -46,7 +46,7 @@ public class PatientService {
 	}
 		
 	@ApiOperation(value="Get all patients at the logged-in user's ACF")
-	@RequestMapping("/")
+	@RequestMapping("")
 	public List<Patient> getPatientsAtAcf() throws InvalidParameterException {
 		User user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.GET_ALL_PATIENTS, "/patients", user.getUsername());

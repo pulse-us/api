@@ -38,7 +38,7 @@ public class QueryOrganization {
 		
 		if(dto.getResults() != null && dto.getResults().size() > 0) {
 			for(PatientRecordDTO prDto : dto.getResults()) {
-				PatientRecord pr = DtoToDomainConverter.convert(prDto);
+				PatientRecord pr = new PatientRecord(prDto);
 				this.results.add(pr);
 			}
 		}
@@ -98,5 +98,13 @@ public class QueryOrganization {
 
 	public void setSuccess(Boolean success) {
 		this.success = success;
+	}
+
+	public List<PatientRecord> getResults() {
+		return results;
+	}
+
+	public void setResults(List<PatientRecord> results) {
+		this.results = results;
 	}
 }

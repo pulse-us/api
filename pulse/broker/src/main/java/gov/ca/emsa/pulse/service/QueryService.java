@@ -82,6 +82,7 @@ public class QueryService {
 			throw new InvalidParameterException("The ACF supplied, '" + user.getAcf() + "' was not found in the database.");
 		}
 		patientToCreate.setAcf(acfDto);
+
 		PatientDTO patient = patientManager.create(patientToCreate);
 		
 		//create patient organization mappings based on the patientrecords we are using
@@ -106,13 +107,12 @@ public class QueryService {
 			} catch (MarshallingException e) {
 				logger.error("Could not create SAML from input " + input, e);
 			}
+			patient.getOrgMaps().add(orgMapDto);
 			docManager.queryForDocuments(samlMessage, orgMapDto);
 		}
 		
 		//delete query (all associated items should cascade)
-		queryManager.delete(queryId);
-		
-		patient = patientManager.getPatientById(patient.getId());		
+		queryManager.delete(queryId);	
 		return new Patient(patient);
     }
 }

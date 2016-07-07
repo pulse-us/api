@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.dao.AddressDAO;
+import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
@@ -21,6 +23,7 @@ import gov.ca.emsa.pulse.broker.manager.QueryManager;
 @Service
 public class PatientManagerImpl implements PatientManager {
 	@Autowired private PatientDAO patientDao;
+	@Autowired private OrganizationDAO orgDao;
 	@Autowired private AddressDAO addressDao;
 	@Autowired private QueryManager queryManager;
 	@Autowired private QueryDAO queryDao;
@@ -54,11 +57,15 @@ public class PatientManagerImpl implements PatientManager {
 	@Override
 	@Transactional
 	public PatientDTO create(PatientDTO toCreate) {
+		AddressDTO address = null;
 		if(toCreate.getAddress() != null && toCreate.getAddress().getId() == null) {
-			AddressDTO createdAddress = addressDao.create(toCreate.getAddress());
-			toCreate.setAddress(createdAddress);
+			address = addressDao.create(toCreate.getAddress());
+			toCreate.setAddress(address);
 		}
-		return patientDao.create(toCreate);
+		PatientDTO result = patientDao.create(toCreate);
+		result.setAddress(address);
+		result.setAcf(toCreate.getAcf());
+		return result;
 	}
 	
 	@Override
@@ -110,6 +117,10 @@ public class PatientManagerImpl implements PatientManager {
 				orgMapToCreate.setOrganizationId(queryOrgDto.getOrgId());	
 			}
 			result = patientDao.createOrgMap(orgMapToCreate);
+			if(result.getOrganizationId() != null && result.getOrg() == null) {
+				OrganizationDTO org = orgDao.findById(result.getOrganizationId());
+				result.setOrg(org);
+			}
 		}
 		return result;
 	}

@@ -7,6 +7,7 @@ import gov.ca.emsa.pulse.broker.domain.Organization;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 
 public interface OrganizationManager {
+	public OrganizationDTO getById(Long id);
 	public void updateOrganizations(ArrayList<Organization> orgs);
 	public List<OrganizationDTO> getAll();
 }

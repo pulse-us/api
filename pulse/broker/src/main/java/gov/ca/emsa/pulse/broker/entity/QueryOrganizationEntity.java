@@ -28,11 +28,6 @@ public class QueryOrganizationEntity {
 	@Column(name="query_id")
 	private Long queryId;
 	
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "query_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private QueryEntity query;
-	
 	@Column(name = "organization_id")
 	private Long organizationId;
 	
@@ -109,14 +104,6 @@ public class QueryOrganizationEntity {
 
 	public void setOrganizationId(Long organizationId) {
 		this.organizationId = organizationId;
-	}
-
-	public QueryEntity getQuery() {
-		return query;
-	}
-
-	public void setQuery(QueryEntity query) {
-		this.query = query;
 	}
 
 	public OrganizationEntity getOrg() {
