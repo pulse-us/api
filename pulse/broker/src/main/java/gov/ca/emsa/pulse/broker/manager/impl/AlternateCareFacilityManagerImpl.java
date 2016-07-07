@@ -46,8 +46,10 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 	@Transactional
 	public AlternateCareFacilityDTO getById(Long id) {
 		AlternateCareFacilityDTO result = acfDao.getById(id);
-		result.setLastReadDate(new Date());
-		result = acfDao.update(result);
+		if(result != null) {
+			result.setLastReadDate(new Date());
+			result = acfDao.update(result);
+		}
 		return result;
 	}
 

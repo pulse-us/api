@@ -114,6 +114,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	@Override
 	public void deleteItemsOlderThan(Date oldestItem) {
 		Query query = entityManager.createQuery( "from AlternateCareFacilityEntity acf "
+				+ "LEFT OUTER JOIN FETCH acf.address "
 				+ " WHERE acf.lastReadDate <= :cacheDate");
 		
 		query.setParameter("cacheDate", oldestItem);
@@ -122,7 +123,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 			for(AlternateCareFacilityEntity oldAcf : oldAcfs) {
 				List<PatientDTO> patientsAtAcf = patientDao.getPatientsAtAcf(oldAcf.getId());
 				if(patientsAtAcf == null || patientsAtAcf.size() == 0) {
-					delete(oldAcf.getId());
+					entityManager.remove(oldAcf);
 					logger.info("Deleted ACF with ID " + oldAcf.getId() + " and name " + oldAcf.getName() + " during ACF cleanup.");
 				}
 			}
