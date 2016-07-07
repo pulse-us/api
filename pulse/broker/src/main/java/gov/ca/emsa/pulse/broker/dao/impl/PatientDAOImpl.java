@@ -146,10 +146,10 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		
 	@Override
 	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
-		Query query = entityManager.createQuery( "SELECT pat from PatientEntity pat "
-//				+ "LEFT OUTER JOIN FETCH pat.acf "
-//				+ "LEFT OUTER JOIN FETCH pat.address "
-//				+ "LEFT OUTER JOIN FETCH pat.orgMaps "
+		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
+				+ "LEFT OUTER JOIN FETCH pat.acf "
+				+ "LEFT OUTER JOIN FETCH pat.address "
+				+ "LEFT OUTER JOIN FETCH pat.orgMaps "
 				+ "where pat.acfId = :acfId) ", 
 				PatientEntity.class );
 		
@@ -175,7 +175,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	private PatientEntity getEntityById(Long id) {
 		PatientEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT pat from PatientEntity pat "
+		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.acf "
 				+ "LEFT OUTER JOIN FETCH pat.address "
 				+ "LEFT OUTER JOIN FETCH pat.orgMaps "
@@ -191,7 +191,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 	
 	private PatientOrganizationMapEntity getOrgMapById(Long id) {		
-		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "
+		Query query = entityManager.createQuery( "SELECT distinct pat from PatientOrganizationMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.organization "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
 				+ "LEFT OUTER JOIN FETCH pat.documents "

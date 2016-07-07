@@ -100,5 +100,13 @@ public class Patient {
 	public void setSsn(String ssn) {
 		this.ssn = ssn;
 	}
+
+	public List<PatientOrganizationMap> getOrgMaps() {
+		return orgMaps;
+	}
+
+	public void setOrgMaps(List<PatientOrganizationMap> orgMaps) {
+		this.orgMaps = orgMaps;
+	}
 	
 }

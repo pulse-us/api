@@ -51,7 +51,6 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryOrganizationEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
-				+ "LEFT JOIN FETCH q.query "
 				+ "where q.id = :entityid) ", 
 				QueryOrganizationEntity.class );
 		
