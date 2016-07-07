@@ -32,7 +32,6 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 	}
 
 	@Override
-	@Transactional
 	public AddressDTO update(AddressDTO addressDto) {
 		AddressEntity address = this.getEntityById(addressDto.getId());
 
@@ -48,7 +47,6 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 	}
 
 	@Override
-	@Transactional
 	public void delete(Long id) {
 		AddressEntity toDelete = getEntityById(id);
 		entityManager.remove(toDelete);
