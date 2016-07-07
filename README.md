@@ -45,7 +45,11 @@ $ gradlew bootRun
 
 ## API Methods 
 - POST /acfs/create  create a new ACF
-	* PostBody includes name and address objects
+	* PostBody includes name, phone number and address objects
+
+- POST /acfs/{id}/edit  update an existing ACF
+	* PostBody includes same info as create
+
 - GET /acfs return a list of ACFS
 - GET /acfs/{id} get the info for one ACF
 

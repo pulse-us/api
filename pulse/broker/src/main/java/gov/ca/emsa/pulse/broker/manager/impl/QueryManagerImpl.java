@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
+import gov.ca.emsa.pulse.broker.domain.Address;
 import gov.ca.emsa.pulse.broker.domain.Patient;
 import gov.ca.emsa.pulse.broker.domain.User;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
@@ -119,40 +120,17 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	}
 
 	@Override
-	public QueryDTO queryForPatientRecords(String samlMessage, PatientRecordDTO searchParams, User user)
+	@Transactional
+	public QueryDTO queryForPatientRecords(String samlMessage, Patient toSearch, QueryDTO query, User user)
 			throws JsonProcessingException {
-		Patient queryTerms = new Patient();
-		queryTerms.setFirstName(searchParams.getFirstName());
-		queryTerms.setLastName(searchParams.getLastName());
-		queryTerms.setDateOfBirth(searchParams.getDateOfBirth());
-		queryTerms.setSsn(searchParams.getSsn());
-		queryTerms.setGender(searchParams.getGender());
-		if(searchParams.getAddress() != null) {
-			queryTerms.getAddress().setZipcode(searchParams.getAddress().getZipcode());
-		}
-		String queryTermsJson = JSONUtils.toJSON(queryTerms);
-		
-		QueryDTO query = new QueryDTO();
-		query.setUserId(user.getSubjectName());
-		query.setTerms(queryTermsJson);
-		query.setStatus(QueryStatus.ACTIVE.name());
-		query = createQuery(query);
 		
 		//get the list of organizations
 		List<OrganizationDTO> orgsToQuery = orgManager.getAll();
-		for(OrganizationDTO org : orgsToQuery) {
-			QueryOrganizationDTO queryOrg = new QueryOrganizationDTO();
-			queryOrg.setOrgId(org.getId());
-			queryOrg.setQueryId(query.getId());
-			queryOrg.setStatus(QueryStatus.ACTIVE.name());
-			queryOrg = createOrUpdateQueryOrganization(queryOrg);
-			query.getOrgStatuses().add(queryOrg);
-			
+		for(QueryOrganizationDTO queryOrg : query.getOrgStatuses()) {
 			PatientQueryService service = getPatientQueryService();
 			service.setSamlMessage(samlMessage);
-			service.setToSearch(searchParams);
+			service.setToSearch(toSearch);
 			service.setQueryOrg(queryOrg);
-			service.setOrg(org);
 			pool.execute(service);
 		}
 		return query;
@@ -162,14 +140,15 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public PatientRecordDTO getPatientRecordById(Long patientRecordId) {
 		PatientRecordDTO prDto = patientRecordDao.getById(patientRecordId);
-		
-		//update last read date
-		Long queryOrgId = prDto.getQueryOrganizationId();
-		QueryOrganizationDTO queryOrgDto = queryDao.getQueryOrganizationById(queryOrgId);
-		if(queryOrgDto != null && queryOrgDto.getQueryId() != null) {
-			QueryDTO query = queryDao.getById(queryOrgDto.getQueryId());
-			query.setLastReadDate(new Date());
-			queryDao.update(query);
+		if(prDto != null) {
+			//update last read date
+			Long queryOrgId = prDto.getQueryOrganizationId();
+			QueryOrganizationDTO queryOrgDto = queryDao.getQueryOrganizationById(queryOrgId);
+			if(queryOrgDto != null && queryOrgDto.getQueryId() != null) {
+				QueryDTO query = queryDao.getById(queryOrgDto.getQueryId());
+				query.setLastReadDate(new Date());
+				queryDao.update(query);
+			}
 		}
 		return prDto;
 	}

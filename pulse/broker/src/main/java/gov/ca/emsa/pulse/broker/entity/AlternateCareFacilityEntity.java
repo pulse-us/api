@@ -21,15 +21,15 @@ public class AlternateCareFacilityEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false )
 	private Long id;
-	
+
 	@Column(name="name")
 	private String name;
 	
-	@Column(name = "address_id")
-	private Long addressId;
+	@Column(name = "phone_number")
+	private String phoneNumber;
 	
-	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "address_id", unique=true, nullable = true, insertable=false, updatable= false)
+	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "address_id", unique=true, nullable = true)
 	private AddressEntity address;
 	
 	@Column(name = "last_read_date")
@@ -44,7 +44,7 @@ public class AlternateCareFacilityEntity {
 	public Long getId() {
 		return id;
 	}
-	
+
 	public void setId(Long long1) {
 		this.id = long1;
 	}
@@ -81,13 +81,13 @@ public class AlternateCareFacilityEntity {
 		this.lastReadDate = lastReadDate;
 	}
 
-	public Long getAddressId() {
-		return addressId;
-	}
-
-	public void setAddressId(Long addressId) {
-		this.addressId = addressId;
-	}
+//	public Long getAddressId() {
+//		return addressId;
+//	}
+//
+//	public void setAddressId(Long addressId) {
+//		this.addressId = addressId;
+//	}
 
 	public AddressEntity getAddress() {
 		return address;
@@ -95,5 +95,13 @@ public class AlternateCareFacilityEntity {
 
 	public void setAddress(AddressEntity address) {
 		this.address = address;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 }

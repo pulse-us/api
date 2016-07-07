@@ -2,8 +2,10 @@ package gov.ca.emsa.pulse.broker.domain;
 
 import java.util.Date;
 
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+
 public class PatientRecord {
-	private String id;
+	private Long id;
 	private String firstName;
 	private String lastName;
 	private Date dateOfBirth;
@@ -11,12 +13,28 @@ public class PatientRecord {
 	private String phoneNumber;
 	private Address address;
 	private String ssn;
-	private QueryOrganization org;
 	
-	public String getId() {
+	public PatientRecord() {
+		
+	}
+	
+	public PatientRecord(PatientRecordDTO dto) {
+		this.id = dto.getId();
+		this.firstName = dto.getFirstName();
+		this.lastName = dto.getLastName();
+		this.dateOfBirth = dto.getDateOfBirth();
+		this.gender = dto.getGender();
+		this.phoneNumber = dto.getPhoneNumber();
+		if(dto.getAddress() != null) {
+			this.address = new Address(dto.getAddress());
+		}
+		this.ssn = dto.getSsn();
+	}
+	
+	public Long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getFirstName() {
@@ -54,12 +72,6 @@ public class PatientRecord {
 	}
 	public void setAddress(Address address) {
 		this.address = address;
-	}
-	public QueryOrganization getOrg() {
-		return org;
-	}
-	public void setOrg(QueryOrganization org) {
-		this.org = org;
 	}
 	public String getSsn() {
 		return ssn;
