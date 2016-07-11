@@ -1,9 +1,10 @@
-package gov.ca.emsa.pulse.broker;
+package gov.ca.emsa.pulse.broker.manager;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.TestCase;
+import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.domain.Organization;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
@@ -21,7 +22,7 @@ import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
-public class BrokerApplicationTests extends TestCase {
+public class OrganizationManagerTest extends TestCase {
 	
 	@Autowired
 	private OrganizationManager organizationManager;

@@ -21,39 +21,32 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	public OrganizationDTO create(OrganizationDTO dto) throws EntityExistsException{
 
 		OrganizationEntity entity = null;
-		OrganizationDTO result = null;
-		if(getOrganizationById(dto.getOrganizationId()) != null){
-			throw new EntityExistsException();
-		}else{
-
-			entity = new OrganizationEntity();
-			entity.setOrganizationId(dto.getOrganizationId());
-			entity.setName(dto.getName());
-			entity.setActive(dto.isActive());
-			entity.setAdapter(dto.getAdapter());
-			if(dto.getIpAddress() != null){
-				entity.setIpAddress(dto.getIpAddress());
-			}
-			if(dto.getUsername() != null){
-				entity.setUsername(dto.getUsername());
-			}
-			if(dto.getPassword() != null){
-				entity.setPassword(dto.getPassword());
-			}
-			if(dto.getCertificationKey() != null){
-				entity.setCertificationKey(dto.getCertificationKey());
-			}
-			if(dto.getEndpointUrl() != null){
-				entity.setEndpointUrl(dto.getEndpointUrl());
-			}
-			entity.setCreationDate(new Date());
-			entity.setLastModifiedDate(new Date());
-
-			create(entity);
-
-			result = new OrganizationDTO(entity);
+		entity = new OrganizationEntity();
+		entity.setOrganizationId(dto.getOrganizationId());
+		entity.setName(dto.getName());
+		entity.setActive(dto.isActive());
+		entity.setAdapter(dto.getAdapter());
+		if(dto.getIpAddress() != null){
+			entity.setIpAddress(dto.getIpAddress());
 		}
-		return result;
+		if(dto.getUsername() != null){
+			entity.setUsername(dto.getUsername());
+		}
+		if(dto.getPassword() != null){
+			entity.setPassword(dto.getPassword());
+		}
+		if(dto.getCertificationKey() != null){
+			entity.setCertificationKey(dto.getCertificationKey());
+		}
+		if(dto.getEndpointUrl() != null){
+			entity.setEndpointUrl(dto.getEndpointUrl());
+		}
+		entity.setCreationDate(new Date());
+		entity.setLastModifiedDate(new Date());
+
+		create(entity);
+
+		return new OrganizationDTO(entity);
 	}
 
 	public OrganizationDTO update(OrganizationDTO dto){
@@ -170,22 +163,7 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	}
 
 	private OrganizationEntity getOrganizationById(Long id) {
-		OrganizationEntity org = null;
-		TypedQuery<OrganizationEntity> query = null;
-
-		query = entityManager.createQuery("from OrganizationEntity where (organization_id = :id) ", OrganizationEntity.class);
-
-		query.setParameter("id", id);
-
-		List<OrganizationEntity> result = query.getResultList();
-
-		if(result.size() == 0){
-			return null;
-		}else if(result.size() == 1){
-			org = result.get(0);
-		}else{
-			return null;
-		}
+		OrganizationEntity org = entityManager.find(OrganizationEntity.class, id);
 		return org;
 	}
 
