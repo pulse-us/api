@@ -1,8 +1,10 @@
-package gov.ca.emsa.pulse.broker.domain;
+package gov.ca.emsa.pulse.common.domain;
 
-import gov.ca.emsa.pulse.common.domain.User;
+import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 
@@ -14,9 +16,10 @@ public class JWTAuthenticatedUser implements User {
 	private String firstName;
 	private String lastName;
     private String email;
+	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private boolean authenticated = true;
-	private String acf;
-	
+    private String jwt;
+
 	public JWTAuthenticatedUser(){
 		this.subjectName = null;
 	}
@@ -57,9 +60,27 @@ public class JWTAuthenticatedUser implements User {
         this.email = email;
     }
 
+	public Set<GrantedPermission> getPermissions() {
+		return this.permissions;
+	}
+
+	public void addPermission(GrantedPermission permission){
+		this.permissions.add(permission);
+	}
+
+	public void addPermission(String permissionValue) {
+		GrantedPermission permission = new GrantedPermission(permissionValue);
+		this.permissions.add(permission);
+	}
+
+	@Override
+	public void removePermission(String permissionValue){
+		this.permissions.remove(new GrantedPermission(permissionValue));
+	}
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+		return this.getPermissions();
 	}
 
 	@Override
@@ -112,6 +133,14 @@ public class JWTAuthenticatedUser implements User {
 		this.authenticated = arg0;
 	}
 
+    public String getJwt() {
+        return jwt;
+    }
+
+    public void setJwt(String jwt) {
+        this.jwt = jwt;
+    }
+
 	@Override
 	public String getName() {
 		return subjectName;
@@ -128,14 +157,6 @@ public class JWTAuthenticatedUser implements User {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getAcf() {
-		return acf;
-	}
-
-	public void setAcf(String acf) {
-		this.acf = acf;
 	}
 
 }
