@@ -59,7 +59,9 @@ public class DtoToDomainConverter {
 	
 	public static AlternateCareFacility convert(AlternateCareFacilityDTO acfDto){
 		AlternateCareFacility acf = new AlternateCareFacility();
-		acf.setAddress(convert(acfDto.getAddress()));
+		if(acfDto.getAddress() != null){
+			acf.setAddress(convert(acfDto.getAddress()));
+		}
 		acf.setId(acfDto.getId());
 		acf.setName(acfDto.getName());
 		acf.setPhoneNumber(acfDto.getPhoneNumber());
@@ -114,16 +116,21 @@ public class DtoToDomainConverter {
 		org.setName(orgDto.getName());
 		org.setAdapter(orgDto.getAdapter());
 		org.setOrganizationId(orgDto.getOrganizationId());
-		if(orgDto.getCertificationKey() != null)
+		if(orgDto.getCertificationKey() != null){
 			org.setCertificationKey(orgDto.getCertificationKey());
-		if(orgDto.getEndpointUrl() != null)
+		}
+		if(orgDto.getEndpointUrl() != null){
 			org.setEndpointUrl(orgDto.getEndpointUrl());
-		if(orgDto.getIpAddress() != null)
+		}
+		if(orgDto.getIpAddress() != null){
 			org.setIpAddress(orgDto.getIpAddress());
-		if(orgDto.getUsername() != null)
+		}
+		if(orgDto.getUsername() != null){
 			org.setUsername(orgDto.getUsername());
-		if(orgDto.getPassword() != null)
+		}
+		if(orgDto.getPassword() != null){
 			org.setPassword(orgDto.getPassword());
+		}
 		return org;
 	}
 	
