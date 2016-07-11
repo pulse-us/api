@@ -21,7 +21,8 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.ca.emsa.pulse.service.Document;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -40,9 +41,9 @@ public class DocumentService {
 		ObjectMapper mapper = new ObjectMapper();
 		
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		User user = new User();
+		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
 		if(auth != null){
-			user.setName(auth.getName());
+			user.setSubjectName(auth.getName());
 		}else{
 			logger.error("Could not find a logged in user. ");
 		}
@@ -67,9 +68,9 @@ public class DocumentService {
 		ObjectMapper mapper = new ObjectMapper();
 		
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		User user = new User();
+		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
 		if(auth != null){
-			user.setName(auth.getName());
+			user.setSubjectName(auth.getName());
 		}else{
 			logger.error("Could not find a logged in user. ");
 		}
