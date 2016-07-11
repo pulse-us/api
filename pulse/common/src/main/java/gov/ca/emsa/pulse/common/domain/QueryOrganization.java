@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.common.domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class QueryOrganization {
@@ -8,8 +9,8 @@ public class QueryOrganization {
 	private Long queryId;
 	private Long orgId;
 	private String status;
-	private Long startDate;
-	private Long endDate;
+	private Date startDate;
+	private Date endDate;
 	private Boolean success;
 	private List<PatientRecord> results;
 	
@@ -49,19 +50,19 @@ public class QueryOrganization {
 		this.status = status;
 	}
 
-	public Long getStartDate() {
+	public Date getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Long startDate) {
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
-	public Long getEndDate() {
+	public Date getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Long endDate) {
+	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 

@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.ca.emsa.pulse.broker.domain.Document;
-import gov.ca.emsa.pulse.broker.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
-import gov.ca.emsa.pulse.broker.domain.User;
+import gov.ca.emsa.pulse.common.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
+import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditManager;
@@ -58,7 +59,8 @@ public class PatientService {
 		List<PatientDTO> queryResults = patientManager.getPatientsAtAcf(acfDto.getId());
 		List<Patient> results = new ArrayList<Patient>(queryResults.size());
         for(PatientDTO patientDto : queryResults) {
-        	results.add(new Patient(patientDto));
+        	Patient patient = DtoToDomainConverter.convert(patientDto);
+        	results.add(patient);
         }
         
         return results;
@@ -72,7 +74,7 @@ public class PatientService {
 		List<DocumentDTO> docDtos = docManager.getDocumentsForPatient(patientId);
 		List<Document> results = new ArrayList<Document>(docDtos.size());
 		for(DocumentDTO docDto : docDtos) {
-			results.add(new Document(docDto));
+			results.add(DtoToDomainConverter.convert(docDto));
 		}
 		return results;
 	}
