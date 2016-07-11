@@ -1,0 +1,60 @@
+buildscript {
+  ext {
+    springBootVersion = '1.3.3.RELEASE'
+  }
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+  }
+}
+
+configurations {
+ compile.exclude group:'ch.qos.logback'
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'findbugs'
+
+jar {
+  baseName = 'common'
+  version = '0.0.1-SNAPSHOT'
+}
+
+findbugs {
+  effort = 'max'
+  ignoreFailures = true
+  reportsDir = file("$project.buildDir/reports/tests")
+  reportLevel = 'low'
+}
+
+tasks.withType(FindBugs) {
+  reports {
+    xml.enabled = false
+    html.enabled = true
+  }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+  compile('org.springframework:spring-beans:4.2.6.RELEASE')
+  compile('org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final')
+  compile('org.postgresql:postgresql:9.4-1200-jdbc41')
+  compile('io.springfox:springfox-swagger2:2.4.0')
+  compile('io.springfox:springfox-spring-web:2.4.0')
+  compile('io.springfox:springfox-core:2.4.0')
+  compile('org.springframework:spring-orm:4.2.6.RELEASE')
+  compile('org.springframework.security:spring-security-core:4.1.0.RELEASE')
+  compile('org.hibernate:hibernate-core:4.2.6.Final')
+  compile('org.hibernate:hibernate-entitymanager:4.2.6.Final')
+  compile('org.opensaml:opensaml:2.6.4')
+  compile('com.github.springtestdbunit:spring-test-dbunit:1.3.0')
+}
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.12'
+}
