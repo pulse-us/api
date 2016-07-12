@@ -140,6 +140,15 @@ public class PatientSearchTest {
 		 
 		 Assert.assertNotNull(query);
 		 Assert.assertNotNull(query.getId());
+		 
+		 queryManager.delete(query.getId());
+		 
+		 if(org1 != null) {
+			 orgDao.delete(org1);
+		 }
+		 if(org2 != null) {
+			 orgDao.delete(org2);
+		 }
 	}
 	
 	private void insertOrganizations() {

@@ -11,9 +11,12 @@ import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
 import gov.ca.emsa.pulse.broker.domain.Organization;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
@@ -32,6 +35,8 @@ public class OrganizationManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback(true)
 	public void createDirectoryCacheTest(){
 		ArrayList<Organization> orgs = new ArrayList<Organization>();
 		Organization org1 = new Organization();
@@ -66,6 +71,8 @@ public class OrganizationManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback(true)
 	public void removeOrgDirectoryCacheTest(){
 		ArrayList<Organization> orgs = new ArrayList<Organization>();
 		Organization org1 = new Organization();
@@ -104,6 +111,8 @@ public class OrganizationManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback(true)
 	public void updateOrgDirectoryCacheTest(){
 		ArrayList<Organization> orgs = new ArrayList<Organization>();
 		Organization org1 = new Organization();

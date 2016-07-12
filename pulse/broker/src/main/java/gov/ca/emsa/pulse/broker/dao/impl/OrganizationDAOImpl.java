@@ -21,37 +21,40 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	public OrganizationDTO create(OrganizationDTO dto) throws EntityExistsException{
 
 		OrganizationEntity entity = null;
-		entity = new OrganizationEntity();
-		entity.setOrganizationId(dto.getOrganizationId());
-		entity.setName(dto.getName());
-		entity.setActive(dto.isActive());
-		entity.setAdapter(dto.getAdapter());
-		if(dto.getIpAddress() != null){
-			entity.setIpAddress(dto.getIpAddress());
+		if(getByOrgId(dto.getOrganizationId()) != null){
+			throw new EntityExistsException();
+		} else {
+			entity = new OrganizationEntity();
+			entity.setOrganizationId(dto.getOrganizationId());
+			entity.setName(dto.getName());
+			entity.setActive(dto.isActive());
+			entity.setAdapter(dto.getAdapter());
+			if(dto.getIpAddress() != null){
+				entity.setIpAddress(dto.getIpAddress());
+			}
+			if(dto.getUsername() != null){
+				entity.setUsername(dto.getUsername());
+			}
+			if(dto.getPassword() != null){
+				entity.setPassword(dto.getPassword());
+			}
+			if(dto.getCertificationKey() != null){
+				entity.setCertificationKey(dto.getCertificationKey());
+			}
+			if(dto.getEndpointUrl() != null){
+				entity.setEndpointUrl(dto.getEndpointUrl());
+			}
+			entity.setCreationDate(new Date());
+			entity.setLastModifiedDate(new Date());
+	
+			create(entity);
 		}
-		if(dto.getUsername() != null){
-			entity.setUsername(dto.getUsername());
-		}
-		if(dto.getPassword() != null){
-			entity.setPassword(dto.getPassword());
-		}
-		if(dto.getCertificationKey() != null){
-			entity.setCertificationKey(dto.getCertificationKey());
-		}
-		if(dto.getEndpointUrl() != null){
-			entity.setEndpointUrl(dto.getEndpointUrl());
-		}
-		entity.setCreationDate(new Date());
-		entity.setLastModifiedDate(new Date());
-
-		create(entity);
-
 		return new OrganizationDTO(entity);
 	}
 
 	public OrganizationDTO update(OrganizationDTO dto){
 
-		OrganizationEntity entity =  getOrganizationById(dto.getOrganizationId());
+		OrganizationEntity entity =  getByOrgId(dto.getOrganizationId());
 
 		boolean changed = false;
 
@@ -104,7 +107,7 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	}
 
 	public void delete(OrganizationDTO organizationDTO) {
-		OrganizationEntity toDelete = getOrganizationById(organizationDTO.getOrganizationId());
+		OrganizationEntity toDelete = getOrganizationById(organizationDTO.getId());
 		deleteOrganization(toDelete);
 	}
 
@@ -167,6 +170,18 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 		return org;
 	}
 
+	private OrganizationEntity getByOrgId(Long orgId) {
+		Query query = entityManager.createQuery("from OrganizationEntity o "
+				+ "WHERE o.organizationId = :orgId", OrganizationEntity.class);
+		query.setParameter("orgId", orgId);
+		
+		List<OrganizationEntity> result = query.getResultList();
+		if(result != null && result.size() > 0) {
+			return result.get(0);
+		}
+		return null;
+	}
+	
 	@Override
 	public List<OrganizationEntity> getAllEntities() {
 		TypedQuery<OrganizationEntity> query = null;
