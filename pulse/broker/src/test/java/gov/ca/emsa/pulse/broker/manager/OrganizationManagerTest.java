@@ -1,26 +1,25 @@
-package gov.ca.emsa.pulse.broker;
+package gov.ca.emsa.pulse.broker.manager;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
-import junit.framework.TestCase;
-import gov.ca.emsa.pulse.common.domain.Organization;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import gov.ca.emsa.pulse.common.domain.Organization;
 import junit.framework.TestCase;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
-public class BrokerApplicationTests extends TestCase {
+public class OrganizationManagerTest extends TestCase {
 	
 	@Autowired
 	private OrganizationManager organizationManager;
@@ -30,6 +29,8 @@ public class BrokerApplicationTests extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback(true)
 	public void createDirectoryCacheTest(){
 		ArrayList<Organization> orgs = new ArrayList<Organization>();
 		Organization org1 = new Organization();
@@ -64,6 +65,8 @@ public class BrokerApplicationTests extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback(true)
 	public void removeOrgDirectoryCacheTest(){
 		ArrayList<Organization> orgs = new ArrayList<Organization>();
 		Organization org1 = new Organization();
@@ -102,6 +105,8 @@ public class BrokerApplicationTests extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback(true)
 	public void updateOrgDirectoryCacheTest(){
 		ArrayList<Organization> orgs = new ArrayList<Organization>();
 		Organization org1 = new Organization();

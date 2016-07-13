@@ -47,6 +47,7 @@ public class OrganizationManagerImpl implements OrganizationManager {
 		for(Organization org: orgs){
 			updatedOrgIds.add(org.getOrganizationId());
 		}
+		
 		Set<Long> nonDupUpdatedOrgIds = new HashSet<Long>();
 		//create set of updates org ids
 		nonDupUpdatedOrgIds.addAll(updatedOrgIds);

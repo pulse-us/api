@@ -1,20 +1,12 @@
 package gov.ca.emsa.pulse.broker.dao;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
@@ -25,18 +17,16 @@ import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
-//@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-//    DirtiesContextTestExecutionListener.class,
-//    TransactionalTestExecutionListener.class,
-//    DbUnitTestExecutionListener.class })
-//@DatabaseSetup("classpath:/testData.xml")
 public class QueryDaoTest extends TestCase {
 
 	@Autowired QueryDAO queryDao;
 	@Autowired OrganizationDAO orgDao;
+	private OrganizationDTO org1;
+	private OrganizationDTO org2;
 	
 	@Test
 	@Transactional
+	@Rollback(true)
 	public void testInsertQueryWithoutOrgs() {
 		QueryDTO toInsert = new QueryDTO();
 		toInsert.setStatus(QueryStatus.ACTIVE.name());
@@ -49,104 +39,143 @@ public class QueryDaoTest extends TestCase {
 		assertTrue(inserted.getId().longValue() > 0);
 	}
 	
-//	@Test
-//	@Transactional
-//	public void testInsertQueryWithOrg() {
-//		QueryDTO toInsert = new QueryDTO();
-//		toInsert.setStatus(QueryStatus.ACTIVE.name());
-//		toInsert.setTerms("terms");
-//		toInsert.setUserId("kekey");
-//		
-//		OrganizationDTO org = new OrganizationDTO();
-//		org.setAdapter("IHE");
-//		org.setEndpointUrl("http://www.localhost.com");
-//		org.setPassword("pwd");
-//		org.setUsername("kekey");
-//		org = orgDao.create(org);
-//		
-//		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
-//		orgQuery1.setOrgId(org.getId());
-//		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
-//		toInsert.getOrgStatuses().add(orgQuery1);
-//		
-//		QueryDTO inserted = queryDao.create(toInsert);
-//		
-//		QueryDTO selected = queryDao.getById(inserted.getId());
-//		
-//		assertNotNull(selected);
-//		assertNotNull(selected.getId());
-//		assertTrue(selected.getId().longValue() > 0);
-//		assertNotNull(selected.getOrgStatuses());
-//		assertEquals(1, selected.getOrgStatuses().size());
-//		orgQuery1 = selected.getOrgStatuses().get(0);
-//		assertNotNull(orgQuery1.getId());
-//		assertTrue(orgQuery1.getId().longValue() > 0);
-//		
-//		orgDao.delete(org);
-//	}
-//	
-//	@Test
-//	@Transactional
-//	public void testInsertQueryWithOrgs() {
-//		QueryDTO toInsert = new QueryDTO();
-//		toInsert.setStatus(QueryStatus.ACTIVE.name());
-//		toInsert.setTerms("terms");
-//		toInsert.setUserId("kekey");
-//		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
-//		orgQuery1.setOrgId(1L);
-//		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
-//		toInsert.getOrgStatuses().add(orgQuery1);
-//		QueryOrganizationDTO orgQuery2 = new QueryOrganizationDTO();
-//		orgQuery2.setOrgId(1L);
-//		orgQuery2.setStatus(QueryStatus.ACTIVE.name());
-//		toInsert.getOrgStatuses().add(orgQuery2);
-//		
-//		QueryDTO inserted = queryDao.create(toInsert);
-//		
-//		QueryDTO selected = queryDao.getById(inserted.getId());
-//		
-//		assertNotNull(selected);
-//		assertNotNull(selected.getId());
-//		assertTrue(selected.getId().longValue() > 0);
-//		assertNotNull(selected.getOrgStatuses());
-//		assertEquals(2, selected.getOrgStatuses().size());
-//		orgQuery1 = selected.getOrgStatuses().get(0);
-//		assertNotNull(orgQuery1.getId());
-//		assertTrue(orgQuery1.getId().longValue() > 0);
-//		orgQuery2 = selected.getOrgStatuses().get(0);
-//		assertNotNull(orgQuery2.getId());
-//		assertTrue(orgQuery2.getId().longValue() > 0);
-//	}
-//	
-//	@Test
-//	@Transactional
-//	public void testUpdateQuery() {
-//		QueryDTO toInsert = new QueryDTO();
-//		toInsert.setStatus(QueryStatus.ACTIVE.name());
-//		toInsert.setTerms("terms");
-//		toInsert.setUserId("kekey");
-//		QueryDTO inserted = queryDao.create(toInsert);
-//		QueryDTO selected = queryDao.getById(inserted.getId());
-//		
-//		assertNotNull(selected);
-//		assertNotNull(selected.getId());
-//		assertTrue(selected.getId().longValue() > 0);
-//		assertEquals(0, selected.getOrgStatuses().size());
-//		
-//		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
-//		orgQuery1.setOrgId(1L);
-//		orgQuery1.setQueryId(selected.getId());
-//		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
-//		selected.getOrgStatuses().add(orgQuery1);
-//		selected = queryDao.update(selected);
-//		
-//		assertEquals(1, selected.getOrgStatuses().size());
-//		orgQuery1 = selected.getOrgStatuses().get(0);
-//		orgQuery1.setStatus(QueryStatus.COMPLETE.name());
-//		selected = queryDao.update(selected);
-//		selected = queryDao.getById(selected.getId());
-//		orgQuery1 = selected.getOrgStatuses().get(0);
-//		assertEquals(QueryStatus.COMPLETE.name(), orgQuery1.getStatus());
-//		assertEquals(QueryStatus.COMPLETE.name(), selected.getStatus());
-//	}
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testInsertQueryWithOrg() {
+		insertOrganizations();
+		
+		QueryDTO toInsert = new QueryDTO();
+		toInsert.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.setTerms("terms");
+		toInsert.setUserId("kekey");
+		
+		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
+		orgQuery1.setOrgId(org1.getId());
+		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.getOrgStatuses().add(orgQuery1);
+		
+		QueryDTO inserted = queryDao.create(toInsert);
+		assertNotNull(inserted);
+		assertNotNull(inserted.getId());
+		assertTrue(inserted.getId().longValue() > 0);
+		assertNotNull(inserted.getOrgStatuses());
+		assertEquals(1, inserted.getOrgStatuses().size());
+		orgQuery1 = inserted.getOrgStatuses().get(0);
+		assertNotNull(inserted.getOrgStatuses().get(0).getId());
+		assertTrue(inserted.getOrgStatuses().get(0).getId().longValue() > 0);
+		
+		QueryDTO selected = queryDao.getById(inserted.getId());
+		assertNotNull(selected);
+		assertNotNull(selected.getId());
+		assertTrue(selected.getId().longValue() > 0);
+		assertNotNull(selected.getOrgStatuses());
+		assertEquals(1, selected.getOrgStatuses().size());
+		orgQuery1 = selected.getOrgStatuses().get(0);
+		assertNotNull(orgQuery1.getId());
+		assertTrue(orgQuery1.getId().longValue() > 0);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testInsertQueryWithTwoOrgs() {		
+		insertOrganizations();
+
+		QueryDTO toInsert = new QueryDTO();
+		toInsert.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.setTerms("terms");
+		toInsert.setUserId("kekey");
+		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
+		orgQuery1.setOrgId(org1.getId());
+		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.getOrgStatuses().add(orgQuery1);
+		QueryOrganizationDTO orgQuery2 = new QueryOrganizationDTO();
+		orgQuery2.setOrgId(org2.getId());
+		orgQuery2.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.getOrgStatuses().add(orgQuery2);
+		
+		QueryDTO inserted = queryDao.create(toInsert);
+		assertNotNull(inserted);
+		assertNotNull(inserted.getId());
+		assertTrue(inserted.getId().longValue() > 0);
+		assertNotNull(inserted.getOrgStatuses());
+		assertEquals(2, inserted.getOrgStatuses().size());
+		orgQuery1 = inserted.getOrgStatuses().get(0);
+		assertNotNull(orgQuery1.getId());
+		assertTrue(orgQuery1.getId().longValue() > 0);
+		orgQuery2 = inserted.getOrgStatuses().get(0);
+		assertNotNull(orgQuery2.getId());
+		assertTrue(orgQuery2.getId().longValue() > 0);
+		
+		QueryDTO selected = queryDao.getById(inserted.getId());
+		assertNotNull(selected);
+		assertNotNull(selected.getId());
+		assertTrue(selected.getId().longValue() > 0);
+		assertNotNull(selected.getOrgStatuses());
+		assertEquals(2, selected.getOrgStatuses().size());
+		orgQuery1 = selected.getOrgStatuses().get(0);
+		assertNotNull(orgQuery1.getId());
+		assertTrue(orgQuery1.getId().longValue() > 0);
+		orgQuery2 = selected.getOrgStatuses().get(0);
+		assertNotNull(orgQuery2.getId());
+		assertTrue(orgQuery2.getId().longValue() > 0);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testUpdateQuery() {
+		insertOrganizations();
+		
+		QueryDTO toInsert = new QueryDTO();
+		toInsert.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.setTerms("terms");
+		toInsert.setUserId("kekey");
+		QueryDTO inserted = queryDao.create(toInsert);
+		QueryDTO selected = queryDao.getById(inserted.getId());
+		
+		assertNotNull(selected);
+		assertNotNull(selected.getId());
+		assertTrue(selected.getId().longValue() > 0);
+		assertEquals(0, selected.getOrgStatuses().size());
+		
+		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
+		orgQuery1.setOrgId(org1.getId());
+		orgQuery1.setQueryId(selected.getId());
+		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
+		selected.getOrgStatuses().add(orgQuery1);
+		selected = queryDao.update(selected);
+		
+		assertEquals(1, selected.getOrgStatuses().size());
+		orgQuery1 = selected.getOrgStatuses().get(0);
+		orgQuery1.setStatus(QueryStatus.COMPLETE.name());
+		selected = queryDao.update(selected);
+		selected = queryDao.getById(selected.getId());
+		orgQuery1 = selected.getOrgStatuses().get(0);
+		assertEquals(QueryStatus.COMPLETE.name(), orgQuery1.getStatus());
+		assertEquals(QueryStatus.COMPLETE.name(), selected.getStatus());
+	}
+	
+	private void insertOrganizations() {
+		org1 = new OrganizationDTO();
+		org1.setOrganizationId(1L);
+		org1.setName("IHE Org");
+		org1.setAdapter("IHE");
+		org1.setEndpointUrl("http://www.localhost.com");
+		org1.setPassword("pwd");
+		org1.setUsername("kekey");
+		org1.setActive(true);
+		org1 = orgDao.create(org1);
+		
+		org2 = new OrganizationDTO();
+		org2.setOrganizationId(2L);
+		org2.setName("eHealth Org");
+		org2.setAdapter("eHealth");
+		org2.setEndpointUrl("http://www.localhost.com");
+		org2.setPassword("pwd");
+		org2.setUsername("kekey");
+		org2.setActive(true);
+		org2 = orgDao.create(org2);
+	}
 }

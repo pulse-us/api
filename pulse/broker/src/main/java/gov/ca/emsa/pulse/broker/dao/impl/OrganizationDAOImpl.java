@@ -21,11 +21,9 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	public OrganizationDTO create(OrganizationDTO dto) throws EntityExistsException{
 
 		OrganizationEntity entity = null;
-		OrganizationDTO result = null;
-		if(getOrganizationById(dto.getOrganizationId()) != null){
+		if(getByOrgId(dto.getOrganizationId()) != null){
 			throw new EntityExistsException();
-		}else{
-
+		} else {
 			entity = new OrganizationEntity();
 			entity.setOrganizationId(dto.getOrganizationId());
 			entity.setName(dto.getName());
@@ -48,17 +46,15 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 			}
 			entity.setCreationDate(new Date());
 			entity.setLastModifiedDate(new Date());
-
+	
 			create(entity);
-
-			result = new OrganizationDTO(entity);
 		}
-		return result;
+		return new OrganizationDTO(entity);
 	}
 
 	public OrganizationDTO update(OrganizationDTO dto){
 
-		OrganizationEntity entity =  getOrganizationById(dto.getOrganizationId());
+		OrganizationEntity entity =  getByOrgId(dto.getOrganizationId());
 
 		boolean changed = false;
 
@@ -111,7 +107,7 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	}
 
 	public void delete(OrganizationDTO organizationDTO) {
-		OrganizationEntity toDelete = getOrganizationById(organizationDTO.getOrganizationId());
+		OrganizationEntity toDelete = getOrganizationById(organizationDTO.getId());
 		deleteOrganization(toDelete);
 	}
 
@@ -170,25 +166,22 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	}
 
 	private OrganizationEntity getOrganizationById(Long id) {
-		OrganizationEntity org = null;
-		TypedQuery<OrganizationEntity> query = null;
-
-		query = entityManager.createQuery("from OrganizationEntity where (organization_id = :id) ", OrganizationEntity.class);
-
-		query.setParameter("id", id);
-
-		List<OrganizationEntity> result = query.getResultList();
-
-		if(result.size() == 0){
-			return null;
-		}else if(result.size() == 1){
-			org = result.get(0);
-		}else{
-			return null;
-		}
+		OrganizationEntity org = entityManager.find(OrganizationEntity.class, id);
 		return org;
 	}
 
+	private OrganizationEntity getByOrgId(Long orgId) {
+		Query query = entityManager.createQuery("from OrganizationEntity o "
+				+ "WHERE o.organizationId = :orgId", OrganizationEntity.class);
+		query.setParameter("orgId", orgId);
+		
+		List<OrganizationEntity> result = query.getResultList();
+		if(result != null && result.size() > 0) {
+			return result.get(0);
+		}
+		return null;
+	}
+	
 	@Override
 	public List<OrganizationEntity> getAllEntities() {
 		TypedQuery<OrganizationEntity> query = null;
