@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Patient {
 	private Long id;
+	private String orgPatientId;
 	private String firstName;
 	private String lastName;
 	private Date dateOfBirth;
@@ -26,6 +27,15 @@ public class Patient {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	public String getOrgPatientId() {
+		return orgPatientId;
+	}
+
+	public void setOrgPatientId(String orgPatientId) {
+		this.orgPatientId = orgPatientId;
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}
