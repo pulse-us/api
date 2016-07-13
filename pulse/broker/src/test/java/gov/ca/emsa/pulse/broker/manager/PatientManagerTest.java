@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.broker.manager;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -137,6 +139,7 @@ public class PatientManagerTest extends TestCase {
 		orgMap.setOrg(org1);
 		orgMap.setOrganizationId(org1.getId());
 		orgMap.setOrgPatientId(queryResult1.getOrgPatientId());
+		toCreate.getOrgMaps().add(orgMap);
 		
 		PatientDTO created = patientManager.create(toCreate);
 		assertNotNull(created);
@@ -157,5 +160,32 @@ public class PatientManagerTest extends TestCase {
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
 		//TODO: why is this coming back empty?? It works when the service is called
 		//assertEquals(1, selected.getOrgMaps().size());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testGetPatientsAtAcf() {		
+		PatientDTO toCreate = new PatientDTO();
+		toCreate.setAcf(acf);
+		toCreate.setFirstName("Jonathan");
+		toCreate.setLastName("Smith");
+		toCreate.setPhoneNumber("4105554444");
+		toCreate.setSsn("111223344");
+		toCreate.setGender("Male");
+		
+		PatientOrganizationMapDTO orgMap = new PatientOrganizationMapDTO();
+		orgMap.setOrg(org1);
+		orgMap.setOrganizationId(org1.getId());
+		orgMap.setOrgPatientId(queryResult1.getOrgPatientId());
+		toCreate.getOrgMaps().add(orgMap);
+		
+		patientManager.create(toCreate);
+		
+		List<PatientDTO> patients = patientManager.getPatientsAtAcf(acf.getId());
+		assertNotNull(patients);
+		assertEquals(1, patients.size());
+		assertNotNull(patients.get(0).getOrgMaps());
+		assertEquals(1, patients.get(0).getOrgMaps().size());
 	}
 }
