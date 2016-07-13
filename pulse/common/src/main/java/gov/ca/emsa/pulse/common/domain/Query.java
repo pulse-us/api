@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.common.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Query {
@@ -9,6 +10,10 @@ public class Query {
 	private String terms;
 	private List<QueryOrganization> orgStatuses;
 
+	public Query() {
+		orgStatuses = new ArrayList<QueryOrganization>();
+	}
+	
 	public Long getId() {
 		return id;
 	}
