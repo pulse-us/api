@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.ca.emsa.pulse.broker.domain.AlternateCareFacility;
+import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.broker.domain.Audit;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
-import gov.ca.emsa.pulse.broker.domain.User;
+import gov.ca.emsa.pulse.common.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditManager;
 import io.swagger.annotations.Api;
@@ -36,8 +38,7 @@ public class AlternateCareFacilityService {
 		List<AlternateCareFacilityDTO> dtos = acfManager.getAll();
 		List<AlternateCareFacility> results = new ArrayList<AlternateCareFacility>();
 		for(AlternateCareFacilityDTO dto : dtos) {
-			AlternateCareFacility acf = new AlternateCareFacility(dto);
-			results.add(acf);
+			results.add(DtoToDomainConverter.convert(dto));
 		}
        return results;
     }
@@ -48,7 +49,7 @@ public class AlternateCareFacilityService {
 		User user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.GET_ACF_BY_ID, "/acfs" + acfId, user.getUsername());
 		AlternateCareFacilityDTO dto = acfManager.getById(acfId);
-		return new AlternateCareFacility(dto);
+		return DtoToDomainConverter.convert(dto);
     }
 	
 	@ApiOperation(value = "Create a new ACF")
@@ -71,7 +72,7 @@ public class AlternateCareFacilityService {
 			dto.setAddress(address);
 		}
 		AlternateCareFacilityDTO created = acfManager.create(dto);
-		return new AlternateCareFacility(created);
+		return DtoToDomainConverter.convert(created);
 		
 	}
 	
@@ -106,7 +107,6 @@ public class AlternateCareFacilityService {
 			dto.setAddress(null);
 		}
 		AlternateCareFacilityDTO updated = acfManager.update(dto);
-		return new AlternateCareFacility(updated);
-		
+		return DtoToDomainConverter.convert(updated);
 	}
 }

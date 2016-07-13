@@ -19,6 +19,7 @@ public class JWTAuthenticatedUser implements User {
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private boolean authenticated = true;
     private String jwt;
+    private String acf;
 
 	public JWTAuthenticatedUser(){
 		this.subjectName = null;
@@ -158,5 +159,15 @@ public class JWTAuthenticatedUser implements User {
 	public void setId(Long id) {
 		this.id = id;
 	}
+
+	public String getAcf() {
+		return acf;
+	}
+
+	public void setAcf(String acf) {
+		this.acf = acf;
+	}
+	
+	
 
 }

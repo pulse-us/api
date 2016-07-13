@@ -1,10 +1,10 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import gov.ca.emsa.pulse.broker.domain.Address;
-import gov.ca.emsa.pulse.broker.domain.Document;
+import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.broker.domain.MockPatient;
-import gov.ca.emsa.pulse.broker.domain.Patient;
-import gov.ca.emsa.pulse.broker.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
 
 public class DomainToDtoConverter {
 

@@ -1,6 +1,5 @@
-package gov.ca.emsa.pulse.service;
+package gov.ca.emsa.pulse.common.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Query {
@@ -8,7 +7,7 @@ public class Query {
 	private String userToken;
 	private String status;
 	private String terms;
-	private List<OrganizationStatus> orgStatuses;
+	private List<QueryOrganization> orgStatuses;
 
 	public Long getId() {
 		return id;
@@ -42,11 +41,11 @@ public class Query {
 		this.terms = terms;
 	}
 
-	public List<OrganizationStatus> getOrgStatuses() {
+	public List<QueryOrganization> getOrgStatuses() {
 		return orgStatuses;
 	}
 
-	public void setOrgStatuses(List<OrganizationStatus> orgStatuses) {
+	public void setOrgStatuses(List<QueryOrganization> orgStatuses) {
 		this.orgStatuses = orgStatuses;
 	}
 }

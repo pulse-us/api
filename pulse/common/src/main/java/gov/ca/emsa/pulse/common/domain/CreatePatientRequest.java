@@ -1,4 +1,4 @@
-package gov.ca.emsa.pulse.broker.domain;
+package gov.ca.emsa.pulse.common.domain;
 
 import java.util.List;
 

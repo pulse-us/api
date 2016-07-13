@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.dao.AddressDAO;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
-import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 
@@ -26,32 +25,14 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 	@Override
 	@Transactional
 	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO toCreate) {
-		AddressDTO createdAddress = null;
-		if(toCreate.getAddress() != null && toCreate.getAddress().getId() == null) {
-			createdAddress = addressDao.create(toCreate.getAddress());
-			toCreate.setAddress(createdAddress);
-		}
-		AlternateCareFacilityDTO created = acfDao.create(toCreate);
-		created.setAddress(createdAddress);
-		return created;
+		return acfDao.create(toCreate);
 	}
 
 	@Override
 	@Transactional
 	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO toUpdate) {
-		AddressDTO updatedAddress = null;
-		if(toUpdate.getAddress() != null) {
-			if(toUpdate.getAddress().getId() != null) {
-				updatedAddress = addressDao.update(toUpdate.getAddress());
-			} else {
-				AddressDTO createdAddress = addressDao.create(toUpdate.getAddress());
-				updatedAddress = createdAddress;
-				toUpdate.setAddress(createdAddress);
-			}
-		}
 		toUpdate.setLastReadDate(new Date());
 		AlternateCareFacilityDTO updated = acfDao.update(toUpdate);
-		updated.setAddress(updatedAddress);
 		return updated;
 	}
 
@@ -65,8 +46,10 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 	@Transactional
 	public AlternateCareFacilityDTO getById(Long id) {
 		AlternateCareFacilityDTO result = acfDao.getById(id);
-		result.setLastReadDate(new Date());
-		result = acfDao.update(result);
+		if(result != null) {
+			result.setLastReadDate(new Date());
+			result = acfDao.update(result);
+		}
 		return result;
 	}
 

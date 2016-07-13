@@ -1,5 +1,8 @@
 package gov.ca.emsa.pulse.service;
 
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.common.domain.Organization;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -34,9 +37,9 @@ public class OrganizationService {
 		ObjectMapper mapper = new ObjectMapper();
 
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		User user = new User();
+		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
 		if(auth != null){
-			user.setName(auth.getName());
+			user.setSubjectName(auth.getName());
 		}else{
 			logger.error("Could not find a logged in user. ");
 		}

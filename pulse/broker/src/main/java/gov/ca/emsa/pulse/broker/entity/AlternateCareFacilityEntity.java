@@ -28,11 +28,8 @@ public class AlternateCareFacilityEntity {
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
-	@Column(name = "address_id")
-	private Long addressId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "address_id", unique=true, nullable = true, insertable=false, updatable= false)
+	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "address_id", unique=true, nullable = true)
 	private AddressEntity address;
 	
 	@Column(name = "last_read_date")
@@ -84,13 +81,13 @@ public class AlternateCareFacilityEntity {
 		this.lastReadDate = lastReadDate;
 	}
 
-	public Long getAddressId() {
-		return addressId;
-	}
-
-	public void setAddressId(Long addressId) {
-		this.addressId = addressId;
-	}
+//	public Long getAddressId() {
+//		return addressId;
+//	}
+//
+//	public void setAddressId(Long addressId) {
+//		this.addressId = addressId;
+//	}
 
 	public AddressEntity getAddress() {
 		return address;

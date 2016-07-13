@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.broker.domain;
 
+import gov.ca.emsa.pulse.common.domain.User;
+
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;

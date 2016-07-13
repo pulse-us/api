@@ -23,6 +23,11 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.Query;
+import gov.ca.emsa.pulse.common.domain.User;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -35,21 +40,21 @@ public class PatientService {
 
 	@ApiOperation(value="Search for patients that match the parameters.")
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
-	public void searchPatients(@RequestBody PatientSearchTerms patientSearchTerms) throws JsonProcessingException {
+	public void searchPatients(@RequestBody PatientSearch patientSearchTerms) throws JsonProcessingException {
 
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		ObjectMapper mapper = new ObjectMapper();
 		
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		User user = new User();
+		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
 		if(auth != null){
-			user.setName(auth.getName());
+			user.setSubjectName(auth.getName());
 		}else{
 			logger.error("Could not find a logged in user. ");
 		}
 		
 		headers.add("User", mapper.writeValueAsString(user));
-		HttpEntity<PatientSearchTerms> request = new HttpEntity<PatientSearchTerms>(patientSearchTerms, headers);
+		HttpEntity<PatientSearch> request = new HttpEntity<PatientSearch>(patientSearchTerms, headers);
 		RestTemplate query = new RestTemplate();
 		query.postForObject(brokerUrl + "/search", request, Query.class);
 		logger.info("Request sent to broker from services REST.");
@@ -64,9 +69,9 @@ public class PatientService {
 		ObjectMapper mapper = new ObjectMapper();
 
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		User user = new User();
+		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
 		if(auth != null){
-			user.setName(auth.getName());
+			user.setSubjectName(auth.getName());
 			user.setAcf("ACF1");
 		}else{
 			logger.error("Could not find a logged in user. ");

@@ -1,6 +1,4 @@
-package gov.ca.emsa.pulse.broker.domain;
-
-import gov.ca.emsa.pulse.broker.dto.AddressDTO;
+package gov.ca.emsa.pulse.common.domain;
 
 public class Address {
 	private Long id;
@@ -12,16 +10,6 @@ public class Address {
 	private String country;
 	
 	public Address(){}
-	
-	public Address(AddressDTO dto) {
-		this.id = dto.getId();
-		this.street1 = dto.getStreetLineOne();
-		this.street2 = dto.getStreetLineTwo();
-		this.city = dto.getCity();
-		this.state = dto.getState();
-		this.zipcode = dto.getZipcode();
-		this.country = dto.getCountry();
-	}
 	
 	public Long getId() {
 		return id;

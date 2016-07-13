@@ -21,12 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.ca.emsa.pulse.broker.domain.Address;
-import gov.ca.emsa.pulse.broker.domain.Patient;
-import gov.ca.emsa.pulse.broker.domain.PatientSearch;
-import gov.ca.emsa.pulse.broker.domain.Query;
+import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
-import gov.ca.emsa.pulse.broker.domain.User;
+import gov.ca.emsa.pulse.common.domain.User;
+import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
@@ -131,6 +132,6 @@ public class SearchService {
 		}
 		
        QueryDTO initiatedQuery = searchManager.queryForPatientRecords(samlMessage, queryTerms, query, user);
-       return new Query(initiatedQuery);
+       return DtoToDomainConverter.convert(initiatedQuery);
     }
 }

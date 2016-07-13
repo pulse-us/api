@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.ca.emsa.pulse.broker.domain.CreatePatientRequest;
-import gov.ca.emsa.pulse.broker.domain.Patient;
-import gov.ca.emsa.pulse.broker.domain.Query;
-import gov.ca.emsa.pulse.broker.domain.User;
+import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.Query;
+import gov.ca.emsa.pulse.common.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
+import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
@@ -52,7 +53,7 @@ public class QueryService {
 		List<QueryDTO> queries = queryManager.getAllQueriesForUser(user.getSubjectName());
 		List<Query> results = new ArrayList<Query>();
 		for(QueryDTO query : queries) {
-			results.add(new Query(query));
+			results.add(DtoToDomainConverter.convert(query));
 		}
 		return results;
 	}
@@ -61,7 +62,7 @@ public class QueryService {
 	@RequestMapping(value="/{queryId}", method = RequestMethod.GET)
     public Query getQueryStatus(@PathVariable(value="queryId") Long queryId) {
        QueryDTO initiatedQuery = queryManager.getById(queryId); 
-       return new Query(initiatedQuery);
+       return DtoToDomainConverter.convert(initiatedQuery);
     }
 	
 	@ApiOperation(value="Create a Patient from multiple PatientRecords")
@@ -113,6 +114,6 @@ public class QueryService {
 		
 		//delete query (all associated items should cascade)
 		queryManager.delete(queryId);	
-		return new Patient(patient);
+		return DtoToDomainConverter.convert(patient);
     }
 }

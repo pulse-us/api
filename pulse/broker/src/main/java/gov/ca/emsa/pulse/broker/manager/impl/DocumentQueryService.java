@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
-import gov.ca.emsa.pulse.broker.domain.Document;
+import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;

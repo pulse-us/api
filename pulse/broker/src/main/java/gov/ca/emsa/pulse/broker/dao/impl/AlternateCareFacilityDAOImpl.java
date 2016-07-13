@@ -10,12 +10,14 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
+import gov.ca.emsa.pulse.broker.dao.AddressDAO;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
+import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.entity.AddressEntity;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
 
 @Repository
@@ -23,6 +25,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	private static final Logger logger = LogManager.getLogger(AlternateCareFacilityDAOImpl.class);
 
 	@Autowired PatientDAO patientDao;
+	@Autowired AddressDAO addrDao;
 	
 	@Override
 	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO dto) {
@@ -31,33 +34,45 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		toInsert.setPhoneNumber(dto.getPhoneNumber());
 		toInsert.setLastReadDate(new Date());
 		if(dto.getAddress() != null) {
-			toInsert.setAddressId(dto.getAddress().getId());
+			if(dto.getAddress().getId() == null) {
+				AddressDTO addrDto = addrDao.create(dto.getAddress());
+				dto.setAddress(addrDto);
+			} 
+			//address entity should exist now
+			AddressEntity addr = entityManager.find(AddressEntity.class, dto.getAddress().getId());
+			toInsert.setAddress(addr);
 		}
 		
 		entityManager.persist(toInsert);
 		entityManager.flush();
-		return getById(toInsert.getId());
+		return new AlternateCareFacilityDTO(toInsert);
 	}
 
 	@Override
-	@Transactional
 	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO dto) {
-		AlternateCareFacilityEntity entity = this.getEntityById(dto.getId());
-		entity.setName(dto.getName());
-		entity.setPhoneNumber(dto.getPhoneNumber());
-		entity.setLastReadDate(dto.getLastReadDate());
+		AlternateCareFacilityEntity toUpdate = this.getEntityById(dto.getId());
+		toUpdate.setName(dto.getName());
+		toUpdate.setPhoneNumber(dto.getPhoneNumber());
+		toUpdate.setLastReadDate(dto.getLastReadDate());
 		if(dto.getAddress() != null) {
-			entity.setAddressId(dto.getAddress().getId());
+			if(dto.getAddress().getId() == null) {
+				AddressDTO addrDto = addrDao.create(dto.getAddress());
+				dto.setAddress(addrDto);
+			} else {
+				addrDao.update(dto.getAddress());
+			}
+			//address entity should exist now
+			AddressEntity addr = entityManager.find(AddressEntity.class, dto.getAddress().getId());
+			toUpdate.setAddress(addr);
 		} else {
-			entity.setAddressId(null);
+			toUpdate.setAddress(null);
 		}
 		
-		entity = entityManager.merge(entity);
-		return new AlternateCareFacilityDTO(entity);
+		toUpdate = entityManager.merge(toUpdate);
+		return new AlternateCareFacilityDTO(toUpdate);
 	}
 
 	@Override
-	@Transactional
 	public void delete(Long id) {
 		AlternateCareFacilityEntity toDelete = getEntityById(id);
 		entityManager.remove(toDelete);
@@ -99,6 +114,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	@Override
 	public void deleteItemsOlderThan(Date oldestItem) {
 		Query query = entityManager.createQuery( "from AlternateCareFacilityEntity acf "
+				+ "LEFT OUTER JOIN FETCH acf.address "
 				+ " WHERE acf.lastReadDate <= :cacheDate");
 		
 		query.setParameter("cacheDate", oldestItem);
@@ -107,7 +123,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 			for(AlternateCareFacilityEntity oldAcf : oldAcfs) {
 				List<PatientDTO> patientsAtAcf = patientDao.getPatientsAtAcf(oldAcf.getId());
 				if(patientsAtAcf == null || patientsAtAcf.size() == 0) {
-					delete(oldAcf.getId());
+					entityManager.remove(oldAcf);
 					logger.info("Deleted ACF with ID " + oldAcf.getId() + " and name " + oldAcf.getName() + " during ACF cleanup.");
 				}
 			}
@@ -125,11 +141,11 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		
 		Query query = entityManager.createQuery( "SELECT a from AlternateCareFacilityEntity a "
 				+ "LEFT OUTER JOIN FETCH a.address "
-				+ "where (a.id = :entityid) ", AlternateCareFacilityEntity.class );
+				+ "where a.id = :entityid", AlternateCareFacilityEntity.class );
 		query.setParameter("entityid", id);
-		List<AlternateCareFacilityEntity> result = query.getResultList();
 		
-		if(result.size() == 1) {
+		List<AlternateCareFacilityEntity> result = query.getResultList();
+		if(result.size() != 0) {
 			entity = result.get(0);
 		}
 		

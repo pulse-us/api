@@ -1,47 +1,21 @@
-package gov.ca.emsa.pulse.broker.domain;
+package gov.ca.emsa.pulse.common.domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 
 public class QueryOrganization {
 	private Long id;
 	private Long queryId;
 	private Long orgId;
 	private String status;
-	private Long startDate;
-	private Long endDate;
+	private Date startDate;
+	private Date endDate;
 	private Boolean success;
 	private List<PatientRecord> results;
 	
 	public QueryOrganization() {
 		results = new ArrayList<PatientRecord>();
-	}
-	
-	public QueryOrganization(QueryOrganizationDTO dto) {
-		this();
-		
-		this.id = dto.getId();
-		this.queryId = dto.getQueryId();
-		this.orgId = dto.getOrgId();
-		this.status = dto.getStatus();
-		this.success = dto.getSuccess();
-		if(dto.getStartDate() != null) {
-			this.startDate = dto.getStartDate().getTime();
-		}
-		if(dto.getEndDate() != null) {
-			this.endDate = dto.getEndDate().getTime();
-		}
-		
-		if(dto.getResults() != null && dto.getResults().size() > 0) {
-			for(PatientRecordDTO prDto : dto.getResults()) {
-				PatientRecord pr = new PatientRecord(prDto);
-				this.results.add(pr);
-			}
-		}
 	}
 
 	public Long getId() {
@@ -76,19 +50,19 @@ public class QueryOrganization {
 		this.status = status;
 	}
 
-	public Long getStartDate() {
+	public Date getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Long startDate) {
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
-	public Long getEndDate() {
+	public Date getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Long endDate) {
+	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 
