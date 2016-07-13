@@ -10,6 +10,12 @@ Pulse Broker
 $ git clone https://github.com/pulse/api.git
 ```
 
+## Install the common object project
+
+#### Command Line
+1. `cd api/pulse/common/`
+2. Run `gradlew install`
+
 ## Build the jar file
 
 #### Command Line

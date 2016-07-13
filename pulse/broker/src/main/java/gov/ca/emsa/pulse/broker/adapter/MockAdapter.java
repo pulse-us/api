@@ -12,9 +12,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import gov.ca.emsa.pulse.broker.domain.Document;
+import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.broker.domain.MockPatient;
-import gov.ca.emsa.pulse.broker.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;

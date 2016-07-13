@@ -1,6 +1,4 @@
-package gov.ca.emsa.pulse.broker.domain;
-
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+package gov.ca.emsa.pulse.common.domain;
 
 public class Organization extends OrganizationBase {
 	
@@ -14,14 +12,6 @@ public class Organization extends OrganizationBase {
 	
 	public Organization(String name){
 		this.setName(name);
-	}
-	
-	public Organization(OrganizationDTO dto) {
-		this.ipAddress = dto.getIpAddress();
-		this.username = dto.getUsername();
-		this.password = dto.getPassword();
-		this.certificationKey = dto.getCertificationKey();
-		this.endpointUrl = dto.getEndpointUrl();
 	}
 	
 	public String getEndpointUrl() {

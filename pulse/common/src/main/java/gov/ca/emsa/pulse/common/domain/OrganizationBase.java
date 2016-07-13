@@ -1,6 +1,4 @@
-package gov.ca.emsa.pulse.broker.domain;
-
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+package gov.ca.emsa.pulse.common.domain;
 
 /**
  * A class that has only the fields about an organization we might want to return to a 
@@ -20,14 +18,6 @@ public class OrganizationBase {
 	
 	public OrganizationBase(String name){
 		this.name = name;
-	}
-	
-	public OrganizationBase(OrganizationDTO dto) {
-		this.id = dto.getId();
-		this.organizationId = dto.getOrganizationId();
-		this.name = dto.getName();
-		this.isActive = dto.isActive();
-		this.adapter = dto.getAdapter();
 	}
 	
 	public Long getId() {

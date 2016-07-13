@@ -1,13 +1,13 @@
-package gov.ca.emsa.pulse.service;
+package gov.ca.emsa.pulse.common.domain;
 
-public class PatientSearchTerms {
-	
+public class PatientSearch {
 	private String firstName;
 	private String lastName;
 	private String dob;
 	private String ssn;
 	private String gender;
-	private String zipcode;
+	private String zip;
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -38,13 +38,10 @@ public class PatientSearchTerms {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	public String getZipcode() {
-		return zipcode;
+	public String getZip() {
+		return zip;
 	}
-	public void setZipcode(String zipcode) {
-		this.zipcode = zipcode;
+	public void setZip(String zip) {
+		this.zip = zip;
 	}
-	
-	
-
 }

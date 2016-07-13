@@ -1,14 +1,8 @@
-package gov.ca.emsa.pulse.broker.domain;
+package gov.ca.emsa.pulse.common.domain;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
-import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
-import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.Organization;
 
 public class PatientOrganizationMap {
 	private Long id;
@@ -22,24 +16,6 @@ public class PatientOrganizationMap {
 	
 	public PatientOrganizationMap() {
 		this.documents = new ArrayList<Document>();
-	}
-	
-	public PatientOrganizationMap(PatientOrganizationMapDTO dto) {
-		this();
-		this.id = dto.getId();
-		this.patientId = dto.getPatientId();
-		this.organization = DtoToDomainConverter.convert(dto.getOrg());
-		this.documentsQueryStatus = dto.getDocumentsQueryStatus();
-		this.documentsQuerySuccess = dto.getDocumentsQuerySuccess();
-		this.documentsQueryStart = dto.getDocumentsQueryStart();
-		this.documentsQueryEnd = dto.getDocumentsQueryEnd();
-		
-		if(dto.getDocuments() != null && dto.getDocuments().size() > 0) { 
-			for(DocumentDTO docDto : dto.getDocuments()) {
-				Document doc = DtoToDomainConverter.convert(docDto);
-				this.documents.add(doc);
-			}
-		}
 	}
 	
 	public Long getId() {

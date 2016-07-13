@@ -1,8 +1,6 @@
-package gov.ca.emsa.pulse.broker.domain;
+package gov.ca.emsa.pulse.common.domain;
 
 import java.util.Date;
-
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 
 public class PatientRecord {
 	private Long id;
@@ -16,19 +14,6 @@ public class PatientRecord {
 	
 	public PatientRecord() {
 		
-	}
-	
-	public PatientRecord(PatientRecordDTO dto) {
-		this.id = dto.getId();
-		this.firstName = dto.getFirstName();
-		this.lastName = dto.getLastName();
-		this.dateOfBirth = dto.getDateOfBirth();
-		this.gender = dto.getGender();
-		this.phoneNumber = dto.getPhoneNumber();
-		if(dto.getAddress() != null) {
-			this.address = new Address(dto.getAddress());
-		}
-		this.ssn = dto.getSsn();
 	}
 	
 	public Long getId() {
