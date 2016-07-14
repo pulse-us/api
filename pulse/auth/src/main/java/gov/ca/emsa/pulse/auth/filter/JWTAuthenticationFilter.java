@@ -36,6 +36,10 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 		String authorizationHeader = request.getHeader("Authorization");
 
 		if (authorizationHeader == null){
+				ErrorJSONObject errorObj = new ErrorJSONObject("No header");
+				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+				String json = ow.writeValueAsString(errorObj);
+				res.getOutputStream().write(json.getBytes(StandardCharsets.UTF_8));
 			chain.doFilter(req, res); //continue
 			SecurityContextHolder.getContext().setAuthentication(null);
 		} else {

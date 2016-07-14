@@ -26,7 +26,6 @@ import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
-import gov.ca.emsa.pulse.common.domain.User;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
@@ -40,6 +39,8 @@ import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 
 @Api(value = "search")
 @RestController
@@ -64,7 +65,7 @@ public class SearchService {
 		produces="application/json; charset=utf-8",consumes="application/json")
     public @ResponseBody Query searchPatients(@RequestBody(required=true) PatientSearch toSearch) throws JsonProcessingException {
 		
-		User user = UserUtil.getCurrentUser();
+		JWTAuthenticatedUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getUsername());
 
 		SAMLInput input = new SAMLInput();
@@ -131,7 +132,7 @@ public class SearchService {
 			query.getOrgStatuses().add(queryOrg);
 		}
 		
-       QueryDTO initiatedQuery = searchManager.queryForPatientRecords(samlMessage, queryTerms, query, user);
+       QueryDTO initiatedQuery = searchManager.queryForPatientRecords(samlMessage, queryTerms, query);
        return DtoToDomainConverter.convert(initiatedQuery);
     }
 }

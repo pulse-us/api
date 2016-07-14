@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.ca.emsa.pulse.broker.domain.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 
 @Component
 public class HttpRequestUserFilter implements Filter {

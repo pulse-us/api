@@ -49,5 +49,4 @@ public interface User extends UserDetails , Authentication {
 
 	@Override
 	public String getName();
-
 }

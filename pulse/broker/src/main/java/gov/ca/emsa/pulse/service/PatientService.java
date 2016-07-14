@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
-import gov.ca.emsa.pulse.common.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
@@ -31,6 +30,8 @@ import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 
 @Api(value = "patients")
 @RestController
@@ -49,7 +50,7 @@ public class PatientService {
 	@ApiOperation(value="Get all patients at the logged-in user's ACF")
 	@RequestMapping("")
 	public List<Patient> getPatientsAtAcf() throws InvalidParameterException {
-		User user = UserUtil.getCurrentUser();
+		JWTAuthenticatedUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.GET_ALL_PATIENTS, "/patients", user.getUsername());
 		AlternateCareFacilityDTO acfDto = acfManager.getByName(user.getAcf());
 		if(acfDto == null || acfDto.getId() == null) {
@@ -69,7 +70,7 @@ public class PatientService {
 	@ApiOperation(value="Get a list of documents associated with the given patient")
 	@RequestMapping("/{patientId}/documents")
 	public List<Document> getDocumentListForPatient(@PathVariable("patientId")Long patientId) {
-		User user = UserUtil.getCurrentUser();
+		JWTAuthenticatedUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.SEARCH_DOCUMENT, "/" + patientId + "/documents", user.getUsername());
 		List<DocumentDTO> docDtos = docManager.getDocumentsForPatient(patientId);
 		List<Document> results = new ArrayList<Document>(docDtos.size());
@@ -85,7 +86,7 @@ public class PatientService {
 			@PathVariable("documentId") Long documentId,
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) {
 		
-		User user = UserUtil.getCurrentUser();
+		JWTAuthenticatedUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getUsername());
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");

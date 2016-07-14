@@ -14,7 +14,6 @@ import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.broker.domain.Audit;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
-import gov.ca.emsa.pulse.common.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
@@ -22,6 +21,8 @@ import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 
 @Api(value = "acfs")
 @RestController
@@ -33,7 +34,7 @@ public class AlternateCareFacilityService {
 	@ApiOperation(value="Get the list of all alternate care facilities (ACFs)")
 	@RequestMapping(value="",  method = RequestMethod.GET)
     public List<AlternateCareFacility> getAll() {
-		User user = UserUtil.getCurrentUser();
+		JWTAuthenticatedUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.GET_ALL_ACFS, "/acfs", user.getUsername());
 		List<AlternateCareFacilityDTO> dtos = acfManager.getAll();
 		List<AlternateCareFacility> results = new ArrayList<AlternateCareFacility>();
@@ -46,7 +47,7 @@ public class AlternateCareFacilityService {
 	@ApiOperation(value="Get information about a specific ACF")
 	@RequestMapping(value = "/{acfId}", method=RequestMethod.GET)
     public AlternateCareFacility getById(@PathVariable("acfId") Long acfId) {
-		User user = UserUtil.getCurrentUser();
+		JWTAuthenticatedUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.GET_ACF_BY_ID, "/acfs" + acfId, user.getUsername());
 		AlternateCareFacilityDTO dto = acfManager.getById(acfId);
 		return DtoToDomainConverter.convert(dto);
@@ -55,7 +56,7 @@ public class AlternateCareFacilityService {
 	@ApiOperation(value = "Create a new ACF")
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public AlternateCareFacility create(@RequestBody(required=true) AlternateCareFacility toCreate) {
-		User user = UserUtil.getCurrentUser();
+		JWTAuthenticatedUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.CREATE_ACF, "/create", user.getUsername());
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(toCreate.getName());
@@ -80,7 +81,7 @@ public class AlternateCareFacilityService {
 	@RequestMapping(value = "/{acfId}/edit", method = RequestMethod.POST)
 	public AlternateCareFacility update(@RequestBody(required=true) AlternateCareFacility toUpdate) 
 		throws Exception {
-		User user = UserUtil.getCurrentUser();
+		JWTAuthenticatedUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.EDIT_ACF, user.getAcf() + "/edit", user.getUsername());
 		AlternateCareFacilityDTO userAcf = acfManager.getByName(user.getAcf());
 		if(userAcf == null) {

@@ -27,10 +27,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
-import gov.ca.emsa.pulse.broker.domain.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.broker.domain.MockPatient;
 import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.User;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
@@ -39,6 +37,8 @@ import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import junit.framework.TestCase;
+
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
@@ -119,7 +119,7 @@ public class PatientSearchTest {
 			 Assert.fail(ex.getMessage());
 		 }
 		 
-		 User user = createUser();
+		 JWTAuthenticatedUser user = createUser();
 		 
 		 QueryDTO query = null;
 		 
@@ -130,7 +130,7 @@ public class PatientSearchTest {
 		 }
 		 
 		 try {
-			 query = queryManager.queryForPatientRecords(samlMessage, toSearch, query, user);
+			 query = queryManager.queryForPatientRecords(samlMessage, toSearch, query);
 		 } catch(Exception ex) {
 			 Assert.fail(ex.getMessage());
 		 }
@@ -194,8 +194,8 @@ public class PatientSearchTest {
 		return samlMessage;
 	}
 	
-	private User createUser() {
-		User user = new JWTAuthenticatedUser();
+	private JWTAuthenticatedUser createUser() {
+		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
 		user.setAcf("Tent 1");
 		user.setSubjectName("kekey");
 		user.setAuthenticated(true);
@@ -205,7 +205,7 @@ public class PatientSearchTest {
 		return user;
 	}
 	
-	private QueryDTO createQuery(User user) throws JsonProcessingException {
+	private QueryDTO createQuery(JWTAuthenticatedUser user) throws JsonProcessingException {
 		Patient queryTerms = new Patient();
 		queryTerms.setFirstName("John");
 		String queryTermsJson = JSONUtils.toJSON(queryTerms);

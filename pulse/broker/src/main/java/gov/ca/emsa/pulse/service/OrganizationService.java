@@ -10,13 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.ca.emsa.pulse.common.domain.OrganizationBase;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
-import gov.ca.emsa.pulse.common.domain.User;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditManager;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 
 @Api(value = "organizations")
 @RestController
@@ -28,7 +29,7 @@ public class OrganizationService {
 	@ApiOperation(value="Get the list of organizations")
 	@RequestMapping(value="", method=RequestMethod.GET)
     public List<OrganizationBase> getAll() {
-		User user = UserUtil.getCurrentUser();
+		JWTAuthenticatedUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.GET_ALL_ORGANIZATIONS, "/organizations", user.getUsername());
 		List<OrganizationDTO> orgDtos = orgManager.getAll();
 		List<OrganizationBase> orgs = new ArrayList<OrganizationBase>();

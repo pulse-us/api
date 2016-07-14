@@ -20,6 +20,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+
 @RestController
 public class OrganizationService {
 	
@@ -30,7 +32,7 @@ public class OrganizationService {
 	
 	// get all organizations
 	@RequestMapping(value = "/organizations")
-	public ArrayList<Organization> getACFs() throws JsonProcessingException {
+	public ArrayList<Organization> getOrganizations() throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
@@ -44,7 +46,12 @@ public class OrganizationService {
 			logger.error("Could not find a logged in user. ");
 		}
 
-		headers.set("User", mapper.writeValueAsString(user));
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        headers.set("User", mapper.writeValueAsString(user));
+        logger.info("Sending query to broker with user: " + mapper.writeValueAsString(user));
+        logger.info("User info: " + user.toString());
+        logger.info("User details: " + user.getDetails());
+        logger.info(headers.get("User"));
 		HttpEntity<Organization[]> entity = new HttpEntity<Organization[]>(headers);
 		HttpEntity<Organization[]> response = query.exchange(brokerUrl + "/organizations", HttpMethod.GET, entity, Organization[].class);
 		logger.info("Request sent to broker from services REST.");

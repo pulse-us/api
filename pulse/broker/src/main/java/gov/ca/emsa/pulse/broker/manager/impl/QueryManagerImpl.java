@@ -121,7 +121,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public QueryDTO queryForPatientRecords(String samlMessage, Patient toSearch, QueryDTO query, User user)
+	public QueryDTO queryForPatientRecords(String samlMessage, Patient toSearch, QueryDTO query)
 			throws JsonProcessingException {
 		
 		//get the list of organizations

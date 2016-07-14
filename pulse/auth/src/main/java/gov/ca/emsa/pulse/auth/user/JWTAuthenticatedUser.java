@@ -3,6 +3,7 @@ package gov.ca.emsa.pulse.auth.user;
 import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,8 +18,8 @@ public class JWTAuthenticatedUser implements User {
 	private String lastName;
     private String email;
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+    private HashMap<String,String> details = new HashMap<String,String>();
 	private boolean authenticated = true;
-    private String jwt;
 
 	public JWTAuthenticatedUser(){
 		this.subjectName = null;
@@ -85,7 +86,7 @@ public class JWTAuthenticatedUser implements User {
 
 	@Override
 	public Object getDetails() {
-		return this;
+		return details;
 	}
 
     @Override
@@ -134,11 +135,11 @@ public class JWTAuthenticatedUser implements User {
 	}
 
     public String getJwt() {
-        return jwt;
+        return details.get("jwt");
     }
 
     public void setJwt(String jwt) {
-        this.jwt = jwt;
+        details.put("jwt",jwt);
     }
 
 	@Override
@@ -159,4 +160,23 @@ public class JWTAuthenticatedUser implements User {
 		this.id = id;
 	}
 
+	public String getAcf() {
+		return details.get("acf");
+	}
+
+	public void setAcf(String acf) {
+        details.put("acf",acf);
+	}
+
+    @Override
+    public String toString() {
+        String ret = "{User: " +
+            "[subjectName: " + subjectName + "]" +
+            "[firstName: " + firstName + "]" +
+            "[lastName: " + lastName + "]" +
+            "[email: " + email + "]" +
+            "[jwt: " + details.get("jwt") + "]" +
+            "[acf: " + details.get("acf") + "]}";
+        return ret;
+    }
 }

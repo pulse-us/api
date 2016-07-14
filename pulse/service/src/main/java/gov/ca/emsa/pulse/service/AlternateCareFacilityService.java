@@ -76,6 +76,7 @@ public class AlternateCareFacilityService {
 		}
 		
 		headers.set("User", mapper.writeValueAsString(user));
+        logger.info("Sending message to broker, user is: " + headers.get("User"));
 		HttpEntity<AlternateCareFacility[]> entity = new HttpEntity<AlternateCareFacility[]>(headers);
 		HttpEntity<AlternateCareFacility[]> response = query.exchange(brokerUrl + "/acfs", HttpMethod.GET, entity, AlternateCareFacility[].class);
 		logger.info("Request sent to broker from services REST.");

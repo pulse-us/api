@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.Query;
-import gov.ca.emsa.pulse.common.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
@@ -34,6 +33,8 @@ import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+
 @Api(value = "queryStatus")
 @RestController
 @RequestMapping("/queries")
@@ -48,7 +49,7 @@ public class QueryService {
 	@ApiOperation(value = "Get all queries for the logged-in user")
 	@RequestMapping(value="", method = RequestMethod.GET)
 	public List<Query> getQueries() {
-		User user = UserUtil.getCurrentUser();
+		JWTAuthenticatedUser user = UserUtil.getCurrentUser();
 
 		List<QueryDTO> queries = queryManager.getAllQueriesForUser(user.getSubjectName());
 		List<Query> results = new ArrayList<Query>();
@@ -69,7 +70,7 @@ public class QueryService {
 	@RequestMapping(value="/{queryId}/stage", method = RequestMethod.POST)
     public Patient stagePatientFromResults(@PathVariable(value="queryId") Long queryId,
     		@RequestBody CreatePatientRequest request) throws InvalidParameterException {		
-		User user = UserUtil.getCurrentUser();
+		JWTAuthenticatedUser user = UserUtil.getCurrentUser();
 		if(request.getPatient() == null || 
 				request.getPatientRecordIds() == null || 
 				request.getPatientRecordIds().size() == 0) {

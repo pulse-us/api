@@ -23,7 +23,7 @@ public interface QueryManager {
 	public QueryOrganizationDTO createOrUpdateQueryOrganization(QueryOrganizationDTO toUpdate);
 	
 	public PatientRecordDTO getPatientRecordById(Long patientRecordId);
-	public QueryDTO queryForPatientRecords(String samlMessage, Patient toSearch, QueryDTO query, User user) throws JsonProcessingException;
+	public QueryDTO queryForPatientRecords(String samlMessage, Patient toSearch, QueryDTO query) throws JsonProcessingException;
 	public PatientRecordDTO addPatientRecord(PatientRecordDTO record);
 	public void removePatientRecord(Long prId);
 	
