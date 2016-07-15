@@ -36,19 +36,17 @@ public class OrganizationService {
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
 
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
-		if(auth != null){
-			user.setSubjectName(auth.getName());
-		}else{
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		ArrayList<Organization> orgList = null;
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.set("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Organization[]> entity = new HttpEntity<Organization[]>(headers);
+			HttpEntity<Organization[]> response = query.exchange(brokerUrl + "/organizations", HttpMethod.GET, entity, Organization[].class);
+			logger.info("Request sent to broker from services REST.");
+			orgList = new ArrayList<Organization>(Arrays.asList(response.getBody()));
 		}
-
-		headers.set("User", mapper.writeValueAsString(user));
-		HttpEntity<Organization[]> entity = new HttpEntity<Organization[]>(headers);
-		HttpEntity<Organization[]> response = query.exchange(brokerUrl + "/organizations", HttpMethod.GET, entity, Organization[].class);
-		logger.info("Request sent to broker from services REST.");
-		ArrayList<Organization> orgList = new ArrayList<Organization>(Arrays.asList(response.getBody()));
 
 		return orgList;
 	}

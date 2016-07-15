@@ -24,10 +24,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.common.domain.CommonUser;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
-import gov.ca.emsa.pulse.common.domain.User;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -44,20 +44,18 @@ public class PatientService {
 
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		ObjectMapper mapper = new ObjectMapper();
-		
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
-		if(auth != null){
-			user.setSubjectName(auth.getName());
-		}else{
+
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.add("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<PatientSearch> request = new HttpEntity<PatientSearch>(patientSearchTerms, headers);
+			RestTemplate query = new RestTemplate();
+			query.postForObject(brokerUrl + "/search", request, Query.class);
+			logger.info("Request sent to broker from services REST.");
 		}
-		
-		headers.add("User", mapper.writeValueAsString(user));
-		HttpEntity<PatientSearch> request = new HttpEntity<PatientSearch>(patientSearchTerms, headers);
-		RestTemplate query = new RestTemplate();
-		query.postForObject(brokerUrl + "/search", request, Query.class);
-		logger.info("Request sent to broker from services REST.");
+
 	}
 
 	// get all patients from the logged in users ACF
@@ -68,21 +66,18 @@ public class PatientService {
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
 
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
-		if(auth != null){
-			user.setSubjectName(auth.getName());
-			user.setAcf("ACF1");
-		}else{
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		ArrayList<Patient> patientList = null;
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.set("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Patient[]> entity = new HttpEntity<Patient[]>(headers);
+			HttpEntity<Patient[]> response = query.exchange(brokerUrl + "/patients", HttpMethod.GET, entity, Patient[].class);
+			logger.info("Request sent to broker from services REST.");
+			patientList = new ArrayList<Patient>(Arrays.asList(response.getBody()));
 		}
 		
-		headers.set("User", mapper.writeValueAsString(user));
-		HttpEntity<Patient[]> entity = new HttpEntity<Patient[]>(headers);
-		HttpEntity<Patient[]> response = query.exchange(brokerUrl + "/patients", HttpMethod.GET, entity, Patient[].class);
-		logger.info("Request sent to broker from services REST.");
-		ArrayList<Patient> patientList = new ArrayList<Patient>(Arrays.asList(response.getBody()));
-
 		return patientList;
 	}
 }
