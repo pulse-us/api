@@ -8,6 +8,11 @@ import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class JWTAuthenticatedUser implements User {
 
 	private static final long serialVersionUID = 1L;
@@ -19,6 +24,7 @@ public class JWTAuthenticatedUser implements User {
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private boolean authenticated = true;
     private String jwt;
+    private String acf;
 
 	public JWTAuthenticatedUser(){
 		this.subjectName = null;
@@ -34,6 +40,16 @@ public class JWTAuthenticatedUser implements User {
 
 	public void setSubjectName(String subject) {
 		this.subjectName = subject;
+	}
+	
+	
+
+	public String getAcf() {
+		return acf;
+	}
+
+	public void setAcf(String acf) {
+		this.acf = acf;
 	}
 
 	public String getFirstName() {
@@ -79,13 +95,13 @@ public class JWTAuthenticatedUser implements User {
 	}
 
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
+	public Collection<GrantedPermission> getAuthorities() {
 		return this.getPermissions();
 	}
 
 	@Override
 	public Object getDetails() {
-		return this;
+		return null;
 	}
 
     @Override
