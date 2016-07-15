@@ -1,8 +1,10 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import gov.ca.emsa.pulse.common.domain.PatientOrganizationMap;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
@@ -42,6 +44,38 @@ public class DtoToDomainConverter {
 			result.setAddress(addr);
 		}
 		
+		if(dtoObj.getOrgMaps() != null && dtoObj.getOrgMaps().size() > 0) {
+			for(PatientOrganizationMapDTO orgMapDto : dtoObj.getOrgMaps()) {
+				PatientOrganizationMap orgMap = DtoToDomainConverter.convert(orgMapDto);
+				result.getOrgMaps().add(orgMap);
+			}
+		}
+		
+		return result;
+	}
+	
+	public static PatientOrganizationMap convert(PatientOrganizationMapDTO dto) {	
+		PatientOrganizationMap result = new PatientOrganizationMap();
+		result.setId(dto.getId());
+		result.setPatientId(dto.getPatientId());
+		if(dto.getOrg() != null) {
+			result.setOrganization(DtoToDomainConverter.convert(dto.getOrg()));
+		} else {
+			Organization org = new Organization();
+			org.setId(dto.getOrganizationId());
+			result.setOrganization(org);
+		}
+		result.setDocumentsQuerySuccess(dto.getDocumentsQuerySuccess());
+		result.setDocumentsQueryStatus(dto.getDocumentsQueryStatus());
+		result.setDocumentsQueryStart(dto.getDocumentsQueryStart());
+		result.setDocumentsQueryEnd(dto.getDocumentsQueryEnd());
+
+		if(dto.getDocuments() != null && dto.getDocuments().size() > 0) {
+			for(DocumentDTO docDto : dto.getDocuments()) {
+				Document doc = DtoToDomainConverter.convert(docDto);
+				result.getDocuments().add(doc);
+			}
+		}
 		return result;
 	}
 	
@@ -74,9 +108,9 @@ public class DtoToDomainConverter {
 		query.setStatus(queryDto.getStatus());
 		query.setTerms(queryDto.getTerms());
 		query.setUserToken(queryDto.getUserId());
-		List<QueryOrganization> qOrgList = new ArrayList<QueryOrganization>();
 		for(QueryOrganizationDTO qOrgDto : queryDto.getOrgStatuses()){
-			qOrgList.add(DtoToDomainConverter.convert(qOrgDto));
+			QueryOrganization qOrg = DtoToDomainConverter.convert(qOrgDto);
+			query.getOrgStatuses().add(qOrg);
 		}
 		return query;
 	}
@@ -86,11 +120,10 @@ public class DtoToDomainConverter {
 		qOrg.setId(qOrgDto.getId());
 		qOrg.setOrgId(qOrgDto.getOrgId());
 		qOrg.setQueryId(qOrgDto.getQueryId());
-		List<PatientRecord> prList = new ArrayList<PatientRecord>();
 		for(PatientRecordDTO prDto : qOrgDto.getResults()){
-			prList.add(DtoToDomainConverter.convert(prDto));
-		}
-		qOrg.setResults(prList);
+			PatientRecord pr = DtoToDomainConverter.convert(prDto);
+			qOrg.getResults().add(pr);
+		}		
 		qOrg.setStartDate(qOrgDto.getStartDate());
 		qOrg.setEndDate(qOrgDto.getEndDate());
 		qOrg.setStatus(qOrgDto.getStatus());
