@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.ca.emsa.pulse.common.domain.CommonUser;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
-import gov.ca.emsa.pulse.common.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
@@ -49,8 +49,8 @@ public class PatientService {
 	@ApiOperation(value="Get all patients at the logged-in user's ACF")
 	@RequestMapping("")
 	public List<Patient> getPatientsAtAcf() throws InvalidParameterException {
-		User user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.GET_ALL_PATIENTS, "/patients", user.getUsername());
+		CommonUser user = UserUtil.getCurrentUser();
+		auditManager.addAuditEntry(QueryType.GET_ALL_PATIENTS, "/patients", user.getEmail());
 		AlternateCareFacilityDTO acfDto = acfManager.getByName(user.getAcf());
 		if(acfDto == null || acfDto.getId() == null) {
 			throw new InvalidParameterException("The ACF supplied, '" + user.getAcf() + "' was not found in the database.");
@@ -69,8 +69,8 @@ public class PatientService {
 	@ApiOperation(value="Get a list of documents associated with the given patient")
 	@RequestMapping("/{patientId}/documents")
 	public List<Document> getDocumentListForPatient(@PathVariable("patientId")Long patientId) {
-		User user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.SEARCH_DOCUMENT, "/" + patientId + "/documents", user.getUsername());
+		CommonUser user = UserUtil.getCurrentUser();
+		auditManager.addAuditEntry(QueryType.SEARCH_DOCUMENT, "/" + patientId + "/documents", user.getEmail());
 		List<DocumentDTO> docDtos = docManager.getDocumentsForPatient(patientId);
 		List<Document> results = new ArrayList<Document>(docDtos.size());
 		for(DocumentDTO docDto : docDtos) {
@@ -85,16 +85,16 @@ public class PatientService {
 			@PathVariable("documentId") Long documentId,
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) {
 		
-		User user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getUsername());
+		CommonUser user = UserUtil.getCurrentUser();
+		auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getEmail());
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
-		input.setStrNameID(user.getName());
+		input.setStrNameID(user.getFirstName());
 		input.setStrNameQualifier("My Website");
 		input.setSessionId("abcdedf1234567");
 		
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
-		customAttributes.put("RequesterName", user.getName());
+		customAttributes.put("RequesterName", user.getFirstName());
 		customAttributes.put("RequestReason", "Patient is bleeding.");
 		customAttributes.put("PatientFirstName", "Hodor");
 		customAttributes.put("PatientLastName", "Guy");

@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.broker.auth;
 
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.ca.emsa.pulse.broker.domain.JWTAuthenticatedUser;
 
 @Component
 public class HttpRequestUserFilter implements Filter {
@@ -45,17 +46,16 @@ public class HttpRequestUserFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
-
 		HttpServletRequest request = (HttpServletRequest) req;
 		if(exemptions.contains(request.getRequestURI().trim())) {
 			chain.doFilter(req, res);
 		} else {
 			String userHeader = request.getHeader("User");
-			
 			if (userHeader == null){
 				SecurityContextHolder.getContext().setAuthentication(null);
 				throw new ServletException("No header found with the name 'User'");
 			} else {
+				
 				JWTAuthenticatedUser authenticatedUser = jsonMapper.readValue(userHeader, JWTAuthenticatedUser.class);
 				if (authenticatedUser != null){
 					SecurityContextHolder.getContext().setAuthentication(authenticatedUser);

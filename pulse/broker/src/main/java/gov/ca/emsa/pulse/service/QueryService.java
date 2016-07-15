@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.ca.emsa.pulse.common.domain.CommonUser;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.Query;
-import gov.ca.emsa.pulse.common.domain.User;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
@@ -48,7 +48,7 @@ public class QueryService {
 	@ApiOperation(value = "Get all queries for the logged-in user")
 	@RequestMapping(value="", method = RequestMethod.GET)
 	public List<Query> getQueries() {
-		User user = UserUtil.getCurrentUser();
+		CommonUser user = UserUtil.getCurrentUser();
 
 		List<QueryDTO> queries = queryManager.getAllQueriesForUser(user.getSubjectName());
 		List<Query> results = new ArrayList<Query>();
@@ -69,7 +69,7 @@ public class QueryService {
 	@RequestMapping(value="/{queryId}/stage", method = RequestMethod.POST)
     public Patient stagePatientFromResults(@PathVariable(value="queryId") Long queryId,
     		@RequestBody CreatePatientRequest request) throws InvalidParameterException {		
-		User user = UserUtil.getCurrentUser();
+		CommonUser user = UserUtil.getCurrentUser();
 		if(request.getPatient() == null || 
 				request.getPatientRecordIds() == null || 
 				request.getPatientRecordIds().size() == 0) {
@@ -97,7 +97,7 @@ public class QueryService {
 			input.setStrNameQualifier("My Website");
 			input.setSessionId("abcdedf1234567");
 			HashMap<String, String> customAttributes = new HashMap<String,String>();
-			customAttributes.put("RequesterFirstName", user.getName());
+			customAttributes.put("RequesterFirstName", user.getFirstName());
 			customAttributes.put("RequestReason", "Get patient documents");
 			customAttributes.put("PatientId", orgMapDto.getOrgPatientId());
 			input.setAttributes(customAttributes);

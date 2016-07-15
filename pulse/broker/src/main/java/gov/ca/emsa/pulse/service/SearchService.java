@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.CommonUser;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
-import gov.ca.emsa.pulse.common.domain.User;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
@@ -64,8 +64,8 @@ public class SearchService {
 		produces="application/json; charset=utf-8",consumes="application/json")
     public @ResponseBody Query searchPatients(@RequestBody(required=true) PatientSearch toSearch) throws JsonProcessingException {
 		
-		User user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getUsername());
+		CommonUser user = UserUtil.getCurrentUser();
+		auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getEmail());
 
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
@@ -74,7 +74,7 @@ public class SearchService {
 		input.setSessionId("abcdedf1234567");
 		
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
-		customAttributes.put("RequesterFirstName", user.getName());
+		customAttributes.put("RequesterFirstName", user.getFirstName());
 		customAttributes.put("RequestReason", "Patient is bleeding.");
 		customAttributes.put("PatientFirstName", toSearch.getFirstName());
 		customAttributes.put("PatientLastName", toSearch.getLastName());
