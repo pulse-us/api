@@ -14,11 +14,11 @@ configurations {
   compile.exclude group:'ch.qos.logback'
 }
 
+apply plugin: 'spring-boot'
+
 springBoot {
   executable = true
 }
-
-apply plugin: 'spring-boot'
 
 jar {
   baseName = 'broker'
