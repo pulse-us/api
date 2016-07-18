@@ -27,8 +27,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.broker.domain.MockPatient;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.CommonUser;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
@@ -46,28 +48,28 @@ public class PatientSearchTest {
 	@Autowired private SamlGenerator samlGenerator;
 	@Autowired QueryManager queryManager;
 	@Autowired OrganizationDAO orgDao;
-	
+
 	ResponseEntity<MockPatient> mockResponseEntity;
     MockRestServiceServer mockServer;
     @Mock RestTemplate mockRestTemplate;
-    
+
     @Before
-    public void setUp() {    	
+    public void setUp() {
         mockRestTemplate = new RestTemplate();
         mockServer = MockRestServiceServer.createServer(mockRestTemplate);
     }
 
 	private OrganizationDTO org1, org2;
-	
+
 	@Test
 	@Transactional
 	@Rollback(true)
 	public void searchPatients() {
 		insertOrganizations();
-		
+
 		Patient toSearch = new Patient();
 		toSearch.setFirstName("John");
-		
+
 		 mockServer
 		 	.expect(MockRestRequestMatchers.requestTo(org1.getEndpointUrl()))
 		 	.andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
@@ -89,7 +91,7 @@ public class PatientSearchTest {
 		 			  "}" +
 		 			"]"
                  , MediaType.APPLICATION_JSON));
-		 
+
 		 mockServer
 		 	.expect(MockRestRequestMatchers.requestTo(org1.getEndpointUrl()))
 		 	.andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
@@ -111,38 +113,38 @@ public class PatientSearchTest {
 		 			  "}"+
 		 			"]"
               , MediaType.APPLICATION_JSON));
-		 
+
 		 String samlMessage = null;
 		 try {
 			 samlMessage = createSAMLMessage();
 		 } catch(Exception ex) {
 			 Assert.fail(ex.getMessage());
 		 }
-		 
-		 JWTAuthenticatedUser user = createUser();
-		 
+
+		 CommonUser user = createUser();
+
 		 QueryDTO query = null;
-		 
+
 		 try {
 			 query = createQuery(user);
 		 } catch(Exception ex) {
 			 Assert.fail(ex.getMessage());
 		 }
-		 
+
 		 try {
-			 query = queryManager.queryForPatientRecords(samlMessage, toSearch, query);
+			 query = queryManager.queryForPatientRecords(samlMessage, toSearch, query, user);
 		 } catch(Exception ex) {
 			 Assert.fail(ex.getMessage());
 		 }
-		 
+
 		 //TODO: this is so close - but doesn't work because the calls are asynch.
 		// mockServer.verify();
-		 
+
 		 Assert.assertNotNull(query);
 		 Assert.assertNotNull(query.getId());
-		 
+
 		 queryManager.delete(query.getId());
-		 
+
 		 if(org1 != null) {
 			 orgDao.delete(org1);
 		 }
@@ -150,7 +152,7 @@ public class PatientSearchTest {
 			 orgDao.delete(org2);
 		 }
 	}
-	
+
 	private void insertOrganizations() {
 		org1 = new OrganizationDTO();
 		org1.setOrganizationId(1L);
@@ -159,7 +161,7 @@ public class PatientSearchTest {
 		org1.setEndpointUrl("http://localhost:8090/mock/ihe/patients");
 		org1.setActive(true);
 		org1 = orgDao.create(org1);
-		
+
 		org2 = new OrganizationDTO();
 		org2.setOrganizationId(2L);
 		org2.setName("eHealth Org");
@@ -170,14 +172,14 @@ public class PatientSearchTest {
 		org2.setActive(true);
 		org2 = orgDao.create(org2);
 	}
-	
+
 	private String createSAMLMessage() throws MarshallingException {
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID("UserBrianLindsey");
 		input.setStrNameQualifier("My Website");
 		input.setSessionId("abcdedf1234567");
-		
+
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
 		customAttributes.put("RequesterFirstName", "Katy");
 		customAttributes.put("RequestReason", "Patient is bleeding.");
@@ -187,15 +189,15 @@ public class PatientSearchTest {
 		customAttributes.put("PatientGender", "");
 		customAttributes.put("PatientHomeZip", "");
 		customAttributes.put("PatientSSN", "");
-		
+
 		input.setAttributes(customAttributes);
-		
+
 		String samlMessage = samlGenerator.createSAML(input);
 		return samlMessage;
 	}
-	
-	private JWTAuthenticatedUser createUser() {
-		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
+
+	private CommonUser createUser() {
+		CommonUser user = new CommonUser();
 		user.setAcf("Tent 1");
 		user.setSubjectName("kekey");
 		user.setAuthenticated(true);
@@ -204,18 +206,18 @@ public class PatientSearchTest {
 		user.setLastName("Ekey");
 		return user;
 	}
-	
-	private QueryDTO createQuery(JWTAuthenticatedUser user) throws JsonProcessingException {
+
+	private QueryDTO createQuery(CommonUser user) throws JsonProcessingException {
 		Patient queryTerms = new Patient();
 		queryTerms.setFirstName("John");
 		String queryTermsJson = JSONUtils.toJSON(queryTerms);
-		
+
 		QueryDTO query = new QueryDTO();
 		query.setUserId(user.getSubjectName());
 		query.setTerms(queryTermsJson);
 		query.setStatus(QueryStatus.ACTIVE.name());
 		query = queryManager.createQuery(query);
-		
+
 		//get the list of organizations
 		List<OrganizationDTO> orgsToQuery = orgDao.findAll();
 		for(OrganizationDTO org : orgsToQuery) {
@@ -226,7 +228,7 @@ public class PatientSearchTest {
 			queryOrg = queryManager.createOrUpdateQueryOrganization(queryOrg);
 			query.getOrgStatuses().add(queryOrg);
 		}
-		
+
 		return query;
 	}
 }

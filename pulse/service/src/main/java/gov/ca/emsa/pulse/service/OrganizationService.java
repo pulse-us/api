@@ -24,12 +24,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 
 @RestController
 public class OrganizationService {
-	
+
 	private static final Logger logger = LogManager.getLogger(OrganizationService.class);
-	
+
 	@Value("${brokerUrl}")
 	private String brokerUrl;
-	
+
 	// get all organizations
 	@RequestMapping(value = "/organizations")
 	public ArrayList<Organization> getOrganizations() throws JsonProcessingException {
@@ -38,25 +38,18 @@ public class OrganizationService {
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
 
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
-		if(auth != null){
-			user.setSubjectName(auth.getName());
-		}else{
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		ArrayList<Organization> orgList = null;
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+            //mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+			headers.set("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Organization[]> entity = new HttpEntity<Organization[]>(headers);
+			HttpEntity<Organization[]> response = query.exchange(brokerUrl + "/organizations", HttpMethod.GET, entity, Organization[].class);
+			logger.info("Request sent to broker from services REST.");
+			orgList = new ArrayList<Organization>(Arrays.asList(response.getBody()));
 		}
-
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        headers.set("User", mapper.writeValueAsString(user));
-        logger.info("Sending query to broker with user: " + mapper.writeValueAsString(user));
-        logger.info("User info: " + user.toString());
-        logger.info("User details: " + user.getDetails());
-        logger.info(headers.get("User"));
-		HttpEntity<Organization[]> entity = new HttpEntity<Organization[]>(headers);
-		HttpEntity<Organization[]> response = query.exchange(brokerUrl + "/organizations", HttpMethod.GET, entity, Organization[].class);
-		logger.info("Request sent to broker from services REST.");
-		ArrayList<Organization> orgList = new ArrayList<Organization>(Arrays.asList(response.getBody()));
-
 		return orgList;
 	}
 }

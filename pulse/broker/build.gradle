@@ -11,7 +11,7 @@ buildscript {
 }
 
 configurations {
- compile.exclude group:'ch.qos.logback'
+  compile.exclude group:'ch.qos.logback'
 }
 
 apply plugin: 'spring-boot'
@@ -25,7 +25,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-  compile('org.springframework.boot:spring-boot-starter-web')  
+  compile('org.springframework.boot:spring-boot-starter-web')
   compile('org.springframework:spring-beans:4.2.6.RELEASE')
   compile('org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final')
   compile('org.postgresql:postgresql:9.4-1200-jdbc41')
@@ -52,13 +52,13 @@ eclipse {
 		 containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
 		 containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
 	}
-	
+
 	tasks.withType(Test) {
 		if(System.getProperty('DEBUG', 'false') == 'true') {
 			jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009'
 		}
 	}
-	
+
 	tasks.withType(JavaExec) {
 		if(System.getProperty('DEBUG', 'false') == 'true') {
 			jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009'

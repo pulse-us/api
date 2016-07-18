@@ -7,6 +7,8 @@ public class GrantedPermission implements GrantedAuthority {
 	private static final long serialVersionUID = 1L;
 
 	private String authority;
+	
+	public GrantedPermission(){}
 
 	public GrantedPermission(String authority){
 		this.authority = authority;

@@ -30,32 +30,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class AlternateCareFacilityService {
 
 	private static final Logger logger = LogManager.getLogger(AlternateCareFacilityService.class);
-	
+
 	@Value("${brokerUrl}")
 	private String brokerUrl;
-	
+
 	// POST - create an alternate care facility
 	@RequestMapping(value = "/acfs/create", method = RequestMethod.POST)
 	public AlternateCareFacility createACF(@RequestBody AlternateCareFacility acf) throws JsonProcessingException {
-		
+
 		RestTemplate query = new RestTemplate();
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		ObjectMapper mapper = new ObjectMapper();
-		
 
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
-		if(auth != null){
-			user.setSubjectName(auth.getName());
-		}else{
+
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		AlternateCareFacility returnAcf = null;
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.add("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<AlternateCareFacility> request = new HttpEntity<AlternateCareFacility>(acf, headers);
+			returnAcf = query.postForObject(brokerUrl + "/acfs/create", request, AlternateCareFacility.class);
+			logger.info("Request sent to broker from services REST.");
 		}
-		
-		headers.add("User", mapper.writeValueAsString(user));
-		HttpEntity<AlternateCareFacility> request = new HttpEntity<AlternateCareFacility>(acf, headers);
-		AlternateCareFacility returnAcf = query.postForObject(brokerUrl + "/acfs/create", request, AlternateCareFacility.class);
-		
-		logger.info("Request sent to broker from services REST.");
 		return returnAcf;
 	}
 
@@ -67,22 +64,19 @@ public class AlternateCareFacilityService {
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
 
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
-		if(auth != null){
-			user.setSubjectName(auth.getName());
-		}else{
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		ArrayList<AlternateCareFacility> acfList = null;
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.set("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<AlternateCareFacility[]> entity = new HttpEntity<AlternateCareFacility[]>(headers);
+			HttpEntity<AlternateCareFacility[]> response = query.exchange(brokerUrl + "/acfs", HttpMethod.GET, entity, AlternateCareFacility[].class);
+			logger.info("Request sent to broker from services REST.");
+			acfList = new ArrayList<AlternateCareFacility>(Arrays.asList(response.getBody()));
 		}
-		
-		headers.set("User", mapper.writeValueAsString(user));
-        logger.info("Sending message to broker, user is: " + headers.get("User"));
-		HttpEntity<AlternateCareFacility[]> entity = new HttpEntity<AlternateCareFacility[]>(headers);
-		HttpEntity<AlternateCareFacility[]> response = query.exchange(brokerUrl + "/acfs", HttpMethod.GET, entity, AlternateCareFacility[].class);
-		logger.info("Request sent to broker from services REST.");
-		ArrayList<AlternateCareFacility> acfList = new ArrayList<AlternateCareFacility>(Arrays.asList(response.getBody()));
-
 		return acfList;
+
 	}
 
 	// get acf by its id
@@ -93,41 +87,38 @@ public class AlternateCareFacilityService {
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
 
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
-		if(auth != null){
-			user.setSubjectName(auth.getName());
-		}else{
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		HttpEntity<AlternateCareFacility> response = null;
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.set("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<AlternateCareFacility> entity = new HttpEntity<AlternateCareFacility>(headers);
+			response = query.exchange(brokerUrl + "/acfs" + id, HttpMethod.GET, entity, AlternateCareFacility.class);
+			logger.info("Request sent to broker from services REST.");
 		}
-		
-		headers.set("User", mapper.writeValueAsString(user));
-		HttpEntity<AlternateCareFacility> entity = new HttpEntity<AlternateCareFacility>(headers);
-		HttpEntity<AlternateCareFacility> response = query.exchange(brokerUrl + "/acfs" + id, HttpMethod.GET, entity, AlternateCareFacility.class);
-		logger.info("Request sent to broker from services REST.");
 		return response.getBody();
 	}
-	
+
 		// edit an acf by its id
-		@RequestMapping(value = "/acfs/{acfId}/edit")
-		public AlternateCareFacility editACFById(@PathVariable Long acfId) throws JsonProcessingException {
+	@RequestMapping(value = "/acfs/{acfId}/edit")
+	public AlternateCareFacility editACFById(@PathVariable Long acfId) throws JsonProcessingException {
 
-			RestTemplate query = new RestTemplate();
-			HttpHeaders headers = new HttpHeaders();
-			ObjectMapper mapper = new ObjectMapper();
+		RestTemplate query = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
 
-			Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-			JWTAuthenticatedUser user = new JWTAuthenticatedUser();
-			if(auth != null){
-				user.setSubjectName(auth.getName());
-			}else{
-				logger.error("Could not find a logged in user. ");
-			}
-			
-			headers.set("User", mapper.writeValueAsString(user));
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		AlternateCareFacility returnAcf = null;
+		if(jwtUser == null){
+			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.set("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<AlternateCareFacility> request = new HttpEntity<AlternateCareFacility>(headers);
-			AlternateCareFacility returnAcf = query.postForObject(brokerUrl + "/acfs/" + acfId + "/edit", request, AlternateCareFacility.class);
+			returnAcf = query.postForObject(brokerUrl + "/acfs/" + acfId + "/edit", request, AlternateCareFacility.class);
 			logger.info("Request sent to broker from services REST.");
-			return returnAcf;
 		}
+
+		return returnAcf;
+	}
 }

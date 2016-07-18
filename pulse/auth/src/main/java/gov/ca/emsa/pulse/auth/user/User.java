@@ -21,6 +21,8 @@ public interface User extends UserDetails , Authentication {
 	public String getLastName();
     public void setEmail(String email);
     public String getEmail();
+    public void setAcf(String email);
+    public String getAcf();
 
 	public Set<GrantedPermission> getPermissions();
 	public void addPermission(GrantedPermission permission);
@@ -33,7 +35,7 @@ public interface User extends UserDetails , Authentication {
 
 	// Authentication Interface
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities();
+	public Collection<GrantedPermission> getAuthorities();
 
 	@Override
 	public Object getDetails();
