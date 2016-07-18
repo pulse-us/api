@@ -1,10 +1,6 @@
 #for embedded gradle tomcat
 server.port=9090
 
-security.user.password=password
-springfox.documentation.swagger.v2.path=/api-docs
-basePath=/rest
-
 #spring boot properties
 spring.datasource.url= jdbc:postgresql://localhost:5432/pulse
 spring.datasource.driverClassName=org.postgresql.Driver
@@ -24,3 +20,7 @@ queryCacheExpireMinutes=240
 
 #how often do we check the cache to clean up expired entries
 queryCacheCleanupMinutes=10
+
+#allow detailed health information to come back without authentication
+management.security.enabled=false
+endpoints.health.sensitive=false
