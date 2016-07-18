@@ -12,6 +12,10 @@ buildscript {
 
 apply plugin: 'spring-boot'
 
+springBoot {
+   executable = true
+}
+
 jar {
   baseName = 'service'
   version = '0.0.1-SNAPSHOT'
