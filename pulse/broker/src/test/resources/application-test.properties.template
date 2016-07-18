@@ -11,7 +11,7 @@ spring.datasource.driverClassName=org.postgresql.Driver
 spring.datasource.driver-class-name=org.postgresql.Driver
 spring.datasource.username=postgres
 spring.datasource.password=admin
-persistenceUnitName=pulse
+persistenceUnitName=pulse-test
 
 #the url where directory services are located
 directoryServicesUrl=http://localhost:8090/mock/directory

@@ -21,7 +21,9 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.ca.emsa.pulse.service.Document;
+import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -34,24 +36,22 @@ public class DocumentService {
 	@ApiOperation(value="Search Documents for the given patient id.")
 	@RequestMapping("/patients/{id}/documents")
 	public List<Document> searchDocuments(@PathVariable Long id) throws Exception {
-		
+
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
-		
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		User user = new User();
-		if(auth != null){
-			user.setName(auth.getName());
-		}else{
+
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		ArrayList<Document> docList = null;
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.set("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Document[]> entity = new HttpEntity<Document[]>(headers);
+			HttpEntity<Document[]> response = query.exchange(brokerUrl + "/patients/" + id + "/documents", HttpMethod.GET, entity, Document[].class);
+			logger.info("Request sent to broker from services REST.");
+			docList = new ArrayList<Document>(Arrays.asList(response.getBody()));
 		}
-		
-		headers.set("User", mapper.writeValueAsString(user));
-		HttpEntity<Document[]> entity = new HttpEntity<Document[]>(headers);
-		HttpEntity<Document[]> response = query.exchange(brokerUrl + "/patients/" + id + "/documents", HttpMethod.GET, entity, Document[].class);
-		logger.info("Request sent to broker from services REST.");
-		ArrayList<Document> docList = new ArrayList<Document>(Arrays.asList(response.getBody()));
 
 		return docList;
 	}
@@ -61,23 +61,23 @@ public class DocumentService {
 	public Document getDocumentContents(@PathVariable("documentId") Long documentId,
 			@PathVariable("patientId") Long patientId,
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) throws JsonProcessingException {
-		
+
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
-		
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		User user = new User();
-		if(auth != null){
-			user.setName(auth.getName());
-		}else{
+
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		HttpEntity<Document> response = null;
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+
+			headers.set("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Document> entity = new HttpEntity<Document>(headers);
+			response = query.exchange(brokerUrl + "/patients/" + patientId + "/documents/" + documentId + "?cacheOnly=" + cacheOnly.toString(), HttpMethod.GET, entity, Document.class);
+			logger.info("Request sent to broker from services REST.");
 		}
-		
-		headers.set("User", mapper.writeValueAsString(user));
-		HttpEntity<Document> entity = new HttpEntity<Document>(headers);
-		HttpEntity<Document> response = query.exchange(brokerUrl + "/patients/" + patientId + "/documents/" + documentId + "?cacheOnly=" + cacheOnly.toString(), HttpMethod.GET, entity, Document.class);
-		logger.info("Request sent to broker from services REST.");
-        return response.getBody();
+
+		return response.getBody();
 	}
 }

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
-import gov.ca.emsa.pulse.broker.domain.Organization;
+import gov.ca.emsa.pulse.common.domain.Organization;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 
@@ -47,6 +47,7 @@ public class OrganizationManagerImpl implements OrganizationManager {
 		for(Organization org: orgs){
 			updatedOrgIds.add(org.getOrganizationId());
 		}
+		
 		Set<Long> nonDupUpdatedOrgIds = new HashSet<Long>();
 		//create set of updates org ids
 		nonDupUpdatedOrgIds.addAll(updatedOrgIds);

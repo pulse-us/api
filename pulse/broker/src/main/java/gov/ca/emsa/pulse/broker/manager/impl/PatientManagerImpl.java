@@ -57,14 +57,7 @@ public class PatientManagerImpl implements PatientManager {
 	@Override
 	@Transactional
 	public PatientDTO create(PatientDTO toCreate) {
-		AddressDTO address = null;
-		if(toCreate.getAddress() != null && toCreate.getAddress().getId() == null) {
-			address = addressDao.create(toCreate.getAddress());
-			toCreate.setAddress(address);
-		}
 		PatientDTO result = patientDao.create(toCreate);
-		result.setAddress(address);
-		result.setAcf(toCreate.getAcf());
 		return result;
 	}
 	

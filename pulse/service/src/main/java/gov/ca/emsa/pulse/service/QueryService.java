@@ -1,5 +1,8 @@
 package gov.ca.emsa.pulse.service;
 
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.common.domain.Query;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,20 +40,17 @@ public class QueryService {
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
 
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		User user = new User();
-		if(auth != null){
-			user.setUserToken(auth.getPrincipal().toString());
-			user.setName(auth.getName());
-		}else{
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		ArrayList<Query> queryList = null;
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.set("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Query[]> entity = new HttpEntity<Query[]>(headers);
+			HttpEntity<Query[]> response = query.exchange(brokerUrl + "/queries", HttpMethod.GET, entity, Query[].class);
+			logger.info("Request sent to broker from services REST.");
+			queryList = new ArrayList<Query>(Arrays.asList(response.getBody()));
 		}
-
-		headers.set("User", mapper.writeValueAsString(user));
-		HttpEntity<Query[]> entity = new HttpEntity<Query[]>(headers);
-		HttpEntity<Query[]> response = query.exchange(brokerUrl + "/queries", HttpMethod.GET, entity, Query[].class);
-		logger.info("Request sent to broker from services REST.");
-		ArrayList<Query> queryList = new ArrayList<Query>(Arrays.asList(response.getBody()));
 
 		return queryList;
 	}
@@ -63,18 +63,17 @@ public class QueryService {
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
 
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		User user = new User();
-		if(auth != null){
-			user.setName(auth.getName());
-		}else{
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		HttpEntity<Query> response = null;
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.set("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Query> entity = new HttpEntity<Query>(headers);
+			response = query.exchange(brokerUrl + "/queries/" + queryId, HttpMethod.GET, entity, Query.class);
+			logger.info("Request sent to broker from services REST.");
 		}
 
-		headers.set("User", mapper.writeValueAsString(user));
-		HttpEntity<Query> entity = new HttpEntity<Query>(headers);
-		HttpEntity<Query> response = query.exchange(brokerUrl + "/queries/" + queryId, HttpMethod.GET, entity, Query.class);
-		logger.info("Request sent to broker from services REST.");
 		return response.getBody();
 	}
 
@@ -86,18 +85,17 @@ public class QueryService {
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
 
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		User user = new User();
-		if(auth != null){
-			user.setName(auth.getName());
-		}else{
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		Query queryRet = null;
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.add("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<ArrayList<Long>> request = new HttpEntity<ArrayList<Long>>(patientIds, headers);
+			queryRet = query.postForObject(brokerUrl + "/queries/" + queryId + "/stage", request, Query.class);
+			logger.info("Request sent to broker from services REST.");
 		}
 
-		headers.add("User", mapper.writeValueAsString(user));
-		HttpEntity<ArrayList<Long>> request = new HttpEntity<ArrayList<Long>>(patientIds, headers);
-		Query queryRet = query.postForObject(brokerUrl + "/queries/" + queryId + "/stage", request, Query.class);
-		logger.info("Request sent to broker from services REST.");
 		return queryRet;
 	}
 }

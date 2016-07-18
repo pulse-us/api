@@ -1,5 +1,8 @@
 package gov.ca.emsa.pulse.service;
 
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.common.domain.Organization;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -17,36 +20,36 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+
 @RestController
 public class OrganizationService {
-	
+
 	private static final Logger logger = LogManager.getLogger(OrganizationService.class);
-	
+
 	@Value("${brokerUrl}")
 	private String brokerUrl;
-	
+
 	// get all organizations
 	@RequestMapping(value = "/organizations")
-	public ArrayList<Organization> getACFs() throws JsonProcessingException {
+	public ArrayList<Organization> getOrganizations() throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
 
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		User user = new User();
-		if(auth != null){
-			user.setName(auth.getName());
-		}else{
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		ArrayList<Organization> orgList = null;
+		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
+		}else{
+            //mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+			headers.set("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Organization[]> entity = new HttpEntity<Organization[]>(headers);
+			HttpEntity<Organization[]> response = query.exchange(brokerUrl + "/organizations", HttpMethod.GET, entity, Organization[].class);
+			logger.info("Request sent to broker from services REST.");
+			orgList = new ArrayList<Organization>(Arrays.asList(response.getBody()));
 		}
-
-		headers.set("User", mapper.writeValueAsString(user));
-		HttpEntity<Organization[]> entity = new HttpEntity<Organization[]>(headers);
-		HttpEntity<Organization[]> response = query.exchange(brokerUrl + "/organizations", HttpMethod.GET, entity, Organization[].class);
-		logger.info("Request sent to broker from services REST.");
-		ArrayList<Organization> orgList = new ArrayList<Organization>(Arrays.asList(response.getBody()));
-
 		return orgList;
 	}
 }

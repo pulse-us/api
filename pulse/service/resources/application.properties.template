@@ -1,8 +1,0 @@
-entityId=urn:test:ainq:state:name
-portalUrl=http://localhost:3000
-keyLocation=C:\\JSONPulseRsaJoseJWebKey.txt
-jwtAllowedClockSkew=30
-jwtIssuer=CALEMSA
-jwtAudience=CALEMSA
-jwtExpirationTimeMinutesInTheFuture=30
-jwtNotBeforeMinutesInThePast=4

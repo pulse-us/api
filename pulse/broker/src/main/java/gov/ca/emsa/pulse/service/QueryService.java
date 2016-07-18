@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.ca.emsa.pulse.broker.domain.CreatePatientRequest;
-import gov.ca.emsa.pulse.broker.domain.Patient;
-import gov.ca.emsa.pulse.broker.domain.Query;
-import gov.ca.emsa.pulse.broker.domain.User;
+import gov.ca.emsa.pulse.common.domain.CommonUser;
+import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
+import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
@@ -43,38 +44,38 @@ public class QueryService {
 	@Autowired PatientManager patientManager;
 	@Autowired DocumentManager docManager;
 	@Autowired AlternateCareFacilityManager acfManager;
-	
+
 	@ApiOperation(value = "Get all queries for the logged-in user")
 	@RequestMapping(value="", method = RequestMethod.GET)
 	public List<Query> getQueries() {
-		User user = UserUtil.getCurrentUser();
+		CommonUser user = UserUtil.getCurrentUser();
 
 		List<QueryDTO> queries = queryManager.getAllQueriesForUser(user.getSubjectName());
 		List<Query> results = new ArrayList<Query>();
 		for(QueryDTO query : queries) {
-			results.add(new Query(query));
+			results.add(DtoToDomainConverter.convert(query));
 		}
 		return results;
 	}
-	
+
 	@ApiOperation(value="Get the status of a query")
 	@RequestMapping(value="/{queryId}", method = RequestMethod.GET)
     public Query getQueryStatus(@PathVariable(value="queryId") Long queryId) {
-       QueryDTO initiatedQuery = queryManager.getById(queryId); 
-       return new Query(initiatedQuery);
+       QueryDTO initiatedQuery = queryManager.getById(queryId);
+       return DtoToDomainConverter.convert(initiatedQuery);
     }
-	
+
 	@ApiOperation(value="Create a Patient from multiple PatientRecords")
 	@RequestMapping(value="/{queryId}/stage", method = RequestMethod.POST)
     public Patient stagePatientFromResults(@PathVariable(value="queryId") Long queryId,
-    		@RequestBody CreatePatientRequest request) throws InvalidParameterException {		
-		User user = UserUtil.getCurrentUser();
-		if(request.getPatient() == null || 
-				request.getPatientRecordIds() == null || 
+    		@RequestBody CreatePatientRequest request) throws InvalidParameterException {
+		CommonUser user = UserUtil.getCurrentUser();
+		if(request.getPatient() == null ||
+				request.getPatientRecordIds() == null ||
 				request.getPatientRecordIds().size() == 0) {
 			throw new InvalidParameterException("A patient object and at least one patient record id is required.");
 		}
-		
+
 		//create a new Patient
 		PatientDTO patientToCreate = DomainToDtoConverter.convertToPatient(request.getPatient());
 		AlternateCareFacilityDTO acfDto = acfManager.getByName(user.getAcf());
@@ -84,11 +85,11 @@ public class QueryService {
 		patientToCreate.setAcf(acfDto);
 
 		PatientDTO patient = patientManager.create(patientToCreate);
-		
+
 		//create patient organization mappings based on the patientrecords we are using
 		for(Long patientRecordId : request.getPatientRecordIds()) {
 			PatientOrganizationMapDTO orgMapDto = patientManager.createOrganizationMapFromPatientRecord(patient, patientRecordId);
-			
+
 			//kick off document list retrieval service
 			SAMLInput input = new SAMLInput();
 			input.setStrIssuer("https://idp.dhv.gov");
@@ -96,11 +97,11 @@ public class QueryService {
 			input.setStrNameQualifier("My Website");
 			input.setSessionId("abcdedf1234567");
 			HashMap<String, String> customAttributes = new HashMap<String,String>();
-			customAttributes.put("RequesterFirstName", user.getName());
+			customAttributes.put("RequesterFirstName", user.getFirstName());
 			customAttributes.put("RequestReason", "Get patient documents");
 			customAttributes.put("PatientId", orgMapDto.getOrgPatientId());
 			input.setAttributes(customAttributes);
-			
+
 			String samlMessage = null;
 			try {
 				samlMessage = samlGenerator.createSAML(input);
@@ -110,9 +111,9 @@ public class QueryService {
 			patient.getOrgMaps().add(orgMapDto);
 			docManager.queryForDocuments(samlMessage, orgMapDto);
 		}
-		
+
 		//delete query (all associated items should cascade)
-		queryManager.delete(queryId);	
-		return new Patient(patient);
+		queryManager.delete(queryId);
+		return DtoToDomainConverter.convert(patient);
     }
 }

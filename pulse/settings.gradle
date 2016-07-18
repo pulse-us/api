@@ -1,1 +1,1 @@
-include 'auth', 'service', 'broker'
+include 'auth', 'service', 'broker', 'common'
