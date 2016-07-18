@@ -14,6 +14,10 @@ configurations {
   compile.exclude group:'ch.qos.logback'
 }
 
+springBoot {
+  executable = true
+}
+
 apply plugin: 'spring-boot'
 
 jar {
