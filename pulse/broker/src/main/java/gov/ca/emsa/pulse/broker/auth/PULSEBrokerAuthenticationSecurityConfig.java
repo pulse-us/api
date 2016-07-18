@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,10 +35,19 @@ public class PULSEBrokerAuthenticationSecurityConfig extends WebSecurityConfigur
 	}
 	
 	@Override
+	public void configure(WebSecurity web) throws Exception {
+		web.ignoring().antMatchers("/health**");
+	}
+	
+	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-
-		http.authorizeRequests().antMatchers("/**").hasRole("USER")
-		.and().addFilterBefore(new HttpRequestUserFilter(), UsernamePasswordAuthenticationFilter.class).headers();
+		http
+			.authorizeRequests()
+			.antMatchers("/**")
+			.hasRole("USER")
+		.and()
+			.addFilterBefore(new HttpRequestUserFilter(), UsernamePasswordAuthenticationFilter.class)
+			.headers();
 	}
 	
 	@Bean

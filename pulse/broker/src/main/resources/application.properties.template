@@ -20,3 +20,7 @@ queryCacheExpireMinutes=240
 
 #how often do we check the cache to clean up expired entries
 queryCacheCleanupMinutes=10
+
+#allow detailed health information to come back without authentication
+management.security.enabled=false
+endpoints.health.sensitive=false
