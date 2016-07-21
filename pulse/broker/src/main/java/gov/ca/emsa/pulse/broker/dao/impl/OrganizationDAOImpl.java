@@ -184,13 +184,8 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	
 	@Override
 	public List<OrganizationEntity> getAllEntities() {
-		TypedQuery<OrganizationEntity> query = null;
-
-		query = entityManager.createQuery("from OrganizationEntity", OrganizationEntity.class);
-
-		List<OrganizationEntity> result = query.getResultList();
-
-		return result;
+		Query query = entityManager.createQuery("from OrganizationEntity", OrganizationEntity.class);
+		return query.getResultList();
 	}
 
 	public void deleteOrganization(OrganizationEntity org){

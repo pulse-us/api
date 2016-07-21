@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.ca.emsa.pulse.common.domain.CommonUser;
+import gov.ca.emsa.pulse.common.domain.Organization;
 import gov.ca.emsa.pulse.common.domain.OrganizationBase;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
@@ -33,7 +34,8 @@ public class OrganizationService {
 		List<OrganizationDTO> orgDtos = orgManager.getAll();
 		List<OrganizationBase> orgs = new ArrayList<OrganizationBase>();
 		for(OrganizationDTO orgDto : orgDtos) {
-			DtoToDomainConverter.convert(orgDto);
+			Organization org = DtoToDomainConverter.convert(orgDto);
+			orgs.add(org);
 		}
        return orgs;
     }
