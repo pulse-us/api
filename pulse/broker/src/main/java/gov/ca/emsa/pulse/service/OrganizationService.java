@@ -29,7 +29,7 @@ public class OrganizationService {
 	@RequestMapping(value="", method=RequestMethod.GET)
     public List<OrganizationBase> getAll() {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.GET_ALL_ORGANIZATIONS, "/organizations", user.getEmail());
+		auditManager.addAuditEntry(QueryType.GET_ALL_ORGANIZATIONS, "/organizations", user.getSubjectName());
 		List<OrganizationDTO> orgDtos = orgManager.getAll();
 		List<OrganizationBase> orgs = new ArrayList<OrganizationBase>();
 		for(OrganizationDTO orgDto : orgDtos) {

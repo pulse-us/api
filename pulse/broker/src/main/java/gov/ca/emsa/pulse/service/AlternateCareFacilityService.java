@@ -34,7 +34,7 @@ public class AlternateCareFacilityService {
 	@RequestMapping(value="",  method = RequestMethod.GET)
     public List<AlternateCareFacility> getAll() {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.GET_ALL_ACFS, "/acfs", user.getEmail());
+		auditManager.addAuditEntry(QueryType.GET_ALL_ACFS, "/acfs", user.getSubjectName());
 		List<AlternateCareFacilityDTO> dtos = acfManager.getAll();
 		List<AlternateCareFacility> results = new ArrayList<AlternateCareFacility>();
 		for(AlternateCareFacilityDTO dto : dtos) {
@@ -47,7 +47,7 @@ public class AlternateCareFacilityService {
 	@RequestMapping(value = "/{acfId}", method=RequestMethod.GET)
     public AlternateCareFacility getById(@PathVariable("acfId") Long acfId) {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.GET_ACF_BY_ID, "/acfs" + acfId, user.getEmail());
+		auditManager.addAuditEntry(QueryType.GET_ACF_BY_ID, "/acfs" + acfId, user.getSubjectName());
 		AlternateCareFacilityDTO dto = acfManager.getById(acfId);
 		return DtoToDomainConverter.convert(dto);
     }
@@ -56,7 +56,7 @@ public class AlternateCareFacilityService {
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public AlternateCareFacility create(@RequestBody(required=true) AlternateCareFacility toCreate) {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.CREATE_ACF, "/create", user.getEmail());
+		auditManager.addAuditEntry(QueryType.CREATE_ACF, "/create", user.getSubjectName());
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(toCreate.getName());
 		dto.setPhoneNumber(toCreate.getPhoneNumber());
@@ -81,7 +81,7 @@ public class AlternateCareFacilityService {
 	public AlternateCareFacility update(@RequestBody(required=true) AlternateCareFacility toUpdate)
 		throws Exception {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.EDIT_ACF, user.getAcf() + "/edit", user.getEmail());
+		auditManager.addAuditEntry(QueryType.EDIT_ACF, user.getAcf() + "/edit", user.getSubjectName());
 		AlternateCareFacilityDTO userAcf = acfManager.getByName(user.getAcf());
 		if(userAcf == null) {
 			throw new Exception("The current user's ACF (" + user.getAcf() + ") was not found in the database.");

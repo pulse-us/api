@@ -50,7 +50,7 @@ public class PatientService {
 	@RequestMapping("")
 	public List<Patient> getPatientsAtAcf() throws InvalidParameterException {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.GET_ALL_PATIENTS, "/patients", user.getEmail());
+		auditManager.addAuditEntry(QueryType.GET_ALL_PATIENTS, "/patients", user.getSubjectName());
 		AlternateCareFacilityDTO acfDto = acfManager.getByName(user.getAcf());
 		if(acfDto == null || acfDto.getId() == null) {
 			throw new InvalidParameterException("The ACF supplied, '" + user.getAcf() + "' was not found in the database.");
@@ -70,7 +70,7 @@ public class PatientService {
 	@RequestMapping("/{patientId}/documents")
 	public List<Document> getDocumentListForPatient(@PathVariable("patientId")Long patientId) {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.SEARCH_DOCUMENT, "/" + patientId + "/documents", user.getEmail());
+		auditManager.addAuditEntry(QueryType.SEARCH_DOCUMENT, "/" + patientId + "/documents", user.getSubjectName());
 		List<DocumentDTO> docDtos = docManager.getDocumentsForPatient(patientId);
 		List<Document> results = new ArrayList<Document>(docDtos.size());
 		for(DocumentDTO docDto : docDtos) {
@@ -86,7 +86,7 @@ public class PatientService {
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) {
 
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getEmail());
+		auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getSubjectName());
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID(user.getFirstName());

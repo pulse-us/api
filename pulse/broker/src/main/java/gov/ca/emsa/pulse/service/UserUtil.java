@@ -18,6 +18,7 @@ public class UserUtil {
 			user.setFirstName(((User) auth).getFirstName());
 			user.setLastName(((User) auth).getLastName());
 			user.setEmail(((User) auth).getEmail());
+			user.setSubjectName(((User)auth).getSubjectName());
 		}
 		return user;
 	}

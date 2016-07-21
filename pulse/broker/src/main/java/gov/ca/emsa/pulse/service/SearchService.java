@@ -65,7 +65,7 @@ public class SearchService {
     public @ResponseBody Query searchPatients(@RequestBody(required=true) PatientSearch toSearch) throws JsonProcessingException {
 
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getEmail());
+		auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
 
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
