@@ -38,9 +38,6 @@ public interface User extends UserDetails , Authentication {
 	public Collection<GrantedPermission> getAuthorities();
 
 	@Override
-	public Object getDetails();
-
-	@Override
 	public Object getPrincipal();
 
 	@Override

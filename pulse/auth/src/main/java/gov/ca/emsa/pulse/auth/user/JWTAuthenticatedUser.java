@@ -136,14 +136,6 @@ public class JWTAuthenticatedUser implements User {
 		this.authenticated = arg0;
 	}
 
-    public String getJwt() {
-        return details.get("jwt");
-    }
-
-    public void setJwt(String jwt) {
-        details.put("jwt",jwt);
-    }
-
 	@Override
 	public String getName() {
 		return subjectName;
@@ -176,9 +168,7 @@ public class JWTAuthenticatedUser implements User {
             "[subjectName: " + subjectName + "]" +
             "[firstName: " + firstName + "]" +
             "[lastName: " + lastName + "]" +
-            "[email: " + email + "]" +
-            "[jwt: " + details.get("jwt") + "]" +
-            "[acf: " + details.get("acf") + "]}";
+            "[email: " + email + "]";
         return ret;
     }
 }
