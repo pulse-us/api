@@ -82,7 +82,8 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			user.setFirstName(firstName);
 			user.setLastName(lastName);
             user.setEmail(email);
-
+            user.setJwt(jwt);
+            
             if (identityInfo.size() > 3) {
             	String acfObjStr = identityInfo.get(3);
             	try {
