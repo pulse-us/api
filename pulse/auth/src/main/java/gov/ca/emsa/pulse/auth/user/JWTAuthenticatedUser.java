@@ -1,18 +1,14 @@
 package gov.ca.emsa.pulse.auth.user;
 
-import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.security.core.GrantedAuthority;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+
+import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
+import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JWTAuthenticatedUser implements User {
 
@@ -23,6 +19,7 @@ public class JWTAuthenticatedUser implements User {
 	private String lastName;
     private String email;
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+	private AlternateCareFacility acf;
     private HashMap<String,String> details = new HashMap<String,String>();
 	private boolean authenticated = true;
 
@@ -165,14 +162,14 @@ public class JWTAuthenticatedUser implements User {
 		this.id = id;
 	}
 
-	public String getAcf() {
-		return details.get("acf");
+	public AlternateCareFacility getAcf() {
+		return acf;
 	}
 
-	public void setAcf(String acf) {
-        details.put("acf",acf);
+	public void setAcf(AlternateCareFacility acf) {
+		this.acf = acf;
 	}
-
+	
     @Override
     public String toString() {
         String ret = "{User: " +

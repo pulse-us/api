@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
-import gov.ca.emsa.pulse.common.domain.CommonUser;
+import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.domain.Audit;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
@@ -82,11 +82,10 @@ public class AlternateCareFacilityService {
 		throws Exception {
 		CommonUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.EDIT_ACF, user.getAcf() + "/edit", user.getSubjectName());
-		AlternateCareFacilityDTO userAcf = acfManager.getByName(user.getAcf());
-		if(userAcf == null) {
-			throw new Exception("The current user's ACF (" + user.getAcf() + ") was not found in the database.");
+		if(user.getAcf() == null) {
+			throw new Exception("No ACF was found in the User header.");
 		}
-		if(!userAcf.getId().equals(toUpdate.getId())) {
+		if(!user.getAcf().getId().equals(toUpdate.getId())) {
 			throw new Exception("User " + user.getSubjectName() + " does not have permission to edit ACF " + toUpdate.getName());
 		}
 

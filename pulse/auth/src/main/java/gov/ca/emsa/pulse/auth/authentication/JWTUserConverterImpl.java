@@ -80,7 +80,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 
             if (identityInfo.size() > 3) {
                 String acf = identityInfo.get(3);
-                user.setAcf(acf);
+                System.out.println(acf);
             }
 
             LOG.info(user.toString());

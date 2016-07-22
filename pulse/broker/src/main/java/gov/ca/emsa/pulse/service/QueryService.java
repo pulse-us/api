@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.ca.emsa.pulse.common.domain.CommonUser;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.Query;
+import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
@@ -78,10 +78,10 @@ public class QueryService {
 
 		//create a new Patient
 		PatientDTO patientToCreate = DomainToDtoConverter.convertToPatient(request.getPatient());
-		AlternateCareFacilityDTO acfDto = acfManager.getByName(user.getAcf());
-		if(acfDto == null || acfDto.getId() == null) {
-			throw new InvalidParameterException("The ACF supplied, '" + user.getAcf() + "' was not found in the database.");
+		if(user.getAcf() == null || user.getAcf().getId() == null) {
+			throw new InvalidParameterException("There was no ACF supplied in the User header or the ACF ID was null.");
 		}
+		AlternateCareFacilityDTO acfDto = acfManager.getById(user.getAcf().getId());
 		patientToCreate.setAcf(acfDto);
 
 		PatientDTO patient = patientManager.create(patientToCreate);

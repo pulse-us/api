@@ -27,10 +27,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.broker.domain.MockPatient;
+import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.CommonUser;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
@@ -198,7 +199,10 @@ public class PatientSearchTest {
 
 	private CommonUser createUser() {
 		CommonUser user = new CommonUser();
-		user.setAcf("Tent 1");
+		AlternateCareFacility acf = new AlternateCareFacility();
+		acf.setId(1L);
+		acf.setName("Tent 1");
+		user.setAcf(acf);
 		user.setSubjectName("kekey");
 		user.setAuthenticated(true);
 		user.setEmail("kekey@ainq.com");
