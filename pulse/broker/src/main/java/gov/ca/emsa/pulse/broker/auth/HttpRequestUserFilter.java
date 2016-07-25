@@ -14,6 +14,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class HttpRequestUserFilter implements Filter {
+	private static final Logger logger = LogManager.getLogger(HttpRequestUserFilter.class);
+
 	List<String> exemptions;
 	ObjectMapper jsonMapper;
 
@@ -51,11 +55,11 @@ public class HttpRequestUserFilter implements Filter {
 			chain.doFilter(req, res);
 		} else {
 			String userHeader = request.getHeader("User");
+			logger.info("User Header " + userHeader);
 			if (userHeader == null){
 				SecurityContextHolder.getContext().setAuthentication(null);
 				throw new ServletException("No header found with the name 'User'");
 			} else {
-
 				JWTAuthenticatedUser authenticatedUser = jsonMapper.readValue(userHeader, JWTAuthenticatedUser.class);
 				if (authenticatedUser != null){
 					SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
