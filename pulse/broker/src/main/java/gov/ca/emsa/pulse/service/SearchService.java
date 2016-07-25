@@ -93,26 +93,7 @@ public class SearchService {
 			logger.error("Could not create SAML from input " + input, e);
 		}
 
-		Patient queryTerms = new Patient();
-		queryTerms.setFirstName(toSearch.getFirstName());
-		queryTerms.setLastName(toSearch.getLastName());
-		if(!StringUtils.isEmpty(toSearch.getDob())) {
-			try {
-				Date dateOfBirth = formatter.parse(toSearch.getDob());
-				queryTerms.setDateOfBirth(dateOfBirth);
-			} catch(ParseException ex) {
-				logger.error("Could not parse date " + toSearch.getDob(), ex);
-			}
-		}
-
-		queryTerms.setSsn(toSearch.getSsn());
-		queryTerms.setGender(toSearch.getGender());
-		if(toSearch.getZip() != null) {
-			Address qtAddress = new Address();
-			qtAddress.setZipcode(toSearch.getZip());
-			queryTerms.setAddress(qtAddress);
-		}
-		String queryTermsJson = JSONUtils.toJSON(queryTerms);
+		String queryTermsJson = JSONUtils.toJSON(toSearch);
 
 		QueryDTO query = new QueryDTO();
 		query.setUserId(user.getSubjectName());
@@ -131,7 +112,7 @@ public class SearchService {
 			query.getOrgStatuses().add(queryOrg);
 		}
 
-        QueryDTO initiatedQuery = searchManager.queryForPatientRecords(samlMessage, queryTerms, query, user);
+        QueryDTO initiatedQuery = searchManager.queryForPatientRecords(samlMessage, toSearch, query, user);
        return DtoToDomainConverter.convert(initiatedQuery);
     }
 }

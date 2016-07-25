@@ -54,7 +54,6 @@ public class PatientService {
 			RestTemplate query = new RestTemplate();
 			query.postForObject(brokerUrl + "/search", request, Query.class);
 			logger.info("Request sent to broker from services REST.");
-			logger.info("User header is " + headers.get("User"));
 		}
 
 	}
