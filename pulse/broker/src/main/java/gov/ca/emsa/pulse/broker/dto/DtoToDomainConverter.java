@@ -148,6 +148,7 @@ public class DtoToDomainConverter {
 		org.setId(orgDto.getId());
 		org.setName(orgDto.getName());
 		org.setAdapter(orgDto.getAdapter());
+		org.setActive(orgDto.isActive());
 		org.setOrganizationId(orgDto.getOrganizationId());
 		if(orgDto.getCertificationKey() != null){
 			org.setCertificationKey(orgDto.getCertificationKey());

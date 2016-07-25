@@ -47,9 +47,10 @@ public class PatientQueryService implements Runnable {
 		
 		Adapter adapter = adapterFactory.getAdapter(org);
 		if(adapter != null) {
-			logger.info("Starting query to " + org.getAdapter() + " for orgquery " + queryOrg.getId());
+			logger.info("Starting query to " + org.getAdapter() + " for orgStatus " + queryOrg.getId());
 			try {
 				searchResults = adapter.queryPatients(org, toSearch, samlMessage);
+				logger.info("Successfully queried " + org.getAdapter());
 			} catch(Exception ex) {
 				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 				queryError = true;
@@ -57,19 +58,23 @@ public class PatientQueryService implements Runnable {
 		}
 		//store the patients returned so we can retrieve them later when all orgs have finished querying
 		if(searchResults != null && searchResults.size() > 0) {
+			logger.info("Found " + searchResults.size() + " results for " + org.getAdapter());
 			for(PatientRecordDTO patient : searchResults) {
 				patient.setQueryOrganizationId(queryOrg.getId());
 					
 				//save the search results
 				queryManager.addPatientRecord(patient);
+				logger.info("Added patient record to the orgStatus " + queryOrg.getId());
 			}
-		} 
+		} else {
+			logger.info("Found 0 results for " + org.getAdapter());
+		}
 		
 		queryOrg.setStatus(QueryStatus.COMPLETE.name());
 		queryOrg.setEndDate(new Date());
 		queryOrg.setSuccess(!queryError);
 		queryManager.createOrUpdateQueryOrganization(queryOrg);
-		logger.info("Completed query to " + org.getAdapter() + " for orgquery " + queryOrg.getId());
+		logger.info("Completed query to " + org.getAdapter() + " for orgStatus" + queryOrg.getId());
 	}
 
 	public QueryOrganizationDTO getQueryOrg() {

@@ -42,9 +42,12 @@ public class PULSEBrokerAuthenticationSecurityConfig extends WebSecurityConfigur
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
+		//user has been authenticated through the public service before they come here
+		//so we can allow everyone
 			.authorizeRequests()
 			.antMatchers("/**")
-			.hasRole("USER")
+			.permitAll()
+			//.hasRole("USER")
 		.and()
 			.addFilterBefore(new HttpRequestUserFilter(), UsernamePasswordAuthenticationFilter.class)
 			.headers();

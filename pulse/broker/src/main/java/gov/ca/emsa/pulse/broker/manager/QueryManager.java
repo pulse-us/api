@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.ca.emsa.pulse.common.domain.CommonUser;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;

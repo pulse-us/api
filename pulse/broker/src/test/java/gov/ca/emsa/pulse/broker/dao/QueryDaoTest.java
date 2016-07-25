@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.broker.dao;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,6 +122,53 @@ public class QueryDaoTest extends TestCase {
 		orgQuery2 = selected.getOrgStatuses().get(0);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testGetAllQueries() {		
+		insertOrganizations();
+
+		QueryDTO toInsert = new QueryDTO();
+		toInsert.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.setTerms("terms");
+		toInsert.setUserId("kekey");
+		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
+		orgQuery1.setOrgId(org1.getId());
+		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.getOrgStatuses().add(orgQuery1);
+		QueryOrganizationDTO orgQuery2 = new QueryOrganizationDTO();
+		orgQuery2.setOrgId(org2.getId());
+		orgQuery2.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.getOrgStatuses().add(orgQuery2);
+		
+		QueryDTO inserted = queryDao.create(toInsert);
+		assertNotNull(inserted);
+		assertNotNull(inserted.getId());
+		assertTrue(inserted.getId().longValue() > 0);
+		assertNotNull(inserted.getOrgStatuses());
+		assertEquals(2, inserted.getOrgStatuses().size());
+		orgQuery1 = inserted.getOrgStatuses().get(0);
+		assertNotNull(orgQuery1.getId());
+		assertTrue(orgQuery1.getId().longValue() > 0);
+		orgQuery2 = inserted.getOrgStatuses().get(0);
+		assertNotNull(orgQuery2.getId());
+		assertTrue(orgQuery2.getId().longValue() > 0);
+		
+		List<QueryDTO> selected = queryDao.findAllForUser("kekey");
+		assertNotNull(selected);
+		assertEquals(1, selected.size());
+//		assertNotNull(selected.getId());
+//		assertTrue(selected.getId().longValue() > 0);
+//		assertNotNull(selected.getOrgStatuses());
+//		assertEquals(2, selected.getOrgStatuses().size());
+//		orgQuery1 = selected.getOrgStatuses().get(0);
+//		assertNotNull(orgQuery1.getId());
+//		assertTrue(orgQuery1.getId().longValue() > 0);
+//		orgQuery2 = selected.getOrgStatuses().get(0);
+//		assertNotNull(orgQuery2.getId());
+//		assertTrue(orgQuery2.getId().longValue() > 0);
 	}
 	
 	@Test

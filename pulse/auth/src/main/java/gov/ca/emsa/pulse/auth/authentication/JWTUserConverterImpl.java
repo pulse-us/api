@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.auth.authentication;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -11,9 +12,14 @@ import gov.ca.emsa.pulse.auth.jwt.JWTValidationException;
 //import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.auth.user.User;
+import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 
 @Service
 public class JWTUserConverterImpl implements JWTUserConverter {
@@ -77,14 +83,21 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			user.setLastName(lastName);
             user.setEmail(email);
             user.setJwt(jwt);
-
+            
             if (identityInfo.size() > 3) {
-                String acf = identityInfo.get(3);
-                user.setAcf(acf);
+            	String acfObjStr = identityInfo.get(3);
+            	try {
+	            	ObjectReader reader = new ObjectMapper().reader().forType(AlternateCareFacility.class);
+	            	AlternateCareFacility acf = reader.readValue(acfObjStr);
+	                user.setAcf(acf);
+            	} catch(JsonProcessingException ex) {
+            		LOG.error("Could not read '" + acfObjStr + "' as AlternateCareFacility", ex);
+            	} catch(IOException io) {
+            		LOG.error("Could not read '" + acfObjStr + "' as AlternateCareFacility", io);
+            	}
             }
 
             LOG.info(user.toString());
-            LOG.info(user.getDetails().toString());
 		}
 		return user;
 	}
