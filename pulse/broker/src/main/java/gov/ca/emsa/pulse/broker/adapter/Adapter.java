@@ -4,11 +4,12 @@ import java.util.List;
 
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 
 public interface Adapter {
-	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, Patient toSearch, String samlMessage);
+	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, PatientSearch toSearch, String samlMessage);
 	public Document[] queryDocuments(OrganizationDTO org, PatientOrganizationMapDTO orgPatient, String samlMessage);
 }

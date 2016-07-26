@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.broker.domain.MockPatient;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
@@ -31,19 +32,15 @@ public class MockAdapter implements Adapter {
 	}
 	
 	@Override
-	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, Patient toSearch, String samlMessage) {
+	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, PatientSearch toSearch, String samlMessage) {
 		String postUrl = org.getEndpointUrl() + "/patients";
 		MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
 		parameters.add("firstName", toSearch.getFirstName());
 		parameters.add("lastName", toSearch.getLastName());
-		if(toSearch.getDateOfBirth() != null) {
-			parameters.add("dob", formatter.format(toSearch.getDateOfBirth()));
-		}
+		parameters.add("dob", toSearch.getDob());
 		parameters.add("gender", toSearch.getGender());
 		parameters.add("ssn", toSearch.getSsn());
-		if(toSearch.getAddress() != null) {
-			parameters.add("zipcode", toSearch.getAddress().getZipcode());
-		}
+		parameters.add("zipcode", toSearch.getZip());
 		parameters.add("samlMessage", samlMessage);
 		RestTemplate restTemplate = new RestTemplate();
 		MockPatient[] searchResults = null;
