@@ -77,7 +77,10 @@ public class DocumentService {
 			response = query.exchange(brokerUrl + "/patients/" + patientId + "/documents/" + documentId + "?cacheOnly=" + cacheOnly.toString(), HttpMethod.GET, entity, String.class);
 			logger.info("Request sent to broker from services REST.");
 		}
-
-		return response.getBody();
+		if(cacheOnly){
+			return "";
+		}else{
+			return response.getBody();
+		}
 	}
 }
