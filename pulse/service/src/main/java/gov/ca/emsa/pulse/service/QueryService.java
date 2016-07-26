@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.service;
 
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Query;
 
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public class QueryService {
 
 	// stages a patient in the database from a query id
 	@RequestMapping(value = "/queries/{queryId}/stage", method = RequestMethod.POST)
-	public Query stageQueryWithId(@RequestBody ArrayList<Long> patientIds, @PathVariable Long queryId) throws JsonProcessingException {
+	public Query stageQueryWithId(@RequestBody CreatePatientRequest request, @PathVariable Long queryId) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
@@ -91,8 +92,8 @@ public class QueryService {
 			logger.error("Could not find a logged in user. ");
 		}else{
 			headers.add("User", mapper.writeValueAsString(jwtUser));
-			HttpEntity<ArrayList<Long>> request = new HttpEntity<ArrayList<Long>>(patientIds, headers);
-			queryRet = query.postForObject(brokerUrl + "/queries/" + queryId + "/stage", request, Query.class);
+			HttpEntity<CreatePatientRequest> httpRequest = new HttpEntity<CreatePatientRequest>(request, headers);
+			queryRet = query.postForObject(brokerUrl + "/queries/" + queryId + "/stage", httpRequest, Query.class);
 			logger.info("Request sent to broker from services REST.");
 		}
 
