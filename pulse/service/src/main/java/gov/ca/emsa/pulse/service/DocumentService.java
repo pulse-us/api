@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import io.swagger.annotations.ApiOperation;
 
@@ -58,26 +59,29 @@ public class DocumentService {
 
 	@ApiOperation(value="Retrieve a specific Document from an organization.")
 	@RequestMapping("/patients/{patientId}/documents/{documentId}")
-	public Document getDocumentContents(@PathVariable("documentId") Long documentId,
+	public DocumentWrapper getDocumentContents(@PathVariable("documentId") Long documentId,
 			@PathVariable("patientId") Long patientId,
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
+		DocumentWrapper dw = new DocumentWrapper("");
 
 		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
-		HttpEntity<Document> response = null;
+		HttpEntity<String> response = null;
 		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
 		}else{
 
 			headers.set("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<Document> entity = new HttpEntity<Document>(headers);
-			response = query.exchange(brokerUrl + "/patients/" + patientId + "/documents/" + documentId + "?cacheOnly=" + cacheOnly.toString(), HttpMethod.GET, entity, Document.class);
+			response = query.exchange(brokerUrl + "/patients/" + patientId + "/documents/" + documentId + "?cacheOnly=" + cacheOnly.toString(), HttpMethod.GET, entity, String.class);
+			if(!cacheOnly){
+				dw.setData(response.getBody());
+			}
 			logger.info("Request sent to broker from services REST.");
 		}
-
-		return response.getBody();
+		return dw;
 	}
 }
