@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
-import gov.ca.emsa.pulse.common.domain.CommonUser;
+import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.domain.Audit;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
@@ -34,7 +34,7 @@ public class AlternateCareFacilityService {
 	@RequestMapping(value="",  method = RequestMethod.GET)
     public List<AlternateCareFacility> getAll() {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.GET_ALL_ACFS, "/acfs", user.getEmail());
+		auditManager.addAuditEntry(QueryType.GET_ALL_ACFS, "/acfs", user.getSubjectName());
 		List<AlternateCareFacilityDTO> dtos = acfManager.getAll();
 		List<AlternateCareFacility> results = new ArrayList<AlternateCareFacility>();
 		for(AlternateCareFacilityDTO dto : dtos) {
@@ -47,7 +47,7 @@ public class AlternateCareFacilityService {
 	@RequestMapping(value = "/{acfId}", method=RequestMethod.GET)
     public AlternateCareFacility getById(@PathVariable("acfId") Long acfId) {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.GET_ACF_BY_ID, "/acfs" + acfId, user.getEmail());
+		auditManager.addAuditEntry(QueryType.GET_ACF_BY_ID, "/acfs" + acfId, user.getSubjectName());
 		AlternateCareFacilityDTO dto = acfManager.getById(acfId);
 		return DtoToDomainConverter.convert(dto);
     }
@@ -56,7 +56,7 @@ public class AlternateCareFacilityService {
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public AlternateCareFacility create(@RequestBody(required=true) AlternateCareFacility toCreate) {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.CREATE_ACF, "/create", user.getEmail());
+		auditManager.addAuditEntry(QueryType.CREATE_ACF, "/create", user.getSubjectName());
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(toCreate.getName());
 		dto.setPhoneNumber(toCreate.getPhoneNumber());
@@ -81,12 +81,11 @@ public class AlternateCareFacilityService {
 	public AlternateCareFacility update(@RequestBody(required=true) AlternateCareFacility toUpdate)
 		throws Exception {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.EDIT_ACF, user.getAcf() + "/edit", user.getEmail());
-		AlternateCareFacilityDTO userAcf = acfManager.getByName(user.getAcf());
-		if(userAcf == null) {
-			throw new Exception("The current user's ACF (" + user.getAcf() + ") was not found in the database.");
+		auditManager.addAuditEntry(QueryType.EDIT_ACF, user.getAcf() + "/edit", user.getSubjectName());
+		if(user.getAcf() == null) {
+			throw new Exception("No ACF was found in the User header.");
 		}
-		if(!userAcf.getId().equals(toUpdate.getId())) {
+		if(!user.getAcf().getId().equals(toUpdate.getId())) {
 			throw new Exception("User " + user.getSubjectName() + " does not have permission to edit ACF " + toUpdate.getName());
 		}
 

@@ -211,7 +211,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	private QueryEntity getEntityById(Long id) {
 		QueryEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT q from QueryEntity q "
+		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
 				+ "where q.id = :entityid) ", 
 				QueryEntity.class );
@@ -222,12 +222,12 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 			entity = results.get(0);
 		}
 		return entity;
-		}
+	}
 	
 	private QueryOrganizationEntity getQueryStatusById(Long id) {
 		QueryOrganizationEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
+		Query query = entityManager.createQuery( "SELECT distinct q from QueryOrganizationEntity q "
 				+ "LEFT OUTER JOIN FETCH q.org " 
 				+ "LEFT OUTER JOIN FETCH q.results "
 				+ "where q.id = :entityid) ", 
@@ -243,7 +243,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	private List<QueryEntity> getEntitiesByUser(String user) {		
-		Query query = entityManager.createQuery( "SELECT q from QueryEntity q "
+		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
 				+ "where q.userId = :userId) ", 
 				QueryEntity.class );
@@ -254,7 +254,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	private List<QueryEntity> getEntitiesByUserAndStatus(String user, String status) {		
-		Query query = entityManager.createQuery( "SELECT q from QueryEntity q "
+		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
 				+ "where q.userId = :userId "
 				+ "and q.status = :status) ", 

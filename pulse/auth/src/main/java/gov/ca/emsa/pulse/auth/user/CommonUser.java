@@ -1,18 +1,16 @@
-package gov.ca.emsa.pulse.common.domain;
+package gov.ca.emsa.pulse.auth.user;
 
 import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
-import gov.ca.emsa.pulse.auth.user.User;
+import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 public class CommonUser implements User{
 
+	private static final long serialVersionUID = -4255948572251487878L;
+	
 	private Long id;
 	private String subjectName;
 	private String firstName;
@@ -21,7 +19,7 @@ public class CommonUser implements User{
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private boolean authenticated = true;
     private String jwt;
-    private String acf;
+    private AlternateCareFacility acf;
     
 	public Long getId() {
 		return id;
@@ -71,10 +69,10 @@ public class CommonUser implements User{
 	public void setJwt(String jwt) {
 		this.jwt = jwt;
 	}
-	public String getAcf() {
+	public AlternateCareFacility getAcf() {
 		return acf;
 	}
-	public void setAcf(String acf) {
+	public void setAcf(AlternateCareFacility acf) {
 		this.acf = acf;
 	}
 	@Override

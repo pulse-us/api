@@ -102,10 +102,11 @@ public class AlternateCareFacilityService {
 
 		// edit an acf by its id
 	@RequestMapping(value = "/acfs/{acfId}/edit")
-	public AlternateCareFacility editACFById(@PathVariable Long acfId) throws JsonProcessingException {
+	public AlternateCareFacility editACFById(@PathVariable Long acfId, 
+			@RequestBody AlternateCareFacility acf) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
-		HttpHeaders headers = new HttpHeaders();
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		ObjectMapper mapper = new ObjectMapper();
 
 		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
@@ -113,8 +114,8 @@ public class AlternateCareFacilityService {
 		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
 		}else{
-			headers.set("User", mapper.writeValueAsString(jwtUser));
-			HttpEntity<AlternateCareFacility> request = new HttpEntity<AlternateCareFacility>(headers);
+			headers.add("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<AlternateCareFacility> request = new HttpEntity<AlternateCareFacility>(acf, headers);
 			returnAcf = query.postForObject(brokerUrl + "/acfs/" + acfId + "/edit", request, AlternateCareFacility.class);
 			logger.info("Request sent to broker from services REST.");
 		}
