@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
@@ -29,7 +30,7 @@ public class PatientQueryService implements Runnable {
 	@Autowired private PatientManager patientManager;
 	@Autowired private OrganizationManager orgManager;
 	@Autowired private AdapterFactory adapterFactory;
-	private Patient toSearch;
+	private PatientSearch toSearch;
 	private String samlMessage;
 	
 	@Override
@@ -117,11 +118,11 @@ public class PatientQueryService implements Runnable {
 		this.adapterFactory = adapterFactory;
 	}
 
-	public Patient getToSearch() {
+	public PatientSearch getToSearch() {
 		return toSearch;
 	}
 
-	public void setToSearch(Patient toSearch) {
+	public void setToSearch(PatientSearch toSearch) {
 		this.toSearch = toSearch;
 	}
 

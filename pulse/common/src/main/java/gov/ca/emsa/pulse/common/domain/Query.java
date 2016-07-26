@@ -7,7 +7,7 @@ public class Query {
 	private Long id;
 	private String userToken;
 	private String status;
-	private String terms;
+	private PatientSearch terms;
 	private List<QueryOrganization> orgStatuses;
 
 	public Query() {
@@ -38,11 +38,11 @@ public class Query {
 		this.status = status;
 	}
 
-	public String getTerms() {
+	public PatientSearch getTerms() {
 		return terms;
 	}
 
-	public void setTerms(String terms) {
+	public void setTerms(PatientSearch terms) {
 		this.terms = terms;
 	}
 

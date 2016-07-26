@@ -1,14 +1,10 @@
 package gov.ca.emsa.pulse.broker.auth;
 
-import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -17,13 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.web.filter.GenericFilterBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 
-@Component
-public class HttpRequestUserFilter implements Filter {
+public class HttpRequestUserFilter extends GenericFilterBean {
 	private static final Logger logger = LogManager.getLogger(HttpRequestUserFilter.class);
 
 	List<String> exemptions;
@@ -38,16 +34,6 @@ public class HttpRequestUserFilter implements Filter {
 	}
 
 	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void destroy() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) req;
@@ -55,7 +41,7 @@ public class HttpRequestUserFilter implements Filter {
 			chain.doFilter(req, res);
 		} else {
 			String userHeader = request.getHeader("User");
-			logger.info("User Header " + userHeader);
+			logger.debug("User Header " + userHeader);
 			if (userHeader == null){
 				SecurityContextHolder.getContext().setAuthentication(null);
 				throw new ServletException("No header found with the name 'User'");

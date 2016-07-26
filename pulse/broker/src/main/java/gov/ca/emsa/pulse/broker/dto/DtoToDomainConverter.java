@@ -1,22 +1,28 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.io.IOException;
 
-import gov.ca.emsa.pulse.common.domain.PatientOrganizationMap;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
+import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Organization;
-import gov.ca.emsa.pulse.common.domain.OrganizationBase;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientOrganizationMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.common.domain.QueryOrganization;
 
 public class DtoToDomainConverter {
-	
+	private static final Logger logger = LogManager.getLogger(DtoToDomainConverter.class);
+
 	public static Patient convert(PatientDTO dtoObj) {
 		Patient result = new Patient();
 		result.setId(dtoObj.getId());
@@ -106,7 +112,15 @@ public class DtoToDomainConverter {
 		Query query = new Query();
 		query.setId(queryDto.getId());
 		query.setStatus(queryDto.getStatus());
-		query.setTerms(queryDto.getTerms());
+		
+		try {
+			ObjectMapper termReader = new ObjectMapper();
+			PatientSearch terms = termReader.readValue(queryDto.getTerms(), PatientSearch.class);
+			query.setTerms(terms);
+		} catch(IOException ioex) {
+			logger.error("Could not read " + queryDto.getTerms() + " as JSON.");
+		}
+		
 		query.setUserToken(queryDto.getUserId());
 		for(QueryOrganizationDTO qOrgDto : queryDto.getOrgStatuses()){
 			QueryOrganization qOrg = DtoToDomainConverter.convert(qOrgDto);
