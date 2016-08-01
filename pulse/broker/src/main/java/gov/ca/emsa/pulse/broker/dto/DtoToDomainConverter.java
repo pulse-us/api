@@ -94,6 +94,7 @@ public class DtoToDomainConverter {
 		address.setStreet1(addressDto.getStreetLineOne());
 		address.setStreet2(addressDto.getStreetLineTwo());
 		address.setZipcode(addressDto.getZipcode());
+		address.setCountry(addressDto.getCountry());
 		return address;
 	}
 	
