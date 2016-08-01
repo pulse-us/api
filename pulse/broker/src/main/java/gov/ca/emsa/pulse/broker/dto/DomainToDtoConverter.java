@@ -32,6 +32,7 @@ public class DomainToDtoConverter {
 				acfAddrDto.setCity(acfAddress.getCity());
 				acfAddrDto.setState(acfAddress.getState());
 				acfAddrDto.setZipcode(acfAddress.getZipcode());
+				acfAddrDto.setCountry(acfAddress.getCountry());
 				acf.setAddress(acfAddrDto);
 			}
 			result.setAcf(acf);
@@ -44,6 +45,7 @@ public class DomainToDtoConverter {
 			address.setCity(domainObj.getAddress().getCity());
 			address.setState(domainObj.getAddress().getState());
 			address.setZipcode(domainObj.getAddress().getZipcode());
+			address.setCountry(domainObj.getAddress().getCountry());
 			result.setAddress(address);
 		}
 		
