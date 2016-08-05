@@ -45,10 +45,6 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public QueryDTO getById(Long id) {
 		QueryDTO result = queryDao.getById(id);
-		if(result != null) {
-			result.setLastReadDate(new Date());
-			result = queryDao.update(result);
-		}
 		return result;
 	}
 
@@ -56,10 +52,6 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public List<QueryDTO> getAllQueriesForUser(String userKey) {
 		List<QueryDTO> results = queryDao.findAllForUser(userKey);
-		for(QueryDTO result : results) {
-			result.setLastReadDate(new Date());
-			result = queryDao.update(result);
-		}
 		return results;
 	}
 
@@ -67,10 +59,6 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public List<QueryDTO> getActiveQueriesForUser(String userKey) {
 		List<QueryDTO> results = queryDao.findAllForUserWithStatus(userKey, QueryStatus.ACTIVE.name());
-		for(QueryDTO result : results) {
-			result.setLastReadDate(new Date());
-			result = queryDao.update(result);
-		}
 		return results;
 	}
 
@@ -78,16 +66,12 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public String getQueryStatus(Long queryId) {
 		QueryDTO query = queryDao.getById(queryId);
-		query.setLastReadDate(new Date());
-		queryDao.update(query);
-
 		return query.getStatus();
 	}
 
 	@Override
 	@Transactional
 	public QueryDTO updateQuery(QueryDTO toUpdate) {
-		toUpdate.setLastReadDate(new Date());
 		return queryDao.update(toUpdate);
 	}
 
@@ -107,6 +91,10 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 			updated = queryDao.updateQueryOrganization(toUpdate);
 		}
 
+		//update last read date here because this will be getting called 
+		//when the query is complete which is the time the user can actually 
+		//"see" it. this is probably when the timer should start counting 
+		//from in terms of figuring out when to delete it
 		QueryDTO query = queryDao.getById(toUpdate.getQueryId());
 		query.setLastReadDate(new Date());
 		queryDao.update(query);
@@ -141,16 +129,6 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public PatientRecordDTO getPatientRecordById(Long patientRecordId) {
 		PatientRecordDTO prDto = patientRecordDao.getById(patientRecordId);
-		if(prDto != null) {
-			//update last read date
-			Long queryOrgId = prDto.getQueryOrganizationId();
-			QueryOrganizationDTO queryOrgDto = queryDao.getQueryOrganizationById(queryOrgId);
-			if(queryOrgDto != null && queryOrgDto.getQueryId() != null) {
-				QueryDTO query = queryDao.getById(queryOrgDto.getQueryId());
-				query.setLastReadDate(new Date());
-				queryDao.update(query);
-			}
-		}
 		return prDto;
 	}
 
@@ -168,7 +146,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public void cleanupQueryCache(Date oldestAllowedQuery) {
+	public void cleanupCache(Date oldestAllowedQuery) {
 		queryDao.deleteItemsOlderThan(oldestAllowedQuery);
 	}
 

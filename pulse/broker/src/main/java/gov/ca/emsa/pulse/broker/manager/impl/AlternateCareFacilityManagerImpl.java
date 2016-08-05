@@ -38,18 +38,8 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 
 	@Override
 	@Transactional
-	public void cleanup(Date lastReadDate) {
-		acfDao.deleteItemsOlderThan(lastReadDate);
-	}
-
-	@Override
-	@Transactional
 	public AlternateCareFacilityDTO getById(Long id) {
 		AlternateCareFacilityDTO result = acfDao.getById(id);
-		if(result != null) {
-			result.setLastReadDate(new Date());
-			result = acfDao.update(result);
-		}
 		return result;
 	}
 
@@ -62,5 +52,11 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 			result = matches.get(0);
 		}
 		return result;
+	}
+	
+	@Override
+	@Transactional
+	public void cleanupCache(Date oldestAllowed) {
+		acfDao.deleteItemsOlderThan(oldestAllowed);
 	}
 }

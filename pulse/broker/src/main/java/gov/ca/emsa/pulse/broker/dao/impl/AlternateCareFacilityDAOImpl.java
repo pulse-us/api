@@ -121,12 +121,11 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		List<AlternateCareFacilityEntity> oldAcfs = query.getResultList();
 		if(oldAcfs != null && oldAcfs.size() > 0) {
 			for(AlternateCareFacilityEntity oldAcf : oldAcfs) {
-				List<PatientDTO> patientsAtAcf = patientDao.getPatientsAtAcf(oldAcf.getId());
-				if(patientsAtAcf == null || patientsAtAcf.size() == 0) {
-					entityManager.remove(oldAcf);
-					logger.info("Deleted ACF with ID " + oldAcf.getId() + " and name " + oldAcf.getName() + " during ACF cleanup.");
-				}
+				entityManager.remove(oldAcf);
+				logger.info("Deleted ACF with ID " + oldAcf.getId() + " and name " + oldAcf.getName() + " during ACF cleanup.");
 			}
+		} else {
+			logger.info("Deleted 0 ACFs from the cache.");
 		}
 	}
 	
