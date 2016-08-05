@@ -14,6 +14,7 @@ public class Patient {
 	private String phoneNumber;
 	private Address address;
 	private String ssn;
+	private Date lastRead;
 	private AlternateCareFacility acf;
 	private List<PatientOrganizationMap> orgMaps;
 	
@@ -91,6 +92,14 @@ public class Patient {
 
 	public void setOrgMaps(List<PatientOrganizationMap> orgMaps) {
 		this.orgMaps = orgMaps;
+	}
+
+	public Date getLastRead() {
+		return lastRead;
+	}
+
+	public void setLastRead(Date lastRead) {
+		this.lastRead = lastRead;
 	}
 	
 }

@@ -1,10 +1,13 @@
 package gov.ca.emsa.pulse.common.domain;
 
+import java.util.Date;
+
 public class AlternateCareFacility {
 	private Long id;
 	private String name;
 	private String phoneNumber;
 	private Address address;
+	private Date lastRead;
 	
 	public AlternateCareFacility() {}
 
@@ -31,5 +34,13 @@ public class AlternateCareFacility {
 	}
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	public void setLastRead(Date lastRead) {
+		this.lastRead = lastRead;
+	}
+
+	public Date getLastRead() {
+		return lastRead;
 	}
 }
