@@ -318,7 +318,7 @@ public class AcfManagerTest {
 		
 		//should delete neither
 		Date cleanupIfOlderThan = new Date(System.currentTimeMillis()-60000);
-		acfManager.cleanup(cleanupIfOlderThan);
+		acfManager.cleanupCache(cleanupIfOlderThan);
 		dto1 = acfManager.getById(dto1.getId());
 		Assert.assertNotNull(dto1);
 		
@@ -331,7 +331,7 @@ public class AcfManagerTest {
 		
 		//should delete both
 		cleanupIfOlderThan = new Date(System.currentTimeMillis()+1000);
-		acfManager.cleanup(cleanupIfOlderThan);
+		acfManager.cleanupCache(cleanupIfOlderThan);
 		
 		dto1 = acfManager.getById(dto1.getId());
 		Assert.assertNull(dto1);

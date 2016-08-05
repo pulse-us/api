@@ -16,10 +16,15 @@ directoryServicesUrl=http://localhost:8090/mock/directory
 directoryRefreshSeconds=20
 
 #how long is something valid in the cache
-queryCacheExpireMinutes=240
+queryCacheExpireMinutes=30
+patientCacheExpireMinutes=60
+acfCacheExpireMinutes=120
 
 #how often do we check the cache to clean up expired entries
 queryCacheCleanupMinutes=10
+patientCacheCleanupMinutes=10
+acfCacheCleanupMinutes=30
+
 
 #allow detailed health information to come back without authentication
 management.security.enabled=false

@@ -195,11 +195,13 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		query.setParameter("cacheDate", oldestDate);
 		List<QueryEntity> oldQueries = query.getResultList();
 		
-		for(QueryEntity oldQuery : oldQueries) {
-			if(oldQuery.getOrgStatuses() == null || oldQuery.getOrgStatuses().size() == 0) {
+		if(oldQueries.size() > 0) {
+			for(QueryEntity oldQuery : oldQueries) {
 				delete(oldQuery.getId());
 				logger.info("Deleted query with id " + oldQuery.getId() +" from the cache.");
 			}
+		} else {
+			logger.info("Deleted 0 queries from the cache.");
 		}
 	}
 	

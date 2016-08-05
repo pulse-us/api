@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,12 +21,14 @@ import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 
 @Service
 public class DocumentManagerImpl implements DocumentManager {
 	@Autowired private PatientManager patientManager;
+	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private DocumentDAO docDao;
 	@Autowired private PatientDAO patientDao;
 	@Autowired private OrganizationDAO orgDao;
@@ -53,17 +56,27 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	public List<DocumentDTO> getDocumentsForPatient(Long patientId) {
-		//update the last read time for the patient
-		PatientDTO patient = patientManager.getPatientById(patientId);
-		
-		//get the documents
 		return docDao.getByPatientId(patientId);
 	}
 	
 	@Override
 	public String getDocumentById(String samlMessage, Long documentId) {
-		String docContents = "";
+		String docContents = "";		
+		
 		DocumentDTO cachedDoc = docDao.getById(documentId);
+		//update patient last read time when document is cached or viewed
+		if(cachedDoc != null) {
+			PatientOrganizationMapDTO patientOrgMap = patientDao.getPatientOrgMapById(cachedDoc.getPatientOrgMapId());
+			PatientDTO patient = patientDao.getById(patientOrgMap.getPatientId());
+			patient.setLastReadDate(new Date());
+			patientManager.update(patient);
+			
+			if(patient.getAcf() != null) {
+				patient.getAcf().setLastReadDate(new Date());
+				acfManager.update(patient.getAcf());
+			}
+		}
+		
 		if(cachedDoc != null && cachedDoc.getContents() != null && cachedDoc.getContents().length > 0) {
 			docContents = new String(cachedDoc.getContents());
 		} else if(cachedDoc != null) {
