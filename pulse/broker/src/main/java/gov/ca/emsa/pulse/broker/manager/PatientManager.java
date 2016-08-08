@@ -10,6 +10,7 @@ public interface PatientManager extends CachedDataManager {
 	public List<PatientDTO> getPatientsAtAcf(Long acfId);
 	public PatientDTO create(PatientDTO toCreate);
 	public PatientDTO update(PatientDTO toUpdate);
+	public void delete(Long patientId);
 	
 	public PatientOrganizationMapDTO updateOrganizationMap(PatientOrganizationMapDTO toUpdate);
 	public PatientOrganizationMapDTO createOrganizationMap(PatientOrganizationMapDTO toCreate);
