@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.common.domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Query {
@@ -8,6 +9,7 @@ public class Query {
 	private String userToken;
 	private String status;
 	private PatientSearch terms;
+	private Date lastRead;
 	private List<QueryOrganization> orgStatuses;
 
 	public Query() {
@@ -52,5 +54,13 @@ public class Query {
 
 	public void setOrgStatuses(List<QueryOrganization> orgStatuses) {
 		this.orgStatuses = orgStatuses;
+	}
+
+	public Date getLastRead() {
+		return lastRead;
+	}
+
+	public void setLastRead(Date lastRead) {
+		this.lastRead = lastRead;
 	}
 }

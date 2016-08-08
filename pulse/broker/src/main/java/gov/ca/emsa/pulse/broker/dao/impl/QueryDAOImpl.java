@@ -150,9 +150,15 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 
 	@Override
 	public void delete(Long id) {
-		QueryEntity toDelete = getEntityById(id);
-		entityManager.remove(toDelete);
-		entityManager.flush();
+		try {
+			QueryEntity toDelete = getEntityById(id);
+			if(toDelete != null) {
+				entityManager.remove(toDelete);
+				entityManager.flush();
+			}
+		} catch(Exception ex) {
+			logger.error("Could not delete query with id " + id + ". Maybe it was deleted by another thread?", ex);
+		}
 	}
 
 	@Override
