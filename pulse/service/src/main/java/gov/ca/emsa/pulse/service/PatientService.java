@@ -85,6 +85,7 @@ public class PatientService {
 		return patientList;
 	}
 	
+	@ApiOperation(value="Delete the specified patient and all associated documents.")
 	@RequestMapping(value="/patients/{patientId}/delete", method = RequestMethod.POST)
 	public Void deletePatient(@PathVariable(value="patientId") Long patientId) throws JsonProcessingException {
 

@@ -86,6 +86,7 @@ public class QueryService {
 		return response.getBody();
 	}
 
+	@ApiOperation(value="Delete the specified query and any associated results.")
 	@RequestMapping(value="/queries/{queryId}/delete", method = RequestMethod.POST)
 	public Void deleteQuery(@PathVariable(value="queryId") Long queryId) throws JsonProcessingException {
 
