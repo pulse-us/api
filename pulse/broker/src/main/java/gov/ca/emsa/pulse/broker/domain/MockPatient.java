@@ -4,8 +4,8 @@ import java.util.Date;
 
 public class MockPatient {
 	private String orgPatientId;
-	private String firstName;
-	private String lastName;
+	private String givenName;
+	private String familyName;
 	private Date dateOfBirth;
 	private String gender;
 	private String phoneNumber;
@@ -16,18 +16,7 @@ public class MockPatient {
 	private String zipcode;
 	private String ssn;
 	
-	public String getFirstName() {
-		return firstName;
-	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+
 	public Date getDateOfBirth() {
 		return dateOfBirth;
 	}
@@ -87,5 +76,17 @@ public class MockPatient {
 	}
 	public void setOrgPatientId(String patientUniqueId) {
 		this.orgPatientId = patientUniqueId;
+	}
+	public String getGivenName() {
+		return givenName;
+	}
+	public void setGivenName(String givenName) {
+		this.givenName = givenName;
+	}
+	public String getFamilyName() {
+		return familyName;
+	}
+	public void setFamilyName(String familyName) {
+		this.familyName = familyName;
 	}
 }

@@ -97,8 +97,8 @@ public class PatientManagerTest extends TestCase {
 		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
 		
 		queryResult1 = new PatientRecordDTO();
-		queryResult1.setFirstName("John");
-		queryResult1.setLastName("Smith");
+		queryResult1.setGivenName("John");
+		queryResult1.setFamilyName("Smith");
 		queryResult1.setGender("Male");
 		queryResult1.setOrgPatientId("JS1");
 		queryResult1.setQueryOrganizationId(orgQuery1.getId());
@@ -110,8 +110,8 @@ public class PatientManagerTest extends TestCase {
 		assertTrue(queryResult1.getId().longValue() > 0);
 		
 		queryResult2 = new PatientRecordDTO();
-		queryResult2.setFirstName("John");
-		queryResult2.setLastName("Smith");
+		queryResult2.setGivenName("John");
+		queryResult2.setFamilyName("Smith");
 		queryResult2.setGender("Male");
 		queryResult2.setOrgPatientId("JSMITH15");
 		queryResult2.setQueryOrganizationId(orgQuery2.getId());
@@ -129,8 +129,8 @@ public class PatientManagerTest extends TestCase {
 	public void testCreatePatientWithOrg() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setFirstName("Jonathan");
-		toCreate.setLastName("Smith");
+		toCreate.setGivenName("Jonathan");
+		toCreate.setFamilyName("Smith");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -168,8 +168,8 @@ public class PatientManagerTest extends TestCase {
 	public void testGetPatientsAtAcf() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setFirstName("Jonathan");
-		toCreate.setLastName("Smith");
+		toCreate.setGivenName("Jonathan");
+		toCreate.setFamilyName("Smith");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");

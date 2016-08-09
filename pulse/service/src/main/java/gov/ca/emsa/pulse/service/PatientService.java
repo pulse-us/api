@@ -29,8 +29,10 @@ import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+@Api(value="Patients")
 @RestController
 public class PatientService {
 	private static final Logger logger = LogManager.getLogger(PatientService.class);
@@ -60,7 +62,8 @@ public class PatientService {
 	}
 
 	// get all patients from the logged in users ACF
-	@RequestMapping(value = "/patients")
+	@ApiOperation(value="get all patients from the logged in users ACF.")
+	@RequestMapping(value = "/patients", method = RequestMethod.GET)
 	public ArrayList<Patient> getAllPatientsAtACF() throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
@@ -82,6 +85,7 @@ public class PatientService {
 		return patientList;
 	}
 	
+	@ApiOperation(value="Delete the specified patient and all associated documents.")
 	@RequestMapping(value="/patients/{patientId}/delete", method = RequestMethod.POST)
 	public Void deletePatient(@PathVariable(value="patientId") Long patientId) throws JsonProcessingException {
 

@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -25,8 +26,10 @@ import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+@Api(value = "Documents")
 @RestController
 public class DocumentService {
 	private static final Logger logger = LogManager.getLogger(DocumentService.class);
@@ -35,7 +38,7 @@ public class DocumentService {
 	private String brokerUrl;
 
 	@ApiOperation(value="Search Documents for the given patient id.")
-	@RequestMapping("/patients/{id}/documents")
+	@RequestMapping(value = "/patients/{id}/documents", method = RequestMethod.GET)
 	public List<Document> searchDocuments(@PathVariable Long id) throws Exception {
 
 		RestTemplate query = new RestTemplate();
@@ -58,7 +61,7 @@ public class DocumentService {
 	}
 
 	@ApiOperation(value="Retrieve a specific Document from an organization.")
-	@RequestMapping("/patients/{patientId}/documents/{documentId}")
+	@RequestMapping(value = "/patients/{patientId}/documents/{documentId}", method = RequestMethod.GET)
 	public DocumentWrapper getDocumentContents(@PathVariable("documentId") Long documentId,
 			@PathVariable("patientId") Long patientId,
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) throws JsonProcessingException {

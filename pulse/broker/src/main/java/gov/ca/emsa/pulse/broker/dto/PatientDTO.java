@@ -9,8 +9,8 @@ import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 
 public class PatientDTO {
 	private Long id;
-	private String firstName;
-	private String lastName;
+	private String givenName;
+	private String familyName;
 	private Date dateOfBirth;
 	private String ssn;
 	private String gender;
@@ -27,8 +27,8 @@ public class PatientDTO {
 	public PatientDTO(PatientEntity entity) {
 		this();
 		this.id = entity.getId();
-		this.firstName = entity.getFirstName();
-		this.lastName = entity.getLastName();
+		this.givenName = entity.getGivenName();
+		this.familyName = entity.getFamilyName();
 		this.dateOfBirth = entity.getDateOfBirth();
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
@@ -52,18 +52,7 @@ public class PatientDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getFirstName() {
-		return firstName;
-	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+
 	public Date getDateOfBirth() {
 		return dateOfBirth;
 	}
@@ -117,5 +106,21 @@ public class PatientDTO {
 
 	public void setOrgMaps(List<PatientOrganizationMapDTO> orgMaps) {
 		this.orgMaps = orgMaps;
+	}
+
+	public String getGivenName() {
+		return givenName;
+	}
+
+	public void setGivenName(String givenName) {
+		this.givenName = givenName;
+	}
+
+	public String getFamilyName() {
+		return familyName;
+	}
+
+	public void setFamilyName(String familyName) {
+		this.familyName = familyName;
 	}
 }
