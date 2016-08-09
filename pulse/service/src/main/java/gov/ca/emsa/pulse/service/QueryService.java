@@ -87,7 +87,7 @@ public class QueryService {
 	}
 
 	@ApiOperation(value="Delete the specified query and any associated results.")
-	@RequestMapping(value="/queries/{queryId}/delete", method = RequestMethod.POST)
+	@RequestMapping(value="/{queryId}/delete", method = RequestMethod.POST)
 	public Void deleteQuery(@PathVariable(value="queryId") Long queryId) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();

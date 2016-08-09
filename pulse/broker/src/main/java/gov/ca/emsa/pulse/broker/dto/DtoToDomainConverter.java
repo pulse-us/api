@@ -136,7 +136,11 @@ public class DtoToDomainConverter {
 	public static QueryOrganization convert(QueryOrganizationDTO qOrgDto){
 		QueryOrganization qOrg = new QueryOrganization();
 		qOrg.setId(qOrgDto.getId());
-		qOrg.setOrgId(qOrgDto.getOrgId());
+		
+		if(qOrgDto.getOrg() != null) {
+			qOrg.setOrg(convert(qOrgDto.getOrg()));
+		}
+		
 		qOrg.setQueryId(qOrgDto.getQueryId());
 		for(PatientRecordDTO prDto : qOrgDto.getResults()){
 			PatientRecord pr = DtoToDomainConverter.convert(prDto);
