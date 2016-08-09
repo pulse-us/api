@@ -2,6 +2,8 @@ package gov.ca.emsa.pulse.service;
 
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +28,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Api(value = "acfs")
 @RestController
+@RequestMapping("/acfs")
 public class AlternateCareFacilityService {
 
 	private static final Logger logger = LogManager.getLogger(AlternateCareFacilityService.class);
@@ -35,7 +39,8 @@ public class AlternateCareFacilityService {
 	private String brokerUrl;
 
 	// POST - create an alternate care facility
-	@RequestMapping(value = "/acfs/create", method = RequestMethod.POST)
+	@ApiOperation(value = "Create a new ACF")
+	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public AlternateCareFacility createACF(@RequestBody AlternateCareFacility acf) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
@@ -57,7 +62,8 @@ public class AlternateCareFacilityService {
 	}
 
 	// GET all acfs
-	@RequestMapping(value = "/acfs")
+	@ApiOperation(value="Get the list of all alternate care facilities (ACFs)")
+	@RequestMapping(value = "", method = RequestMethod.GET)
 	public ArrayList<AlternateCareFacility> getACFs() throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
@@ -80,7 +86,8 @@ public class AlternateCareFacilityService {
 	}
 
 	// get acf by its id
-	@RequestMapping(value = "/acfs/{id}")
+	@ApiOperation(value="Get information about a specific ACF")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public AlternateCareFacility getACFById(@PathVariable Long id) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
@@ -101,7 +108,8 @@ public class AlternateCareFacilityService {
 	}
 
 		// edit an acf by its id
-	@RequestMapping(value = "/acfs/{acfId}/edit")
+	@ApiOperation(value = "Edit an existing ACF")
+	@RequestMapping(value = "/{acfId}/edit", method = RequestMethod.POST)
 	public AlternateCareFacility editACFById(@PathVariable Long acfId, 
 			@RequestBody AlternateCareFacility acf) throws JsonProcessingException {
 
