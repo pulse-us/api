@@ -3,6 +3,8 @@ package gov.ca.emsa.pulse.service;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Query;
+import io.swagger.annotations.Api;
+
 import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Api(value="Queries")
+@RequestMapping(value="/queries")
 @RestController
 public class QueryService {
 	private static final Logger logger = LogManager.getLogger(QueryService.class);
@@ -36,7 +40,8 @@ public class QueryService {
 	private String brokerUrl;
 	
 	// get all queries that belong to the logged in user
-	@RequestMapping(value = "/queries")
+	@ApiOperation(value="Get all queries that belong to the logged in user.")
+	@RequestMapping(value = "", method = RequestMethod.GET)
 	public List<Query> getQueries() throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
@@ -59,7 +64,8 @@ public class QueryService {
 	}
 
 	// get the query that has the id = queryId
-	@RequestMapping(value = "/queries/{queryId}")
+	@ApiOperation(value="Get the query that has the given id.")
+	@RequestMapping(value = "/{queryId}", method = RequestMethod.GET)
 	public Query getQueryWithId(@PathVariable Long queryId) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
@@ -80,6 +86,7 @@ public class QueryService {
 		return response.getBody();
 	}
 
+	@ApiOperation(value="Delete the specified query and any associated results.")
 	@RequestMapping(value="/queries/{queryId}/delete", method = RequestMethod.POST)
 	public Void deleteQuery(@PathVariable(value="queryId") Long queryId) throws JsonProcessingException {
 
@@ -102,7 +109,8 @@ public class QueryService {
 	}
 	
 	// stages a patient in the database from a query id
-	@RequestMapping(value = "/queries/{queryId}/stage", method = RequestMethod.POST)
+	@ApiOperation(value="Stages a patient in the database from a query id.")
+	@RequestMapping(value = "/{queryId}/stage", method = RequestMethod.POST)
 	public Query stageQueryWithId(@RequestBody CreatePatientRequest request, @PathVariable Long queryId) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();

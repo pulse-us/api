@@ -72,8 +72,8 @@ public class PatientDaoTest extends TestCase {
 	public void testCreatePatientNoAddress() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setFirstName("Jonathan");
-		toCreate.setLastName("Smith");
+		toCreate.setGivenName("Jonathan");
+		toCreate.setFamilyName("Smith");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -117,8 +117,8 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setFirstName("Jonathan");
-		toCreate.setLastName("Smith");
+		toCreate.setGivenName("Jonathan");
+		toCreate.setFamilyName("Smith");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -164,8 +164,8 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setFirstName("Jonathan");
-		toCreate.setLastName("Smith");
+		toCreate.setGivenName("Jonathan");
+		toCreate.setFamilyName("Smith");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -203,8 +203,8 @@ public class PatientDaoTest extends TestCase {
 	public void testCreatePatientWithOrgMaps() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setFirstName("Jonathan");
-		toCreate.setLastName("Smith");
+		toCreate.setGivenName("Jonathan");
+		toCreate.setFamilyName("Smith");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -257,19 +257,19 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setFirstName("Jonathan");
-		toCreate.setLastName("Smith");
+		toCreate.setGivenName("Jonathan");
+		toCreate.setFamilyName("Smith");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		toCreate.setAddress(addrDto);
 		
 		PatientDTO created = patientDao.create(toCreate);
-		created.setFirstName("Johnathan");
+		created.setGivenName("Johnathan");
 		PatientDTO updated = patientDao.update(created);
 		assertNotNull(updated);
 		assertEquals(updated.getId().longValue(), created.getId().longValue());
-		assertEquals("Johnathan", updated.getFirstName());
+		assertEquals("Johnathan", updated.getGivenName());
 	}
 	
 	@Test
@@ -293,8 +293,8 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setFirstName("Jonathan");
-		toCreate.setLastName("Smith");
+		toCreate.setGivenName("Jonathan");
+		toCreate.setFamilyName("Smith");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");

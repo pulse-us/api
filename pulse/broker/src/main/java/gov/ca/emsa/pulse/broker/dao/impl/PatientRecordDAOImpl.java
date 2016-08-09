@@ -24,8 +24,8 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 	public PatientRecordDTO create(PatientRecordDTO dto) {
 		
 		PatientRecordEntity patient = new PatientRecordEntity();
-		patient.setFirstName(dto.getFirstName());
-		patient.setLastName(dto.getLastName());
+		patient.setGivenName(dto.getGivenName());
+		patient.setFamilyName(dto.getFamilyName());
 		patient.setDateOfBirth(dto.getDateOfBirth());
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
@@ -49,8 +49,8 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 	@Override
 	public PatientRecordDTO update(PatientRecordDTO dto) {
 		PatientRecordEntity patient = this.getEntityById(dto.getId());
-		patient.setFirstName(dto.getFirstName());
-		patient.setLastName(dto.getLastName());
+		patient.setGivenName(dto.getGivenName());
+		patient.setFamilyName(dto.getFamilyName());
 		patient.setDateOfBirth(dto.getDateOfBirth());
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());

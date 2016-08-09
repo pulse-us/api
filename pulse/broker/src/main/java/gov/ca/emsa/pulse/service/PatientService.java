@@ -11,6 +11,7 @@ import org.opensaml.xml.io.MarshallingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -95,8 +96,8 @@ public class PatientService {
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
 		customAttributes.put("RequesterName", user.getFirstName());
 		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientFirstName", "Hodor");
-		customAttributes.put("PatientLastName", "Guy");
+		customAttributes.put("PatientGivenName", "Hodor");
+		customAttributes.put("PatientFamilyName", "Guy");
 		customAttributes.put("PatientSSN", "123456789");
 		input.setAttributes(customAttributes);
 
@@ -115,5 +116,11 @@ public class PatientService {
 			docManager.getDocumentById(samlMessage, documentId);
 		}
 		return result;
+	}
+	
+	@ApiOperation(value = "Delete a patient")
+	@RequestMapping(value="/{patientId}/delete", method = RequestMethod.POST)
+	public void deleteQuery(@PathVariable(value="patientId") Long patientId) {
+		patientManager.delete(patientId);
 	}
 }

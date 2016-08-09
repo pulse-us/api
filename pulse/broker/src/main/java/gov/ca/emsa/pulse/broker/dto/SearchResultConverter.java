@@ -6,8 +6,8 @@ public class SearchResultConverter {
 	
 	public static PatientRecordDTO convertToPatientRecord(MockPatient domainObj) {
 		PatientRecordDTO result = new PatientRecordDTO();
-		result.setFirstName(domainObj.getFirstName());
-		result.setLastName(domainObj.getLastName());
+		result.setGivenName(domainObj.getGivenName());
+		result.setFamilyName(domainObj.getFamilyName());
 		result.setGender(domainObj.getGender());
 		result.setDateOfBirth(domainObj.getDateOfBirth());
 		result.setPhoneNumber(domainObj.getPhoneNumber());

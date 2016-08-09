@@ -35,8 +35,8 @@ public class MockAdapter implements Adapter {
 	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, PatientSearch toSearch, String samlMessage) {
 		String postUrl = org.getEndpointUrl() + "/patients";
 		MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
-		parameters.add("firstName", toSearch.getFirstName());
-		parameters.add("lastName", toSearch.getLastName());
+		parameters.add("givenName", toSearch.getGivenName());
+		parameters.add("familyName", toSearch.getFamilyName());
 		parameters.add("dob", toSearch.getDob());
 		parameters.add("gender", toSearch.getGender());
 		parameters.add("ssn", toSearch.getSsn());

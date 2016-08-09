@@ -76,6 +76,12 @@ public class PatientManagerImpl implements PatientManager {
 	
 	@Override
 	@Transactional
+	public void delete(Long patientId) {
+		patientDao.delete(patientId);
+	}
+	
+	@Override
+	@Transactional
 	public void cleanupCache(Date oldestAllowedPatient) {
 		patientDao.deleteItemsOlderThan(oldestAllowedPatient);
 	}
