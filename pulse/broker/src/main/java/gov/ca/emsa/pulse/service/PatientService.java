@@ -96,8 +96,8 @@ public class PatientService {
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
 		customAttributes.put("RequesterName", user.getFirstName());
 		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientFirstName", "Hodor");
-		customAttributes.put("PatientLastName", "Guy");
+		customAttributes.put("PatientGivenName", "Hodor");
+		customAttributes.put("PatientFamilyName", "Guy");
 		customAttributes.put("PatientSSN", "123456789");
 		input.setAttributes(customAttributes);
 
