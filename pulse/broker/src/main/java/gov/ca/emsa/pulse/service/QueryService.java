@@ -9,6 +9,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.opensaml.xml.io.MarshallingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,6 +66,12 @@ public class QueryService {
        return DtoToDomainConverter.convert(initiatedQuery);
     }
 
+	@ApiOperation(value = "Delete a query")
+	@RequestMapping(value="/{queryId}/delete", method = RequestMethod.POST)
+	public void deleteQuery(@PathVariable(value="queryId") Long queryId) {
+		queryManager.delete(queryId);
+	}
+	
 	@ApiOperation(value="Create a Patient from multiple PatientRecords")
 	@RequestMapping(value="/{queryId}/stage", method = RequestMethod.POST)
     public Patient stagePatientFromResults(@PathVariable(value="queryId") Long queryId,

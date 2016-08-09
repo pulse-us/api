@@ -12,7 +12,7 @@ import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 
-public interface QueryManager {
+public interface QueryManager extends CachedDataManager {
 	public QueryDTO getById(Long id);
 	public List<QueryDTO> getAllQueriesForUser(String userKey);
 	public List<QueryDTO> getActiveQueriesForUser(String userKey);
@@ -27,6 +27,4 @@ public interface QueryManager {
 	public QueryDTO queryForPatientRecords(String samlMessage, PatientSearch toSearch, QueryDTO query, CommonUser user) throws JsonProcessingException;
 	public PatientRecordDTO addPatientRecord(PatientRecordDTO record);
 	public void removePatientRecord(Long prId);
-
-	public void cleanupQueryCache(Date oldestAllowedQuery);
 }

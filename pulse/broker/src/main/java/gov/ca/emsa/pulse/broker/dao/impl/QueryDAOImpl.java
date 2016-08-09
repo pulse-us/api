@@ -150,9 +150,15 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 
 	@Override
 	public void delete(Long id) {
-		QueryEntity toDelete = getEntityById(id);
-		entityManager.remove(toDelete);
-		entityManager.flush();
+		try {
+			QueryEntity toDelete = getEntityById(id);
+			if(toDelete != null) {
+				entityManager.remove(toDelete);
+				entityManager.flush();
+			}
+		} catch(Exception ex) {
+			logger.error("Could not delete query with id " + id + ". Maybe it was deleted by another thread?", ex);
+		}
 	}
 
 	@Override
@@ -195,11 +201,13 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		query.setParameter("cacheDate", oldestDate);
 		List<QueryEntity> oldQueries = query.getResultList();
 		
-		for(QueryEntity oldQuery : oldQueries) {
-			if(oldQuery.getOrgStatuses() == null || oldQuery.getOrgStatuses().size() == 0) {
+		if(oldQueries.size() > 0) {
+			for(QueryEntity oldQuery : oldQueries) {
 				delete(oldQuery.getId());
 				logger.info("Deleted query with id " + oldQuery.getId() +" from the cache.");
 			}
+		} else {
+			logger.info("Deleted 0 queries from the cache.");
 		}
 	}
 	

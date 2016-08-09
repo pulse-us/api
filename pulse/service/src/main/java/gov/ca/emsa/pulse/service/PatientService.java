@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -82,5 +83,26 @@ public class PatientService {
 		}
 		
 		return patientList;
+	}
+	
+	@RequestMapping(value="/patients/{patientId}/delete", method = RequestMethod.POST)
+	public Void deletePatient(@PathVariable(value="patientId") Long patientId) throws JsonProcessingException {
+
+		RestTemplate query = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
+
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		HttpEntity<Void> response = null;
+		if(jwtUser == null){
+			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.add("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Void> entity = new HttpEntity<Void>(headers);
+			response = query.exchange(brokerUrl + "/patients/" + patientId + "/delete", HttpMethod.POST, entity, Void.class);
+			logger.info("Request sent to broker from services REST.");
+		}
+		
+		return response.getBody();
 	}
 }

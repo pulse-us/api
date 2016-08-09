@@ -32,6 +32,7 @@ public class DtoToDomainConverter {
 		result.setDateOfBirth(dtoObj.getDateOfBirth());
 		result.setPhoneNumber(dtoObj.getPhoneNumber());
 		result.setSsn(dtoObj.getSsn());
+		result.setLastRead(dtoObj.getLastReadDate());
 		
 		if(dtoObj.getAcf() != null) {
 			AlternateCareFacility acf = new AlternateCareFacility();
@@ -106,6 +107,7 @@ public class DtoToDomainConverter {
 		acf.setId(acfDto.getId());
 		acf.setName(acfDto.getName());
 		acf.setPhoneNumber(acfDto.getPhoneNumber());
+		acf.setLastRead(acfDto.getLastReadDate());
 		return acf;
 	}
 	
@@ -113,7 +115,8 @@ public class DtoToDomainConverter {
 		Query query = new Query();
 		query.setId(queryDto.getId());
 		query.setStatus(queryDto.getStatus());
-		
+		query.setLastRead(queryDto.getLastReadDate());
+
 		try {
 			ObjectMapper termReader = new ObjectMapper();
 			PatientSearch terms = termReader.readValue(queryDto.getTerms(), PatientSearch.class);

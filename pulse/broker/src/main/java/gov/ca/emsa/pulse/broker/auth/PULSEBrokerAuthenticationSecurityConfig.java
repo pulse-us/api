@@ -5,8 +5,11 @@ import java.util.List;
 
 import gov.ca.emsa.pulse.auth.authentication.JWTUserConverter;
 import gov.ca.emsa.pulse.auth.filter.JWTAuthenticationFilter;
+import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
+import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +31,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @EnableWebSecurity
 @Configuration
-public class PULSEBrokerAuthenticationSecurityConfig extends WebSecurityConfigurerAdapter {
-	
+public class PULSEBrokerAuthenticationSecurityConfig extends WebSecurityConfigurerAdapter {	
 	public PULSEBrokerAuthenticationSecurityConfig() {
 		super(true);
 	}
@@ -52,7 +54,7 @@ public class PULSEBrokerAuthenticationSecurityConfig extends WebSecurityConfigur
 			.addFilterBefore(new HttpRequestUserFilter(), UsernamePasswordAuthenticationFilter.class)
 			.headers();
 	}
-	
+	   
 	@Bean
 	public MappingJackson2HttpMessageConverter jsonConverter(){
 		

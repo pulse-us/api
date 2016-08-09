@@ -4,12 +4,14 @@ import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Query;
 import io.swagger.annotations.Api;
+
 import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.http.HttpStatus;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -84,6 +86,27 @@ public class QueryService {
 		return response.getBody();
 	}
 
+	@RequestMapping(value="/queries/{queryId}/delete", method = RequestMethod.POST)
+	public Void deleteQuery(@PathVariable(value="queryId") Long queryId) throws JsonProcessingException {
+
+		RestTemplate query = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
+
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		HttpEntity<Void> response = null;
+		if(jwtUser == null){
+			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.add("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Void> entity = new HttpEntity<Void>(headers);
+			response = query.exchange(brokerUrl + "/queries/" + queryId + "/delete", HttpMethod.POST, entity, Void.class);
+			logger.info("Request sent to broker from services REST.");
+		}
+		
+		return response.getBody();
+	}
+	
 	// stages a patient in the database from a query id
 	@ApiOperation(value="Stages a patient in the database from a query id.")
 	@RequestMapping(value = "/{queryId}/stage", method = RequestMethod.POST)

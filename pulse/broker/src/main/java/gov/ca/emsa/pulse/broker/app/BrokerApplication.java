@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
@@ -14,7 +15,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
-import gov.ca.emsa.pulse.broker.cache.QueryCacheManager;
+import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
+import gov.ca.emsa.pulse.broker.auth.AcfLastAccessFilter;
+import gov.ca.emsa.pulse.broker.cache.CacheCleanupJob;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
@@ -36,6 +39,7 @@ public class BrokerApplication implements EnvironmentAware {
 	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private PatientManager patientManager;
 	@Autowired private QueryManager queryManager;
+	@Autowired private AlternateCareFacilityDAO acfDao;
 	@Autowired private Environment env;
 	
 	@Override
@@ -63,28 +67,69 @@ public class BrokerApplication implements EnvironmentAware {
 	}
 
 	@Bean
-	public QueryCacheManager queryCacheManager() {
+	public CacheCleanupJob queryCacheManager() {
 		int queryCacheExpirationMinutes = new Integer(env.getProperty("queryCacheExpireMinutes").trim());
 		long queryCacheExpirationMillis = queryCacheExpirationMinutes * 60 * 1000;
 		int queryCacheCleanupMinutes = new Integer(env.getProperty("queryCacheCleanupMinutes").trim());
 		long queryCacheCleanupMillis = queryCacheCleanupMinutes * 60 * 1000;
 		
-		QueryCacheManager qcTask = null;
+		CacheCleanupJob task = null;
 
 		if(queryCacheExpirationMinutes > 0) {
-			qcTask = new QueryCacheManager();
-			qcTask.setExpirationMillis(queryCacheExpirationMillis);
-			qcTask.setAcfManager(acfManager);
-			qcTask.setPatientManager(patientManager);
-			qcTask.setQueryManager(queryManager);
+			task = new CacheCleanupJob();
+			task.setExpirationMillis(queryCacheExpirationMillis);
+			task.setManager(queryManager);
 			
 			Timer timer = new Timer();
-			//timer.scheduleAtFixedRate(qcTask, queryCacheCleanupMinutes, queryCacheCleanupMinutes);
-			timer.scheduleAtFixedRate(qcTask, 0, queryCacheCleanupMillis);
+			timer.scheduleAtFixedRate(task, 0, queryCacheCleanupMillis);
 
-		} //TODO: 0 and -1 mean different things?
+		}
 		
-		return qcTask;
+		return task;
+	}
+	
+	@Bean
+	public CacheCleanupJob acfCacheManager() {
+		int acfCacheExpirationMinutes = new Integer(env.getProperty("acfCacheExpireMinutes").trim());
+		long acfCacheExpirationMillis = acfCacheExpirationMinutes * 60 * 1000;
+		int acfCacheCleanupMinutes = new Integer(env.getProperty("acfCacheCleanupMinutes").trim());
+		long acfCacheCleanupMillis = acfCacheCleanupMinutes * 60 * 1000;
+		
+		CacheCleanupJob task = null;
+
+		if(acfCacheExpirationMinutes > 0) {
+			task = new CacheCleanupJob();
+			task.setExpirationMillis(acfCacheExpirationMillis);
+			task.setManager(acfManager);
+			
+			Timer timer = new Timer();
+			timer.scheduleAtFixedRate(task, 0, acfCacheCleanupMillis);
+
+		}
+		
+		return task;
+	}
+	
+	@Bean
+	public CacheCleanupJob patientCacheManager() {
+		int patientCacheExpirationMinutes = new Integer(env.getProperty("patientCacheExpireMinutes").trim());
+		long patientCacheExpirationMillis = patientCacheExpirationMinutes * 60 * 1000;
+		int patientCacheCleanupMinutes = new Integer(env.getProperty("patientCacheCleanupMinutes").trim());
+		long patientCacheCleanupMillis = patientCacheCleanupMinutes * 60 * 1000;
+		
+		CacheCleanupJob task = null;
+
+		if(patientCacheExpirationMinutes > 0) {
+			task = new CacheCleanupJob();
+			task.setExpirationMillis(patientCacheExpirationMillis);
+			task.setManager(patientManager);
+			
+			Timer timer = new Timer();
+			timer.scheduleAtFixedRate(task, 0, patientCacheCleanupMillis);
+
+		}
+		
+		return task;
 	}
 	
 	@Bean
@@ -108,6 +153,16 @@ public class BrokerApplication implements EnvironmentAware {
 		return qcTask;
 	}
 	
+	   @Bean
+	    public FilterRegistrationBean acfLastAccessFilter() {
+		   AcfLastAccessFilter filter = new AcfLastAccessFilter();
+		   filter.setAcfManager(acfManager);
+	        FilterRegistrationBean registration = new FilterRegistrationBean();
+	        registration.setFilter(filter);
+	        registration.setOrder(2);
+	        return registration;
+	    }
+	   
 	@Bean
     @Scope(scopeName=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public PatientQueryService patientQueryService() {

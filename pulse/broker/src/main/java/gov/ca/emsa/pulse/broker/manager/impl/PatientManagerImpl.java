@@ -17,6 +17,7 @@ import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 
@@ -26,6 +27,7 @@ public class PatientManagerImpl implements PatientManager {
 	@Autowired private OrganizationDAO orgDao;
 	@Autowired private AddressDAO addressDao;
 	@Autowired private QueryManager queryManager;
+	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private QueryDAO queryDao;
 	
 	public PatientManagerImpl() {
@@ -35,10 +37,6 @@ public class PatientManagerImpl implements PatientManager {
 	@Transactional	
 	public PatientDTO getPatientById(Long patientId) {
 		PatientDTO result = patientDao.getById(patientId);
-		if(result != null) {
-			result.setLastReadDate(new Date());
-			patientDao.update(result);
-		}
 		return result;
 	}
 	
@@ -46,11 +44,6 @@ public class PatientManagerImpl implements PatientManager {
 	@Transactional	
 	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
 		List<PatientDTO> results = patientDao.getPatientsAtAcf(acfId);
-		
-		for(PatientDTO result : results) {
-			result.setLastReadDate(new Date());
-			result = patientDao.update(result);
-		}
 		return results;
 	}
 	
@@ -58,6 +51,11 @@ public class PatientManagerImpl implements PatientManager {
 	@Transactional
 	public PatientDTO create(PatientDTO toCreate) {
 		PatientDTO result = patientDao.create(toCreate);
+		
+		if(toCreate.getAcf() != null) {
+			toCreate.getAcf().setLastReadDate(new Date());
+			acfManager.update(toCreate.getAcf());
+		}
 		return result;
 	}
 	
@@ -78,7 +76,13 @@ public class PatientManagerImpl implements PatientManager {
 	
 	@Override
 	@Transactional
-	public void cleanupPatientCache(Date oldestAllowedPatient) {
+	public void delete(Long patientId) {
+		patientDao.delete(patientId);
+	}
+	
+	@Override
+	@Transactional
+	public void cleanupCache(Date oldestAllowedPatient) {
 		patientDao.deleteItemsOlderThan(oldestAllowedPatient);
 	}
 
@@ -99,7 +103,6 @@ public class PatientManagerImpl implements PatientManager {
 	public PatientOrganizationMapDTO createOrganizationMapFromPatientRecord(PatientDTO patient, Long patientRecordId) {
 		PatientOrganizationMapDTO result = null;
 		PatientRecordDTO patientRecord = queryManager.getPatientRecordById(patientRecordId);
-		//used queryManager because this also updates the last read time of the query
 		
 		if(patientRecord != null) {
 			PatientOrganizationMapDTO orgMapToCreate = new PatientOrganizationMapDTO();
