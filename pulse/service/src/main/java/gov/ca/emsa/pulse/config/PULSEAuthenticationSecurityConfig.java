@@ -33,6 +33,7 @@ public class PULSEAuthenticationSecurityConfig extends WebSecurityConfigurerAdap
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/health**");
 		web.ignoring().antMatchers("/api-docs**");
+		web.ignoring().antMatchers("/patientDiscovery");
 	}
 	
 	@Override

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -18,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
+import gov.ca.emsa.pulse.broker.dao.impl.QueryDAOImpl;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -26,11 +29,14 @@ import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryStatus;
+import gov.ca.emsa.pulse.broker.entity.QueryEntity;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 
 @Service
 public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
+	private static final Logger logger = LogManager.getLogger(QueryManagerImpl.class);
+
 	@Autowired QueryDAO queryDao;
 	@Autowired PatientRecordDAO patientRecordDao;
 	@Autowired private OrganizationManager orgManager;
@@ -77,6 +83,21 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
+	public QueryDTO updateQueryStatusFromOrganizations(Long queryId) {
+		QueryDTO query = getById(queryId);
+		//see if the entire query is complete
+		Boolean isStillActive = queryDao.hasActiveOrganizations(queryId);
+		if(!isStillActive) {
+			logger.info("Setting query " + queryId + " to COMPLETE.");
+			query.setStatus(QueryStatus.COMPLETE.name());
+			query.setLastReadDate(new Date());
+			query = queryDao.update(query);
+		}
+		return query;
+	}
+	
+	@Override
+	@Transactional
 	public void delete(Long queryId) {
 		queryDao.delete(queryId);
 	}
@@ -90,15 +111,6 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		} else {
 			updated = queryDao.updateQueryOrganization(toUpdate);
 		}
-
-		//update last read date here because this will be getting called 
-		//when the query is complete which is the time the user can actually 
-		//"see" it. this is probably when the timer should start counting 
-		//from in terms of figuring out when to delete it
-		QueryDTO query = queryDao.getById(toUpdate.getQueryId());
-		query.setLastReadDate(new Date());
-		queryDao.update(query);
-
 		return updated;
 	}
 
@@ -109,18 +121,19 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	}
 
 	@Override
-	@Transactional
 	public QueryDTO queryForPatientRecords(String samlMessage, PatientSearch toSearch, QueryDTO query, CommonUser user)
 			throws JsonProcessingException {
 
 		//get the list of organizations
 		List<OrganizationDTO> orgsToQuery = orgManager.getAll();
-		for(QueryOrganizationDTO queryOrg : query.getOrgStatuses()) {
-			PatientQueryService service = getPatientQueryService();
-			service.setSamlMessage(samlMessage);
-			service.setToSearch(toSearch);
-			service.setQueryOrg(queryOrg);
-			pool.execute(service);
+		if(orgsToQuery != null && orgsToQuery.size() > 0) {
+			for(QueryOrganizationDTO queryOrg : query.getOrgStatuses()) {
+				PatientQueryService service = getPatientQueryService();
+				service.setSamlMessage(samlMessage);
+				service.setToSearch(toSearch);
+				service.setQueryOrg(queryOrg);
+				pool.execute(service);
+			}
 		}
 		return query;
 	}
