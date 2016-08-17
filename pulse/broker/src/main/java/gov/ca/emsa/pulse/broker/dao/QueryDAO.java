@@ -17,4 +17,5 @@ public interface QueryDAO {
 	public QueryDTO getById(Long id);
 	public QueryOrganizationDTO getQueryOrganizationById(Long queryOrgId);
 	public void deleteItemsOlderThan(Date oldestDate);
+	public Boolean hasActiveOrganizations(Long queryId);
 }

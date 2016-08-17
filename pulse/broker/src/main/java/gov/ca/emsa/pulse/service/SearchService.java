@@ -95,24 +95,27 @@ public class SearchService {
 
 		String queryTermsJson = JSONUtils.toJSON(toSearch);
 
-		QueryDTO query = new QueryDTO();
-		query.setUserId(user.getSubjectName());
-		query.setTerms(queryTermsJson);
-		query.setStatus(QueryStatus.ACTIVE.name());
-		query = searchManager.createQuery(query);
-
-		//get the list of organizations
 		List<OrganizationDTO> orgsToQuery = orgManager.getAll();
-		for(OrganizationDTO org : orgsToQuery) {
-			QueryOrganizationDTO queryOrg = new QueryOrganizationDTO();
-			queryOrg.setOrgId(org.getId());
-			queryOrg.setQueryId(query.getId());
-			queryOrg.setStatus(QueryStatus.ACTIVE.name());
-			queryOrg = searchManager.createOrUpdateQueryOrganization(queryOrg);
-			query.getOrgStatuses().add(queryOrg);
+		if(orgsToQuery != null && orgsToQuery.size() > 0) {
+			QueryDTO query = new QueryDTO();
+			query.setUserId(user.getSubjectName());
+			query.setTerms(queryTermsJson);
+			query.setStatus(QueryStatus.ACTIVE.name());
+			query = searchManager.createQuery(query);
+	
+			//get the list of organizations		
+			for(OrganizationDTO org : orgsToQuery) {
+				QueryOrganizationDTO queryOrg = new QueryOrganizationDTO();
+				queryOrg.setOrgId(org.getId());
+				queryOrg.setQueryId(query.getId());
+				queryOrg.setStatus(QueryStatus.ACTIVE.name());
+				queryOrg = searchManager.createOrUpdateQueryOrganization(queryOrg);
+				query.getOrgStatuses().add(queryOrg);
+			}
+	
+	        QueryDTO initiatedQuery = searchManager.queryForPatientRecords(samlMessage, toSearch, query, user);
+	        return DtoToDomainConverter.convert(initiatedQuery);
 		}
-
-        QueryDTO initiatedQuery = searchManager.queryForPatientRecords(samlMessage, toSearch, query, user);
-       return DtoToDomainConverter.convert(initiatedQuery);
+		return null;
     }
 }

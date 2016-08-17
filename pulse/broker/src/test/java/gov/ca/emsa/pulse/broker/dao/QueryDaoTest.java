@@ -106,10 +106,10 @@ public class QueryDaoTest extends TestCase {
 		orgQuery1 = inserted.getOrgStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		orgQuery2 = inserted.getOrgStatuses().get(0);
+		orgQuery2 = inserted.getOrgStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
-		
+
 		QueryDTO selected = queryDao.getById(inserted.getId());
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
@@ -189,20 +189,8 @@ public class QueryDaoTest extends TestCase {
 		assertTrue(selected.getId().longValue() > 0);
 		assertEquals(0, selected.getOrgStatuses().size());
 		
-		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
-		orgQuery1.setOrgId(org1.getId());
-		orgQuery1.setQueryId(selected.getId());
-		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
-		selected.getOrgStatuses().add(orgQuery1);
+		selected.setStatus(QueryStatus.COMPLETE.name());
 		selected = queryDao.update(selected);
-		
-		assertEquals(1, selected.getOrgStatuses().size());
-		orgQuery1 = selected.getOrgStatuses().get(0);
-		orgQuery1.setStatus(QueryStatus.COMPLETE.name());
-		selected = queryDao.update(selected);
-		selected = queryDao.getById(selected.getId());
-		orgQuery1 = selected.getOrgStatuses().get(0);
-		assertEquals(QueryStatus.COMPLETE.name(), orgQuery1.getStatus());
 		assertEquals(QueryStatus.COMPLETE.name(), selected.getStatus());
 	}
 	

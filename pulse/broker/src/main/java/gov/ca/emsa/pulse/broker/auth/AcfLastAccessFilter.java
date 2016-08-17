@@ -40,6 +40,9 @@ public class AcfLastAccessFilter extends GenericFilterBean {
 					//was made using it and this request... so have to check for null
 					acf.setLastReadDate(new Date());
 					acfManager.update(acf);
+				} else {
+					logger.error("ACF with ID " + user.getAcf().getId() + " and name " + user.getAcf().getName() + " does not exist!");
+					throw new ServletException("ACF " + user.getAcf().getName() + " does not exist!");
 				}
 			}
 		} else {
