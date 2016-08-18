@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 // cross gateway patient discovery response message
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PatientDiscoveryResponse {
+public class PatientDiscoveryRequest {
 	
 	@XmlAttribute(name = "xmlns:xsi") public String xmlnsxsi = "http://www.w3.org/2001/XMLSchema-instance";
 	@XmlAttribute(name = "xmlns") public String xmlns = "urn:hl7-org:v3";
@@ -39,8 +39,6 @@ public class PatientDiscoveryResponse {
 	public Receiver receiver;
 	
 	public Sender sender;
-	
-	public Acknowledgement acknowledgement;
 	
 	public ControlActProcess controlActProcess;
 

@@ -1,10 +1,50 @@
 package gov.ca.emsa.pulse.xcpd;
 
+import gov.ca.emsa.pulse.xcpd.prpa.AcceptAckCode;
+import gov.ca.emsa.pulse.xcpd.prpa.Acknowledgement;
+import gov.ca.emsa.pulse.xcpd.prpa.ControlActProcess;
+import gov.ca.emsa.pulse.xcpd.prpa.CreationTime;
+import gov.ca.emsa.pulse.xcpd.prpa.InteractionId;
+import gov.ca.emsa.pulse.xcpd.prpa.ProcessingCode;
+import gov.ca.emsa.pulse.xcpd.prpa.ProcessingModeCode;
+import gov.ca.emsa.pulse.xcpd.prpa.Receiver;
+import gov.ca.emsa.pulse.xcpd.prpa.Sender;
+import gov.ca.emsa.pulse.xcpd.prpa.TargetMessage;
+import gov.ca.emsa.pulse.xcpd.prpa.TypeCode;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.Code;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.QueryAck;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.QueryByParameter;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.QueryReponseCode;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.Subject;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.ParameterList;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.QueryId;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.StatusCode;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjectNameValue;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjBirthTimeValue;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjectAdminGender;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjectAdminGenderValue;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjectBirthTime;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjectId;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjectName;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.Custodian;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.Patient;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.PatientPerson;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.ProviderOrganization;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.RegistrationEvent;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.SubjectOfOne;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.SubjectOne;
+import gov.ca.emsa.pulse.xcpd.soap.DiscoveryResponseSoapBody;
+import gov.ca.emsa.pulse.xcpd.soap.DiscoveryResponseSoapEnvelope;
+import gov.ca.emsa.pulse.xcpd.soap.header.Action;
+import gov.ca.emsa.pulse.xcpd.soap.header.CorrelationTimeToLive;
+import gov.ca.emsa.pulse.xcpd.soap.header.RelatesTo;
+import gov.ca.emsa.pulse.xcpd.soap.header.DiscoveryResponseSoapHeader;
+
 import java.util.ArrayList;
 
 public class XcpdUtils {
 	
-	public static PatientDiscoveryResponse generateQueryResponse(){
+	public static DiscoveryResponseSoapEnvelope generateQueryResponse(String givenInput, String familyInput){
 		PatientDiscoveryResponse pdr = new PatientDiscoveryResponse();
 		CreationTime ct = new CreationTime();
 		ct.value = (String.valueOf(System.currentTimeMillis()));
@@ -74,15 +114,13 @@ public class XcpdUtils {
 		lsid.setLsiv(lsidv);
 		ArrayList<LivingSubjectId> array = new ArrayList<LivingSubjectId>();
 		array.add(lsid);
-		pl.setLivingSubjId(array);
+		pl.livingSubjectId = array;
 		
-		Given given = new Given();
-		given.setGiven("Brian");
-		Family family = new Family();
-		family.setFamily("Lindsey");
-		LiveSubjNameValue lsnv = new LiveSubjNameValue();
-		lsnv.setGiven(given);
-		lsnv.setFamily(family);
+		String given = givenInput;
+		String family = familyInput;
+		LivingSubjectNameValue lsnv = new LivingSubjectNameValue();
+		lsnv.given = given;
+		lsnv.family = family;
 		LivingSubjectName lsn = new LivingSubjectName();
 		lsn.setValue(lsnv);
 		lsn.semanticsText = "LivingSubject.name";
@@ -98,7 +136,7 @@ public class XcpdUtils {
 		LivingSubjectAdminGenderValue lsagv = new LivingSubjectAdminGenderValue();
 		lsagv.code = "M";
 		LivingSubjectAdminGender lsag = new LivingSubjectAdminGender();
-		lsag.setLivingSubjectAdministrativeGender(lsagv);
+		lsag.value = lsagv;
 		lsag.semanticsText = "LivingSubject.administrativeGender";
 		pl.setLivingSubjectAdministrativeGender(lsag);
 		
@@ -114,7 +152,7 @@ public class XcpdUtils {
 		qa.setQueryResponseCode(qrc);
 		
 		ControlActProcess cap = new ControlActProcess();
-		cap.setQueryByParamter(qbp);
+		cap.setQueryByParameter(qbp);
 		cap.setQueryAck(qa);
 		Code code = new Code();
 		code.code = "PRPA_TE201306UV02";
@@ -144,25 +182,25 @@ public class XcpdUtils {
 		StatusCode patStatus = new StatusCode();
 		patStatus.code = "12345";
 		patient.setId(patId);
-		patient.setSc(patStatus);
+		patient.setStatusCode(patStatus);
 		
 		PatientPerson pp = new PatientPerson();
 		ProviderOrganization po = new ProviderOrganization();
 		SubjectOfOne soo = new SubjectOfOne();
 		patient.setPp(pp);
-		patient.setPo(po);
-		patient.setSoo(soo);
+		patient.setProviderOrganization(po);
+		patient.setSubjectOf1(soo);
 		
 		s1.setPatient(patient);
 		
-		re.setSo(s1);
+		re.setSubject1(s1);
 		
 		Custodian cust = new Custodian();
 		
 		re.setCustodian(cust);
 		
 		subjs.add(subject1);
-		cap.setSubjects(subjs);
+		cap.subjects = subjs;
 		
 		QueryAck queryAck = new QueryAck();
 		QueryId qid1 = new QueryId();
@@ -175,10 +213,26 @@ public class XcpdUtils {
 		queryAck.setQueryId(qid1);
 		queryAck.setQueryResponseCode(qrc1);
 		cap.setQueryAck(queryAck);
-		cap.setQueryByParamter(qbp);
+		cap.setQueryByParameter(qbp);
 		
 		pdr.controlActProcess = cap;
 		
-		return pdr;
+		DiscoveryResponseSoapEnvelope se = new DiscoveryResponseSoapEnvelope();
+		DiscoveryResponseSoapHeader sh = new DiscoveryResponseSoapHeader();
+		DiscoveryResponseSoapBody sb = new DiscoveryResponseSoapBody();
+		sb.PRPA_IN201306UV02 = pdr;
+		
+		Action action = new Action();
+		CorrelationTimeToLive cttl = new CorrelationTimeToLive();
+		RelatesTo rt = new RelatesTo();
+		
+		sh.action = action;
+		sh.cttl = cttl;
+		sh.relatesTo = rt;
+		
+		se.sHeader = sh;
+		se.sBody = sb;
+		
+		return se;
 	}
 }
