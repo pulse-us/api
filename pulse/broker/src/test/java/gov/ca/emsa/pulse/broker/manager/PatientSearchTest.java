@@ -65,7 +65,7 @@ public class PatientSearchTest {
 		insertOrganizations();
 
 		PatientSearch toSearch = new PatientSearch();
-		toSearch.setFirstName("John");
+		toSearch.setGivenName("John");
 
 		 mockServer
 		 	.expect(MockRestRequestMatchers.requestTo(org1.getEndpointUrl()))
@@ -209,7 +209,7 @@ public class PatientSearchTest {
 
 	private QueryDTO createQuery(CommonUser user) throws JsonProcessingException {
 		Patient queryTerms = new Patient();
-		queryTerms.setFirstName("John");
+		queryTerms.setGivenName("John");
 		String queryTermsJson = JSONUtils.toJSON(queryTerms);
 
 		QueryDTO query = new QueryDTO();

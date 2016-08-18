@@ -34,7 +34,6 @@ public class PatientQueryService implements Runnable {
 	private String samlMessage;
 	
 	@Override
-	@Transactional
 	public void run() {
 		boolean queryError = false;
 		//query this organization directly for patient matches
@@ -71,10 +70,13 @@ public class PatientQueryService implements Runnable {
 			logger.info("Found 0 results for " + org.getAdapter());
 		}
 		
-		queryOrg.setStatus(QueryStatus.COMPLETE.name());
-		queryOrg.setEndDate(new Date());
-		queryOrg.setSuccess(!queryError);
-		queryManager.createOrUpdateQueryOrganization(queryOrg);
+		synchronized(queryOrg.getQueryId()) {
+			queryOrg.setStatus(QueryStatus.COMPLETE.name());
+			queryOrg.setEndDate(new Date());
+			queryOrg.setSuccess(!queryError);
+			queryManager.createOrUpdateQueryOrganization(queryOrg);
+			queryManager.updateQueryStatusFromOrganizations(queryOrg.getQueryId());
+		}
 		logger.info("Completed query to " + org.getAdapter() + " for orgStatus" + queryOrg.getId());
 	}
 

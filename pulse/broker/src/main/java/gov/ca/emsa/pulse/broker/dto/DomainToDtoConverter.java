@@ -13,8 +13,8 @@ public class DomainToDtoConverter {
 		if(domainObj.getId() != null) {
 			result.setId(new Long(domainObj.getId()));
 		}
-		result.setFirstName(domainObj.getFirstName());
-		result.setLastName(domainObj.getLastName());
+		result.setGivenName(domainObj.getGivenName());
+		result.setFamilyName(domainObj.getFamilyName());
 		result.setGender(domainObj.getGender());
 		result.setDateOfBirth(domainObj.getDateOfBirth());
 		result.setPhoneNumber(domainObj.getPhoneNumber());

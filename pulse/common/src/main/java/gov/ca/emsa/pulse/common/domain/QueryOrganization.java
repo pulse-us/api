@@ -7,7 +7,7 @@ import java.util.List;
 public class QueryOrganization {
 	private Long id;
 	private Long queryId;
-	private Long orgId;
+	private Organization org;
 	private String status;
 	private Date startDate;
 	private Date endDate;
@@ -32,14 +32,6 @@ public class QueryOrganization {
 
 	public void setQueryId(Long queryId) {
 		this.queryId = queryId;
-	}
-
-	public Long getOrgId() {
-		return orgId;
-	}
-
-	public void setOrgId(Long orgId) {
-		this.orgId = orgId;
 	}
 
 	public String getStatus() {
@@ -80,5 +72,13 @@ public class QueryOrganization {
 
 	public void setResults(List<PatientRecord> results) {
 		this.results = results;
+	}
+
+	public Organization getOrg() {
+		return org;
+	}
+
+	public void setOrg(Organization org) {
+		this.org = org;
 	}
 }

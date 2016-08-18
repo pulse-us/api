@@ -24,11 +24,11 @@ public class PatientRecordEntity {
 	@Column(name = "organization_patient_id")
 	private String orgPatientId;
 	
-	@Column(name="first_name")
-	private String firstName;
+	@Column(name="given_name")
+	private String givenName;
 	
-	@Column(name = "last_name")
-	private String lastName;
+	@Column(name = "family_name")
+	private String familyName;
 	
 	@Column(name = "dob")
 	private Date dateOfBirth;
@@ -79,22 +79,6 @@ public class PatientRecordEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
 	}
 
 	public Date getDateOfBirth() {
@@ -215,5 +199,21 @@ public class PatientRecordEntity {
 
 	public void setQueryOrganization(QueryOrganizationEntity queryOrganization) {
 		this.queryOrganization = queryOrganization;
+	}
+
+	public String getGivenName() {
+		return givenName;
+	}
+
+	public void setGivenName(String givenName) {
+		this.givenName = givenName;
+	}
+
+	public String getFamilyName() {
+		return familyName;
+	}
+
+	public void setFamilyName(String familyName) {
+		this.familyName = familyName;
 	}
 }

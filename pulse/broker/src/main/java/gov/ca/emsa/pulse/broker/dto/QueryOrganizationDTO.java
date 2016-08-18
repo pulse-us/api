@@ -12,6 +12,7 @@ public class QueryOrganizationDTO {
 	private Long id;
 	private Long queryId;
 	private Long orgId;
+	private OrganizationDTO org;
 	private String status;
 	private Date startDate;
 	private Date endDate;
@@ -29,6 +30,10 @@ public class QueryOrganizationDTO {
 			this.id = entity.getId();
 			this.queryId = entity.getQueryId();
 			this.orgId = entity.getOrganizationId();
+			if(entity.getOrg() != null) {
+				this.org = new OrganizationDTO(entity.getOrg());
+			}
+			
 			this.status = entity.getStatus();
 			this.startDate = entity.getStartDate();
 			this.endDate = entity.getEndDate();
@@ -104,5 +109,13 @@ public class QueryOrganizationDTO {
 
 	public void setResults(List<PatientRecordDTO> results) {
 		this.results = results;
+	}
+
+	public OrganizationDTO getOrg() {
+		return org;
+	}
+
+	public void setOrg(OrganizationDTO org) {
+		this.org = org;
 	}
 }

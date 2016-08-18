@@ -73,7 +73,8 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	@Override
-	public synchronized QueryOrganizationDTO updateQueryOrganization(QueryOrganizationDTO orgStatus) {
+	public QueryOrganizationDTO updateQueryOrganization(QueryOrganizationDTO orgStatus) {
+		logger.info("Update query organization " + orgStatus.getId() + " with status " + orgStatus.getStatus());
 		QueryOrganizationEntity orgMap = this.getQueryStatusById(orgStatus.getId());
 		if(orgStatus.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
 			orgMap.setEndDate(new Date());
@@ -83,67 +84,21 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 			orgMap.setStatus(QueryStatus.ACTIVE.name());
 		}
 		orgMap = entityManager.merge(orgMap);
-		
-		//see if the entire query is complete
-		QueryEntity query = this.getEntityById(orgStatus.getQueryId());
-		if(query.getOrgStatuses() != null && query.getOrgStatuses().size() > 0) {
-			int completeCount = 0;
-			for(QueryOrganizationEntity orgMapEntity : query.getOrgStatuses()) {
-				if(orgMapEntity.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
-					completeCount++;
-				} 
-			}
-			
-			if(completeCount == query.getOrgStatuses().size()) {
-				query.setStatus(QueryStatus.COMPLETE.name());
-				query = entityManager.merge(query);
-			}
-		}
-		
 		entityManager.flush();
+		logger.info("Updated orgStatus " + orgStatus.getId());
 		return new QueryOrganizationDTO(orgMap);
 	}
 	
 	@Override
 	public QueryDTO update(QueryDTO dto) {
 		QueryEntity query = this.getEntityById(dto.getId());
+		logger.info("Set last read date for query " + dto.getId() + " to " + dto.getLastReadDate());
 		query.setLastReadDate(dto.getLastReadDate());
+		logger.info("Set status for query " + dto.getId() + " to " + dto.getStatus());
+		query.setStatus(dto.getStatus());
 		//terms and user wouldn't change
-		
-		//check the org statuses
-		if(dto.getOrgStatuses() != null && dto.getOrgStatuses().size() > 0) {
-			int completeCount = 0;
-			for(QueryOrganizationDTO orgStatus : dto.getOrgStatuses()) {
-				QueryOrganizationEntity orgMap = this.getQueryStatusById(orgStatus.getId());
-				if(orgMap == null || orgMap.getId() == null) {
-					//create 
-					orgMap = new QueryOrganizationEntity();
-					orgMap.setOrganizationId(orgStatus.getOrgId());
-					orgMap.setQueryId(query.getId());
-					orgMap.setStatus(QueryStatus.ACTIVE.name());
-					orgMap.setStartDate(new Date());
-					query.getOrgStatuses().add(orgMap);
-					entityManager.persist(orgMap);
-				} else {
-					//update - org and query wouldn't change
-					if(orgStatus.getStatus().equalsIgnoreCase(QueryStatus.COMPLETE.name())) {
-						orgMap.setEndDate(new Date());
-						orgMap.setSuccess(orgStatus.getSuccess());
-						orgMap.setStatus(QueryStatus.COMPLETE.name());
-						completeCount++;
-					} else {
-						orgMap.setStatus(QueryStatus.ACTIVE.name());
-					}
-					orgMap = entityManager.merge(orgMap);
-				}
-			}
-			
-			if(completeCount == dto.getOrgStatuses().size()) {
-				query.setStatus(QueryStatus.COMPLETE.name());
-				query = entityManager.merge(query);
-			}
-		}
-		
+		//org statuses should be updated separately in a manager
+		entityManager.merge(query);
 		entityManager.flush();
 		return new QueryDTO(query);
 	}
@@ -230,6 +185,18 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 			entity = results.get(0);
 		}
 		return entity;
+	}
+	
+	public Boolean hasActiveOrganizations(Long queryId) {		
+		Query query = entityManager.createQuery( "SELECT count(org) "
+				+ "FROM QueryOrganizationEntity org " 
+				+ "WHERE org.queryId = :queryId " 
+				+ "AND UPPER(status) = 'ACTIVE'", Long.class);
+		
+		query.setParameter("queryId", queryId);
+		Long activeCount = (Long)query.getSingleResult();
+		logger.info("Query " + queryId + " has " + activeCount + " ACTIVE statuses.");
+		return activeCount > 0;
 	}
 	
 	private QueryOrganizationEntity getQueryStatusById(Long id) {

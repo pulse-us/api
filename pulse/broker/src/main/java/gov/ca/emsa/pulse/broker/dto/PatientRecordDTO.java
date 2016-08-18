@@ -7,8 +7,8 @@ import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
 public class PatientRecordDTO {
 	private Long id;
 	private String orgPatientId;
-	private String firstName;
-	private String lastName;
+	private String givenName;
+	private String familyName;
 	private Date dateOfBirth;
 	private String ssn;
 	private String gender;
@@ -22,8 +22,8 @@ public class PatientRecordDTO {
 	public PatientRecordDTO(PatientRecordEntity entity) {
 		this.id = entity.getId();
 		this.orgPatientId = entity.getOrgPatientId();
-		this.firstName = entity.getFirstName();
-		this.lastName = entity.getLastName();
+		this.givenName = entity.getGivenName();
+		this.familyName = entity.getFamilyName();
 		this.dateOfBirth = entity.getDateOfBirth();
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
@@ -45,18 +45,6 @@ public class PatientRecordDTO {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public String getFirstName() {
-		return firstName;
-	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
 	}
 	public Date getDateOfBirth() {
 		return dateOfBirth;
@@ -103,5 +91,21 @@ public class PatientRecordDTO {
 
 	public void setQueryOrganizationId(Long queryOrganizationId) {
 		this.queryOrganizationId = queryOrganizationId;
+	}
+
+	public String getGivenName() {
+		return givenName;
+	}
+
+	public void setGivenName(String givenName) {
+		this.givenName = givenName;
+	}
+
+	public String getFamilyName() {
+		return familyName;
+	}
+
+	public void setFamilyName(String familyName) {
+		this.familyName = familyName;
 	}
 }

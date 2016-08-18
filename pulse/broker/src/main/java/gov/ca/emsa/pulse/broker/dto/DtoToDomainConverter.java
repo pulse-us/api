@@ -26,8 +26,8 @@ public class DtoToDomainConverter {
 	public static Patient convert(PatientDTO dtoObj) {
 		Patient result = new Patient();
 		result.setId(dtoObj.getId());
-		result.setFirstName(dtoObj.getFirstName());
-		result.setLastName(dtoObj.getLastName());
+		result.setGivenName(dtoObj.getGivenName());
+		result.setFamilyName(dtoObj.getFamilyName());
 		result.setGender(dtoObj.getGender());
 		result.setDateOfBirth(dtoObj.getDateOfBirth());
 		result.setPhoneNumber(dtoObj.getPhoneNumber());
@@ -136,7 +136,11 @@ public class DtoToDomainConverter {
 	public static QueryOrganization convert(QueryOrganizationDTO qOrgDto){
 		QueryOrganization qOrg = new QueryOrganization();
 		qOrg.setId(qOrgDto.getId());
-		qOrg.setOrgId(qOrgDto.getOrgId());
+		
+		if(qOrgDto.getOrg() != null) {
+			qOrg.setOrg(convert(qOrgDto.getOrg()));
+		}
+		
 		qOrg.setQueryId(qOrgDto.getQueryId());
 		for(PatientRecordDTO prDto : qOrgDto.getResults()){
 			PatientRecord pr = DtoToDomainConverter.convert(prDto);
@@ -153,8 +157,8 @@ public class DtoToDomainConverter {
 		PatientRecord pr = new PatientRecord();
 		pr.setId(prDto.getId());
 		pr.setSsn(prDto.getSsn());
-		pr.setFirstName(prDto.getFirstName());
-		pr.setLastName(prDto.getLastName());
+		pr.setGivenName(prDto.getGivenName());
+		pr.setFamilyName(prDto.getFamilyName());
 		pr.setGender(prDto.getGender());
 		pr.setPhoneNumber(prDto.getPhoneNumber());
 		pr.setDateOfBirth(prDto.getDateOfBirth());
