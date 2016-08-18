@@ -38,8 +38,8 @@ public class EHealthQueryConsumerService {
 		ParameterList parameterList = dr.sBody.PRPA_IN201305UV02.controlActProcess.getQueryByParameter().parameterList;
 		patientSearchTerms.setDob(parameterList.getLivingSubjectBirthTime().value.value);
 		patientSearchTerms.setGender(parameterList.getLivingSubjectAdministrativeGender().value.code);
-		patientSearchTerms.setFirstName(parameterList.getLivingSubjectName().getValue().given);
-		patientSearchTerms.setLastName(parameterList.getLivingSubjectName().getValue().family);
+		patientSearchTerms.setGivenName(parameterList.getLivingSubjectName().getValue().given);
+		patientSearchTerms.setFamilyName(parameterList.getLivingSubjectName().getValue().family);
 		
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		ObjectMapper mapper = new ObjectMapper();
@@ -55,7 +55,7 @@ public class EHealthQueryConsumerService {
 			logger.info("Request sent to broker from services REST.");
 		}
 		
-		return XcpdUtils.generateQueryResponse(patientSearchTerms.getFirstName(), patientSearchTerms.getLastName());
+		return XcpdUtils.generateQueryResponse(patientSearchTerms.getGivenName(), patientSearchTerms.getFamilyName());
 		
 	}
 
