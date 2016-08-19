@@ -3,6 +3,7 @@ package gov.ca.emsa.pulse.common.domain;
 public class Document {
 	private String id;
 	private String name;
+	private Boolean cached;
 	private Long orgMapId;
 	private Patient patient;
 	
@@ -33,6 +34,14 @@ public class Document {
 
 	public void setPatient(Patient patient) {
 		this.patient = patient;
+	}
+
+	public Boolean getCached() {
+		return cached;
+	}
+
+	public void setCached(Boolean cached) {
+		this.cached = cached;
 	}
 	
 }
