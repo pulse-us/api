@@ -84,10 +84,10 @@ public class EHealthQueryConsumerService {
 			headers.add("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<PatientSearch> request = new HttpEntity<PatientSearch>(headers);
 			RestTemplate query = new RestTemplate();
-			query.postForObject(brokerUrl + "/search", request, Query.class);
+			//query.postForObject(brokerUrl + "/search", request, Query.class);
 			logger.info("Request sent to broker from services REST.");
 		}
-		
+		System.out.println(XcpdUtils.generateQueryResponse());
 		return XcpdUtils.generateQueryResponse();
 	}
 	
@@ -106,10 +106,11 @@ public class EHealthQueryConsumerService {
 			headers.add("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<PatientSearch> request = new HttpEntity<PatientSearch>(headers);
 			RestTemplate query = new RestTemplate();
-			query.postForObject(brokerUrl + "/search", request, Query.class);
+			//query.postForObject(brokerUrl + "/search", request, Query.class);
 			logger.info("Request sent to broker from services REST.");
 		}
 		
+		System.out.println(XcpdUtils.generateDocumentResponse());
 		return XcpdUtils.generateDocumentResponse();
 	}
 

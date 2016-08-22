@@ -54,11 +54,13 @@ import gov.ca.emsa.pulse.xcpd.soap.RetrieveDocumentSetResponseSoapBody;
 import gov.ca.emsa.pulse.xcpd.soap.RetrieveDocumentSetResponseSoapEnvelope;
 import gov.ca.emsa.pulse.xcpd.soap.header.Action;
 import gov.ca.emsa.pulse.xcpd.soap.header.CorrelationTimeToLive;
+import gov.ca.emsa.pulse.xcpd.soap.header.MessageId;
 import gov.ca.emsa.pulse.xcpd.soap.header.QueryResponseSoapHeader;
 import gov.ca.emsa.pulse.xcpd.soap.header.RelatesTo;
 import gov.ca.emsa.pulse.xcpd.soap.header.DiscoveryResponseSoapHeader;
 import gov.ca.emsa.pulse.xcpd.soap.header.RetrieveDocumentSetRequestSoapHeader;
 import gov.ca.emsa.pulse.xcpd.soap.header.RetrieveDocumentSetResponseSoapHeader;
+import gov.ca.emsa.pulse.xcpd.soap.header.To;
 
 import java.util.ArrayList;
 
@@ -267,18 +269,24 @@ public class XcpdUtils {
 
 		Slot slot1 = new Slot();
 		ValueList vl1 = new ValueList();
+		ArrayList<String> values1 = new ArrayList<String>();
+		vl1.value = values1;
 		vl1.value.add("http://localhost:8080/XDS/Repository/08a15a6f-5b4a-42de-8f95-89474f83abdf.xml");
 		slot1.valueList = vl1;
 		slot1.name = "URI";
 
 		Slot slot2 = new Slot();
 		ValueList vl2 = new ValueList();
+		ArrayList<String> values2 = new ArrayList<String>();
+		vl2.value = values2;
 		vl2.value.add(String.valueOf(System.currentTimeMillis()));
 		slot2.valueList = vl2;
 		slot2.name = "creationTime";
 		
 		Slot slot3 = new Slot();
 		ValueList vl3 = new ValueList();
+		ArrayList<String> values3 = new ArrayList<String>();
+		vl3.value = values3;
 		vl3.value.add("12345");
 		slot3.valueList = vl3;
 		slot3.name = "sourcePatientId";
@@ -286,6 +294,8 @@ public class XcpdUtils {
 		Classification classification = new Classification();
 		Slot slot4 = new Slot();
 		ValueList vl4 = new ValueList();
+		ArrayList<String> values4 = new ArrayList<String>();
+		vl4.value = values4;
 		vl4.value.add("12345");
 		slot4.valueList = vl4;
 		slot4.name = "codingScheme";
@@ -297,19 +307,31 @@ public class XcpdUtils {
 		classification.name = name;
 		classification.slot = slot4;
 		
+		ArrayList<Slot> slots = new ArrayList<Slot>();
+		eo.slots = slots;
 		eo.slots.add(slot1);
 		eo.slots.add(slot2);
 		eo.slots.add(slot3);
+		ArrayList<Classification> classArray = new ArrayList<Classification>();
+		eo.classification = classArray;
 		eo.classification.add(classification);
 		
 		rol.extrinsicObject = eo;
 		aqr.registryObjectList = rol;
 		sb.adhocQueryResponse = aqr;
 		
+		Action action = new Action();
+		sh.action = action;
 		sh.action.mustUnderstand = "1";
 		sh.action.action = "urn:ihe:iti:2008:RegistryStoredQueryAsyncResponse";
+		MessageId messageId = new MessageId();
+		sh.messageId = messageId;
 		sh.messageId.messageId = "urn:uuid:D6C21225-8E7B-454E-9750-821622C099DB";
+		RelatesTo relatesTo = new RelatesTo();
+		sh.relatesTo = relatesTo;
 		sh.relatesTo.relatesTo = "urn:uuid:a02ca8cd-86fa-4afc-a27c-616c183b2055";
+		To to = new To();
+		sh.to = to;
 		sh.to.mustUnderstand = "1";
 		sh.to.to = "http://localhost:2647/XdsService/DocumentConsumerReceiver.svc";
 		
@@ -325,10 +347,18 @@ public class XcpdUtils {
 		RetrieveDocumentSetResponseSoapBody rdsb = new RetrieveDocumentSetResponseSoapBody();
 		RetrieveDocumentSetResponseSoapHeader rdsh = new RetrieveDocumentSetResponseSoapHeader();
 		
+		Action action = new Action();
+		rdsh.action = action;
 		rdsh.action.mustUnderstand = "1";
 		rdsh.action.action = "urn:ihe:iti:2008:RegistryStoredQueryAsyncResponse";
+		MessageId messageId = new MessageId();
+		rdsh.messageId = messageId;
 		rdsh.messageId.messageId = "urn:uuid:D6C21225-8E7B-454E-9750-821622C099DB";
+		RelatesTo relatesTo = new RelatesTo();
+		rdsh.relatesTo = relatesTo;
 		rdsh.relatesTo.relatesTo = "urn:uuid:a02ca8cd-86fa-4afc-a27c-616c183b2055";
+		To to = new To();
+		rdsh.to = to;
 		rdsh.to.mustUnderstand = "1";
 		rdsh.to.to = "http://localhost:2647/XdsService/DocumentConsumerReceiver.svc";
 		
@@ -343,6 +373,8 @@ public class XcpdUtils {
 		dr.document = "123456789023w09rew98rp9ew8ry";
 		
 		rdsr.registryReponse = rr;
+		ArrayList<DocumentResponse> drArray = new ArrayList<DocumentResponse>();
+		rdsr.documentResponse = drArray;
 		rdsr.documentResponse.add(dr);
 		
 		rdsb.retrieveDocumentSetResponse = rdsr;
