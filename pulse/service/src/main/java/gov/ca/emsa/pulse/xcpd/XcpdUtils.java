@@ -41,15 +41,24 @@ import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.ProviderOrganization;
 import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.RegistrationEvent;
 import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.SubjectOfOne;
 import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.SubjectOne;
+import gov.ca.emsa.pulse.xcpd.rds.DocumentResponse;
+import gov.ca.emsa.pulse.xcpd.rds.RegistryResponse;
+import gov.ca.emsa.pulse.xcpd.rds.RetrieveDocumentSetResponse;
 import gov.ca.emsa.pulse.xcpd.soap.DiscoveryResponseSoapBody;
 import gov.ca.emsa.pulse.xcpd.soap.DiscoveryResponseSoapEnvelope;
 import gov.ca.emsa.pulse.xcpd.soap.QueryResponseSoapBody;
 import gov.ca.emsa.pulse.xcpd.soap.QueryResponseSoapEnvelope;
+import gov.ca.emsa.pulse.xcpd.soap.RetrieveDocumentSetRequestSoapBody;
+import gov.ca.emsa.pulse.xcpd.soap.RetrieveDocumentSetRequestSoapEnvelope;
+import gov.ca.emsa.pulse.xcpd.soap.RetrieveDocumentSetResponseSoapBody;
+import gov.ca.emsa.pulse.xcpd.soap.RetrieveDocumentSetResponseSoapEnvelope;
 import gov.ca.emsa.pulse.xcpd.soap.header.Action;
 import gov.ca.emsa.pulse.xcpd.soap.header.CorrelationTimeToLive;
 import gov.ca.emsa.pulse.xcpd.soap.header.QueryResponseSoapHeader;
 import gov.ca.emsa.pulse.xcpd.soap.header.RelatesTo;
 import gov.ca.emsa.pulse.xcpd.soap.header.DiscoveryResponseSoapHeader;
+import gov.ca.emsa.pulse.xcpd.soap.header.RetrieveDocumentSetRequestSoapHeader;
+import gov.ca.emsa.pulse.xcpd.soap.header.RetrieveDocumentSetResponseSoapHeader;
 
 import java.util.ArrayList;
 
@@ -308,6 +317,40 @@ public class XcpdUtils {
 		se.header = sh;
 		
 		return se;
+	}
+	
+	public static RetrieveDocumentSetResponseSoapEnvelope generateDocumentResponse(){
+		
+		RetrieveDocumentSetResponseSoapEnvelope rdse = new RetrieveDocumentSetResponseSoapEnvelope();
+		RetrieveDocumentSetResponseSoapBody rdsb = new RetrieveDocumentSetResponseSoapBody();
+		RetrieveDocumentSetResponseSoapHeader rdsh = new RetrieveDocumentSetResponseSoapHeader();
+		
+		rdsh.action.mustUnderstand = "1";
+		rdsh.action.action = "urn:ihe:iti:2008:RegistryStoredQueryAsyncResponse";
+		rdsh.messageId.messageId = "urn:uuid:D6C21225-8E7B-454E-9750-821622C099DB";
+		rdsh.relatesTo.relatesTo = "urn:uuid:a02ca8cd-86fa-4afc-a27c-616c183b2055";
+		rdsh.to.mustUnderstand = "1";
+		rdsh.to.to = "http://localhost:2647/XdsService/DocumentConsumerReceiver.svc";
+		
+		RetrieveDocumentSetResponse rdsr = new RetrieveDocumentSetResponse();
+		RegistryResponse rr = new RegistryResponse();
+		rr.status = "urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success";
+		
+		DocumentResponse dr = new DocumentResponse();
+		dr.repositoryUniqueId = "12345";
+		dr.documentUniqueId = "12345";
+		dr.mimeType = "text/xml";
+		dr.document = "123456789023w09rew98rp9ew8ry";
+		
+		rdsr.registryReponse = rr;
+		rdsr.documentResponse.add(dr);
+		
+		rdsb.retrieveDocumentSetResponse = rdsr;
+		
+		rdse.body = rdsb;
+		rdse.header = rdsh;
+		
+		return rdse;
 	}
 	
 }

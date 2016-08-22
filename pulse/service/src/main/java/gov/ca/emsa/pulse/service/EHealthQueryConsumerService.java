@@ -8,10 +8,13 @@ import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.xcpd.XcpdUtils;
 import gov.ca.emsa.pulse.xcpd.aqr.Slot;
 import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.ParameterList;
+import gov.ca.emsa.pulse.xcpd.rds.RetrieveDocumentSetRequest;
 import gov.ca.emsa.pulse.xcpd.soap.DiscoveryRequestSoapEnvelope;
 import gov.ca.emsa.pulse.xcpd.soap.DiscoveryResponseSoapEnvelope;
 import gov.ca.emsa.pulse.xcpd.soap.QueryRequestSoapEnvelope;
 import gov.ca.emsa.pulse.xcpd.soap.QueryResponseSoapEnvelope;
+import gov.ca.emsa.pulse.xcpd.soap.RetrieveDocumentSetRequestSoapEnvelope;
+import gov.ca.emsa.pulse.xcpd.soap.RetrieveDocumentSetResponseSoapEnvelope;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -86,6 +89,28 @@ public class EHealthQueryConsumerService {
 		}
 		
 		return XcpdUtils.generateQueryResponse();
+	}
+	
+	@RequestMapping(value = "/documentRequest", method = RequestMethod.POST, produces = MediaType.APPLICATION_XML_VALUE)
+	public RetrieveDocumentSetResponseSoapEnvelope documentRequest(@RequestBody RetrieveDocumentSetRequestSoapEnvelope rds) throws JsonProcessingException{
+		//patient id
+		RetrieveDocumentSetRequest repositoryId = rds.body.documentSetRequest;
+		
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+		ObjectMapper mapper = new ObjectMapper();
+		
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		if(jwtUser == null){
+			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.add("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<PatientSearch> request = new HttpEntity<PatientSearch>(headers);
+			RestTemplate query = new RestTemplate();
+			query.postForObject(brokerUrl + "/search", request, Query.class);
+			logger.info("Request sent to broker from services REST.");
+		}
+		
+		return XcpdUtils.generateDocumentResponse();
 	}
 
 }
