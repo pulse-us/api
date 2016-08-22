@@ -1,5 +1,13 @@
 package gov.ca.emsa.pulse.xcpd;
 
+import gov.ca.emsa.pulse.xcpd.aqr.AdhocQueryResponse;
+import gov.ca.emsa.pulse.xcpd.aqr.Classification;
+import gov.ca.emsa.pulse.xcpd.aqr.ExtrinsicObject;
+import gov.ca.emsa.pulse.xcpd.aqr.LocalizedString;
+import gov.ca.emsa.pulse.xcpd.aqr.RegistryObjectList;
+import gov.ca.emsa.pulse.xcpd.aqr.Slot;
+import gov.ca.emsa.pulse.xcpd.aqr.Name;
+import gov.ca.emsa.pulse.xcpd.aqr.ValueList;
 import gov.ca.emsa.pulse.xcpd.prpa.AcceptAckCode;
 import gov.ca.emsa.pulse.xcpd.prpa.Acknowledgement;
 import gov.ca.emsa.pulse.xcpd.prpa.ControlActProcess;
@@ -35,16 +43,20 @@ import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.SubjectOfOne;
 import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.SubjectOne;
 import gov.ca.emsa.pulse.xcpd.soap.DiscoveryResponseSoapBody;
 import gov.ca.emsa.pulse.xcpd.soap.DiscoveryResponseSoapEnvelope;
+import gov.ca.emsa.pulse.xcpd.soap.QueryResponseSoapBody;
+import gov.ca.emsa.pulse.xcpd.soap.QueryResponseSoapEnvelope;
 import gov.ca.emsa.pulse.xcpd.soap.header.Action;
 import gov.ca.emsa.pulse.xcpd.soap.header.CorrelationTimeToLive;
+import gov.ca.emsa.pulse.xcpd.soap.header.QueryResponseSoapHeader;
 import gov.ca.emsa.pulse.xcpd.soap.header.RelatesTo;
 import gov.ca.emsa.pulse.xcpd.soap.header.DiscoveryResponseSoapHeader;
 
 import java.util.ArrayList;
 
+
 public class XcpdUtils {
 	
-	public static DiscoveryResponseSoapEnvelope generateQueryResponse(String givenInput, String familyInput){
+	public static DiscoveryResponseSoapEnvelope generateDiscoveryResponse(String givenInput, String familyInput){
 		PatientDiscoveryResponse pdr = new PatientDiscoveryResponse();
 		CreationTime ct = new CreationTime();
 		ct.value = (String.valueOf(System.currentTimeMillis()));
@@ -235,4 +247,67 @@ public class XcpdUtils {
 		
 		return se;
 	}
+	
+	public static QueryResponseSoapEnvelope generateQueryResponse(){
+		QueryResponseSoapEnvelope se = new QueryResponseSoapEnvelope();
+		QueryResponseSoapHeader sh = new QueryResponseSoapHeader();
+		QueryResponseSoapBody sb = new QueryResponseSoapBody();
+		AdhocQueryResponse aqr = new AdhocQueryResponse();
+		RegistryObjectList rol = new RegistryObjectList();
+		ExtrinsicObject eo = new ExtrinsicObject();
+
+		Slot slot1 = new Slot();
+		ValueList vl1 = new ValueList();
+		vl1.value.add("http://localhost:8080/XDS/Repository/08a15a6f-5b4a-42de-8f95-89474f83abdf.xml");
+		slot1.valueList = vl1;
+		slot1.name = "URI";
+
+		Slot slot2 = new Slot();
+		ValueList vl2 = new ValueList();
+		vl2.value.add(String.valueOf(System.currentTimeMillis()));
+		slot2.valueList = vl2;
+		slot2.name = "creationTime";
+		
+		Slot slot3 = new Slot();
+		ValueList vl3 = new ValueList();
+		vl3.value.add("12345");
+		slot3.valueList = vl3;
+		slot3.name = "sourcePatientId";
+		
+		Classification classification = new Classification();
+		Slot slot4 = new Slot();
+		ValueList vl4 = new ValueList();
+		vl4.value.add("12345");
+		slot4.valueList = vl4;
+		slot4.name = "codingScheme";
+		Name name = new Name();
+		LocalizedString ls = new LocalizedString();
+		ls.charset = "UTF-8";
+		ls.value = "Celebrity";
+		name.localizedString = ls;
+		classification.name = name;
+		classification.slot = slot4;
+		
+		eo.slots.add(slot1);
+		eo.slots.add(slot2);
+		eo.slots.add(slot3);
+		eo.classification.add(classification);
+		
+		rol.extrinsicObject = eo;
+		aqr.registryObjectList = rol;
+		sb.adhocQueryResponse = aqr;
+		
+		sh.action.mustUnderstand = "1";
+		sh.action.action = "urn:ihe:iti:2008:RegistryStoredQueryAsyncResponse";
+		sh.messageId.messageId = "urn:uuid:D6C21225-8E7B-454E-9750-821622C099DB";
+		sh.relatesTo.relatesTo = "urn:uuid:a02ca8cd-86fa-4afc-a27c-616c183b2055";
+		sh.to.mustUnderstand = "1";
+		sh.to.to = "http://localhost:2647/XdsService/DocumentConsumerReceiver.svc";
+		
+		se.body = sb;
+		se.header = sh;
+		
+		return se;
+	}
+	
 }
