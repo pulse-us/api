@@ -1,21 +1,21 @@
 <s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://www.w3.org/2005/08/addressing">
   <!--The following header applies for a Synchronous Web Services Exchange Response 
-        Please note that a soap message can only have one header section. -->
+        Please note that a soap message can only have one header section.
   <s:Header>
 		<a:Action s:mustUnderstand="1">urn:ihe:iti:2007:RegistryStoredQueryResponse</a:Action>
 		<a:RelatesTo>urn:uuid:a02ca8cd-86fa-4afc-a27c-616c183b2055</a:RelatesTo>
-	</s:Header>
-  <!--The following DISABLED header applies for an Asynchronous Web Services Exchange 'Reply'
+	</s:Header> 
+  The following DISABLED header applies for an Asynchronous Web Services Exchange 'Reply'
         Please note that:
         1. An Asynchronous Web Services Exchange 'Reply' is in reality a new Request sent by the Receiver.
            Refer to TF-2:Appendix V for more information on Asynchronous Web Services Exchange.
-        2. A soap message can only have one header section
+        2. A soap message can only have one header section-->
   <s:Header>
     <a:Action s:mustUnderstand="1">urn:ihe:iti:2008:RegistryStoredQueryAsyncResponse</a:Action>
     <a:MessageID>urn:uuid:D6C21225-8E7B-454E-9750-821622C099DB</a:MessageID>
 		<a:RelatesTo>urn:uuid:a02ca8cd-86fa-4afc-a27c-616c183b2055</a:RelatesTo>
 		<a:To s:mustUnderstand="1">http://localhost:2647/XdsService/DocumentConsumerReceiver.svc</a:To>
-  </s:Header>  -->
+  </s:Header>  
   <s:Body>
 		<query:AdhocQueryResponse xsi:schemaLocation="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0 ../../schema/ebRS/query.xsd" status="Success" xmlns:query="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
 			<rim:RegistryObjectList>

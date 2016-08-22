@@ -9,7 +9,7 @@ public class QueryResponseSoapHeader {
 	
 	@XmlElement(name = "ReplyTo", namespace = "http://www.w3.org/2005/08/addressing") public ReplyTo replyTo;
 	
-	@XmlElement(name = "ReplyTo", namespace = "http://www.w3.org/2005/08/addressing") public RelatesTo relatesTo;
+	@XmlElement(name = "RelatesTo", namespace = "http://www.w3.org/2005/08/addressing") public RelatesTo relatesTo;
 	
 	@XmlElement(name = "To", namespace = "http://www.w3.org/2005/08/addressing") public To to;
 	
