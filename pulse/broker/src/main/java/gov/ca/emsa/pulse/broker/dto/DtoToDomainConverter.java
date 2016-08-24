@@ -194,6 +194,7 @@ public class DtoToDomainConverter {
 		Document result = new Document();
 		result.setId(dtoObj.getId()+"");
 		result.setName(dtoObj.getName());
+		result.setCached(dtoObj.getContents() != null && dtoObj.getContents().length > 0);
 		result.setOrgMapId(dtoObj.getPatientOrgMapId());
 		return result;
 	}
