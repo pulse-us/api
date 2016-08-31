@@ -1,10 +1,73 @@
 package gov.ca.emsa.pulse.xcpd;
 
+import gov.ca.emsa.pulse.xcpd.aqr.AdhocQueryResponse;
+import gov.ca.emsa.pulse.xcpd.aqr.Classification;
+import gov.ca.emsa.pulse.xcpd.aqr.ExtrinsicObject;
+import gov.ca.emsa.pulse.xcpd.aqr.LocalizedString;
+import gov.ca.emsa.pulse.xcpd.aqr.RegistryObjectList;
+import gov.ca.emsa.pulse.xcpd.aqr.Slot;
+import gov.ca.emsa.pulse.xcpd.aqr.Name;
+import gov.ca.emsa.pulse.xcpd.aqr.ValueList;
+import gov.ca.emsa.pulse.xcpd.prpa.AcceptAckCode;
+import gov.ca.emsa.pulse.xcpd.prpa.Acknowledgement;
+import gov.ca.emsa.pulse.xcpd.prpa.ControlActProcess;
+import gov.ca.emsa.pulse.xcpd.prpa.CreationTime;
+import gov.ca.emsa.pulse.xcpd.prpa.InteractionId;
+import gov.ca.emsa.pulse.xcpd.prpa.ProcessingCode;
+import gov.ca.emsa.pulse.xcpd.prpa.ProcessingModeCode;
+import gov.ca.emsa.pulse.xcpd.prpa.Receiver;
+import gov.ca.emsa.pulse.xcpd.prpa.Sender;
+import gov.ca.emsa.pulse.xcpd.prpa.TargetMessage;
+import gov.ca.emsa.pulse.xcpd.prpa.TypeCode;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.Code;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.QueryAck;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.QueryByParameter;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.QueryReponseCode;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.Subject;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.ParameterList;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.QueryId;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.StatusCode;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjectNameValue;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjBirthTimeValue;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjectAdminGender;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjectAdminGenderValue;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjectBirthTime;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjectId;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.qbp.pl.LivingSubjectName;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.Custodian;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.Patient;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.PatientPerson;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.ProviderOrganization;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.RegistrationEvent;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.SubjectOfOne;
+import gov.ca.emsa.pulse.xcpd.prpa.cap.subj.SubjectOne;
+import gov.ca.emsa.pulse.xcpd.rds.DocumentResponse;
+import gov.ca.emsa.pulse.xcpd.rds.RegistryResponse;
+import gov.ca.emsa.pulse.xcpd.rds.RetrieveDocumentSetResponse;
+import gov.ca.emsa.pulse.xcpd.soap.DiscoveryResponseSoapBody;
+import gov.ca.emsa.pulse.xcpd.soap.DiscoveryResponseSoapEnvelope;
+import gov.ca.emsa.pulse.xcpd.soap.QueryResponseSoapBody;
+import gov.ca.emsa.pulse.xcpd.soap.QueryResponseSoapEnvelope;
+import gov.ca.emsa.pulse.xcpd.soap.RetrieveDocumentSetRequestSoapBody;
+import gov.ca.emsa.pulse.xcpd.soap.RetrieveDocumentSetRequestSoapEnvelope;
+import gov.ca.emsa.pulse.xcpd.soap.RetrieveDocumentSetResponseSoapBody;
+import gov.ca.emsa.pulse.xcpd.soap.RetrieveDocumentSetResponseSoapEnvelope;
+import gov.ca.emsa.pulse.xcpd.soap.header.Action;
+import gov.ca.emsa.pulse.xcpd.soap.header.CorrelationTimeToLive;
+import gov.ca.emsa.pulse.xcpd.soap.header.MessageId;
+import gov.ca.emsa.pulse.xcpd.soap.header.QueryResponseSoapHeader;
+import gov.ca.emsa.pulse.xcpd.soap.header.RelatesTo;
+import gov.ca.emsa.pulse.xcpd.soap.header.DiscoveryResponseSoapHeader;
+import gov.ca.emsa.pulse.xcpd.soap.header.RetrieveDocumentSetRequestSoapHeader;
+import gov.ca.emsa.pulse.xcpd.soap.header.RetrieveDocumentSetResponseSoapHeader;
+import gov.ca.emsa.pulse.xcpd.soap.header.To;
+
 import java.util.ArrayList;
+
 
 public class XcpdUtils {
 	
-	public static PatientDiscoveryResponse generateQueryResponse(){
+	public static DiscoveryResponseSoapEnvelope generateDiscoveryResponse(String givenInput, String familyInput){
 		PatientDiscoveryResponse pdr = new PatientDiscoveryResponse();
 		CreationTime ct = new CreationTime();
 		ct.value = (String.valueOf(System.currentTimeMillis()));
@@ -74,15 +137,13 @@ public class XcpdUtils {
 		lsid.setLsiv(lsidv);
 		ArrayList<LivingSubjectId> array = new ArrayList<LivingSubjectId>();
 		array.add(lsid);
-		pl.setLivingSubjId(array);
+		pl.livingSubjectId = array;
 		
-		Given given = new Given();
-		given.setGiven("Brian");
-		Family family = new Family();
-		family.setFamily("Lindsey");
-		LiveSubjNameValue lsnv = new LiveSubjNameValue();
-		lsnv.setGiven(given);
-		lsnv.setFamily(family);
+		String given = givenInput;
+		String family = familyInput;
+		LivingSubjectNameValue lsnv = new LivingSubjectNameValue();
+		lsnv.given = given;
+		lsnv.family = family;
 		LivingSubjectName lsn = new LivingSubjectName();
 		lsn.setValue(lsnv);
 		lsn.semanticsText = "LivingSubject.name";
@@ -98,7 +159,7 @@ public class XcpdUtils {
 		LivingSubjectAdminGenderValue lsagv = new LivingSubjectAdminGenderValue();
 		lsagv.code = "M";
 		LivingSubjectAdminGender lsag = new LivingSubjectAdminGender();
-		lsag.setLivingSubjectAdministrativeGender(lsagv);
+		lsag.value = lsagv;
 		lsag.semanticsText = "LivingSubject.administrativeGender";
 		pl.setLivingSubjectAdministrativeGender(lsag);
 		
@@ -114,7 +175,7 @@ public class XcpdUtils {
 		qa.setQueryResponseCode(qrc);
 		
 		ControlActProcess cap = new ControlActProcess();
-		cap.setQueryByParamter(qbp);
+		cap.setQueryByParameter(qbp);
 		cap.setQueryAck(qa);
 		Code code = new Code();
 		code.code = "PRPA_TE201306UV02";
@@ -144,25 +205,25 @@ public class XcpdUtils {
 		StatusCode patStatus = new StatusCode();
 		patStatus.code = "12345";
 		patient.setId(patId);
-		patient.setSc(patStatus);
+		patient.setStatusCode(patStatus);
 		
 		PatientPerson pp = new PatientPerson();
 		ProviderOrganization po = new ProviderOrganization();
 		SubjectOfOne soo = new SubjectOfOne();
 		patient.setPp(pp);
-		patient.setPo(po);
-		patient.setSoo(soo);
+		patient.setProviderOrganization(po);
+		patient.setSubjectOf1(soo);
 		
 		s1.setPatient(patient);
 		
-		re.setSo(s1);
+		re.setSubject1(s1);
 		
 		Custodian cust = new Custodian();
 		
 		re.setCustodian(cust);
 		
 		subjs.add(subject1);
-		cap.setSubjects(subjs);
+		cap.subjects = subjs;
 		
 		QueryAck queryAck = new QueryAck();
 		QueryId qid1 = new QueryId();
@@ -175,10 +236,153 @@ public class XcpdUtils {
 		queryAck.setQueryId(qid1);
 		queryAck.setQueryResponseCode(qrc1);
 		cap.setQueryAck(queryAck);
-		cap.setQueryByParamter(qbp);
+		cap.setQueryByParameter(qbp);
 		
 		pdr.controlActProcess = cap;
 		
-		return pdr;
+		DiscoveryResponseSoapEnvelope se = new DiscoveryResponseSoapEnvelope();
+		DiscoveryResponseSoapHeader sh = new DiscoveryResponseSoapHeader();
+		DiscoveryResponseSoapBody sb = new DiscoveryResponseSoapBody();
+		sb.PRPA_IN201306UV02 = pdr;
+		
+		Action action = new Action();
+		CorrelationTimeToLive cttl = new CorrelationTimeToLive();
+		RelatesTo rt = new RelatesTo();
+		
+		sh.action = action;
+		sh.cttl = cttl;
+		sh.relatesTo = rt;
+		
+		se.sHeader = sh;
+		se.sBody = sb;
+		
+		return se;
 	}
+	
+	public static QueryResponseSoapEnvelope generateQueryResponse(){
+		QueryResponseSoapEnvelope se = new QueryResponseSoapEnvelope();
+		QueryResponseSoapHeader sh = new QueryResponseSoapHeader();
+		QueryResponseSoapBody sb = new QueryResponseSoapBody();
+		AdhocQueryResponse aqr = new AdhocQueryResponse();
+		RegistryObjectList rol = new RegistryObjectList();
+		ExtrinsicObject eo = new ExtrinsicObject();
+
+		Slot slot1 = new Slot();
+		ValueList vl1 = new ValueList();
+		ArrayList<String> values1 = new ArrayList<String>();
+		vl1.value = values1;
+		vl1.value.add("http://localhost:8080/XDS/Repository/08a15a6f-5b4a-42de-8f95-89474f83abdf.xml");
+		slot1.valueList = vl1;
+		slot1.name = "URI";
+
+		Slot slot2 = new Slot();
+		ValueList vl2 = new ValueList();
+		ArrayList<String> values2 = new ArrayList<String>();
+		vl2.value = values2;
+		vl2.value.add(String.valueOf(System.currentTimeMillis()));
+		slot2.valueList = vl2;
+		slot2.name = "creationTime";
+		
+		Slot slot3 = new Slot();
+		ValueList vl3 = new ValueList();
+		ArrayList<String> values3 = new ArrayList<String>();
+		vl3.value = values3;
+		vl3.value.add("12345");
+		slot3.valueList = vl3;
+		slot3.name = "sourcePatientId";
+		
+		Classification classification = new Classification();
+		Slot slot4 = new Slot();
+		ValueList vl4 = new ValueList();
+		ArrayList<String> values4 = new ArrayList<String>();
+		vl4.value = values4;
+		vl4.value.add("12345");
+		slot4.valueList = vl4;
+		slot4.name = "codingScheme";
+		Name name = new Name();
+		LocalizedString ls = new LocalizedString();
+		ls.charset = "UTF-8";
+		ls.value = "Celebrity";
+		name.localizedString = ls;
+		classification.name = name;
+		classification.slot = slot4;
+		
+		ArrayList<Slot> slots = new ArrayList<Slot>();
+		eo.slots = slots;
+		eo.slots.add(slot1);
+		eo.slots.add(slot2);
+		eo.slots.add(slot3);
+		ArrayList<Classification> classArray = new ArrayList<Classification>();
+		eo.classification = classArray;
+		eo.classification.add(classification);
+		
+		rol.extrinsicObject = eo;
+		aqr.registryObjectList = rol;
+		sb.adhocQueryResponse = aqr;
+		
+		Action action = new Action();
+		sh.action = action;
+		sh.action.mustUnderstand = "1";
+		sh.action.action = "urn:ihe:iti:2008:RegistryStoredQueryAsyncResponse";
+		MessageId messageId = new MessageId();
+		sh.messageId = messageId;
+		sh.messageId.messageId = "urn:uuid:D6C21225-8E7B-454E-9750-821622C099DB";
+		RelatesTo relatesTo = new RelatesTo();
+		sh.relatesTo = relatesTo;
+		sh.relatesTo.relatesTo = "urn:uuid:a02ca8cd-86fa-4afc-a27c-616c183b2055";
+		To to = new To();
+		sh.to = to;
+		sh.to.mustUnderstand = "1";
+		sh.to.to = "http://localhost:2647/XdsService/DocumentConsumerReceiver.svc";
+		
+		se.body = sb;
+		se.header = sh;
+		
+		return se;
+	}
+	
+	public static RetrieveDocumentSetResponseSoapEnvelope generateDocumentResponse(){
+		
+		RetrieveDocumentSetResponseSoapEnvelope rdse = new RetrieveDocumentSetResponseSoapEnvelope();
+		RetrieveDocumentSetResponseSoapBody rdsb = new RetrieveDocumentSetResponseSoapBody();
+		RetrieveDocumentSetResponseSoapHeader rdsh = new RetrieveDocumentSetResponseSoapHeader();
+		
+		Action action = new Action();
+		rdsh.action = action;
+		rdsh.action.mustUnderstand = "1";
+		rdsh.action.action = "urn:ihe:iti:2008:RegistryStoredQueryAsyncResponse";
+		MessageId messageId = new MessageId();
+		rdsh.messageId = messageId;
+		rdsh.messageId.messageId = "urn:uuid:D6C21225-8E7B-454E-9750-821622C099DB";
+		RelatesTo relatesTo = new RelatesTo();
+		rdsh.relatesTo = relatesTo;
+		rdsh.relatesTo.relatesTo = "urn:uuid:a02ca8cd-86fa-4afc-a27c-616c183b2055";
+		To to = new To();
+		rdsh.to = to;
+		rdsh.to.mustUnderstand = "1";
+		rdsh.to.to = "http://localhost:2647/XdsService/DocumentConsumerReceiver.svc";
+		
+		RetrieveDocumentSetResponse rdsr = new RetrieveDocumentSetResponse();
+		RegistryResponse rr = new RegistryResponse();
+		rr.status = "urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success";
+		
+		DocumentResponse dr = new DocumentResponse();
+		dr.repositoryUniqueId = "12345";
+		dr.documentUniqueId = "12345";
+		dr.mimeType = "text/xml";
+		dr.document = "123456789023w09rew98rp9ew8ry";
+		
+		rdsr.registryReponse = rr;
+		ArrayList<DocumentResponse> drArray = new ArrayList<DocumentResponse>();
+		rdsr.documentResponse = drArray;
+		rdsr.documentResponse.add(dr);
+		
+		rdsb.retrieveDocumentSetResponse = rdsr;
+		
+		rdse.body = rdsb;
+		rdse.header = rdsh;
+		
+		return rdse;
+	}
+	
 }

@@ -10,6 +10,11 @@ buildscript {
   }
 }
 
+configurations {
+    all*.exclude group: 'xml-apis'
+    all*.exclude group: 'xerces'
+}
+
 apply plugin: 'spring-boot'
 
 springBoot {
