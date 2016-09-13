@@ -44,7 +44,6 @@ public class PatientDiscoveryController {
 		} catch (SOAPException e) {
 			logger.error(e);
 		}
-		PatientSearch patientSearch = converter.convertToPatientSearch(requestObj);
 		try {
 			Resource documentsFile = resourceLoader.getResource("classpath:" + RESOURCE_FILE_NAME);
 			return Resources.toString(documentsFile.getURL(), Charsets.UTF_8);

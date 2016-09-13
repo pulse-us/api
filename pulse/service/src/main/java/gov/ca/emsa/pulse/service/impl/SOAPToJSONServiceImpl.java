@@ -9,8 +9,10 @@ import org.hl7.v3.PRPAMT201306UV02LivingSubjectAdministrativeGender;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectBirthTime;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectName;
 import org.hl7.v3.PRPAMT201306UV02ParameterList;
+import org.springframework.stereotype.Service;
 import org.hl7.v3.PRPAIN201305UV02;
 
+@Service
 public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 	
 	public PatientSearch convertToPatientSearch(PRPAIN201305UV02 request){
