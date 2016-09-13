@@ -45,7 +45,6 @@ public class PatientDiscoveryController {
 			logger.error(e);
 		}
 		PatientSearch patientSearch = converter.convertToPatientSearch(requestObj);
-		return new ModelAndView("redirect:/search");
 		try {
 			Resource documentsFile = resourceLoader.getResource("classpath:" + RESOURCE_FILE_NAME);
 			return Resources.toString(documentsFile.getURL(), Charsets.UTF_8);
