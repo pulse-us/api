@@ -1,20 +1,16 @@
 package gov.ca.emsa.pulse.service;
 
-import gov.ca.emsa.pulse.xcpd.PatientDiscoveryResponse;
-import gov.ca.emsa.pulse.xcpd.XcpdUtils;
+import javax.xml.soap.SOAPException;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.http.MediaType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 
-@RestController
-public class EHealthQueryConsumerService {
-	
-	@RequestMapping(value = "/patientDiscovery", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
-	public PatientDiscoveryResponse patientDiscovery(){
-		PatientDiscoveryResponse pdr = XcpdUtils.generateQueryResponse();
-		return pdr;
-	}
+import org.hl7.v3.PRPAIN201305UV02;
+import org.opensaml.common.SAMLException;
 
+public interface EHealthQueryConsumerService {
+	public PRPAIN201305UV02 unMarshallPatientDiscoveryRequestObject(String xml) throws SOAPException, SAMLException;
+	public AdhocQueryRequest unMarshallDocumentQueryRequestObject(String xml) throws SAMLException;
+	public RetrieveDocumentSetRequestType unMarshallDocumentSetRetrieveRequestObject(String xml) throws SAMLException;
+	public String createSOAPFault();
 }
