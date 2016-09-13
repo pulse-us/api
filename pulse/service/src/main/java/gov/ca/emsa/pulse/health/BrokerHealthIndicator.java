@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 @Api(value = "health")
 @Component
 @RestController
+@RequestMapping("/health")
 public class BrokerHealthIndicator implements HealthIndicator {
 	private static final Logger logger = LogManager.getLogger(BrokerHealthIndicator.class);
 

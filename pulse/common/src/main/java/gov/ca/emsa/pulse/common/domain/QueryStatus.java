@@ -1,4 +1,4 @@
-package gov.ca.emsa.pulse.broker.dto;
+package gov.ca.emsa.pulse.common.domain;
 
 public enum QueryStatus {
 	ACTIVE(),
