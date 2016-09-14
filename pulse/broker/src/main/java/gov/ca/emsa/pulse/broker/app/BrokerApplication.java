@@ -3,6 +3,7 @@ package gov.ca.emsa.pulse.broker.app;
 import java.util.Timer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,7 +30,7 @@ import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 @EnableTransactionManagement(proxyTargetClass=true)
 @SpringBootApplication(scanBasePackages= {"gov.ca.emsa.pulse.broker.**",
 		"gov.ca.emsa.pulse.service.**"})
-public class BrokerApplication implements EnvironmentAware {
+public class BrokerApplication {
 	
 	public static void main(String[] args) {
 		SpringApplication.run(BrokerApplication.class, args);
@@ -40,12 +41,25 @@ public class BrokerApplication implements EnvironmentAware {
 	@Autowired private PatientManager patientManager;
 	@Autowired private QueryManager queryManager;
 	@Autowired private AlternateCareFacilityDAO acfDao;
-	@Autowired private Environment env;
 	
-	@Override
-	public void setEnvironment(final Environment e) {
-		this.env = e;
-	}
+	@Value("${persistenceUnitName}")
+	private String persistenceUnitName;
+	@Value("${queryCacheExpireMinutes}")
+	private String queryCacheExpireMinutes;
+	@Value("${queryCacheCleanupMinutes}")
+	private String queryCacheCleanupMinutes1;
+	@Value("${acfCacheExpireMinutes}")
+	private String acfCacheExpireMinutes;
+	@Value("${acfCacheCleanupMinutes}")
+	private String acfCacheCleanupMinutes1;
+	@Value("${patientCacheExpireMinutes}")
+	private String patientCacheExpireMinutes;
+	@Value("${patientCacheCleanupMinutes}")
+	private String patientCacheCleanupMinutes1;
+	@Value("${directoryRefreshSeconds}")
+	private String directoryRefreshSeconds;
+	@Value("${directoryServicesUrl}")
+	private String directoryServicesUrl;
 	
 	//TODO: the env is still null when the entity manager bean gets called and 
 	//i really have no idea why. This is a short-term fix. The longer answer is that
@@ -54,8 +68,7 @@ public class BrokerApplication implements EnvironmentAware {
 	@Bean
 	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
 		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
-		//bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
-		bean.setPersistenceUnitName("pulse");
+		bean.setPersistenceUnitName(persistenceUnitName);
 		return bean;
 	}
 
@@ -68,9 +81,9 @@ public class BrokerApplication implements EnvironmentAware {
 
 	@Bean
 	public CacheCleanupJob queryCacheManager() {
-		int queryCacheExpirationMinutes = new Integer(env.getProperty("queryCacheExpireMinutes").trim());
+		int queryCacheExpirationMinutes = new Integer(queryCacheExpireMinutes);
 		long queryCacheExpirationMillis = queryCacheExpirationMinutes * 60 * 1000;
-		int queryCacheCleanupMinutes = new Integer(env.getProperty("queryCacheCleanupMinutes").trim());
+		int queryCacheCleanupMinutes = new Integer(queryCacheCleanupMinutes1);
 		long queryCacheCleanupMillis = queryCacheCleanupMinutes * 60 * 1000;
 		
 		CacheCleanupJob task = null;
@@ -90,9 +103,9 @@ public class BrokerApplication implements EnvironmentAware {
 	
 	@Bean
 	public CacheCleanupJob acfCacheManager() {
-		int acfCacheExpirationMinutes = new Integer(env.getProperty("acfCacheExpireMinutes").trim());
+		int acfCacheExpirationMinutes = new Integer(acfCacheExpireMinutes);
 		long acfCacheExpirationMillis = acfCacheExpirationMinutes * 60 * 1000;
-		int acfCacheCleanupMinutes = new Integer(env.getProperty("acfCacheCleanupMinutes").trim());
+		int acfCacheCleanupMinutes = new Integer(acfCacheCleanupMinutes1);
 		long acfCacheCleanupMillis = acfCacheCleanupMinutes * 60 * 1000;
 		
 		CacheCleanupJob task = null;
@@ -112,9 +125,9 @@ public class BrokerApplication implements EnvironmentAware {
 	
 	@Bean
 	public CacheCleanupJob patientCacheManager() {
-		int patientCacheExpirationMinutes = new Integer(env.getProperty("patientCacheExpireMinutes").trim());
+		int patientCacheExpirationMinutes = new Integer(patientCacheExpireMinutes);
 		long patientCacheExpirationMillis = patientCacheExpirationMinutes * 60 * 1000;
-		int patientCacheCleanupMinutes = new Integer(env.getProperty("patientCacheCleanupMinutes").trim());
+		int patientCacheCleanupMinutes = new Integer(patientCacheCleanupMinutes1);
 		long patientCacheCleanupMillis = patientCacheCleanupMinutes * 60 * 1000;
 		
 		CacheCleanupJob task = null;
@@ -134,7 +147,7 @@ public class BrokerApplication implements EnvironmentAware {
 	
 	@Bean
 	public DirectoryRefreshManager directoryRefreshManager() {
-		int directoryRefresh = new Integer(env.getProperty("directoryRefreshSeconds").trim());
+		int directoryRefresh = new Integer(directoryRefreshSeconds);
 		long directoryRefreshExpirationMillis = directoryRefresh * 1000;
 		
 		DirectoryRefreshManager qcTask = null;
@@ -143,7 +156,7 @@ public class BrokerApplication implements EnvironmentAware {
 			qcTask = new DirectoryRefreshManager();
 			qcTask.setManager(organizationManager);
 			qcTask.setExpirationMillis(directoryRefreshExpirationMillis);
-			qcTask.setDirectoryServicesUrl(env.getProperty("directoryServicesUrl"));
+			qcTask.setDirectoryServicesUrl(directoryServicesUrl);
 			
 			Timer timer = new Timer();
 			timer.scheduleAtFixedRate(qcTask, 0, directoryRefreshExpirationMillis);

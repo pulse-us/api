@@ -24,7 +24,7 @@ import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryStatus;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
