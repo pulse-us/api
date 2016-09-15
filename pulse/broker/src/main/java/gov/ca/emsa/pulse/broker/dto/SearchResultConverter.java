@@ -1,10 +1,10 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import gov.ca.emsa.pulse.broker.domain.MockPatient;
+import gov.ca.emsa.pulse.common.domain.Patient;
 
 public class SearchResultConverter {
 	
-	public static PatientRecordDTO convertToPatientRecord(MockPatient domainObj) {
+	public static PatientRecordDTO convertToPatientRecord(Patient domainObj) {
 		PatientRecordDTO result = new PatientRecordDTO();
 		result.setGivenName(domainObj.getGivenName());
 		result.setFamilyName(domainObj.getFamilyName());
@@ -14,13 +14,15 @@ public class SearchResultConverter {
 		result.setSsn(domainObj.getSsn());
 		result.setOrgPatientId(domainObj.getOrgPatientId());
 		
-		AddressDTO address = new AddressDTO();
-		address.setStreetLineOne(domainObj.getAddressLine1());
-		address.setStreetLineTwo(domainObj.getAddressLine2());
-		address.setCity(domainObj.getCity());
-		address.setState(domainObj.getState());
-		address.setZipcode(domainObj.getZipcode());
-		result.setAddress(address);
+		if(domainObj.getAddress() != null) {
+			AddressDTO address = new AddressDTO();
+			address.setStreetLineOne(domainObj.getAddress().getStreet1());
+			address.setStreetLineTwo(domainObj.getAddress().getStreet2());
+			address.setCity(domainObj.getAddress().getCity());
+			address.setState(domainObj.getAddress().getState());
+			address.setZipcode(domainObj.getAddress().getZipcode());
+			result.setAddress(address);
+		}
 		
 		return result;
 	}

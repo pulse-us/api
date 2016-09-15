@@ -1,7 +1,5 @@
 package gov.ca.emsa.pulse.broker.adapter;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,22 +11,18 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.broker.domain.MockPatient;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.SearchResultConverter;
-import gov.ca.emsa.pulse.service.SearchService;
 
 @Component
 public class MockAdapter implements Adapter {
 	private static final Logger logger = LogManager.getLogger(MockAdapter.class);
-	private DateFormat formatter;
 
 	public MockAdapter() {
-		formatter = new SimpleDateFormat(SearchService.dobFormat);
 	}
 	
 	@Override
@@ -43,9 +37,9 @@ public class MockAdapter implements Adapter {
 		parameters.add("zipcode", toSearch.getZip());
 		parameters.add("samlMessage", samlMessage);
 		RestTemplate restTemplate = new RestTemplate();
-		MockPatient[] searchResults = null;
+		Patient[] searchResults = null;
 		try {
-			searchResults = restTemplate.postForObject(postUrl, parameters, MockPatient[].class);
+			searchResults = restTemplate.postForObject(postUrl, parameters, Patient[].class);
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + postUrl, ex);
 			throw ex;
