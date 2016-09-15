@@ -1,16 +1,23 @@
 package gov.ca.emsa.pulse.service.impl;
 
+import java.io.Serializable;
 import java.util.List;
-import gov.ca.emsa.pulse.service.SOAPToJSONService;
 
+import javax.xml.bind.JAXBElement;
+
+import gov.ca.emsa.pulse.service.SOAPToJSONService;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 
+import org.hl7.v3.EnExplicitFamily;
+import org.hl7.v3.EnExplicitGiven;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectAdministrativeGender;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectBirthTime;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectName;
 import org.hl7.v3.PRPAMT201306UV02ParameterList;
 import org.hl7.v3.PRPAIN201305UV02;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 	
 	public PatientSearch convertToPatientSearch(PRPAIN201305UV02 request){
@@ -22,8 +29,16 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		if((gender != null && !gender.isEmpty()) && (dob != null && !dob.isEmpty()) && (name != null  && !name.isEmpty())){
 			ps.setGender(gender.get(0).getValue().get(0).getCode());
 			ps.setDob(dob.get(0).getValue().get(0).getValue());
-			ps.setGivenName(name.get(0).getValue().get(0).toString());
-			ps.setFamilyName(name.get(0).getValue().get(1).toString());
+			List<Serializable> names = name.get(0).getValue().get(0).getContent();
+			for(Serializable nameInList: names){
+				if(nameInList instanceof JAXBElement<?>){
+					if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("given")){
+						ps.setGivenName(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
+					}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("family")){
+						ps.setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
+					}
+				}
+			}
 		}
 		return ps;
 	}
