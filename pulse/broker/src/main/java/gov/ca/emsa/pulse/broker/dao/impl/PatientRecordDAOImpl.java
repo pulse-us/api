@@ -26,7 +26,9 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		PatientRecordEntity patient = new PatientRecordEntity();
 		patient.setGivenName(dto.getGivenName());
 		patient.setFamilyName(dto.getFamilyName());
-		patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
+		if(dto.getDateOfBirth() != null) {
+			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
+		}
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
@@ -51,7 +53,11 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		PatientRecordEntity patient = this.getEntityById(dto.getId());
 		patient.setGivenName(dto.getGivenName());
 		patient.setFamilyName(dto.getFamilyName());
-		patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
+		if(dto.getDateOfBirth() != null) {
+			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
+		} else {
+			patient.setDateOfBirth(null);
+		}
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());

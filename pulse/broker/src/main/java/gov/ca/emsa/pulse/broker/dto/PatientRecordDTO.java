@@ -26,7 +26,9 @@ public class PatientRecordDTO {
 		this.orgPatientId = entity.getOrgPatientId();
 		this.givenName = entity.getGivenName();
 		this.familyName = entity.getFamilyName();
-		this.dateOfBirth = entity.getDateOfBirth().toLocalDate();
+		if(entity.getDateOfBirth() != null) {
+			this.dateOfBirth = entity.getDateOfBirth().toLocalDate();
+		}
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
 		this.phoneNumber = entity.getPhoneNumber();
