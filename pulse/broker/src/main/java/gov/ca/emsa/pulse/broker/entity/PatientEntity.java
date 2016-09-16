@@ -49,7 +49,7 @@ public class PatientEntity {
 	@Column(name = "address_id")
 	private Long addressId;
 	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@Fetch(FetchMode.JOIN)
 	@JoinColumn(name = "address_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private AddressEntity address;
