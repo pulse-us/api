@@ -59,7 +59,6 @@ public class PatientSearchTest {
 
 	@Test
 	@Transactional
-	@Rollback(true)
 	public void searchPatients() {
 		insertOrganizations();
 
@@ -75,7 +74,7 @@ public class PatientSearchTest {
 		 			    "\"orgPatientId\": \"PERS.EH.01\"," +
 		 			    "\"givenName\": \"John\"," +
 		 			    "\"familyName\": \"Doe\"," +
-		 			    "\"dateOfBirth\": -461016000000,"+
+		 			    "\"dateOfBirth\": 2016-01-10,"+
 		 			    "\"gender\": \"M\"," +
 		 			    "\"phoneNumber\": \"3517869574\"," +
 		 			    "\"ssn\": \"451674563\"" +
@@ -99,7 +98,7 @@ public class PatientSearchTest {
 		 			    "\"orgPatientId\": \"PERS.IHE.03\","+
 		 			    "\"givenName\": \"John\","+
 		 			    "\"familyName\": \"Snow\","+
-		 			    "\"dateOfBirth\": 413269200000,"+
+		 			    "\"dateOfBirth\": 1983-02-05,"+
 		 			    "\"gender\": \"M\","+
 		 			    "\"phoneNumber\": \"9004783666\","+
 		 			    "\"ssn\": \"451663333\""+
