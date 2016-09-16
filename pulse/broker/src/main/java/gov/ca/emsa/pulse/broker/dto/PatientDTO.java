@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,7 +13,7 @@ public class PatientDTO {
 	private Long id;
 	private String givenName;
 	private String familyName;
-	private Date dateOfBirth;
+	private LocalDate dateOfBirth;
 	private String ssn;
 	private String gender;
 	private String phoneNumber;
@@ -29,7 +31,9 @@ public class PatientDTO {
 		this.id = entity.getId();
 		this.givenName = entity.getGivenName();
 		this.familyName = entity.getFamilyName();
-		this.dateOfBirth = entity.getDateOfBirth();
+		if(entity.getDateOfBirth() != null) {
+			this.dateOfBirth = entity.getDateOfBirth().toLocalDate();
+		}
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
 		this.phoneNumber = entity.getPhoneNumber();
@@ -53,10 +57,10 @@ public class PatientDTO {
 		this.id = id;
 	}
 
-	public Date getDateOfBirth() {
+	public LocalDate getDateOfBirth() {
 		return dateOfBirth;
 	}
-	public void setDateOfBirth(Date dateOfBirth) {
+	public void setDateOfBirth(LocalDate dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 	public String getSsn() {
