@@ -129,15 +129,12 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	
 	@Override
 	public void delete(Long id) {
-		PatientEntity toDelete = getEntityById(id);
-		if(toDelete != null) {
-			try {
-				entityManager.remove(toDelete);
-				entityManager.flush();
-			} catch(Exception ex) {
-				logger.error("Could not delete patient. Was it removed before the delete method was called?", ex);
-			}
-		}
+		Query query = entityManager.createQuery( "DELETE from PatientEntity pat "
+				+ " WHERE pat.id <= :id");
+		
+		query.setParameter("id", id);
+		int deletedCount = query.executeUpdate();		
+		logger.info("Deleted " + deletedCount + " patient.");
 	}
 
 	
