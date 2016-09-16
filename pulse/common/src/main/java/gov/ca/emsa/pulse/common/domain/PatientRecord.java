@@ -6,7 +6,7 @@ public class PatientRecord {
 	private Long id;
 	private String givenName;
 	private String familyName;
-	private Date dateOfBirth;
+	private String dateOfBirth;
 	private String gender;
 	private String phoneNumber;
 	private Address address;
@@ -23,10 +23,10 @@ public class PatientRecord {
 		this.id = id;
 	}
 
-	public Date getDateOfBirth() {
+	public String getDateOfBirth() {
 		return dateOfBirth;
 	}
-	public void setDateOfBirth(Date dateOfBirth) {
+	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 	public String getGender() {
