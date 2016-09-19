@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.service.impl;
 
 import gov.ca.emsa.pulse.service.EHealthQueryConsumerService;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import gov.ca.emsa.pulse.service.controller.PatientDiscoveryController;
 
 import java.io.ByteArrayInputStream;
@@ -14,6 +15,7 @@ import java.util.Iterator;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
@@ -23,6 +25,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 import org.hl7.v3.*;
 import org.opensaml.common.SAMLException;
@@ -73,6 +76,39 @@ public class EHealthQueryConsumerServiceImpl implements EHealthQueryConsumerServ
 			}
 		}
 		return false;
+	}
+	
+	public String marshallPatientDiscoveryResponse(PRPAIN201310UV02 response) throws JAXBException{
+		StringWriter sw = new StringWriter();
+		Marshaller jaxbMarshaller = createMarshaller(createJAXBContext(response.getClass()));
+		jaxbMarshaller.marshal(response, sw);
+		return sw.toString();
+	}
+	
+	public String marshallDocumentQueryResponse(AdhocQueryResponse response) throws JAXBException{
+		StringWriter sw = new StringWriter();
+		Marshaller jaxbMarshaller = createMarshaller(createJAXBContext(response.getClass()));
+		jaxbMarshaller.marshal(response, sw);
+		return sw.toString();
+	}
+	
+	public String marshallDocumentSetResponse(RetrieveDocumentSetResponseType response) throws JAXBException{
+		StringWriter sw = new StringWriter();
+		Marshaller jaxbMarshaller = createMarshaller(createJAXBContext(response.getClass()));
+		jaxbMarshaller.marshal(response, sw);
+		return sw.toString();
+	}
+	
+	public Marshaller createMarshaller(JAXBContext jc){
+		// Create JAXB marshaller
+		Marshaller marshaller = null;
+		try {
+			marshaller = jc.createMarshaller();
+		}
+		catch (Exception ex) {
+			logger.error(ex);
+		}
+		return marshaller;
 	}
 
 	public JAXBContext createJAXBContext(Class<?> classObj){

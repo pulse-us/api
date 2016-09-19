@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.common.domain;
 
 public class Document {
+	// these documents need metadata
 	private String id;
 	private String name;
 	private Boolean cached;

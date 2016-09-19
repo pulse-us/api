@@ -1,134 +1,270 @@
 package gov.ca.emsa.pulse.service;
+import gov.ca.emsa.pulse.ServiceApplicationTestConfig;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentQuery;
+import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.Query;
+import gov.ca.emsa.pulse.common.domain.QueryOrganization;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
-import java.util.ArrayList;
-
+import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201310UV02;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.mockito.Mock;
+import org.opensaml.common.SAMLException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 
-import junit.framework.TestCase;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.twitter.finagle.http.Status;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 
 import static org.junit.Assert.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.match.MockRestRequestMatchers;
+import org.springframework.test.web.client.response.MockRestResponseCreators;
+import org.springframework.web.client.RestTemplate;
+
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.soap.SOAPException;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes=ServiceApplicationTestConfig.class)
+@WebAppConfiguration
 public class ServiceApplicationTests {
-	
-	/*@Rule
-	public WireMockRule wireMockRule = new WireMockRule(8090);
-	
-	@Autowired
-	private WebApplicationContext context;
-	
-	@Autowired
-	private JWTAuthor jwtAuthor;
 
-	private String jwt;
+	private static final String jwt = "Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJDQUxFTVNBIiwiYXVkIjoiQ0FMRU1TQSIsImV4cCI6MTQ3OTc3MDcwMSwianRpIjoiVFcxbEVLTFZ4X3NRTGR5NnQtY3RyQSIsImlhdCI6MTQ3Mzc3MDcwMSwibmJmIjoxNDczNzcwNDYxLCJzdWIiOiJmYWtlQHNhbXBsZS5jb20iLCJBdXRob3JpdGllcyI6WyJST0xFX1VTRVIiXSwiSWRlbnRpdHkiOlsiRmFrZSIsIlBlcnNvbiIsImZha2VAc2FtcGxlLmNvbSJdfQ.N6Kxy9m0ZXagBsBMy3egOT4Vk9pqM3C6ujFgUlok-8kaupwSF_qt-0Q7_oV6eYOgiaUuUuDTHoU7VkFwKG51DeJFZJYb_rSvy3gAAwDEahePYxNlQGpoc39LlN3EltM1U9rZ9Vj8HlgtE8DMUcmG080D0cZDpFDEdADbEchl8KkIMs_tnhs6Rour4KGymcB5lCHhdVdYH_AMKqZ6qWk2Rh2Ejd6SzRPydmcdR_7jIUKdbsgvjFr0I_l2G_tZggJssGx2zmJmyaMsWGnQOfibojugQiZ16qkpHKPAnG9sdGV6_yfHg8gU9dKx1MJOXkvcatJ3cuLRZIwHJQ-k8zLocA";
+	private static final String brokerSearchCompletedQueryResponse = "{\"id\":1,\"userToken\":\"fake@sample.com\",\"status\":\"COMPLETE\",\"terms\":{\"givenName\":\"John\",\"familyName\":\"Doe\",\"dob\":null,\"ssn\":null,\"gender\":null,\"zip\":null},\"lastRead\":1473775608988,\"orgStatuses\":[{\"id\":141,\"queryId\":1,\"org\":{\"name\":\"eHealthExchangeOrg3\",\"id\":3,\"organizationId\":3,\"adapter\":\"eHealth\",\"ipAddress\":\"127.0.0.1\",\"username\":\"org1User\",\"password\":\"password1\",\"certificationKey\":null,\"endpointUrl\":\"http://localhost:9080/mock/ehealthexchange\",\"active\":true},\"status\":\"COMPLETE\",\"startDate\":1473775522671,\"endDate\":1473775555980,\"success\":true,\"results\":[{\"id\":85,\"givenName\":\"John\",\"familyName\":\"Doe\",\"dateOfBirth\":-461030400000,\"gender\":\"M\",\"phoneNumber\":\"3517869574\",\"address\":null,\"ssn\":\"451674563\"}]},{\"id\":139,\"queryId\":24,\"org\":{\"name\":\"eHealthExchangeOrg\",\"id\":1,\"organizationId\":1,\"adapter\":\"eHealth\",\"ipAddress\":\"127.0.0.1\",\"username\":\"org1User\",\"password\":\"password1\",\"certificationKey\":null,\"endpointUrl\":\"http://localhost:9080/mock/ehealthexchange\",\"active\":true},\"status\":\"COMPLETE\",\"startDate\":1473775522668,\"endDate\":1473775608969,\"success\":true,\"results\":[{\"id\":87,\"givenName\":\"John\",\"familyName\":\"Doe\",\"dateOfBirth\":-461030400000,\"gender\":\"M\",\"phoneNumber\":\"3517869574\",\"address\":null,\"ssn\":\"451674563\"}]},{\"id\":140,\"queryId\":24,\"org\":{\"name\":\"eHealthExchangeOrg2\",\"id\":2,\"organizationId\":2,\"adapter\":\"eHealth\",\"ipAddress\":\"127.0.0.1\",\"username\":\"org1User\",\"password\":\"password1\",\"certificationKey\":null,\"endpointUrl\":\"http://localhost:9080/mock/ehealthexchange\",\"active\":true},\"status\":\"COMPLETE\",\"startDate\":1473775522670,\"endDate\":1473775607975,\"success\":true,\"results\":[{\"id\":86,\"givenName\":\"John\",\"familyName\":\"Doe\",\"dateOfBirth\":-461030400000,\"gender\":\"M\",\"phoneNumber\":\"3517869574\",\"address\":null,\"ssn\":\"451674563\"}]},{\"id\":144,\"queryId\":24,\"org\":{\"name\":\"IHEOrg3\",\"id\":6,\"organizationId\":6,\"adapter\":\"IHE\",\"ipAddress\":\"127.0.0.1\",\"username\":null,\"password\":null,\"certificationKey\":\"1234567\",\"endpointUrl\":\"http://localhost:9080/mock/ihe\",\"active\":true},\"status\":\"COMPLETE\",\"startDate\":1473775522676,\"endDate\":1473775561522,\"success\":true,\"results\":[]},{\"id\":142,\"queryId\":24,\"org\":{\"name\":\"IHEOrg\",\"id\":4,\"organizationId\":4,\"adapter\":\"IHE\",\"ipAddress\":\"127.0.0.1\",\"username\":null,\"password\":null,\"certificationKey\":\"1234567\",\"endpointUrl\":\"http://localhost:9080/mock/ihe\",\"active\":true},\"status\":\"COMPLETE\",\"startDate\":1473775522673,\"endDate\":1473775592713,\"success\":true,\"results\":[]},{\"id\":143,\"queryId\":24,\"org\":{\"name\":\"IHEOrg2\",\"id\":5,\"organizationId\":5,\"adapter\":\"IHE\",\"ipAddress\":\"127.0.0.1\",\"username\":null,\"password\":null,\"certificationKey\":\"1234567\",\"endpointUrl\":\"http://localhost:9080/mock/ihe\",\"active\":true},\"status\":\"COMPLETE\",\"startDate\":1473775522674,\"endDate\":1473775587889,\"success\":true,\"results\":[]}]}";
+	private static final String brokerSearchActiveQueryResponse = "{\"id\":1,\"userToken\":\"fake@sample.com\",\"status\":\"ACTIVE\",\"terms\":{\"givenName\":\"John\",\"familyName\":\"Doe\",\"dob\":null,\"ssn\":null,\"gender\":null,\"zip\":null},\"lastRead\":1473775555673,\"orgStatuses\":[{\"id\":144,\"queryId\":1,\"org\":{\"name\":\"IHEOrg3\",\"id\":6,\"organizationId\":6,\"adapter\":\"IHE\",\"ipAddress\":\"127.0.0.1\",\"username\":null,\"password\":null,\"certificationKey\":\"1234567\",\"endpointUrl\":\"http://localhost:9080/mock/ihe\",\"active\":true},\"status\":\"ACTIVE\",\"startDate\":1473775522676,\"endDate\":null,\"success\":null,\"results\":[]},{\"id\":143,\"queryId\":24,\"org\":{\"name\":\"IHEOrg2\",\"id\":5,\"organizationId\":5,\"adapter\":\"IHE\",\"ipAddress\":\"127.0.0.1\",\"username\":null,\"password\":null,\"certificationKey\":\"1234567\",\"endpointUrl\":\"http://localhost:9080/mock/ihe\",\"active\":true},\"status\":\"ACTIVE\",\"startDate\":1473775522674,\"endDate\":null,\"success\":null,\"results\":[]},{\"id\":141,\"queryId\":24,\"org\":{\"name\":\"eHealthExchangeOrg3\",\"id\":3,\"organizationId\":3,\"adapter\":\"eHealth\",\"ipAddress\":\"127.0.0.1\",\"username\":\"org1User\",\"password\":\"password1\",\"certificationKey\":null,\"endpointUrl\":\"http://localhost:9080/mock/ehealthexchange\",\"active\":true},\"status\":\"ACTIVE\",\"startDate\":1473775522671,\"endDate\":null,\"success\":null,\"results\":[]},{\"id\":140,\"queryId\":24,\"org\":{\"name\":\"eHealthExchangeOrg2\",\"id\":2,\"organizationId\":2,\"adapter\":\"eHealth\",\"ipAddress\":\"127.0.0.1\",\"username\":\"org1User\",\"password\":\"password1\",\"certificationKey\":null,\"endpointUrl\":\"http://localhost:9080/mock/ehealthexchange\",\"active\":true},\"status\":\"ACTIVE\",\"startDate\":1473775522670,\"endDate\":null,\"success\":null,\"results\":[]},{\"id\":139,\"queryId\":24,\"org\":{\"name\":\"eHealthExchangeOrg\",\"id\":1,\"organizationId\":1,\"adapter\":\"eHealth\",\"ipAddress\":\"127.0.0.1\",\"username\":\"org1User\",\"password\":\"password1\",\"certificationKey\":null,\"endpointUrl\":\"http://localhost:9080/mock/ehealthexchange\",\"active\":true},\"status\":\"ACTIVE\",\"startDate\":1473775522668,\"endDate\":null,\"success\":null,\"results\":[]},{\"id\":142,\"queryId\":24,\"org\":{\"name\":\"IHEOrg\",\"id\":4,\"organizationId\":4,\"adapter\":\"IHE\",\"ipAddress\":\"127.0.0.1\",\"username\":null,\"password\":null,\"certificationKey\":\"1234567\",\"endpointUrl\":\"http://localhost:9080/mock/ihe\",\"active\":true},\"status\":\"ACTIVE\",\"startDate\":1473775522673,\"endDate\":null,\"success\":null,\"results\":[]}]}";
+
+	private static final String PATIENT_DISCOVERY_REQUEST_RESOURCE_FILE_NAME = "ValidXcpdRequest.xml";
+	private static final String DOCUMENT_QUERY_RESPONSE_RESOURCE_FILE_NAME = "ValidStoredQueryRequest.xml";
 	
-	private MockMvc mvc;
-	
+
+	@Value("${samlServiceUrl}")
+	private String samlServiceUrl;
+	@Value("${server.port}")
+	private String port;
+
+	@Autowired ResourceLoader resourceLoader;
+	@Autowired EHealthQueryConsumerService consumerService;
+	@Autowired SOAPToJSONService SOAPconverter;
+	@Autowired JSONToSOAPService JSONconverter;
+	@Autowired PatientSearchService pss;
+
+	private MockRestServiceServer mockServer;
+	@Mock private RestTemplate mockRestTemplate;
+
+	private ExecutorService executor = Executors.newFixedThreadPool(100);
+
 	@Before
-	public void setup() {
-		mvc = MockMvcBuilders.webAppContextSetup(context).apply(SecurityMockMvcConfigurers.springSecurity()).build();
-		Map<String, List<String>> claims = new HashMap<String, List<String>>();
-		List<String> roles = new ArrayList<String>();
-		roles.add("ROLE_USER");
-		claims.put("Authorities", roles);
-		Map<String, List<String>> identity = new HashMap<String, List<String>>();
-		List<String> id = new ArrayList<String>();
-		id.add("brian");
-		id.add("lindsey");
-		id.add("blindsey@ainq.com");
-		claims.put("Identity", id);
-		jwt = jwtAuthor.createJWT("user", claims);
-		
-	}*/
-	
-	@Test
-	public void test(){
-		assertEquals(1+1,2);
+	public void setUp() {
+		mockRestTemplate = new RestTemplate();
+		mockServer = MockRestServiceServer.createServer(mockRestTemplate);
 	}
 
+	@Test
+	public void testConsumerServicePatientDiscoveryRequest(){
+		Resource documentsFile = resourceLoader.getResource("classpath:" + PATIENT_DISCOVERY_REQUEST_RESOURCE_FILE_NAME);
+		String request = null;
+		try {
+			request = Resources.toString(documentsFile.getURL(), Charsets.UTF_8);
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+		PRPAIN201305UV02 requestObj = null;
+		try {
+			requestObj = consumerService.unMarshallPatientDiscoveryRequestObject(request);
+		} catch (SOAPException | SAMLException e) {
+			e.printStackTrace();
+		}
+		assertNotNull(requestObj);
+	}
+	
+	// JSONToSOAPService tests
+	@Test 
+	public void testConsumerServicePatientDiscoveryResponse(){
+		List<PatientRecord> patientRecords = createPatientRecordList();
+		PRPAIN201310UV02 responseObj = JSONconverter.convertPatientRecordListToSOAPResponse(patientRecords);
+		
+		assertNotNull(responseObj);
+	}
+	
+	@Test 
+	public void testDocumentQueryResponse(){
+		List<Document> docs = createDocumentList();
+		AdhocQueryResponse responseObj = JSONconverter.convertDocumentListToSOAPResponse(docs, "1");
+		
+		assertNotNull(responseObj);
+	}
+	
+	@Test
+	public void testDocumentRetrieveResponse(){
+		List<DocumentWrapper> docs = createDocumentWrapperList();
+		RetrieveDocumentSetResponseType responseObj = JSONconverter.convertDocumentSetToSOAPResponse(docs);
+		
+		assertNotNull(responseObj);
+	}
+
+	// SOAPToJSONService tests
+	@Test
+	public void testPatientDiscoveryRequest(){
+		PRPAIN201305UV02 requestObj = createPatientDiscoveryRequest();
+		PatientSearch patientSearch = SOAPconverter.convertToPatientSearch(requestObj);
+		assertNotNull(patientSearch);
+	}
+	
 	/*@Test
-	public void endpointAcceptsSearchPatient() throws Exception {
-		
-		ObjectMapper mapper = new ObjectMapper();
-		
-		stubFor(post(urlEqualTo("/patients"))
-				.withQueryParam("firstName", containing("John"))
-				.withRequestBody(equalToJson("{ \"name\": \"user\", \"acf\":\"ACF1\"}"))
-				.willReturn(aResponse()
-						.withStatus(200).withBody(mapper.writeValueAsString(new Query()))));
-
-		String tokenHeader = "Bearer " + jwt;
-		PatientSearchTerms pst = new PatientSearchTerms();
-		pst.setFirstName("John");
-		ResultActions ra = mvc.perform(post("/search").contentType(MediaType.APPLICATION_JSON_UTF8)
-				.sessionAttr("patientSearchTerms", pst).header("Authorization", tokenHeader));
-		
-		assertEquals(Status.Ok().code(), ra.andReturn().getResponse().getStatus());
-		
+	public void testDocumentQueryRequest(){
+		AdhocQueryRequest requestObj = createDocumentQueryRequest();
+		DocumentQuery documentQuery = SOAPconverter.convertToDocumentQuery(requestObj);
+		assertNotNull(documentQuery);
 	}*/
-	/* 
+	
 	@Test
-	public void endpointRejectsSearchPatient() throws Exception {
-		setup();
-		mvc.perform(get("/search/patient"))
-		.andExpect(status().isUnauthorized());
+	public void testDocumentSetRequest(){
+		PRPAIN201305UV02 requestObj = createPatientDiscoveryRequest();
+		PatientSearch patientSearch = SOAPconverter.convertToPatientSearch(requestObj);
+		assertNotNull(patientSearch);
+	}
+
+	@Test
+	public void testPatientSearch() throws Exception{
+
+		mockServer
+		.expect(MockRestRequestMatchers.requestTo(samlServiceUrl + "/jwt"))
+		.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+		.andRespond(MockRestResponseCreators.withSuccess(
+				jwt
+				,MediaType.APPLICATION_JSON));
+
+		mockServer
+		.expect(MockRestRequestMatchers.requestTo("http://localhost:" + port + "/search"))
+		.andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+		.andExpect(MockRestRequestMatchers.header("Authorization", jwt))
+		.andRespond(MockRestResponseCreators.withSuccess(
+				brokerSearchActiveQueryResponse
+				,MediaType.APPLICATION_JSON));
+
+		mockServer
+		.expect(MockRestRequestMatchers.requestTo("http://localhost:" + port + "/queries/1"))
+		.andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+		.andExpect(MockRestRequestMatchers.header("Authorization", jwt))
+		.andRespond(MockRestResponseCreators.withSuccess(
+				brokerSearchCompletedQueryResponse
+				,MediaType.APPLICATION_JSON));
+
+		PatientSearch patientSearch = createPatientSearchObject();
+
+		pss.searchForPatientWithTerms(mockRestTemplate, patientSearch);
+
+		Future<List<QueryOrganization>> future = executor.submit(pss);
+
+		assertNotNull(future.get());
+		assertEquals(future.get().get(0).getResults().get(0).getFamilyName(),"Doe");
+		assertEquals(future.get().get(0).getResults().get(0).getGivenName(),"John");
+		assertEquals(future.get().get(0).getResults().get(0).getPhoneNumber(),"3517869574");
+	}
+
+	public PatientSearch createPatientSearchObject(){
+		PRPAIN201305UV02 requestObj = createPatientDiscoveryRequest();
+		PatientSearch patientSearch = SOAPconverter.convertToPatientSearch(requestObj);
+		return patientSearch;
+	}
+
+	public List<PatientRecord> createPatientRecordList(){
+		List<PatientRecord> records = new ArrayList<PatientRecord>();
+		PatientRecord pr1 = new PatientRecord();
+		PatientRecord pr2 = new PatientRecord();
+		pr1.setDateOfBirth(Date.from(Instant.now()));
+		pr1.setFamilyName("Lindsey");
+		pr1.setGivenName("Brian");
+		pr1.setGender("M");
+		pr2.setDateOfBirth(Date.from(Instant.now()));
+		pr2.setFamilyName("Snow");
+		pr2.setGivenName("John");
+		pr2.setGender("M");
+		records.add(pr1);
+		records.add(pr2);
+		return records;
+	}
+
+	public PRPAIN201305UV02 createPatientDiscoveryRequest(){
+		Resource documentsFile = resourceLoader.getResource("classpath:" + PATIENT_DISCOVERY_REQUEST_RESOURCE_FILE_NAME);
+		String request = null;
+		try {
+			request = Resources.toString(documentsFile.getURL(), Charsets.UTF_8);
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+		PRPAIN201305UV02 requestObj = null;
+		try {
+			requestObj = consumerService.unMarshallPatientDiscoveryRequestObject(request);
+		} catch (SOAPException | SAMLException e) {
+			e.printStackTrace();
+		}
+		return requestObj;
 	}
 	
-	@Test
-	public void endpointAcceptsRequestQuery() throws Exception {
-		setup();
-	
-		mvc.perform(get("/search/patient/query/1").with(user("user").roles("USER")))
-		.andExpect(status().isOk())
-		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+	public List<Document> createDocumentList(){
+		Document doc1 = new Document();
+		Document doc2 = new Document();
+		List<Document> documents = new ArrayList<Document>();
+		doc1.setId("1");
+		doc1.setName("Document1");
+		doc1.setOrgMapId(new Long(1));
+		doc1.setPatient(new Patient());
+		doc2.setId("2");
+		doc2.setName("Document2");
+		doc2.setOrgMapId(new Long(2));
+		doc2.setPatient(new Patient());
+		documents.add(doc1);
+		documents.add(doc2);
+		return documents;
 	}
 	
-	@Test
-	public void endpointRejectsRequestQuery() throws Exception {
-		setup();
-		mvc.perform(get("/search/patient/query/1"))
-		.andExpect(status().isUnauthorized());
+	public List<DocumentWrapper> createDocumentWrapperList(){
+		DocumentWrapper doc1 = new DocumentWrapper("eurfiuoisdhfiebdfodsofihf");
+		DocumentWrapper doc2 = new DocumentWrapper("drlkfsoisdhfncslkcxnv;ob");
+		List<DocumentWrapper> documents = new ArrayList<DocumentWrapper>();
+		doc1.setDocumentUniqueId("1.3.6.1.4...2300");
+		doc1.setHomeCommunityId("urn:oid:1.2.3.4");
+		doc1.setRepositoryUniqueId("1.3.6.1.4...1000");
+		doc2.setDocumentUniqueId("1.3.6.1.4...2300");
+		doc2.setHomeCommunityId("urn:oid:1.2.3.4");
+		doc2.setRepositoryUniqueId("1.3.6.1.4...1000");
+		documents.add(doc1);
+		documents.add(doc2);
+		return documents;
 	}
 	
-	@Test
-	public void endpointAcceptsRequestSearchDocuments() throws Exception {
-		setup();
+	//public AdhocQueryRequest createDocumentQueryRequest(){
 		
-		mvc.perform(get("/search/documents").with(user("user").roles("USER")))
-		.andExpect(status().isOk())
-		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
-	}
+	//}
 	
-	@Test
-	public void endpointRejectsRequestSearchDocuments() throws Exception {
-		setup();
-		mvc.perform(get("/search/documents"))
-		.andExpect(status().isUnauthorized());
-	}
-	
-	@Test
-	public void endpointAcceptsRequestGetDocument() throws Exception {
-		setup();
-		
-		mvc.perform(get("/search/document/1").with(user("user").roles("USER")))
-		.andExpect(status().isOk())
-		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
-	}
-	
-	@Test
-	public void endpointRejectsRequestGetDocument() throws Exception {
-		setup();
-		mvc.perform(get("/search/document/1"))
-		.andExpect(status().isUnauthorized());
-	}
-	*/
 }
