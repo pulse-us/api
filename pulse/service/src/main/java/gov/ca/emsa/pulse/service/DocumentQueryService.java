@@ -23,7 +23,7 @@ public class DocumentQueryService extends EHealthQueryService{
 	
 	public List<Document> queryForDocuments(RestTemplate restTemplate, String patientId){
 		HttpEntity<Document[]> entity = new HttpEntity<Document[]>(this.getHeaders());
-		HttpEntity<Document[]> response = restTemplate.exchange("http://localhost:" + this.getPort() + "/patients/{id}/documents", HttpMethod.GET, entity, Document[].class);
+		HttpEntity<Document[]> response = restTemplate.exchange("http://localhost:" + this.getPort() + "/patients/" + patientId + "/documents", HttpMethod.GET, entity, Document[].class);
 		return new ArrayList<Document>(Arrays.asList(response.getBody()));
 	}
 }

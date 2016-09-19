@@ -1,5 +1,8 @@
 package gov.ca.emsa.pulse.service.impl;
 
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.DocumentRequest;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -7,6 +10,7 @@ import javax.xml.bind.JAXBElement;
 
 import gov.ca.emsa.pulse.service.SOAPToJSONService;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
+import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
@@ -75,6 +79,12 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		docQuery.setPatientId(patientId);
 		docQuery.setDocumentStatuses(documentStatusList);
 		return docQuery;
+	}
+	
+	public DocumentRetrieve convertToDocumentSetRequest(RetrieveDocumentSetRequestType request){
+		DocumentRetrieve dr = new DocumentRetrieve();
+		dr.setDocRequests(request.getDocumentRequest());
+		return dr;
 	}
 
 }

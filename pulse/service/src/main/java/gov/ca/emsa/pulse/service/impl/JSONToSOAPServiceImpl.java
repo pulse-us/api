@@ -1,17 +1,25 @@
 package gov.ca.emsa.pulse.service.impl;
 
 import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 import org.hl7.v3.EnExplicitFamily;
 import org.hl7.v3.EnExplicitGiven;
@@ -25,6 +33,8 @@ import org.hl7.v3.PRPAMT201304UV02Patient;
 import org.hl7.v3.PRPAMT201304UV02Person;
 import org.hl7.v3.PRPAMT201310UV02Subject;
 import org.springframework.stereotype.Service;
+
+import com.github.tomakehurst.wiremock.http.MimeType;
 
 import gov.ca.emsa.pulse.service.JSONToSOAPService;
 
@@ -60,9 +70,42 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		return returnSOAP;
 	}
 	
-	public AdhocQueryResponse convertDocumentListToSOAPResponse(List<Document> doc){
-		RegistryObjectListType rol = new RegistryObjectListType();
+	// will be adding metadata to the document object soon to fill in more response fields
+	public AdhocQueryResponse convertDocumentListToSOAPResponse(List<Document> doc, String patientId){
+		AdhocQueryResponse response = new AdhocQueryResponse();
+		RegistryObjectListType rolt = new RegistryObjectListType();
 		ExtrinsicObjectType eo = new ExtrinsicObjectType();
-		
+		List<SlotType1> slots = new ArrayList<SlotType1>();
+		SlotType1 slot = new SlotType1();
+		slot.setName("sourcePatientId");
+		ValueListType valueList = new ValueListType();
+		valueList.getValue().add(patientId);
+		slot.setValueList(valueList);
+		slots.add(slot);
+		eo.getSlot().addAll(slots);
+		rolt.getIdentifiable().add(new JAXBElement(new QName("ExtrinsicObject"), ExtrinsicObjectType.class, eo));
+		response.setRegistryObjectList(rolt);
+		return response;
 	}
+
+	public RetrieveDocumentSetResponseType convertDocumentSetToSOAPResponse(List<DocumentWrapper> docs) {
+		RetrieveDocumentSetResponseType dsrt = new RetrieveDocumentSetResponseType();
+		RegistryResponseType rr = new RegistryResponseType();
+		List<DocumentResponse> documentResponses = new ArrayList<DocumentResponse>();
+		for(DocumentWrapper doc : docs){
+			DocumentResponse docResponse = new DocumentResponse();
+			DataHandler dh = new DataHandler(doc, "text/xml");
+			docResponse.setDocument(dh);
+			docResponse.setMimeType(dh.getContentType());
+			docResponse.setDocumentUniqueId(doc.getDocumentUniqueId());
+			docResponse.setHomeCommunityId(doc.getHomeCommunityId());
+			docResponse.setRepositoryUniqueId(doc.getRepositoryUniqueId());
+			documentResponses.add(docResponse);
+		}
+		rr.setStatus("urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success");
+		dsrt.setRegistryResponse(rr);
+		dsrt.getDocumentResponse().addAll(documentResponses);
+		return dsrt;
+	}
+
 }
