@@ -7,13 +7,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.soap.SOAPException;
 
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.common.domain.QueryOrganization;
 import gov.ca.emsa.pulse.service.EHealthQueryConsumerService;
+import gov.ca.emsa.pulse.service.JSONToSOAPService;
 import gov.ca.emsa.pulse.service.PatientSearchService;
 import gov.ca.emsa.pulse.service.PatientService;
 import gov.ca.emsa.pulse.service.SOAPToJSONService;
@@ -21,6 +24,7 @@ import gov.ca.emsa.pulse.service.SOAPToJSONService;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201310UV02;
 import org.opensaml.common.SAMLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,12 +59,14 @@ public class PatientDiscoveryController {
 	private String port;
 
 	@Autowired EHealthQueryConsumerService consumerService;
-	@Autowired SOAPToJSONService converter;
+	@Autowired SOAPToJSONService SOAPconverter;
 	@Autowired PatientSearchService pss;
+	@Autowired JSONToSOAPService JSONConverter;
 	private ExecutorService executor = Executors.newFixedThreadPool(100);
 
 	@RequestMapping(value = "/patientDiscovery", method = RequestMethod.POST, consumes ={"application/xml"}, produces = {"application/xml"})
 	public String patientDiscovery(@RequestBody String request){
+		RestTemplate restTemplate = new RestTemplate();
 		PRPAIN201305UV02 requestObj = null;
 		try{
 			requestObj = consumerService.unMarshallPatientDiscoveryRequestObject(request);
@@ -69,16 +75,29 @@ public class PatientDiscoveryController {
 		} catch (SOAPException e) {
 			logger.error(e);
 		}
-		PatientSearch patientSearch = converter.convertToPatientSearch(requestObj);
+		PatientSearch patientSearch = SOAPconverter.convertToPatientSearch(requestObj);
 
-		pss.searchForPatientWithTerms(patientSearch);
+		pss.searchForPatientWithTerms(restTemplate, patientSearch);
 		
 		Future<List<QueryOrganization>> future = executor.submit(pss);
+		List<QueryOrganization> results = null;
 		try {
-			System.out.println(future.get());
+			results = future.get();
 		} catch (InterruptedException | ExecutionException e) {
 			logger.error(e);
 		}
-		return null;
+		List<PatientRecord> patientRecords = results.get(0).getResults();
+		for(QueryOrganization queryOrg: results){
+			patientRecords.addAll(queryOrg.getResults());
+		}
+		PRPAIN201310UV02 responseObj = JSONConverter.convertPatientRecordListToSOAPResponse(patientRecords);
+		
+		String response = null;
+		try {
+			response = consumerService.marshallPatientDiscoveryResponse(responseObj);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		return response;
 	}
 }

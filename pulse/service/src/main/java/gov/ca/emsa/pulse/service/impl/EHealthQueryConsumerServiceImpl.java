@@ -14,6 +14,7 @@ import java.util.Iterator;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
@@ -73,6 +74,25 @@ public class EHealthQueryConsumerServiceImpl implements EHealthQueryConsumerServ
 			}
 		}
 		return false;
+	}
+	
+	public String marshallPatientDiscoveryResponse(PRPAIN201310UV02 response) throws JAXBException{
+		StringWriter sw = new StringWriter();
+		Marshaller jaxbMarshaller = createMarshaller(createJAXBContext(response.getClass()));
+		jaxbMarshaller.marshal(response, sw);
+		return sw.toString();
+	}
+	
+	public Marshaller createMarshaller(JAXBContext jc){
+		// Create JAXB marshaller
+		Marshaller marshaller = null;
+		try {
+			marshaller = jc.createMarshaller();
+		}
+		catch (Exception ex) {
+			logger.error(ex);
+		}
+		return marshaller;
 	}
 
 	public JAXBContext createJAXBContext(Class<?> classObj){

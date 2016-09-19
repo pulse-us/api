@@ -31,41 +31,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class PatientSearchService implements Callable{
+public class PatientSearchService extends EHealthQueryService implements Callable {
+	
 	private static final Logger logger = LogManager.getLogger(PatientSearchService.class);
-
-	@Value("${server.port}")
-	private String port;
-
-	@Value("${samlServiceUrl}")
-	private String samlServiceUrl;
-
 	private Query query;
-	private MultiValueMap<String, String> headers;
 
-	public void searchForPatientWithTerms(PatientSearch patientSearch){
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
-		ObjectMapper mapper = new ObjectMapper();
-		HttpEntity<String> jwtResponse = null;
-
-		// get fake jwt to make broker requests
-		HttpHeaders jwtHeader = new HttpHeaders();
-		jwtHeader.setContentType(MediaType.TEXT_XML);
-		HttpEntity<String> jwtRequest = new HttpEntity<String>(jwtHeader);
-		RestTemplate jwtQuery = new RestTemplate();
-		jwtResponse = jwtQuery.exchange(samlServiceUrl + "/jwt", HttpMethod.GET, jwtRequest , String.class);
-		String jwt = jwtResponse.getBody();
-
-		try {
-			headers.add("Authorization", mapper.writeValueAsString("Bearer " + jwt));
-		} catch (JsonProcessingException e) {
-			logger.error(e);
-		}
-		headers.add("Content-Type", "application/xml");
-		this.headers = headers;
-		HttpEntity<PatientSearch> patientSearchRequest = new HttpEntity<PatientSearch>(patientSearch, headers);
-		RestTemplate query = new RestTemplate();
-		Query queryResponse = query.postForObject("http://localhost:" + port + "/search", patientSearchRequest, Query.class);
+	public void searchForPatientWithTerms(RestTemplate restTemplate, PatientSearch patientSearch){
+		this.setRestTemplate(restTemplate);
+		this.setAuthorizationHeader();
+		HttpEntity<PatientSearch> patientSearchRequest = new HttpEntity<PatientSearch>(patientSearch, this.getHeaders());
+		Query queryResponse = restTemplate.postForObject("http://localhost:" + this.getPort() + "/search", patientSearchRequest, Query.class);
 		logger.info("Request sent to broker from services REST.");
 
 		this.query = queryResponse;
@@ -86,9 +61,8 @@ public class PatientSearchService implements Callable{
 			if(areOrgsComplete(queryOrgs)){
 				return queryOrgs;
 			}else{
-				HttpEntity<PatientSearch> patientSearchRequest = new HttpEntity<PatientSearch>(headers);
-				RestTemplate query = new RestTemplate();
-				Query queryResponse = query.postForObject("http://localhost:" + port + "/queries" + this.query.getId() , patientSearchRequest, Query.class);
+				HttpEntity<PatientSearch> patientSearchRequest = new HttpEntity<PatientSearch>(this.getHeaders());
+				Query queryResponse = this.getRestTemplate().postForObject("http://localhost:" + this.getPort() + "/queries/" + this.query.getId() , patientSearchRequest, Query.class);
 				logger.info("Request sent to broker from services REST.");
 				queryOrgs = queryResponse.getOrgStatuses();
 			}
