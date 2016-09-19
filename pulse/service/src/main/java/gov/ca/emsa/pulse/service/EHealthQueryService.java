@@ -1,7 +1,5 @@
 package gov.ca.emsa.pulse.service;
 
-import gov.ca.emsa.pulse.common.domain.Query;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
