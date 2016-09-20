@@ -8,6 +8,8 @@ import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.QueryOrganization;
+import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
+import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 

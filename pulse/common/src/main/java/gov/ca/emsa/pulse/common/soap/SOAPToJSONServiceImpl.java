@@ -1,14 +1,12 @@
-package gov.ca.emsa.pulse.service.impl;
+package gov.ca.emsa.pulse.common.soap;
 
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.DocumentRequest;
 
 import java.io.Serializable;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
-import gov.ca.emsa.pulse.service.SOAPToJSONService;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
 import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -23,16 +21,12 @@ import org.hl7.v3.PRPAMT201306UV02LivingSubjectName;
 import org.hl7.v3.PRPAMT201306UV02ParameterList;
 import org.springframework.stereotype.Service;
 import org.hl7.v3.PRPAIN201305UV02;
-import org.springframework.stereotype.Service;
 
 @Service
 public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 	
 	private final static String PATIENT_ID_PARAMETER = "$XDSDocumentEntryPatientId";
 	private final static String DOCUMENT_STATUS_PARAMETER = "$XDSDocumentEntryStatus";
-	private final static String STATUS_TYPE_APPROVED = "urn:oasis:names:tc:ebxml-regrep:StatusType:Approved";
-	private final static String FIND_DOCUMENTS_QUERY_ID = "urn:uuid:14d4debf-8f97-4251-9a74-a90016b0af0d";
-	private final static String GET_DOCUMENTS_QUERY_ID = "urn:uuid:5c4f972b-d56b-40ac-a5fcc8ca9b40b9d4";
 	
 	public PatientSearch convertToPatientSearch(PRPAIN201305UV02 request){
 		PRPAMT201306UV02ParameterList requestParameterList = request.getControlActProcess().getQueryByParameter().getValue().getParameterList();

@@ -1,10 +1,4 @@
-package gov.ca.emsa.pulse.service.impl;
-
-import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
-import gov.ca.emsa.pulse.common.domain.PatientRecord;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
+package gov.ca.emsa.pulse.common.soap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +6,6 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 import org.hl7.v3.EnExplicitFamily;
 import org.hl7.v3.EnExplicitGiven;
@@ -31,12 +17,19 @@ import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01Subject1;
 import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01Subject2;
 import org.hl7.v3.PRPAMT201304UV02Patient;
 import org.hl7.v3.PRPAMT201304UV02Person;
-import org.hl7.v3.PRPAMT201310UV02Subject;
 import org.springframework.stereotype.Service;
 
-import com.github.tomakehurst.wiremock.http.MimeType;
-
-import gov.ca.emsa.pulse.service.JSONToSOAPService;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 @Service
 public class JSONToSOAPServiceImpl implements JSONToSOAPService{
