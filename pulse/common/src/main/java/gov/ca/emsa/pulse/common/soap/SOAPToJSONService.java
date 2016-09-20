@@ -1,4 +1,4 @@
-package gov.ca.emsa.pulse.service;
+package gov.ca.emsa.pulse.common.soap;
 
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;

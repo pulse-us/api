@@ -27,7 +27,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
-import gov.ca.emsa.pulse.broker.domain.MockPatient;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
@@ -46,7 +45,7 @@ public class PatientSearchTest {
 	@Autowired QueryManager queryManager;
 	@Autowired OrganizationDAO orgDao;
 
-	ResponseEntity<MockPatient> mockResponseEntity;
+	ResponseEntity<Patient> mockResponseEntity;
     MockRestServiceServer mockServer;
     @Mock RestTemplate mockRestTemplate;
 
@@ -60,7 +59,6 @@ public class PatientSearchTest {
 
 	@Test
 	@Transactional
-	@Rollback(true)
 	public void searchPatients() {
 		insertOrganizations();
 
@@ -74,17 +72,19 @@ public class PatientSearchTest {
 		 			"[" +
 		 			  "{" +
 		 			    "\"orgPatientId\": \"PERS.EH.01\"," +
-		 			    "\"firstName\": \"John\"," +
-		 			    "\"lastName\": \"Doe\"," +
-		 			    "\"dateOfBirth\": -461016000000,"+
+		 			    "\"givenName\": \"John\"," +
+		 			    "\"familyName\": \"Doe\"," +
+		 			    "\"dateOfBirth\": 2016-01-10,"+
 		 			    "\"gender\": \"M\"," +
 		 			    "\"phoneNumber\": \"3517869574\"," +
-		 			    "\"addressLine1\": \"11 Audacious Rd\"," +
-		 			    "\"addressLine2\": \"\"," +
-		 			    "\"city\": \"Carmel\"," +
-		 			    "\"state\": \"CA\"," +
-		 			    "\"zipcode\": \"10598\"," +
 		 			    "\"ssn\": \"451674563\"" +
+		 			    "\"address\": { " +
+			 			    "\"street1\": \"11 Audacious Rd\"," +
+			 			    "\"street2\": \"\"," +
+			 			    "\"city\": \"Carmel\"," +
+			 			    "\"state\": \"CA\"," +
+			 			    "\"zipcode\": \"10598\"," +
+			 			 "}" +
 		 			  "}" +
 		 			"]"
                  , MediaType.APPLICATION_JSON));
@@ -96,17 +96,19 @@ public class PatientSearchTest {
 		 			"[" +
 		 			  "{" +
 		 			    "\"orgPatientId\": \"PERS.IHE.03\","+
-		 			    "\"firstName\": \"John\","+
-		 			    "\"lastName\": \"Snow\","+
-		 			    "\"dateOfBirth\": 413269200000,"+
+		 			    "\"givenName\": \"John\","+
+		 			    "\"familyName\": \"Snow\","+
+		 			    "\"dateOfBirth\": 1983-02-05,"+
 		 			    "\"gender\": \"M\","+
 		 			    "\"phoneNumber\": \"9004783666\","+
-		 			    "\"addressLine1\": \"6740 Sycamore Hill\","+
-		 			    "\"addressLine2\": \"\","+
-		 			    "\"city\": \"San Francisco\","+
-		 			    "\"state\": \"CA\","+
-		 			    "\"zipcode\": \"10088\","+
 		 			    "\"ssn\": \"451663333\""+
+		 			    "\"address\": { " +
+			 			    "\"street1\": \"6740 Sycamore Hill\","+
+			 			    "\"street2\": \"\","+
+			 			    "\"city\": \"San Francisco\","+
+			 			    "\"state\": \"CA\","+
+			 			    "\"zipcode\": \"10088\","+
+			 			 "}"+
 		 			  "}"+
 		 			"]"
               , MediaType.APPLICATION_JSON));
@@ -180,8 +182,8 @@ public class PatientSearchTest {
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
 		customAttributes.put("RequesterFirstName", "Katy");
 		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientFirstName", "John");
-		customAttributes.put("PatientLastName", "");
+		customAttributes.put("PatientGivenName", "John");
+		customAttributes.put("PatientFamilyName", "");
 		customAttributes.put("PatientDOB", "");
 		customAttributes.put("PatientGender", "");
 		customAttributes.put("PatientHomeZip", "");

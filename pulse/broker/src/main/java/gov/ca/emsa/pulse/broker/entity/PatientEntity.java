@@ -35,7 +35,7 @@ public class PatientEntity {
 	private String familyName;
 	
 	@Column(name = "dob")
-	private Date dateOfBirth;
+	private java.sql.Date dateOfBirth;
 	
 	@Column(name = "ssn")
 	private String ssn;
@@ -57,7 +57,7 @@ public class PatientEntity {
 	@Column(name = "alternate_care_facility_id")
 	private Long acfId;
 	
-	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@Fetch(FetchMode.JOIN)
 	@JoinColumn(name = "alternate_care_facility_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private AlternateCareFacilityEntity acf;
@@ -84,11 +84,11 @@ public class PatientEntity {
 		this.id = id;
 	}
 
-	public Date getDateOfBirth() {
+	public java.sql.Date getDateOfBirth() {
 		return dateOfBirth;
 	}
 
-	public void setDateOfBirth(Date dateOfBirth) {
+	public void setDateOfBirth(java.sql.Date dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 

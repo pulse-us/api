@@ -8,6 +8,8 @@ import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.QueryOrganization;
+import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
+import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
@@ -270,11 +272,11 @@ public class ServiceApplicationTests {
 		List<PatientRecord> records = new ArrayList<PatientRecord>();
 		PatientRecord pr1 = new PatientRecord();
 		PatientRecord pr2 = new PatientRecord();
-		pr1.setDateOfBirth(Date.from(Instant.now()));
+		pr1.setDateOfBirth("2016-09-19");
 		pr1.setFamilyName("Lindsey");
 		pr1.setGivenName("Brian");
 		pr1.setGender("M");
-		pr2.setDateOfBirth(Date.from(Instant.now()));
+		pr2.setDateOfBirth("2016-09-19");
 		pr2.setFamilyName("Snow");
 		pr2.setGivenName("John");
 		pr2.setGender("M");

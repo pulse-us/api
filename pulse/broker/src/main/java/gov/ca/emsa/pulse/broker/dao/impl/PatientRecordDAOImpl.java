@@ -26,7 +26,9 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		PatientRecordEntity patient = new PatientRecordEntity();
 		patient.setGivenName(dto.getGivenName());
 		patient.setFamilyName(dto.getFamilyName());
-		patient.setDateOfBirth(dto.getDateOfBirth());
+		if(dto.getDateOfBirth() != null) {
+			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
+		}
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
@@ -51,12 +53,15 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		PatientRecordEntity patient = this.getEntityById(dto.getId());
 		patient.setGivenName(dto.getGivenName());
 		patient.setFamilyName(dto.getFamilyName());
-		patient.setDateOfBirth(dto.getDateOfBirth());
+		if(dto.getDateOfBirth() != null) {
+			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
+		} else {
+			patient.setDateOfBirth(null);
+		}
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
 		patient.setOrgPatientId(dto.getOrgPatientId());
-		patient.setLastModifiedDate(new Date());
 		if(dto.getAddress() != null) {
 			patient.setStreetLineOne(dto.getAddress().getStreetLineOne());
 			patient.setStreetLineTwo(dto.getAddress().getStreetLineTwo());

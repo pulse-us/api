@@ -2,24 +2,12 @@ package gov.ca.emsa.pulse.service.controller;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.SOAPException;
-
-import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
-import gov.ca.emsa.pulse.common.domain.PatientRecord;
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import gov.ca.emsa.pulse.common.domain.Query;
-import gov.ca.emsa.pulse.common.domain.QueryOrganization;
-import gov.ca.emsa.pulse.service.EHealthQueryConsumerService;
-import gov.ca.emsa.pulse.service.JSONToSOAPService;
-import gov.ca.emsa.pulse.service.PatientSearchService;
-import gov.ca.emsa.pulse.service.PatientService;
-import gov.ca.emsa.pulse.service.SOAPToJSONService;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -28,24 +16,19 @@ import org.hl7.v3.PRPAIN201310UV02;
 import org.opensaml.common.SAMLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.QueryOrganization;
+import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
+import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import gov.ca.emsa.pulse.service.EHealthQueryConsumerService;
+import gov.ca.emsa.pulse.service.PatientSearchService;
 
 @RestController
 public class PatientDiscoveryController {
@@ -75,6 +58,7 @@ public class PatientDiscoveryController {
 		} catch (SOAPException e) {
 			logger.error(e);
 		}
+
 		PatientSearch patientSearch = SOAPconverter.convertToPatientSearch(requestObj);
 
 		pss.searchForPatientWithTerms(restTemplate, patientSearch);

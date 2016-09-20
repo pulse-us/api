@@ -1,4 +1,4 @@
-package gov.ca.emsa.pulse.service;
+package gov.ca.emsa.pulse.common.soap;
 
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
