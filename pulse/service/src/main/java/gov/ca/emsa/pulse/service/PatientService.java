@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -50,10 +51,11 @@ public class PatientService {
 
 	@ApiOperation(value="Search for patients that match the parameters.")
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
-	public void searchPatients(@RequestBody PatientSearch patientSearchTerms) throws JsonProcessingException {
+	public @ResponseBody Query searchPatients(@RequestBody PatientSearch patientSearchTerms) throws JsonProcessingException {
+		Query returnQuery;
 		if(patientSearchTerms.getDob() != null && patientSearchTerms.getFamilyName() != null
 				&& patientSearchTerms.getGivenName() != null && patientSearchTerms.getGender() != null){
-
+			
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 			ObjectMapper mapper = new ObjectMapper();
 
@@ -66,12 +68,13 @@ public class PatientService {
 				System.out.println(mapper.writeValueAsString(jwtUser));
 				HttpEntity<PatientSearch> request = new HttpEntity<PatientSearch>(patientSearchTerms, headers);
 				RestTemplate query = new RestTemplate();
-				query.postForObject(brokerUrl + "/search", request, Query.class);
+				returnQuery = query.postForObject(brokerUrl + "/search", request, Query.class);
 				logger.info("Request sent to broker from services REST.");
 			}
 		}else{
 			throw new PatientSearchTermsException();
 		}
+		return returnQuery;
 	}
 
 	// get all patients from the logged in users ACF
