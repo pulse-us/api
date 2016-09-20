@@ -127,17 +127,13 @@ public class DocumentParseTest extends TestCase {
 			    XPathConstants.NODE);
 			Node givenNameNode = (Node) xpath.evaluate("ClinicalDocument/recordTarget/patientRole/patient/name/given", document,
 				    XPathConstants.NODE);				
-			Node birthTimeNode = (Node) xpath.evaluate("ClinicalDocument/recordTarget/patientRole/patient/name/birthTime", document,
-				    XPathConstants.NODE);
 			
 			String familyName = familyNameNode.getTextContent();
 			assertEquals("Jones", familyName);
 
 			String givenName = givenNameNode.getTextContent();
 			assertEquals("Isabella", givenName);
-			
-			String birthTime = birthTimeNode.getTextContent();
-			assertEquals("19880201", birthTime);
+
 		} catch(ParserConfigurationException pce) {
 			pce.printStackTrace();
 			fail();
