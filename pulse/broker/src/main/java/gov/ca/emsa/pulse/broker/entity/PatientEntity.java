@@ -57,7 +57,7 @@ public class PatientEntity {
 	@Column(name = "alternate_care_facility_id")
 	private Long acfId;
 	
-	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@Fetch(FetchMode.JOIN)
 	@JoinColumn(name = "alternate_care_facility_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private AlternateCareFacilityEntity acf;
