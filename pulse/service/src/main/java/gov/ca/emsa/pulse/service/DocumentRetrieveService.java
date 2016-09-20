@@ -11,16 +11,15 @@ import java.util.List;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@Service
 public class DocumentRetrieveService extends EHealthQueryService{
 	
-	public DocumentRetrieveService(){
-		super.setAuthorizationHeader();
-	}
-	
 	public List<DocumentWrapper> retrieveDocuments(RestTemplate restTemplate, DocumentRetrieve docRetrieve, String patientId){
-		
+		this.setRestTemplate(restTemplate);
+		this.setAuthorizationHeader();
 		List<DocumentWrapper> docs = new ArrayList<DocumentWrapper>();
 		for(DocumentRequest docRequest : docRetrieve.getDocRequests()){
 			String documentId = docRequest.getHomeCommunityId() + "-" + docRequest.getRepositoryUniqueId() + "-" + docRequest.getDocumentUniqueId();

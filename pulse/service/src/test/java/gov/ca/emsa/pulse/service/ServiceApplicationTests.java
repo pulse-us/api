@@ -2,11 +2,11 @@ package gov.ca.emsa.pulse.service;
 import gov.ca.emsa.pulse.ServiceApplicationTestConfig;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
+import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
 import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.common.domain.QueryOrganization;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
@@ -39,6 +38,7 @@ import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 
 import java.io.IOException;
@@ -63,8 +63,8 @@ public class ServiceApplicationTests {
 	private static final String brokerSearchActiveQueryResponse = "{\"id\":1,\"userToken\":\"fake@sample.com\",\"status\":\"ACTIVE\",\"terms\":{\"givenName\":\"John\",\"familyName\":\"Doe\",\"dob\":null,\"ssn\":null,\"gender\":null,\"zip\":null},\"lastRead\":1473775555673,\"orgStatuses\":[{\"id\":144,\"queryId\":1,\"org\":{\"name\":\"IHEOrg3\",\"id\":6,\"organizationId\":6,\"adapter\":\"IHE\",\"ipAddress\":\"127.0.0.1\",\"username\":null,\"password\":null,\"certificationKey\":\"1234567\",\"endpointUrl\":\"http://localhost:9080/mock/ihe\",\"active\":true},\"status\":\"ACTIVE\",\"startDate\":1473775522676,\"endDate\":null,\"success\":null,\"results\":[]},{\"id\":143,\"queryId\":24,\"org\":{\"name\":\"IHEOrg2\",\"id\":5,\"organizationId\":5,\"adapter\":\"IHE\",\"ipAddress\":\"127.0.0.1\",\"username\":null,\"password\":null,\"certificationKey\":\"1234567\",\"endpointUrl\":\"http://localhost:9080/mock/ihe\",\"active\":true},\"status\":\"ACTIVE\",\"startDate\":1473775522674,\"endDate\":null,\"success\":null,\"results\":[]},{\"id\":141,\"queryId\":24,\"org\":{\"name\":\"eHealthExchangeOrg3\",\"id\":3,\"organizationId\":3,\"adapter\":\"eHealth\",\"ipAddress\":\"127.0.0.1\",\"username\":\"org1User\",\"password\":\"password1\",\"certificationKey\":null,\"endpointUrl\":\"http://localhost:9080/mock/ehealthexchange\",\"active\":true},\"status\":\"ACTIVE\",\"startDate\":1473775522671,\"endDate\":null,\"success\":null,\"results\":[]},{\"id\":140,\"queryId\":24,\"org\":{\"name\":\"eHealthExchangeOrg2\",\"id\":2,\"organizationId\":2,\"adapter\":\"eHealth\",\"ipAddress\":\"127.0.0.1\",\"username\":\"org1User\",\"password\":\"password1\",\"certificationKey\":null,\"endpointUrl\":\"http://localhost:9080/mock/ehealthexchange\",\"active\":true},\"status\":\"ACTIVE\",\"startDate\":1473775522670,\"endDate\":null,\"success\":null,\"results\":[]},{\"id\":139,\"queryId\":24,\"org\":{\"name\":\"eHealthExchangeOrg\",\"id\":1,\"organizationId\":1,\"adapter\":\"eHealth\",\"ipAddress\":\"127.0.0.1\",\"username\":\"org1User\",\"password\":\"password1\",\"certificationKey\":null,\"endpointUrl\":\"http://localhost:9080/mock/ehealthexchange\",\"active\":true},\"status\":\"ACTIVE\",\"startDate\":1473775522668,\"endDate\":null,\"success\":null,\"results\":[]},{\"id\":142,\"queryId\":24,\"org\":{\"name\":\"IHEOrg\",\"id\":4,\"organizationId\":4,\"adapter\":\"IHE\",\"ipAddress\":\"127.0.0.1\",\"username\":null,\"password\":null,\"certificationKey\":\"1234567\",\"endpointUrl\":\"http://localhost:9080/mock/ihe\",\"active\":true},\"status\":\"ACTIVE\",\"startDate\":1473775522673,\"endDate\":null,\"success\":null,\"results\":[]}]}";
 
 	private static final String PATIENT_DISCOVERY_REQUEST_RESOURCE_FILE_NAME = "ValidXcpdRequest.xml";
-	private static final String DOCUMENT_QUERY_RESPONSE_RESOURCE_FILE_NAME = "ValidStoredQueryRequest.xml";
-	
+	private static final String DOCUMENT_QUERY_REQUEST_RESOURCE_FILE_NAME = "ValidStoredQueryRequest.xml";
+	private static final String DOCUMENT_SET_REQUEST_RESOURCE_FILE_NAME = "ValidStoredQueryRequest.xml";
 
 	@Value("${samlServiceUrl}")
 	private String samlServiceUrl;
@@ -103,7 +103,76 @@ public class ServiceApplicationTests {
 		} catch (SOAPException | SAMLException e) {
 			e.printStackTrace();
 		}
+		
 		assertNotNull(requestObj);
+		
+		PRPAIN201310UV02 responseObj = createPatientDiscoveryResponse();
+		
+		String responseString = null;
+		try {
+			responseString = consumerService.marshallPatientDiscoveryResponse(responseObj);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		assertNotNull(responseString);
+	}
+	
+	@Test
+	public void testConsumerServiceDocumentQueryRequest(){
+		Resource documentsFile = resourceLoader.getResource("classpath:" + DOCUMENT_QUERY_REQUEST_RESOURCE_FILE_NAME);
+		String request = null;
+		try {
+			request = Resources.toString(documentsFile.getURL(), Charsets.UTF_8);
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+		AdhocQueryRequest requestObj = null;
+		try {
+			requestObj = consumerService.unMarshallDocumentQueryRequestObject(request);
+		} catch (SAMLException e) {
+			e.printStackTrace();
+		}
+		
+		assertNotNull(requestObj);
+		
+		AdhocQueryResponse responseObj = createAdhocQueryResponse();
+		
+		String responseString = null;
+		try {
+			responseString = consumerService.marshallDocumentQueryResponse(responseObj);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		assertNotNull(responseString);
+	}
+	
+	@Test
+	public void testConsumerServiceDocumentSetRequest(){
+		Resource documentsFile = resourceLoader.getResource("classpath:" + DOCUMENT_SET_REQUEST_RESOURCE_FILE_NAME);
+		String request = null;
+		try {
+			request = Resources.toString(documentsFile.getURL(), Charsets.UTF_8);
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+		RetrieveDocumentSetRequestType requestObj = null;
+		try {
+			requestObj = consumerService.unMarshallDocumentSetRetrieveRequestObject(request);
+		} catch (SAMLException e) {
+			e.printStackTrace();
+		}
+		
+		assertNotNull(requestObj);
+		
+		RetrieveDocumentSetResponseType responseObj = createDocumentSetResponse();
+		
+		String responseString = null;
+		try {
+			responseString = consumerService.marshallDocumentSetResponse(responseObj);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		//assertNotNull(responseString);
 	}
 	
 	// JSONToSOAPService tests
@@ -139,18 +208,18 @@ public class ServiceApplicationTests {
 		assertNotNull(patientSearch);
 	}
 	
-	/*@Test
+	@Test
 	public void testDocumentQueryRequest(){
 		AdhocQueryRequest requestObj = createDocumentQueryRequest();
 		DocumentQuery documentQuery = SOAPconverter.convertToDocumentQuery(requestObj);
 		assertNotNull(documentQuery);
-	}*/
+	}
 	
 	@Test
 	public void testDocumentSetRequest(){
-		PRPAIN201305UV02 requestObj = createPatientDiscoveryRequest();
-		PatientSearch patientSearch = SOAPconverter.convertToPatientSearch(requestObj);
-		assertNotNull(patientSearch);
+		RetrieveDocumentSetRequestType requestObj = createDocumentSetRequest();
+		DocumentRetrieve docRetrieve = SOAPconverter.convertToDocumentSetRequest(requestObj);
+		assertNotNull(docRetrieve);
 	}
 
 	@Test
@@ -263,8 +332,55 @@ public class ServiceApplicationTests {
 		return documents;
 	}
 	
-	//public AdhocQueryRequest createDocumentQueryRequest(){
-		
-	//}
+	public AdhocQueryRequest createDocumentQueryRequest(){
+		Resource documentsFile = resourceLoader.getResource("classpath:" + DOCUMENT_QUERY_REQUEST_RESOURCE_FILE_NAME);
+		String request = null;
+		try {
+			request = Resources.toString(documentsFile.getURL(), Charsets.UTF_8);
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+		AdhocQueryRequest requestObj = null;
+		try {
+			requestObj = consumerService.unMarshallDocumentQueryRequestObject(request);
+		} catch (SAMLException e) {
+			e.printStackTrace();
+		}
+		return requestObj;
+	}
 	
+	public RetrieveDocumentSetRequestType createDocumentSetRequest(){
+		Resource documentsFile = resourceLoader.getResource("classpath:" + DOCUMENT_SET_REQUEST_RESOURCE_FILE_NAME);
+		String request = null;
+		try {
+			request = Resources.toString(documentsFile.getURL(), Charsets.UTF_8);
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+		RetrieveDocumentSetRequestType requestObj = null;
+		try {
+			requestObj = consumerService.unMarshallDocumentSetRetrieveRequestObject(request);
+		} catch (SAMLException e) {
+			e.printStackTrace();
+		}
+		return requestObj;
+	}
+	
+	public PRPAIN201310UV02 createPatientDiscoveryResponse(){
+		List<PatientRecord> patientRecords = createPatientRecordList();
+		PRPAIN201310UV02 responseObj = JSONconverter.convertPatientRecordListToSOAPResponse(patientRecords);
+		return responseObj;
+	}
+	
+	public AdhocQueryResponse createAdhocQueryResponse(){
+		List<Document> docs = createDocumentList();
+		AdhocQueryResponse responseObj = JSONconverter.convertDocumentListToSOAPResponse(docs, "1");
+		return responseObj;
+	}
+	
+	public RetrieveDocumentSetResponseType createDocumentSetResponse(){
+		List<DocumentWrapper> docs = createDocumentWrapperList();
+		RetrieveDocumentSetResponseType responseObj = JSONconverter.convertDocumentSetToSOAPResponse(docs);
+		return responseObj;
+	}
 }
