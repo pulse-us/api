@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.common.soap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,9 +8,14 @@ import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.hl7.v3.CE;
+import org.hl7.v3.ENExplicit;
 import org.hl7.v3.EnExplicitFamily;
 import org.hl7.v3.EnExplicitGiven;
+import org.hl7.v3.IVLTSExplicit;
 import org.hl7.v3.PNExplicit;
+import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201305UV02QUQIMT021001UV01ControlActProcess;
 import org.hl7.v3.PRPAIN201310UV02;
 import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01ControlActProcess;
 import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent;
@@ -17,11 +23,18 @@ import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01Subject1;
 import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01Subject2;
 import org.hl7.v3.PRPAMT201304UV02Patient;
 import org.hl7.v3.PRPAMT201304UV02Person;
+import org.hl7.v3.PRPAMT201306UV02LivingSubjectAdministrativeGender;
+import org.hl7.v3.PRPAMT201306UV02LivingSubjectBirthTime;
+import org.hl7.v3.PRPAMT201306UV02LivingSubjectName;
+import org.hl7.v3.PRPAMT201306UV02ParameterList;
+import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
@@ -61,6 +74,50 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		cap.getSubject().addAll(subjects);
 		returnSOAP.setControlActProcess(cap);
 		return returnSOAP;
+	}
+	
+	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch search) {
+		PRPAIN201305UV02 request = new PRPAIN201305UV02();
+		PRPAIN201305UV02QUQIMT021001UV01ControlActProcess controlActProcess = new PRPAIN201305UV02QUQIMT021001UV01ControlActProcess();
+		PRPAMT201306UV02QueryByParameter queryByParameter1 = new PRPAMT201306UV02QueryByParameter();
+		PRPAMT201306UV02ParameterList parameterList = new PRPAMT201306UV02ParameterList();
+		
+		if(!StringUtils.isEmpty(search.getGivenName()) || !StringUtils.isEmpty(search.getFamilyName())) {
+			PRPAMT201306UV02LivingSubjectName name = new PRPAMT201306UV02LivingSubjectName();
+			ENExplicit givenValue = new ENExplicit();
+			givenValue.getContent().add(new JAXBElement<String>(new QName("given"), String.class, search.getGivenName()));
+			name.getValue().add(givenValue);
+			ENExplicit familyValue = new ENExplicit();
+			familyValue.getContent().add(new JAXBElement<String>(new QName("family"), String.class, search.getFamilyName()));
+			name.getValue().add(familyValue);
+			parameterList.getLivingSubjectName().add(name);
+		}
+		
+		if(!StringUtils.isEmpty(search.getGender())) {
+			PRPAMT201306UV02LivingSubjectAdministrativeGender gender = new PRPAMT201306UV02LivingSubjectAdministrativeGender();
+			CE genderValue = new CE();
+			genderValue.setCode(search.getGender());
+			gender.getValue().add(genderValue);
+			parameterList.getLivingSubjectAdministrativeGender().add(gender);
+		}
+		
+		if(!StringUtils.isEmpty(search.getDob())) {
+			PRPAMT201306UV02LivingSubjectBirthTime birthTime = new PRPAMT201306UV02LivingSubjectBirthTime();
+			IVLTSExplicit birthTimeValue = new IVLTSExplicit();
+			birthTimeValue.setValue(search.getDob());
+			birthTime.getValue().add(birthTimeValue);
+			parameterList.getLivingSubjectBirthTime().add(birthTime);
+		}
+		
+		queryByParameter1.setParameterList(parameterList);
+		
+		JAXBElement<PRPAMT201306UV02QueryByParameter> queryByParameter = 
+				new JAXBElement<PRPAMT201306UV02QueryByParameter>(new QName("queryByParameter"), PRPAMT201306UV02QueryByParameter.class, queryByParameter1);
+
+		controlActProcess.setQueryByParameter(queryByParameter);
+		request.setControlActProcess(controlActProcess);
+		
+		return request;
 	}
 	
 	// will be adding metadata to the document object soon to fill in more response fields

@@ -20,7 +20,8 @@ import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 		"gov.ca.emsa.pulse.broker.entity.**",
 		"gov.ca.emsa.pulse.broker.manager.**",
 		"gov.ca.emsa.pulse.broker.saml.**",
-		"gov.ca.emsa.pulse.service.**"})
+		"gov.ca.emsa.pulse.service.**",
+		"gov.ca.emsa.pulse.common.soap.**"})
 public class BrokerApplicationTestConfig implements EnvironmentAware {
 	
 	private Environment env;
