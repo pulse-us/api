@@ -116,7 +116,14 @@ public class ServiceApplicationTests {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
+		
 		assertNotNull(responseString);
+		
+		if(responseString.contains("Envelope")){
+			assertTrue(true);
+		}else{
+			assertTrue(false);
+		}
 	}
 	
 	@Test
@@ -146,6 +153,12 @@ public class ServiceApplicationTests {
 			e.printStackTrace();
 		}
 		assertNotNull(responseString);
+		
+		if(responseString.contains("Envelope")){
+			assertTrue(true);
+		}else{
+			assertTrue(false);
+		}
 	}
 	
 	@Test
