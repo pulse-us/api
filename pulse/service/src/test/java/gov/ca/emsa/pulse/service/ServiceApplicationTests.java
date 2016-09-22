@@ -116,7 +116,14 @@ public class ServiceApplicationTests {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
+		
 		assertNotNull(responseString);
+		
+		if(responseString.contains("Envelope")){
+			assertTrue(true);
+		}else{
+			assertTrue(false);
+		}
 	}
 	
 	@Test
@@ -146,6 +153,12 @@ public class ServiceApplicationTests {
 			e.printStackTrace();
 		}
 		assertNotNull(responseString);
+		
+		if(responseString.contains("Envelope")){
+			assertTrue(true);
+		}else{
+			assertTrue(false);
+		}
 	}
 	
 	@Test
@@ -244,7 +257,7 @@ public class ServiceApplicationTests {
 
 		mockServer
 		.expect(MockRestRequestMatchers.requestTo("http://localhost:" + port + "/queries/1"))
-		.andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+		.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 		.andExpect(MockRestRequestMatchers.header("Authorization", jwt))
 		.andRespond(MockRestResponseCreators.withSuccess(
 				brokerSearchCompletedQueryResponse
