@@ -12,11 +12,14 @@ import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201310UV02;
 import org.opensaml.common.SAMLException;
 
+import gov.ca.emsa.pulse.auth.user.User;
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+
 public interface EHealthQueryProducerService {
 	public PRPAIN201310UV02 unMarshallPatientDiscoveryResponseObject(String xml) throws SOAPException, SAMLException;
 	public AdhocQueryRequest unMarshallDocumentQueryResponseObject(String xml) throws SAMLException;
 	public RetrieveDocumentSetRequestType unMarshallDocumentSetRetrieveResponseObject(String xml) throws SAMLException;
-	public String marshallPatientDiscoveryRequest(PRPAIN201305UV02 response) throws JAXBException;
+	public String marshallPatientDiscoveryRequest(SAMLInput samlInput, PRPAIN201305UV02 response) throws JAXBException;
 	public String createSOAPFault();
 	public String marshallDocumentQueryRequest(AdhocQueryResponse responseObj) throws JAXBException;
 	public String marshallDocumentSetRequest(RetrieveDocumentSetResponseType responseObj) throws JAXBException;

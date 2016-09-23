@@ -62,10 +62,10 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		return ps;
 	}
 	
-	public List<PatientRecord> convertToPatientRecords(PRPAIN201310UV02 response){
+	public List<PatientRecord> convertToPatientRecords(PRPAIN201310UV02 request){
 		List<PatientRecord> result = new ArrayList<PatientRecord>();
 		
-		List<PRPAIN201310UV02MFMIMT700711UV01Subject1> subjects = response.getControlActProcess().getSubject();
+		List<PRPAIN201310UV02MFMIMT700711UV01Subject1> subjects = request.getControlActProcess().getSubject();
 		if(subjects != null && subjects.size() > 0) {
 			for(PRPAIN201310UV02MFMIMT700711UV01Subject1 subject : subjects) {
 				PatientRecord patientRecord = new PatientRecord();
@@ -76,11 +76,11 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					List<Serializable> nameParts = name.getContent();
 					for(Serializable namePart : nameParts) {
 						if(namePart instanceof JAXBElement<?>) {
-							if(((JAXBElement<?>) namePart).getName().getLocalPart().equals("given")) {
+							if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("given")) {
 								patientRecord.setGivenName(((JAXBElement<EnExplicitGiven>)namePart).getValue().getContent());
 							}
 						} else if(namePart instanceof JAXBElement<?>) {
-							if(((JAXBElement<?>) namePart).getName().getLocalPart().equals("family")) {
+							if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
 								patientRecord.setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
 							}
 						}

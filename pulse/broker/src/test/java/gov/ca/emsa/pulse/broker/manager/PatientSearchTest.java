@@ -113,9 +113,9 @@ public class PatientSearchTest {
 		 			"]"
               , MediaType.APPLICATION_JSON));
 
-		 String samlMessage = null;
+		 SAMLInput samlMessage = null;
 		 try {
-			 samlMessage = createSAMLMessage();
+			 samlMessage = createSAMLInput();
 		 } catch(Exception ex) {
 			 Assert.fail(ex.getMessage());
 		 }
@@ -173,6 +173,12 @@ public class PatientSearchTest {
 	}
 
 	private String createSAMLMessage() throws MarshallingException {
+		SAMLInput input = createSAMLInput();
+		String samlMessage = samlGenerator.createSAML(input);
+		return samlMessage;
+	}
+
+	private SAMLInput createSAMLInput() {
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID("UserBrianLindsey");
@@ -190,11 +196,9 @@ public class PatientSearchTest {
 		customAttributes.put("PatientSSN", "");
 
 		input.setAttributes(customAttributes);
-
-		String samlMessage = samlGenerator.createSAML(input);
-		return samlMessage;
+		return input;
 	}
-
+	
 	private CommonUser createUser() {
 		CommonUser user = new CommonUser();
 		AlternateCareFacility acf = new AlternateCareFacility();

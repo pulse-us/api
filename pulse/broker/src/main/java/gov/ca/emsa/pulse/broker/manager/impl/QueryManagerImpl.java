@@ -32,6 +32,7 @@ import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import gov.ca.emsa.pulse.broker.entity.QueryEntity;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 
 @Service
 public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
@@ -121,7 +122,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	}
 
 	@Override
-	public QueryDTO queryForPatientRecords(String samlMessage, PatientSearch toSearch, QueryDTO query, CommonUser user)
+	public QueryDTO queryForPatientRecords(SAMLInput samlInput, PatientSearch toSearch, QueryDTO query, CommonUser user)
 			throws JsonProcessingException {
 
 		//get the list of organizations
@@ -129,7 +130,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		if(orgsToQuery != null && orgsToQuery.size() > 0) {
 			for(QueryOrganizationDTO queryOrg : query.getOrgStatuses()) {
 				PatientQueryService service = getPatientQueryService();
-				service.setSamlMessage(samlMessage);
+				service.setSamlInput(samlInput);
 				service.setToSearch(toSearch);
 				service.setQueryOrg(queryOrg);
 				pool.execute(service);

@@ -1,11 +1,9 @@
 package gov.ca.emsa.pulse.broker.adapter.service;
 
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
@@ -15,28 +13,43 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-
-import org.hl7.v3.*;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201310UV02;
 import org.opensaml.common.SAMLException;
+import org.opensaml.xml.io.MarshallingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 @Service
 public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerService{
 
 	private static final Logger logger = LogManager.getLogger(EHealthQueryProducerServiceImpl.class);
+	@Autowired private SamlGenerator samlGenerator;
 
 	public String createSOAPFault(){
 		MessageFactory factory = null;
@@ -64,6 +77,38 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return fault;
 	} 
 
+	private void createSecurityHeading(SOAPMessage message, SAMLInput samlInput) throws SOAPException {
+		SOAPEnvelope env = message.getSOAPPart().getEnvelope();
+		
+		SOAPHeaderElement header1 = message.getSOAPHeader()
+				.addHeaderElement(env.createName("Action", "a", "http://www.w3.org/2005/08/addressing"));
+		header1.setAttributeNS("http://www.w3.org/2003/05/soap-envelope", "env:mustUnderstand", "1");
+		header1.setValue("urn:hl7-org:v3:PRPA_IN201305UV02:CrossGatewayPatientDiscovery");
+		message.getSOAPHeader().addChildElement(header1);
+
+		SOAPHeaderElement header2 = message.getSOAPHeader()
+				.addHeaderElement(env.createName("MessageID", "a", "http://www.w3.org/2005/08/addressing"));
+		header2.setValue("urn:uuid:a02ca8cd-86fa-4afc-a27c-16c183b2055");
+		message.getSOAPHeader().addChildElement(header2);
+
+		//TODO: there are other elements in the sample - do we need them?
+		
+		SOAPHeaderElement securityElement = message.getSOAPHeader()
+				.addHeaderElement(env.createName("Security", "wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"));
+		
+		//get the SAML assertion into the header. have to "import" it because it's created by a different Document
+		try {
+			Document owner = securityElement.getOwnerDocument();
+			org.w3c.dom.Element samlElement = samlGenerator.createSAMLElement(samlInput);
+			Node importedSamlElement = owner.importNode(samlElement, true);
+			securityElement.appendChild(importedSamlElement);
+		} catch (MarshallingException e) {
+			logger.error("Could not create SAML from input " + samlInput, e);
+		}
+
+		message.getSOAPHeader().addChildElement(securityElement);
+	}
+	
 	public boolean checkSecurityHeading(SaajSoapMessage saajSoap){
 		Iterator<SoapHeaderElement> security = saajSoap.getSoapHeader().examineAllHeaderElements();
 		while(security.hasNext()){
@@ -76,10 +121,46 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return false;
 	}
 	
-	public String marshallPatientDiscoveryRequest(PRPAIN201305UV02 response) throws JAXBException{
-		StringWriter sw = new StringWriter();
-		Marshaller jaxbMarshaller = createMarshaller(createJAXBContext(response.getClass()));
-		jaxbMarshaller.marshal(response, sw);
+	public String marshallPatientDiscoveryRequest(SAMLInput samlInput, PRPAIN201305UV02 request) throws JAXBException{
+		MessageFactory factory = null;
+		try {
+			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+		} catch (SOAPException e1) {
+			logger.error(e1);
+		}
+		SOAPMessage soapMessage = null;
+		try {
+			soapMessage = factory.createMessage();
+		} catch (SOAPException e) {
+			logger.error(e);
+		}
+		
+		try {
+			createSecurityHeading(soapMessage, samlInput);
+		} catch(SOAPException soap) {
+			logger.error(soap);
+		}
+		
+		JAXBElement<PRPAIN201305UV02> je = new JAXBElement<PRPAIN201305UV02>(new QName("PRPAIN201305UV02"), PRPAIN201305UV02.class, request);
+		Document document = null;
+		try {
+			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+		Marshaller documentMarshaller = createMarshaller(createJAXBContext(request.getClass()));
+		documentMarshaller.marshal(je, document);
+		try {
+			soapMessage.getSOAPBody().addDocument(document);
+		} catch (SOAPException e1) {
+			e1.printStackTrace();
+		}
+		OutputStream sw = new ByteArrayOutputStream();
+		try {
+			soapMessage.writeTo(sw);
+		} catch (IOException | SOAPException e) {
+			e.printStackTrace();
+		}
 		return sw.toString();
 	}
 	

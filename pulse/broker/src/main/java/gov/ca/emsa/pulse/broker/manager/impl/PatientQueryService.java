@@ -20,6 +20,7 @@ import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 
 @Component
 public class PatientQueryService implements Runnable {
@@ -31,7 +32,7 @@ public class PatientQueryService implements Runnable {
 	@Autowired private OrganizationManager orgManager;
 	@Autowired private AdapterFactory adapterFactory;
 	private PatientSearch toSearch;
-	private String samlMessage;
+	private SAMLInput samlInput;
 	
 	@Override
 	public void run() {
@@ -49,7 +50,7 @@ public class PatientQueryService implements Runnable {
 		if(adapter != null) {
 			logger.info("Starting query to " + org.getAdapter() + " for orgStatus " + queryOrg.getId());
 			try {
-				searchResults = adapter.queryPatients(org, toSearch, samlMessage);
+				searchResults = adapter.queryPatients(org, toSearch, samlInput);
 				logger.info("Successfully queried " + org.getAdapter());
 			} catch(Exception ex) {
 				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
@@ -86,14 +87,6 @@ public class PatientQueryService implements Runnable {
 
 	public void setQueryOrg(QueryOrganizationDTO queryOrg) {
 		this.queryOrg = queryOrg;
-	}
-
-	public String getSamlMessage() {
-		return samlMessage;
-	}
-
-	public void setSamlMessage(String samlMessage) {
-		this.samlMessage = samlMessage;
 	}
 
 	public QueryManager getQueryManager() {
@@ -134,5 +127,13 @@ public class PatientQueryService implements Runnable {
 
 	public void setOrgManager(OrganizationManager orgManager) {
 		this.orgManager = orgManager;
+	}
+
+	public SAMLInput getSamlInput() {
+		return samlInput;
+	}
+
+	public void setSamlInput(SAMLInput samlInput) {
+		this.samlInput = samlInput;
 	}
 }
