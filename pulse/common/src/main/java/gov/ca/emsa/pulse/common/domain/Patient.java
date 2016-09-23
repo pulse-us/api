@@ -9,7 +9,7 @@ public class Patient {
 	private String orgPatientId;
 	private String givenName;
 	private String familyName;
-	private Date dateOfBirth;
+	private String dateOfBirth;
 	private String gender;
 	private String phoneNumber;
 	private Address address;
@@ -37,10 +37,10 @@ public class Patient {
 		this.orgPatientId = orgPatientId;
 	}
 
-	public Date getDateOfBirth() {
+	public String getDateOfBirth() {
 		return dateOfBirth;
 	}
-	public void setDateOfBirth(Date dateOfBirth) {
+	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 	public String getGender() {

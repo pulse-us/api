@@ -1,9 +1,14 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,14 +27,17 @@ import gov.ca.emsa.pulse.common.domain.QueryOrganization;
 
 public class DtoToDomainConverter {
 	private static final Logger logger = LogManager.getLogger(DtoToDomainConverter.class);
-
+	private static final DateTimeFormatter outFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	
 	public static Patient convert(PatientDTO dtoObj) {
 		Patient result = new Patient();
 		result.setId(dtoObj.getId());
 		result.setGivenName(dtoObj.getGivenName());
 		result.setFamilyName(dtoObj.getFamilyName());
 		result.setGender(dtoObj.getGender());
-		result.setDateOfBirth(dtoObj.getDateOfBirth());
+		if(dtoObj.getDateOfBirth() != null) {
+			result.setDateOfBirth(outFormatter.format(dtoObj.getDateOfBirth()));
+		}
 		result.setPhoneNumber(dtoObj.getPhoneNumber());
 		result.setSsn(dtoObj.getSsn());
 		result.setLastRead(dtoObj.getLastReadDate());
@@ -161,7 +169,9 @@ public class DtoToDomainConverter {
 		pr.setFamilyName(prDto.getFamilyName());
 		pr.setGender(prDto.getGender());
 		pr.setPhoneNumber(prDto.getPhoneNumber());
-		pr.setDateOfBirth(prDto.getDateOfBirth());
+		if(prDto.getDateOfBirth() != null) {
+			pr.setDateOfBirth(outFormatter.format(prDto.getDateOfBirth()));
+		}		
 		return pr;
 	}
 	
@@ -194,6 +204,7 @@ public class DtoToDomainConverter {
 		Document result = new Document();
 		result.setId(dtoObj.getId()+"");
 		result.setName(dtoObj.getName());
+		result.setCached(dtoObj.getContents() != null && dtoObj.getContents().length > 0);
 		result.setOrgMapId(dtoObj.getPatientOrgMapId());
 		return result;
 	}

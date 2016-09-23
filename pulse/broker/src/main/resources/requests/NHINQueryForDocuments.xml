@@ -1,0 +1,38 @@
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope"
+	xmlns:a="http://www.w3.org/2005/08/addressing">
+	<s:Header>
+		<a:Action s:mustUnderstand="1">urn:ihe:iti:2007:CrossGatewayQuery
+		</a:Action>
+		<a:MessageID>urn:uuid:def119ad-dc13-49c1-a3c7-e3742531f9b3
+		</a:MessageID>
+		<a:ReplyTo>
+			<a:Address>http://www.w3.org/2005/08/addressing/anonymous</a:Address>
+		</a:ReplyTo>
+		<a:To s:mustUnderstand="1">http://localhost/service/IHEXCARespondingGateway.svc
+		</a:To>
+	</s:Header>
+	<s:Body>
+		<query:AdhocQueryRequest
+			xmlns:query="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0"
+			xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
+			<query:ResponseOption returnComposedObjects="true"
+				returnType="LeafClass" />
+			<rim:AdhocQuery id="urn:uuid:14d4debf-8f97-4251-9a74-a90016b0af0d">
+				<rim:Slot name="$XDSDocumentEntryPatientId">
+					<rim:ValueList>
+						<Value>'d8420442513945d^^^&amp;1.3.6.1.4.1.21367.2005.1.1&amp;ISO'
+						</Value>
+					</rim:ValueList>
+				</rim:Slot>
+				<rim:Slot name="$XDSDocumentEntryStatus">
+					<rim:ValueList>
+						<rim:Value>
+							('urn:oasis:names:tc:ebxml-regrep:StatusType:Approved',
+							‘urn:ihe:iti:2010:StatusType:DeferredCreation’)
+						</rim:Value>
+					</rim:ValueList>
+				</rim:Slot>
+			</rim:AdhocQuery>
+			</query:AdhocQueryRequest>
+	</s:Body>
+</s:Envelope>

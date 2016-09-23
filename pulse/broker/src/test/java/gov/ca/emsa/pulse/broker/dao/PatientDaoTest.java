@@ -307,5 +307,8 @@ public class PatientDaoTest extends TestCase {
 		assertNull(selected);
 		AddressDTO selectedAddress = addrDao.getById(existingAddrId);
 		assertNull(selectedAddress);
+		
+		AlternateCareFacilityDTO selectedAcf = acfDao.getById(acf.getId());
+		assertNotNull(selectedAcf);
 	}
 }

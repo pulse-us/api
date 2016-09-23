@@ -120,7 +120,7 @@ public class PatientService {
 	
 	@ApiOperation(value = "Delete a patient")
 	@RequestMapping(value="/{patientId}/delete", method = RequestMethod.POST)
-	public void deleteQuery(@PathVariable(value="patientId") Long patientId) {
+	public void deletePatient(@PathVariable(value="patientId") Long patientId) {
 		patientManager.delete(patientId);
 	}
 }
