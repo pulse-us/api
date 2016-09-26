@@ -25,6 +25,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 
 import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201306UV02;
 import org.hl7.v3.PRPAIN201310UV02;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,6 +50,8 @@ import gov.ca.emsa.pulse.auth.user.User;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
@@ -111,5 +114,29 @@ public class JSONToSoapTest {
 		assertEquals(ps.getFamilyName(), unmarshalledSearch.getFamilyName());
 		assertEquals(ps.getDob(), unmarshalledSearch.getDob());
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
+	}
+	
+	@Test
+	public void testParsePatientDiscoveryResponse() throws SAMLException, SOAPException, IOException {
+		Resource pdFile = resourceLoader.getResource("classpath:NHINPatientDiscoveryResponse.xml");
+		String pdResponseStr = Resources.toString(pdFile.getURL(), Charsets.UTF_8);
+		PRPAIN201306UV02 resultObj = ehealthService.unMarshallPatientDiscoveryResponseObject(pdResponseStr);
+		assertNotNull(resultObj);
+		List<PatientRecord> patientRecords = reverseService.convertToPatientRecords(resultObj);
+		assertNotNull(patientRecords);
+		assertEquals(2, patientRecords.size());
+		
+		PatientRecord firstPatient = patientRecords.get(0);
+		assertEquals("James", firstPatient.getGivenName());
+		assertEquals("Jones", firstPatient.getFamilyName());
+		assertEquals("tel:+1-481-555-7684;ext=2342", firstPatient.getPhoneNumber());
+		assertEquals("19630804", firstPatient.getDateOfBirth());
+		assertEquals("M", firstPatient.getGender());
+		Address firstPatientAddress = firstPatient.getAddress();
+		assertNotNull(firstPatientAddress);
+		assertEquals("3443 North Arctic Avenue", firstPatientAddress.getStreet1());
+		assertNull(firstPatientAddress.getStreet2());
+		assertEquals("Some City", firstPatientAddress.getCity());
+		assertEquals("IL", firstPatientAddress.getState());
 	}
 }

@@ -1,6 +1,5 @@
 package gov.ca.emsa.pulse.broker.adapter;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,27 +9,22 @@ import javax.xml.soap.SOAPException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hl7.v3.PRPAIN201305UV02;
-import org.hl7.v3.PRPAIN201310UV02;
+import org.hl7.v3.PRPAIN201306UV02;
 import org.opensaml.common.SAMLException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
-import gov.ca.emsa.pulse.auth.user.User;
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.SearchResultConverter;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
@@ -67,7 +61,7 @@ public class EHealthAdapter implements Adapter {
 		List<PatientRecordDTO> records = new ArrayList<PatientRecordDTO>();
 		if(!StringUtils.isEmpty(searchResults)) {
 			try {
-				PRPAIN201310UV02 resultObj = queryProducer.unMarshallPatientDiscoveryResponseObject(searchResults);
+				PRPAIN201306UV02 resultObj = queryProducer.unMarshallPatientDiscoveryResponseObject(searchResults);
 				List<PatientRecord> patientRecords = soapConverterService.convertToPatientRecords(resultObj);
 				for(int i = 0; i < patientRecords.size(); i++) {
 					PatientRecordDTO record = DomainToDtoConverter.convertToPatientRecord(patientRecords.get(0));

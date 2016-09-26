@@ -9,6 +9,7 @@ import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201306UV02;
 import org.hl7.v3.PRPAIN201310UV02;
 import org.opensaml.common.SAMLException;
 
@@ -16,7 +17,7 @@ import gov.ca.emsa.pulse.auth.user.User;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 
 public interface EHealthQueryProducerService {
-	public PRPAIN201310UV02 unMarshallPatientDiscoveryResponseObject(String xml) throws SOAPException, SAMLException;
+	public PRPAIN201306UV02 unMarshallPatientDiscoveryResponseObject(String xml) throws SOAPException, SAMLException;
 	public AdhocQueryRequest unMarshallDocumentQueryResponseObject(String xml) throws SAMLException;
 	public RetrieveDocumentSetRequestType unMarshallDocumentSetRetrieveResponseObject(String xml) throws SAMLException;
 	public String marshallPatientDiscoveryRequest(SAMLInput samlInput, PRPAIN201305UV02 response) throws JAXBException;

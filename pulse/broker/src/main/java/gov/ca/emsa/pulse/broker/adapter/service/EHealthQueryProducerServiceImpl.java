@@ -28,6 +28,7 @@ import javax.xml.transform.Source;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201306UV02;
 import org.hl7.v3.PRPAIN201310UV02;
 import org.opensaml.common.SAMLException;
 import org.opensaml.xml.io.MarshallingException;
@@ -214,7 +215,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return unmarshaller;
 	}
 
-	public PRPAIN201310UV02 unMarshallPatientDiscoveryResponseObject(String xml) throws SOAPException, SAMLException{
+	public PRPAIN201306UV02 unMarshallPatientDiscoveryResponseObject(String xml) throws SOAPException, SAMLException{
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -228,29 +229,22 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 			logger.error(e);
 		}
 		SaajSoapMessage saajSoap = new SaajSoapMessage(soapMessage);
+		Source requestSource = saajSoap.getSoapBody().getPayloadSource();
 
-		if(checkSecurityHeading(saajSoap)){
+		// Create a JAXB context
+		JAXBContext jc = createJAXBContext(PRPAIN201306UV02.class);
 
-			Source requestSource = saajSoap.getSoapBody().getPayloadSource();
+		// Create JAXB unmarshaller
+		Unmarshaller unmarshaller = createUnmarshaller(jc);
 
-			// Create a JAXB context
-			JAXBContext jc = createJAXBContext(PRPAIN201305UV02.class);
-
-			// Create JAXB unmarshaller
-			Unmarshaller unmarshaller = createUnmarshaller(jc);
-
-			JAXBElement<?> requestObj = null;
-			try {
-				requestObj = (JAXBElement<?>) unmarshaller.unmarshal(requestSource, PRPAIN201305UV02.class);
-			} catch (JAXBException e) {
-				logger.error(e);
-			}
-
-			return (PRPAIN201310UV02) requestObj.getValue();
-		}else{
-			logger.error("SOAP message does not have a SAML header");
-			throw new SAMLException();
+		JAXBElement<?> requestObj = null;
+		try {
+			requestObj = (JAXBElement<?>) unmarshaller.unmarshal(requestSource, PRPAIN201306UV02.class);
+		} catch (JAXBException e) {
+			logger.error(e);
 		}
+
+		return (PRPAIN201306UV02) requestObj.getValue();
 	}
 
 	public AdhocQueryRequest unMarshallDocumentQueryResponseObject(String xml) throws SAMLException{
