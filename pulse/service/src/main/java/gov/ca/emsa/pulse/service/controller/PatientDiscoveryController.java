@@ -58,8 +58,11 @@ public class PatientDiscoveryController {
 		} catch (SOAPException e) {
 			logger.error(e);
 		}
+		logger.info("Request object: " + requestObj.toString());
 
 		PatientSearch patientSearch = SOAPconverter.convertToPatientSearch(requestObj);
+		
+		logger.info("Patient search object: " + patientSearch.toString());
 
 		pss.searchForPatientWithTerms(restTemplate, patientSearch);
 		
@@ -75,13 +78,14 @@ public class PatientDiscoveryController {
 			patientRecords.addAll(queryOrg.getResults());
 		}
 		PRPAIN201310UV02 responseObj = JSONConverter.convertPatientRecordListToSOAPResponse(patientRecords);
-		
+		logger.info("Response object: " + responseObj.toString());
 		String response = null;
 		try {
 			response = consumerService.marshallPatientDiscoveryResponse(responseObj);
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
+		logger.info("Response string: " + response);
 		return response;
 	}
 }

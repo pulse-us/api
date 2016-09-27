@@ -46,7 +46,7 @@ public class PatientSearchService extends EHealthQueryService implements Callabl
 		this.setAuthorizationHeader();
 		HttpEntity<PatientSearch> patientSearchRequest = new HttpEntity<PatientSearch>(patientSearch, this.getHeaders());
 		Query queryResponse = restTemplate.postForObject("http://localhost:" + this.getPort() + "/search", patientSearchRequest, Query.class);
-		logger.info("Request sent to broker from services REST.");
+		logger.info("Request sent to broker from services REST with patient search " + patientSearchRequest.toString());
 
 		this.query = queryResponse;
 	}
@@ -71,7 +71,7 @@ public class PatientSearchService extends EHealthQueryService implements Callabl
 				Thread.sleep(Integer.parseInt(delaySeconds) * 1000);
 				HttpEntity<Patient[]> entity = new HttpEntity<Patient[]>(this.getHeaders());
 				HttpEntity<Query> response = this.getRestTemplate().exchange("http://localhost:" + this.getPort() + "/queries/" + this.query.getId() , HttpMethod.GET, entity, Query.class);
-				logger.info("Query"  + this.query.getId() + "request sent to broker from services REST.");
+				logger.info("Query "  + this.query.getId() + " request sent to broker from services REST.");
 				queryOrgs = response.getBody().getOrgStatuses();
 			}
 		}
