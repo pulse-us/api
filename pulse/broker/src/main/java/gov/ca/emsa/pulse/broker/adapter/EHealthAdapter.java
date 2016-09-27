@@ -12,6 +12,9 @@ import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.opensaml.common.SAMLException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,13 +22,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
-import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.SearchResultConverter;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
@@ -49,10 +52,14 @@ public class EHealthAdapter implements Adapter {
 		}
 
 		String postUrl = org.getEndpointUrl() + "/patientDiscovery";
-		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_XML);   
+		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
+
 		String searchResults = null;
 		try {
-			searchResults = restTemplate.postForObject(postUrl, requestBodyXml, String.class);
+			RestTemplate restTemplate = new RestTemplate();
+			searchResults = restTemplate.postForObject(postUrl, request, String.class);
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + postUrl, ex);
 			throw ex;
@@ -62,9 +69,9 @@ public class EHealthAdapter implements Adapter {
 		if(!StringUtils.isEmpty(searchResults)) {
 			try {
 				PRPAIN201306UV02 resultObj = queryProducer.unMarshallPatientDiscoveryResponseObject(searchResults);
-				List<PatientRecord> patientRecords = soapConverterService.convertToPatientRecords(resultObj);
-				for(int i = 0; i < patientRecords.size(); i++) {
-					PatientRecordDTO record = DomainToDtoConverter.convertToPatientRecord(patientRecords.get(0));
+				List<Patient> patientResults = soapConverterService.convertToPatients(resultObj);
+				for(int i = 0; i < patientResults.size(); i++) {
+					PatientRecordDTO record = SearchResultConverter.convertToPatientRecord(patientResults.get(i));
 					records.add(record);
 				}
 			} catch(SAMLException | SOAPException ex) {

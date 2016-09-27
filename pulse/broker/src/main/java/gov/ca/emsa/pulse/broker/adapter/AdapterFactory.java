@@ -11,14 +11,13 @@ import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 public class AdapterFactory {
 	private static final Logger logger = LogManager.getLogger(AdapterFactory.class);
 	@Autowired private EHealthAdapter ehealthAdapter;
-	@Autowired private IHEAdapter iheAdapter;
 	
 	public Adapter getAdapter(OrganizationDTO org) {
 		if(org.getAdapter().equalsIgnoreCase("ehealth")) {
 			return getEhealthAdapter();
-		} else if(org.getAdapter().equalsIgnoreCase("ihe")) {
-			return getIheAdapter();
-		} else {
+		} 
+		//TODO: if we want to add future types like IHE, they will go here as else if{}
+		else {
 			logger.error("Could not find a matching adapter for org type : " + org.getAdapter());
 		}
 		return null;
@@ -30,13 +29,5 @@ public class AdapterFactory {
 
 	public void setEhealthAdapter(EHealthAdapter ehealthAdapter) {
 		this.ehealthAdapter = ehealthAdapter;
-	}
-
-	public IHEAdapter getIheAdapter() {
-		return iheAdapter;
-	}
-
-	public void setIheAdapter(IHEAdapter iheAdapter) {
-		this.iheAdapter = iheAdapter;
 	}
 }

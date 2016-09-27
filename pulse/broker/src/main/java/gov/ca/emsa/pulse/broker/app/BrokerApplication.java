@@ -29,6 +29,7 @@ import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 @PropertySource("classpath:/application.properties")
 @EnableTransactionManagement(proxyTargetClass=true)
 @SpringBootApplication(scanBasePackages= {"gov.ca.emsa.pulse.broker.**",
+		"gov.ca.emsa.pulse.common.**",
 		"gov.ca.emsa.pulse.service.**"})
 public class BrokerApplication {
 	

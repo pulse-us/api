@@ -1,19 +1,13 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.TemporalAccessor;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
-import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
@@ -172,6 +166,16 @@ public class DtoToDomainConverter {
 		if(prDto.getDateOfBirth() != null) {
 			pr.setDateOfBirth(outFormatter.format(prDto.getDateOfBirth()));
 		}		
+		if(prDto.getAddress() != null) {
+			Address address = new Address();
+			address.setStreet1(prDto.getAddress().getStreetLineOne());
+			address.setStreet2(prDto.getAddress().getStreetLineTwo());
+			address.setCity(prDto.getAddress().getCity());
+			address.setState(prDto.getAddress().getState());
+			address.setZipcode(prDto.getAddress().getZipcode());
+			address.setCountry(prDto.getAddress().getCountry());
+			pr.setAddress(address);
+		}
 		return pr;
 	}
 	
