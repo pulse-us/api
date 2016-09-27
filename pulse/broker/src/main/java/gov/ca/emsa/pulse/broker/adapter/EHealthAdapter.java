@@ -84,7 +84,7 @@ public class EHealthAdapter implements Adapter {
 
 	@Override
 	public Document[] queryDocuments(OrganizationDTO org, PatientOrganizationMapDTO toSearch, String samlMessage) {
-		String postUrl = org.getEndpointUrl() + "/documents";
+		String postUrl = org.getEndpointUrl() + "/mock/ehealthexchange/documents";
 		MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
 		parameters.add("patientId", toSearch.getOrgPatientId());
 		parameters.add("samlMessage", samlMessage);
