@@ -48,20 +48,21 @@ public class DocumentQueryController {
 		}catch(SAMLException e){
 			return consumerService.createSOAPFault();
 		}
-		
+		logger.info("Request object: " + requestObj.toString());
 		DocumentQuery docQuery = SOAPService.convertToDocumentQuery(requestObj);
 		
 		// these documents need to have metadata
 		List<Document> docs = docQueryService.queryForDocuments(restTemplate, docQuery.getPatientId());
 		
 		AdhocQueryResponse responseObj = JSONService.convertDocumentListToSOAPResponse(docs, docQuery.getPatientId());
-		
+		logger.info("Response object: " + responseObj.toString());
 		String response = null;
 		try {
 			response = consumerService.marshallDocumentQueryResponse(responseObj);
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
+		logger.info("Response string: " + response);
 		return response;
 	}
 }
