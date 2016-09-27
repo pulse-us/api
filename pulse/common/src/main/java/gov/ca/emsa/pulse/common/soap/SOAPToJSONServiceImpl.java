@@ -12,6 +12,7 @@ import javax.xml.namespace.QName;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
 import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
+import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
@@ -23,11 +24,13 @@ import org.hl7.v3.AdxpExplicitState;
 import org.hl7.v3.AdxpExplicitStreetAddressLine;
 import org.hl7.v3.EnExplicitFamily;
 import org.hl7.v3.EnExplicitGiven;
+import org.hl7.v3.II;
 import org.hl7.v3.PNExplicit;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectAdministrativeGender;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectBirthTime;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectName;
 import org.hl7.v3.PRPAMT201306UV02ParameterList;
+import org.hl7.v3.PRPAMT201310UV02Patient;
 import org.hl7.v3.PRPAMT201310UV02Person;
 import org.hl7.v3.TELExplicit;
 import org.springframework.stereotype.Service;
@@ -46,7 +49,6 @@ import org.hl7.v3.PRPAMT201304UV02Person;
 
 @Service
 public class SOAPToJSONServiceImpl implements SOAPToJSONService {
-	
 	private final static String PATIENT_ID_PARAMETER = "$XDSDocumentEntryPatientId";
 	private final static String DOCUMENT_STATUS_PARAMETER = "$XDSDocumentEntryStatus";
 	
@@ -79,9 +81,12 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		List<PRPAIN201306UV02MFMIMT700711UV01Subject1> subjects = request.getControlActProcess().getSubject();
 		if(subjects != null && subjects.size() > 0) {
 			for(PRPAIN201306UV02MFMIMT700711UV01Subject1 subject : subjects) {
-				PatientRecord patientRecord = new PatientRecord();
+				PatientRecord patientRecord = new PatientRecord();				
+				
 				PRPAIN201306UV02MFMIMT700711UV01Subject2 currSubject = subject.getRegistrationEvent().getSubject1();
-				JAXBElement<PRPAMT201310UV02Person> patientPerson = currSubject.getPatient().getPatientPerson();
+				PRPAMT201310UV02Patient patient = currSubject.getPatient();
+				//set given and family name
+				JAXBElement<PRPAMT201310UV02Person> patientPerson = patient.getPatientPerson();
 				List<PNExplicit> names = patientPerson.getValue().getName();
 				for(PNExplicit name : names) {
 					List<Serializable> nameParts = name.getContent();
@@ -131,6 +136,83 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					patientRecord.setAddress(address);
 				}
 				result.add(patientRecord);
+			}
+		}
+		
+		return result;
+	}
+	
+	public List<Patient> convertToPatients(PRPAIN201306UV02 request){
+		List<Patient> result = new ArrayList<Patient>();
+		
+		List<PRPAIN201306UV02MFMIMT700711UV01Subject1> subjects = request.getControlActProcess().getSubject();
+		if(subjects != null && subjects.size() > 0) {
+			for(PRPAIN201306UV02MFMIMT700711UV01Subject1 subject : subjects) {
+				Patient patient = new Patient();				
+				
+				PRPAIN201306UV02MFMIMT700711UV01Subject2 currSubject = subject.getRegistrationEvent().getSubject1();
+				PRPAMT201310UV02Patient subjPatient = currSubject.getPatient();
+				//set org patient id; just take the first one now and throw an exception 
+				//if there aren't any because we won't be able to do anything else with this
+				//patient without an id
+				List<II> ids = subjPatient.getId();
+				if(ids != null && ids.size() > 0 && !StringUtils.isEmpty(ids.get(0).getRoot())) {
+					patient.setOrgPatientId(ids.get(0).getRoot());
+				} else {
+					patient.setOrgPatientId("COULD NOT PARSE OR WAS EMPTY");
+				}
+				
+				//set given and family name
+				JAXBElement<PRPAMT201310UV02Person> patientPerson = subjPatient.getPatientPerson();
+				List<PNExplicit> names = patientPerson.getValue().getName();
+				for(PNExplicit name : names) {
+					List<Serializable> nameParts = name.getContent();
+					for(Serializable namePart : nameParts) {
+						if(namePart instanceof JAXBElement<?>) {
+							if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("given")) {
+								patient.setGivenName(((JAXBElement<EnExplicitGiven>)namePart).getValue().getContent());
+							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
+								patient.setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+							}
+						}
+					}
+				}
+				
+				patient.setGender(patientPerson.getValue().getAdministrativeGenderCode().getCode());
+				patient.setDateOfBirth(patientPerson.getValue().getBirthTime().getValue());
+				
+				//TODO: just taking the first listed phone number for now
+				//but eventually we should accommodate multiple phone numbers
+				List<TELExplicit> tels = patientPerson.getValue().getTelecom();
+				if(tels.size() >= 1) {
+					patient.setPhoneNumber(tels.get(0).getValue());
+				} 
+				
+				//TODO: just taking the first listed address for now
+				//but eventually we should accommodate multiple addresses
+				List<ADExplicit> addressList = patientPerson.getValue().getAddr();
+				if(addressList.size() >= 1) {
+					Address address = new Address();
+					ADExplicit addr = addressList.get(0);
+					List<Serializable> addressContent = addr.getContent();
+					for(Serializable line : addressContent) {
+						if(line instanceof JAXBElement<?>) {
+							if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("streetAddressLine")) {
+								if(StringUtils.isEmpty(address.getStreet1())) {
+									address.setStreet1(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
+								} else if(StringUtils.isEmpty(address.getStreet2())) {
+									address.setStreet2(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
+								}
+							} else if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("city")) {
+								address.setCity(((JAXBElement<AdxpExplicitCity>)line).getValue().getContent());
+							} else if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("state")) {
+								address.setState(((JAXBElement<AdxpExplicitState>)line).getValue().getContent());
+							}
+						}
+					}
+					patient.setAddress(address);
+				}
+				result.add(patient);
 			}
 		}
 		
