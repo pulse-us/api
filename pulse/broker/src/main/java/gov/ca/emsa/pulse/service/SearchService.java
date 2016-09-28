@@ -85,14 +85,6 @@ public class SearchService {
 
 		input.setAttributes(customAttributes);
 
-		String samlMessage = null;
-
-		try {
-			samlMessage = samlGenerator.createSAML(input);
-		} catch (MarshallingException e) {
-			logger.error("Could not create SAML from input " + input, e);
-		}
-
 		String queryTermsJson = JSONUtils.toJSON(toSearch);
 
 		List<OrganizationDTO> orgsToQuery = orgManager.getAll();
@@ -113,7 +105,7 @@ public class SearchService {
 				query.getOrgStatuses().add(queryOrg);
 			}
 	
-	        QueryDTO initiatedQuery = searchManager.queryForPatientRecords(samlMessage, toSearch, query, user);
+	        QueryDTO initiatedQuery = searchManager.queryForPatientRecords(input, toSearch, query, user);
 	        return DtoToDomainConverter.convert(initiatedQuery);
 		}
 		return null;

@@ -64,6 +64,13 @@ public class SamlGeneratorImpl implements SamlGenerator {
 		return originalAssertionString;
 	}
 
+	public org.w3c.dom.Element createSAMLElement(SAMLInput input) throws MarshallingException {
+		Assertion assertion = buildDefaultAssertion(input);
+		AssertionMarshaller marshaller = new AssertionMarshaller();
+		org.w3c.dom.Element element = marshaller.marshall(assertion);
+		return element;
+	}
+	
 	/**
 	 * Builds a SAML Attribute of type String
 	 * @param name
