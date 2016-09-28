@@ -16,6 +16,7 @@ import org.hl7.v3.PRPAIN201310UV02;
 import org.opensaml.common.SAMLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,7 +48,7 @@ public class PatientDiscoveryController {
 	@Autowired JSONToSOAPService JSONConverter;
 	private ExecutorService executor = Executors.newFixedThreadPool(100);
 
-	@RequestMapping(value = "/patientDiscovery", method = RequestMethod.POST, consumes ={"application/xml"}, produces = {"application/xml"})
+	@RequestMapping(value = "/patientDiscovery", method = RequestMethod.POST, produces = MediaType.APPLICATION_XML_VALUE)
 	public String patientDiscovery(@RequestBody String request){
 		RestTemplate restTemplate = new RestTemplate();
 		PRPAIN201305UV02 requestObj = null;
@@ -58,11 +59,12 @@ public class PatientDiscoveryController {
 		} catch (SOAPException e) {
 			logger.error(e);
 		}
-		logger.info("Request object: " + requestObj.toString());
+		String creationTime = requestObj.getCreationTime().getValue();
+		logger.info("Patient discovery Request object(" + creationTime + "): " + requestObj.toString());
 
 		PatientSearch patientSearch = SOAPconverter.convertToPatientSearch(requestObj);
 		
-		logger.info("Patient search object: " + patientSearch.toString());
+		logger.info("Patient discovery Patient search object(" + creationTime + "): " + patientSearch.toString());
 
 		pss.searchForPatientWithTerms(restTemplate, patientSearch);
 		
@@ -78,14 +80,14 @@ public class PatientDiscoveryController {
 			patientRecords.addAll(queryOrg.getResults());
 		}
 		PRPAIN201310UV02 responseObj = JSONConverter.convertPatientRecordListToSOAPResponse(patientRecords);
-		logger.info("Response object: " + responseObj.toString());
+		logger.info("Patient discovery Response object(" + creationTime + "): " + responseObj.toString());
 		String response = null;
 		try {
 			response = consumerService.marshallPatientDiscoveryResponse(responseObj);
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-		logger.info("Response string: " + response);
+		logger.info("Patient discovery Response string(" + creationTime + "): " + response);
 		return response;
 	}
 }

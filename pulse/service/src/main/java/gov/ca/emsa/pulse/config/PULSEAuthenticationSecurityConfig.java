@@ -34,6 +34,8 @@ public class PULSEAuthenticationSecurityConfig extends WebSecurityConfigurerAdap
 		web.ignoring().antMatchers("/health**");
 		web.ignoring().antMatchers("/api-docs**");
 		web.ignoring().antMatchers("/patientDiscovery");
+		web.ignoring().antMatchers("/documentQuery");
+		web.ignoring().antMatchers("/retrieveDocumentSet");
 	}
 	
 	@Override
