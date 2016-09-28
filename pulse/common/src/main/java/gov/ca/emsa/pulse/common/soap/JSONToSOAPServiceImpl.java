@@ -33,13 +33,16 @@ import org.springframework.util.StringUtils;
 
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
+import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotListType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
@@ -136,6 +139,19 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		return response;
 	}
 
+	public AdhocQueryRequest convertToDocumentRequest(Patient patient) {
+		AdhocQueryRequest request = new AdhocQueryRequest();
+		SlotListType slotList = new SlotListType();
+		SlotType1 slot = new SlotType1();
+		slot.setName("$XDSDocumentEntryPatientId");
+		ValueListType valueList = new ValueListType();
+		valueList.getValue().add(patient.getOrgPatientId());
+		slot.setValueList(valueList);
+		slotList.getSlot().add(slot);
+		request.setRequestSlotList(slotList);
+		return request;
+	}
+	
 	public RetrieveDocumentSetResponseType convertDocumentSetToSOAPResponse(List<DocumentWrapper> docs) {
 		RetrieveDocumentSetResponseType dsrt = new RetrieveDocumentSetResponseType();
 		RegistryResponseType rr = new RegistryResponseType();

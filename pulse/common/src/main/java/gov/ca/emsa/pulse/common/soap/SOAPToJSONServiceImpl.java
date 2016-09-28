@@ -1,22 +1,10 @@
 package gov.ca.emsa.pulse.common.soap;
 
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
-import gov.ca.emsa.pulse.common.domain.Address;
-import gov.ca.emsa.pulse.common.domain.DocumentQuery;
-import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientRecord;
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 
 import org.hl7.v3.ADExplicit;
 import org.hl7.v3.AdxpExplicitCity;
@@ -26,26 +14,30 @@ import org.hl7.v3.EnExplicitFamily;
 import org.hl7.v3.EnExplicitGiven;
 import org.hl7.v3.II;
 import org.hl7.v3.PNExplicit;
+import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201306UV02;
+import org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01Subject1;
+import org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01Subject2;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectAdministrativeGender;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectBirthTime;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectName;
 import org.hl7.v3.PRPAMT201306UV02ParameterList;
+import org.hl7.v3.PRPAMT201310UV02OtherIDs;
 import org.hl7.v3.PRPAMT201310UV02Patient;
 import org.hl7.v3.PRPAMT201310UV02Person;
 import org.hl7.v3.TELExplicit;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.hl7.v3.PRPAIN201305UV02;
-import org.hl7.v3.PRPAIN201306UV02;
-import org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01Subject1;
-import org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01Subject2;
-import org.hl7.v3.PRPAIN201310UV02;
-import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01ControlActProcess;
-import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent;
-import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01Subject1;
-import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01Subject2;
-import org.hl7.v3.PRPAMT201304UV02Patient;
-import org.hl7.v3.PRPAMT201304UV02Person;
+
+import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.DocumentQuery;
+import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 
 @Service
 public class SOAPToJSONServiceImpl implements SOAPToJSONService {
@@ -155,9 +147,11 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				//set org patient id; just take the first one now and throw an exception 
 				//if there aren't any because we won't be able to do anything else with this
 				//patient without an id
+				//building this from section 1.13.1 on http://sequoiaproject.org/wp-content/uploads/2014/11/nhin-query-for-documents-production-specification-v3.0.pdf
 				List<II> ids = subjPatient.getId();
-				if(ids != null && ids.size() > 0 && !StringUtils.isEmpty(ids.get(0).getRoot())) {
-					patient.setOrgPatientId(ids.get(0).getRoot());
+				if(ids != null && ids.size() > 0) {
+					//TODO: prob want to store the extension and root separately
+					patient.setOrgPatientId(ids.get(0).getExtension() + "^^^&amp;" + ids.get(0).getRoot() + "&amp;ISO");
 				} else {
 					patient.setOrgPatientId("COULD NOT PARSE OR WAS EMPTY");
 				}
@@ -212,6 +206,23 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					}
 					patient.setAddress(address);
 				}
+				
+				//look for the SSN
+				List<PRPAMT201310UV02OtherIDs> otherIds = patientPerson.getValue().getAsOtherIDs();
+				for(PRPAMT201310UV02OtherIDs otherId : otherIds) {
+					List<String> classCodes = otherId.getClassCode();
+					for(String classCode : classCodes) {
+						if(classCode.equalsIgnoreCase("CIT")) {
+							List<II> citIds = otherId.getId();
+							for(II citId : citIds) {
+								if(citId.getRoot().equals("2.16.840.1.113883.4.1")) {
+									patient.setSsn(citId.getExtension());
+								}
+							}
+						}
+					}
+				}
+				
 				result.add(patient);
 			}
 		}

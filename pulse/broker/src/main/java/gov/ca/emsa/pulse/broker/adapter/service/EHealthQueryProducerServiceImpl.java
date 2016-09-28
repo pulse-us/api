@@ -165,7 +165,14 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return sw.toString();
 	}
 	
-	public String marshallDocumentQueryRequest(AdhocQueryResponse response) throws JAXBException{
+	public String marshallDocumentQueryRequest(AdhocQueryRequest request) throws JAXBException{
+		StringWriter sw = new StringWriter();
+		Marshaller jaxbMarshaller = createMarshaller(createJAXBContext(request.getClass()));
+		jaxbMarshaller.marshal(request, sw);
+		return sw.toString();
+	}
+	
+	public String marshallDocumentQueryResponse(AdhocQueryResponse response) throws JAXBException{
 		StringWriter sw = new StringWriter();
 		Marshaller jaxbMarshaller = createMarshaller(createJAXBContext(response.getClass()));
 		jaxbMarshaller.marshal(response, sw);
