@@ -39,7 +39,7 @@ public class DocumentQueryController {
 	@Autowired DocumentQueryService docQueryService;
 	@Autowired JSONToSOAPService JSONService;
 
-	@RequestMapping(value = "/documentQuery", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+	@RequestMapping(value = "/documentQuery", method = RequestMethod.POST, produces = MediaType.APPLICATION_XML_VALUE)
 	public String queryRequest(@RequestBody String request) {
 		RestTemplate restTemplate = new RestTemplate();
 		AdhocQueryRequest requestObj;
@@ -48,21 +48,22 @@ public class DocumentQueryController {
 		}catch(SAMLException e){
 			return consumerService.createSOAPFault();
 		}
-		logger.info("Request object: " + requestObj.toString());
+		String adhocQueryId = requestObj.getId();
+		logger.info("Docuement query Request object(" + adhocQueryId + "): " + requestObj.toString());
 		DocumentQuery docQuery = SOAPService.convertToDocumentQuery(requestObj);
 		
 		// these documents need to have metadata
 		List<Document> docs = docQueryService.queryForDocuments(restTemplate, docQuery.getPatientId());
 		
 		AdhocQueryResponse responseObj = JSONService.convertDocumentListToSOAPResponse(docs, docQuery.getPatientId());
-		logger.info("Response object: " + responseObj.toString());
+		logger.info("Document query Response object(" + adhocQueryId + "): " + responseObj.toString());
 		String response = null;
 		try {
 			response = consumerService.marshallDocumentQueryResponse(responseObj);
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-		logger.info("Response string: " + response);
+		logger.info("Document query Response string(" + adhocQueryId + "): " + response);
 		return response;
 	}
 }

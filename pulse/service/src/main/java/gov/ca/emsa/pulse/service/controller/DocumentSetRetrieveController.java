@@ -45,20 +45,20 @@ public class DocumentSetRetrieveController {
 		} catch (SAMLException e1) {
 			return consumerService.createSOAPFault();
 		}
-		logger.info("Request object: " + requestObj.toString());
+		logger.info("Document set Request object: " + requestObj.toString());
 		DocumentRetrieve docRetrieve = SOAPService.convertToDocumentSetRequest(requestObj);
 		
 		List<DocumentWrapper> docs = docRetrieveService.retrieveDocuments(restTemplate, docRetrieve, "");
 		
 		RetrieveDocumentSetResponseType responseObj = JSONService.convertDocumentSetToSOAPResponse(docs);
-		logger.info("Response object: " + responseObj.toString());
+		logger.info("Document set Response object: " + responseObj.toString());
 		String response = null;
 		try {
 			response = consumerService.marshallDocumentSetResponse(responseObj);
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-		logger.info("Response string: " + response);
+		logger.info("Document set Response string: " + response);
 		return response;
 	}
 }
