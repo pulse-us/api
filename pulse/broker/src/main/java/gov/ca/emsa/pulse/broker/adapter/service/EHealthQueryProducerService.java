@@ -18,12 +18,12 @@ import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 
 public interface EHealthQueryProducerService {
 	public PRPAIN201306UV02 unMarshallPatientDiscoveryResponseObject(String xml) throws SOAPException, SAMLException;
-	public AdhocQueryRequest unMarshallDocumentQueryResponseObject(String xml) throws SAMLException;
+	public AdhocQueryResponse unMarshallDocumentQueryResponseObject(String xml) throws SAMLException, SOAPException;
 	public RetrieveDocumentSetRequestType unMarshallDocumentSetRetrieveResponseObject(String xml) throws SAMLException;
 	public String marshallPatientDiscoveryRequest(SAMLInput samlInput, PRPAIN201305UV02 response) throws JAXBException;
 	public String createSOAPFault();
 	public String marshallDocumentQueryResponse(AdhocQueryResponse response) throws JAXBException;
-	public String marshallDocumentQueryRequest(AdhocQueryRequest request) throws JAXBException;
+	public String marshallDocumentQueryRequest(SAMLInput samlInput, AdhocQueryRequest request) throws JAXBException;
 	public String marshallDocumentSetRequest(RetrieveDocumentSetResponseType responseObj) throws JAXBException;
 	public PRPAIN201305UV02 unMarshallPatientDiscoveryRequestObject(String xml) throws SOAPException, SAMLException;
 	public AdhocQueryRequest unMarshallDocumentQueryRequestObject(String xml) throws SAMLException;

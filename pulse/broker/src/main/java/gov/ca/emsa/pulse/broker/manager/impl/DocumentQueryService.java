@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,6 +21,7 @@ import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 
 @Component
 public class DocumentQueryService implements Runnable {
@@ -32,19 +34,19 @@ public class DocumentQueryService implements Runnable {
 	@Autowired private DocumentManager docManager;
 	@Autowired private AdapterFactory adapterFactory;
 	private PatientDTO toSearch;
-	private String samlMessage;
+	private SAMLInput samlInput;
 	
 	@Override
 	@Transactional
 	public void run() {
 		//query this organization directly for 
 		boolean querySuccess = true;
-		Document[] searchResults = null;
+		List<DocumentDTO> searchResults = null;
 		Adapter adapter = adapterFactory.getAdapter(org);
 		if(adapter != null) {
 			logger.info("Starting query to " + org.getAdapter() + " for documents.");
 			try {
-				searchResults = adapter.queryDocuments(org, patientOrgMap, samlMessage);
+				searchResults = adapter.queryDocuments(org, patientOrgMap, samlInput);
 			} catch(Exception ex) {
 				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 				querySuccess = false;
@@ -52,12 +54,11 @@ public class DocumentQueryService implements Runnable {
 		}
 		
 		//store the returned document info
-		if(searchResults != null && searchResults.length > 0) {
-			for(Document doc : searchResults) {
-				DocumentDTO toSave = DomainToDtoConverter.convert(doc);
-				toSave.setPatientOrgMapId(patientOrgMap.getId());
+		if(searchResults != null && searchResults.size() > 0) {
+			for(DocumentDTO doc : searchResults) {
+				doc.setPatientOrgMapId(patientOrgMap.getId());
 				//save document
-				docManager.create(toSave);
+				docManager.create(doc);
 			}
 		} 
 		
@@ -76,14 +77,6 @@ public class DocumentQueryService implements Runnable {
 
 	public void setOrg(OrganizationDTO org) {
 		this.org = org;
-	}
-
-	public String getSamlMessage() {
-		return samlMessage;
-	}
-
-	public void setSamlMessage(String samlMessage) {
-		this.samlMessage = samlMessage;
 	}
 
 	public QueryManager getQueryManager() {
@@ -124,5 +117,13 @@ public class DocumentQueryService implements Runnable {
 
 	public void setToSearch(PatientDTO toSearch) {
 		this.toSearch = toSearch;
+	}
+
+	public SAMLInput getSamlInput() {
+		return samlInput;
+	}
+
+	public void setSamlInput(SAMLInput samlInput) {
+		this.samlInput = samlInput;
 	}
 }

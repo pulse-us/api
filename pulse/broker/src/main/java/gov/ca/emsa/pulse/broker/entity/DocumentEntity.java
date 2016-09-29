@@ -25,11 +25,37 @@ public class DocumentEntity {
 	@Column(name="patient_organization_map_id")
 	private Long patientOrgMapId;
 	
+	//metadata
 	@Column(name="name")
 	private String name;
 	
 	@Column(name = "format")
 	private String format;
+	
+	@Column(name = "class_name")
+	private String className;
+	
+	@Column(name = "confidentiality")
+	private String confidentiality;
+	
+	@Column(name = "description")
+	private String description;
+	
+	@Column(name = "size")
+	private String size;
+	
+	@Column(name = "doc_creation_time")
+	private String creationTime;
+		
+	//required to get the document back later
+	@Column(name = "home_community_id")
+	private String homeCommunityId; 
+	
+	@Column(name = "repository_unique_id")
+	private String repositoryUniqueId;
+	
+	@Column(name = "document_unique_id")
+	private String documentUniqueId;
 	
 	@Column(name = "contents")
 	private byte[] contents;
@@ -117,5 +143,69 @@ public class DocumentEntity {
 
 	public void setPatientOrgMap(PatientOrganizationMapEntity patientOrgMap) {
 		this.patientOrgMap = patientOrgMap;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public String getConfidentiality() {
+		return confidentiality;
+	}
+
+	public void setConfidentiality(String confidentiality) {
+		this.confidentiality = confidentiality;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getSize() {
+		return size;
+	}
+
+	public void setSize(String size) {
+		this.size = size;
+	}
+
+	public String getCreationTime() {
+		return creationTime;
+	}
+
+	public void setCreationTime(String creationTime) {
+		this.creationTime = creationTime;
+	}
+
+	public String getHomeCommunityId() {
+		return homeCommunityId;
+	}
+
+	public void setHomeCommunityId(String homeCommunityId) {
+		this.homeCommunityId = homeCommunityId;
+	}
+
+	public String getRepositoryUniqueId() {
+		return repositoryUniqueId;
+	}
+
+	public void setRepositoryUniqueId(String repositoryUniqueId) {
+		this.repositoryUniqueId = repositoryUniqueId;
+	}
+
+	public String getDocumentUniqueId() {
+		return documentUniqueId;
+	}
+
+	public void setDocumentUniqueId(String documentUniqueId) {
+		this.documentUniqueId = documentUniqueId;
 	}
 }

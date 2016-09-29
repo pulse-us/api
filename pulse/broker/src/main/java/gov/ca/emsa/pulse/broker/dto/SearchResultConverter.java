@@ -12,6 +12,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
+import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Patient;
 
 public class SearchResultConverter {

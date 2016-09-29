@@ -22,6 +22,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
+import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
+import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
@@ -32,6 +34,8 @@ import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 @Component
 public class EHealthAdapter implements Adapter {
@@ -83,19 +87,44 @@ public class EHealthAdapter implements Adapter {
 	}
 
 	@Override
-	public Document[] queryDocuments(OrganizationDTO org, PatientOrganizationMapDTO toSearch, String samlMessage) {
-		String postUrl = org.getEndpointUrl() + "/mock/ehealthexchange/documents";
-		MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
-		parameters.add("patientId", toSearch.getOrgPatientId());
-		parameters.add("samlMessage", samlMessage);
-		RestTemplate restTemplate = new RestTemplate();
-		Document[] searchResults = null;
+	public List<DocumentDTO> queryDocuments(OrganizationDTO org, PatientOrganizationMapDTO toSearch, SAMLInput samlInput) {
+		Patient patientToSearch = new Patient();
+		toSearch.setOrgPatientId(toSearch.getOrgPatientId());
+		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientToSearch);
+		String requestBodyXml = null;
 		try {
-			searchResults = restTemplate.postForObject(postUrl, parameters, Document[].class);
+			requestBodyXml = queryProducer.marshallDocumentQueryRequest(samlInput, requestBody);
+		} catch(JAXBException ex) {
+			logger.error(ex.getMessage(), ex);
+		}
+		
+		String postUrl = org.getEndpointUrl() + "/documentQuery";
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_XML);   
+		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
+
+		String searchResults = null;
+		try {
+			RestTemplate restTemplate = new RestTemplate();
+			searchResults = restTemplate.postForObject(postUrl, request, String.class);
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + postUrl, ex);
 			throw ex;
 		}
-		return searchResults;
+		
+		List<DocumentDTO> records = new ArrayList<DocumentDTO>();
+		if(!StringUtils.isEmpty(searchResults)) {
+			try {
+				AdhocQueryResponse resultObj = queryProducer.unMarshallDocumentQueryResponseObject(searchResults);
+				List<Document> documentResults = soapConverterService.convertToDocumentQueryResponse(resultObj);
+				for(int i = 0; i < documentResults.size(); i++) {
+					DocumentDTO record = DomainToDtoConverter.convert(documentResults.get(i));
+					records.add(record);
+				}
+			} catch(SAMLException | SOAPException ex) {
+				logger.error("Exception unmarshalling patient discovery response", ex);
+			}
+		}
+		return records;
 	}
 }

@@ -208,8 +208,18 @@ public class DtoToDomainConverter {
 		Document result = new Document();
 		result.setId(dtoObj.getId()+"");
 		result.setName(dtoObj.getName());
+		result.setFormat(dtoObj.getFormat());
 		result.setCached(dtoObj.getContents() != null && dtoObj.getContents().length > 0);
 		result.setOrgMapId(dtoObj.getPatientOrgMapId());
+		
+		result.setClassName(dtoObj.getClassName());
+		result.setConfidentiality(dtoObj.getConfidentiality());
+		result.setCreationTime(dtoObj.getCreationTime());
+		result.setDescription(dtoObj.getDescription());
+		result.setDocumentUniqueId(dtoObj.getDocumentUniqueId());
+		result.setHomeCommunityId(dtoObj.getHomeCommunityId());
+		result.setRepositoryUniqueId(dtoObj.getRepositoryUniqueId());
+		result.setSize(dtoObj.getSize());
 		return result;
 	}
 }

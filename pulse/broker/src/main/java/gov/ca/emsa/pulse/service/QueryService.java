@@ -109,14 +109,8 @@ public class QueryService {
 			customAttributes.put("PatientId", orgMapDto.getOrgPatientId());
 			input.setAttributes(customAttributes);
 
-			String samlMessage = null;
-			try {
-				samlMessage = samlGenerator.createSAML(input);
-			} catch (MarshallingException e) {
-				logger.error("Could not create SAML from input " + input, e);
-			}
 			patient.getOrgMaps().add(orgMapDto);
-			docManager.queryForDocuments(samlMessage, orgMapDto);
+			docManager.queryForDocuments(input, orgMapDto);
 		}
 
 		//delete query (all associated items should cascade)

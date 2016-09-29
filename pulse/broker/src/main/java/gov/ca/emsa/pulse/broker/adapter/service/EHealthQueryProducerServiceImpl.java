@@ -165,10 +165,45 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return sw.toString();
 	}
 	
-	public String marshallDocumentQueryRequest(AdhocQueryRequest request) throws JAXBException{
-		StringWriter sw = new StringWriter();
-		Marshaller jaxbMarshaller = createMarshaller(createJAXBContext(request.getClass()));
-		jaxbMarshaller.marshal(request, sw);
+	public String marshallDocumentQueryRequest(SAMLInput samlInput, AdhocQueryRequest request) throws JAXBException{
+		MessageFactory factory = null;
+		try {
+			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+		} catch (SOAPException e1) {
+			logger.error(e1);
+		}
+		SOAPMessage soapMessage = null;
+		try {
+			soapMessage = factory.createMessage();
+		} catch (SOAPException e) {
+			logger.error(e);
+		}
+		
+		try {
+			createSecurityHeading(soapMessage, samlInput);
+		} catch(SOAPException soap) {
+			logger.error(soap);
+		}
+		
+		Document document = null;
+		try {
+			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+		Marshaller documentMarshaller = createMarshaller(createJAXBContext(request.getClass()));
+		documentMarshaller.marshal(request, document);
+		try {
+			soapMessage.getSOAPBody().addDocument(document);
+		} catch (SOAPException e1) {
+			e1.printStackTrace();
+		}
+		OutputStream sw = new ByteArrayOutputStream();
+		try {
+			soapMessage.writeTo(sw);
+		} catch (IOException | SOAPException e) {
+			e.printStackTrace();
+		}
 		return sw.toString();
 	}
 	
@@ -254,7 +289,8 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return (PRPAIN201306UV02) requestObj.getValue();
 	}
 
-	public AdhocQueryRequest unMarshallDocumentQueryResponseObject(String xml) throws SAMLException{
+	public AdhocQueryResponse unMarshallDocumentQueryResponseObject(String xml) throws SAMLException,SOAPException 
+	{
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -268,39 +304,32 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 			logger.error(e);
 		}
 		SaajSoapMessage saajSoap = new SaajSoapMessage(soapMessage);
+		Source requestSource = saajSoap.getSoapBody().getPayloadSource();
 
-		if(checkSecurityHeading(saajSoap)){
-
-			Source requestSource = saajSoap.getSoapBody().getPayloadSource();
-
-			// Create a JAXB context
-			JAXBContext jc = null;
-			try {
-				jc = JAXBContext.newInstance(AdhocQueryRequest.class);
-			}
-			catch (Exception ex) {
-				logger.error(ex);
-			}
-
-			// Create JAXB unmarshaller
-			Unmarshaller unmarshaller = null;
-			try {
-				unmarshaller = jc.createUnmarshaller();
-			}
-			catch (Exception ex) {
-				logger.error(ex);
-			}
-			JAXBElement<?> requestObj = null;
-			try {
-				requestObj = (JAXBElement<?>) unmarshaller.unmarshal(requestSource, AdhocQueryRequest.class);
-			} catch (JAXBException e) {
-				logger.error(e);
-			}
-			return (AdhocQueryRequest) requestObj.getValue();
-		}else{
-			logger.error("SOAP message does not have a SAML header");
-			throw new SAMLException();
+		// Create a JAXB context
+		JAXBContext jc = null;
+		try {
+			jc = JAXBContext.newInstance(AdhocQueryResponse.class);
 		}
+		catch (Exception ex) {
+			logger.error(ex);
+		}
+
+		// Create JAXB unmarshaller
+		Unmarshaller unmarshaller = null;
+		try {
+			unmarshaller = jc.createUnmarshaller();
+		}
+		catch (Exception ex) {
+			logger.error(ex);
+		}
+		JAXBElement<?> requestObj = null;
+		try {
+			requestObj = (JAXBElement<?>) unmarshaller.unmarshal(requestSource, AdhocQueryResponse.class);
+		} catch (JAXBException e) {
+			logger.error(e);
+		}
+		return (AdhocQueryResponse) requestObj.getValue();
 	}
 
 	public RetrieveDocumentSetRequestType unMarshallDocumentSetRetrieveResponseObject(String xml) throws SAMLException{

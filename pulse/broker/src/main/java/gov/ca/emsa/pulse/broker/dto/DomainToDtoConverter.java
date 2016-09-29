@@ -108,7 +108,15 @@ public class DomainToDtoConverter {
 	public static DocumentDTO convert(Document domainObj) {
 		DocumentDTO result = new DocumentDTO();
 		result.setName(domainObj.getName());
-		result.setFormat("TODO"); //TODO:
+		result.setFormat(domainObj.getFormat());
+		result.setClassName(domainObj.getClassName());
+		result.setConfidentiality(domainObj.getConfidentiality());
+		result.setCreationTime(domainObj.getCreationTime());
+		result.setDescription(domainObj.getDescription());
+		result.setDocumentUniqueId(domainObj.getDocumentUniqueId());
+		result.setHomeCommunityId(domainObj.getHomeCommunityId());
+		result.setRepositoryUniqueId(domainObj.getRepositoryUniqueId());
+		result.setSize(domainObj.getSize());
 		result.setPatientOrgMapId(domainObj.getOrgMapId());
 		return result;
 	}

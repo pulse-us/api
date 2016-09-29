@@ -24,6 +24,7 @@ import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 
 @Service
 public class DocumentManagerImpl implements DocumentManager {
@@ -46,9 +47,9 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	@Transactional
-	public void queryForDocuments(String samlMessage, PatientOrganizationMapDTO dto) {
+	public void queryForDocuments(SAMLInput samlInput, PatientOrganizationMapDTO dto) {
 		DocumentQueryService service = getDocumentQueryService();
-		service.setSamlMessage(samlMessage);
+		service.setSamlInput(samlInput);
 		service.setPatientOrgMap(dto);
 		service.setOrg(dto.getOrg());
 		pool.execute(service);
