@@ -11,7 +11,7 @@ public interface SamlGenerator {
 	public XMLObjectBuilderFactory getSAMLBuilder() throws ConfigurationException;
 	
 	public String createSAML(SAMLInput input) throws MarshallingException;
-
+	public org.w3c.dom.Element createSAMLElement(SAMLInput input) throws MarshallingException;
 	/**
 	 * Builds a SAML Attribute of type String
 	 * @param name

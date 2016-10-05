@@ -17,6 +17,7 @@ import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.SearchResultConverter;
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 
 @Component
 public class MockAdapter implements Adapter {
@@ -26,7 +27,7 @@ public class MockAdapter implements Adapter {
 	}
 	
 	@Override
-	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, PatientSearch toSearch, String samlMessage) {
+	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, PatientSearch toSearch, SAMLInput samlInput) {
 		String postUrl = org.getEndpointUrl() + "/patients";
 		MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
 		parameters.add("givenName", toSearch.getGivenName());
@@ -35,7 +36,7 @@ public class MockAdapter implements Adapter {
 		parameters.add("gender", toSearch.getGender());
 		parameters.add("ssn", toSearch.getSsn());
 		parameters.add("zipcode", toSearch.getZip());
-		parameters.add("samlMessage", samlMessage);
+		parameters.add("samlMessage", samlInput.toString());
 		RestTemplate restTemplate = new RestTemplate();
 		Patient[] searchResults = null;
 		try {

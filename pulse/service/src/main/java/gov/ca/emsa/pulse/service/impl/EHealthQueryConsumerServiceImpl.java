@@ -2,11 +2,13 @@ package gov.ca.emsa.pulse.service.impl;
 
 import gov.ca.emsa.pulse.service.EHealthQueryConsumerService;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import gov.ca.emsa.pulse.service.controller.PatientDiscoveryController;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
@@ -14,21 +16,33 @@ import java.util.Iterator;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
+
+import org.w3c.dom.Node;
+
+import javax.xml.soap.SOAPBodyElement;
 import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPElementFactory;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 import org.hl7.v3.*;
 import org.opensaml.common.SAMLException;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -73,6 +87,126 @@ public class EHealthQueryConsumerServiceImpl implements EHealthQueryConsumerServ
 			}
 		}
 		return false;
+	}
+	
+	public String marshallPatientDiscoveryResponse(PRPAIN201310UV02 response) throws JAXBException{
+		MessageFactory factory = null;
+		try {
+			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+		} catch (SOAPException e1) {
+			logger.error(e1);
+		}
+		SOAPMessage soapMessage = null;
+		try {
+			soapMessage = factory.createMessage();
+		} catch (SOAPException e) {
+			logger.error(e);
+		}
+		JAXBElement<PRPAIN201310UV02> je = new JAXBElement<PRPAIN201310UV02>(new QName("PRPAIN201310UV02"), PRPAIN201310UV02.class, response);
+		Document document = null;
+		try {
+			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+		Marshaller documentMarshaller = createMarshaller(createJAXBContext(response.getClass()));
+		documentMarshaller.marshal(je, document);
+		try {
+			soapMessage.getSOAPBody().addDocument(document);
+		} catch (SOAPException e1) {
+			e1.printStackTrace();
+		}
+		OutputStream sw = new ByteArrayOutputStream();
+		try {
+			soapMessage.writeTo(sw);
+		} catch (IOException | SOAPException e) {
+			e.printStackTrace();
+		}
+		return sw.toString();
+	}
+	
+	public String marshallDocumentQueryResponse(AdhocQueryResponse response) throws JAXBException{
+		MessageFactory factory = null;
+		try {
+			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+		} catch (SOAPException e1) {
+			logger.error(e1);
+		}
+		SOAPMessage soapMessage = null;
+		try {
+			soapMessage = factory.createMessage();
+		} catch (SOAPException e) {
+			logger.error(e);
+		}
+		JAXBElement<AdhocQueryResponse> je = new JAXBElement<AdhocQueryResponse>(new QName("AdhocQueryResponse"), AdhocQueryResponse.class, response);
+		Document document = null;
+		try {
+			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+		Marshaller documentMarshaller = createMarshaller(createJAXBContext(response.getClass()));
+		documentMarshaller.marshal(je, document);
+		try {
+			soapMessage.getSOAPBody().addDocument(document);
+		} catch (SOAPException e1) {
+			e1.printStackTrace();
+		}
+		OutputStream sw = new ByteArrayOutputStream();
+		try {
+			soapMessage.writeTo(sw);
+		} catch (IOException | SOAPException e) {
+			e.printStackTrace();
+		}
+		return sw.toString();
+	}
+	
+	public String marshallDocumentSetResponse(RetrieveDocumentSetResponseType response) throws JAXBException{
+		MessageFactory factory = null;
+		try {
+			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+		} catch (SOAPException e1) {
+			logger.error(e1);
+		}
+		SOAPMessage soapMessage = null;
+		try {
+			soapMessage = factory.createMessage();
+		} catch (SOAPException e) {
+			logger.error(e);
+		}
+		JAXBElement<RetrieveDocumentSetResponseType> je = new JAXBElement<RetrieveDocumentSetResponseType>(new QName("RetrieveDocumentSetResponseType"), RetrieveDocumentSetResponseType.class, response);
+		Document document = null;
+		try {
+			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+		Marshaller documentMarshaller = createMarshaller(createJAXBContext(response.getClass()));
+		documentMarshaller.marshal(je, document);
+		try {
+			soapMessage.getSOAPBody().addDocument(document);
+		} catch (SOAPException e1) {
+			e1.printStackTrace();
+		}
+		OutputStream sw = new ByteArrayOutputStream();
+		try {
+			soapMessage.writeTo(sw);
+		} catch (IOException | SOAPException e) {
+			e.printStackTrace();
+		}
+		return sw.toString();
+	}
+	
+	public Marshaller createMarshaller(JAXBContext jc){
+		// Create JAXB marshaller
+		Marshaller marshaller = null;
+		try {
+			marshaller = jc.createMarshaller();
+		}
+		catch (Exception ex) {
+			logger.error(ex);
+		}
+		return marshaller;
 	}
 
 	public JAXBContext createJAXBContext(Class<?> classObj){

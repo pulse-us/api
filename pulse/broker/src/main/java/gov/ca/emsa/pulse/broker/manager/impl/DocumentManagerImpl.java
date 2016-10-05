@@ -84,7 +84,7 @@ public class DocumentManagerImpl implements DocumentManager {
 			if(patientOrgMap != null && patientOrgMap.getOrg() != null) {
 				OrganizationDTO org = patientOrgMap.getOrg();
 				if(org != null && org.getEndpointUrl() != null) {
-					String url = org.getEndpointUrl() + "/document?name=" + cachedDoc.getName();
+					String url = org.getEndpointUrl() + "/mock/ehealthexchange/document?name=" + cachedDoc.getName();
 					MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
 					parameters.add("samlMessage", samlMessage);
 					RestTemplate restTemplate = new RestTemplate();
