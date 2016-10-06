@@ -1,11 +1,8 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -108,8 +105,19 @@ public class DomainToDtoConverter {
 	public static DocumentDTO convert(Document domainObj) {
 		DocumentDTO result = new DocumentDTO();
 		result.setName(domainObj.getName());
-		result.setFormat("TODO"); //TODO:
+		result.setFormat(domainObj.getFormat());
+		result.setClassName(domainObj.getClassName());
+		result.setConfidentiality(domainObj.getConfidentiality());
+		result.setCreationTime(domainObj.getCreationTime());
+		result.setDescription(domainObj.getDescription());
+		result.setSize(domainObj.getSize());
 		result.setPatientOrgMapId(domainObj.getOrgMapId());
+		
+		if(domainObj.getIdentifier() != null) {
+			result.setDocumentUniqueId(domainObj.getIdentifier().getDocumentUniqueId());
+			result.setHomeCommunityId(domainObj.getIdentifier().getHomeCommunityId());
+			result.setRepositoryUniqueId(domainObj.getIdentifier().getRepositoryUniqueId());
+		}
 		return result;
 	}
 }

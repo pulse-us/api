@@ -7,18 +7,13 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.opensaml.xml.io.MarshallingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
@@ -32,6 +27,9 @@ import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
+import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.Query;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -109,14 +107,8 @@ public class QueryService {
 			customAttributes.put("PatientId", orgMapDto.getOrgPatientId());
 			input.setAttributes(customAttributes);
 
-			String samlMessage = null;
-			try {
-				samlMessage = samlGenerator.createSAML(input);
-			} catch (MarshallingException e) {
-				logger.error("Could not create SAML from input " + input, e);
-			}
 			patient.getOrgMaps().add(orgMapDto);
-			docManager.queryForDocuments(samlMessage, orgMapDto);
+			docManager.queryForDocuments(input, orgMapDto);
 		}
 
 		//delete query (all associated items should cascade)

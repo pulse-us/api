@@ -36,6 +36,8 @@ import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.DocumentRequest;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
@@ -170,6 +172,20 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		dsrt.setRegistryResponse(rr);
 		dsrt.getDocumentResponse().addAll(documentResponses);
 		return dsrt;
+	}
+	
+	public RetrieveDocumentSetRequestType convertToRetrieveDocumentSetRequest(List<Document> documents) {
+		RetrieveDocumentSetRequestType request = new RetrieveDocumentSetRequestType();
+		for(Document doc : documents) {
+			DocumentRequest docReq = new DocumentRequest();
+			if(doc.getIdentifier() != null) {
+				docReq.setDocumentUniqueId(doc.getIdentifier().getDocumentUniqueId());
+				docReq.setHomeCommunityId(doc.getIdentifier().getHomeCommunityId());
+				docReq.setRepositoryUniqueId(doc.getIdentifier().getRepositoryUniqueId());
+				request.getDocumentRequest().add(docReq);
+			}
+		}
+		return request;
 	}
 
 }

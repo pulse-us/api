@@ -30,14 +30,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
 import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExternalIdentifierType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.InternationalStringType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.LocalizedStringType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 
 @Service
 public class SOAPToJSONServiceImpl implements SOAPToJSONService {
@@ -255,10 +268,112 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		return docQuery;
 	}
 	
+	public List<Document> convertToDocumentQueryResponse(AdhocQueryResponse response) {
+		List<Document> documents = new ArrayList<Document>();
+		RegistryObjectListType regList = response.getRegistryObjectList();
+		List<JAXBElement<? extends IdentifiableType>> idTypes = regList.getIdentifiable();
+		for(Object obj : idTypes) {
+			if(obj instanceof JAXBElement<?>) {
+				JAXBElement<?> jaxbObj = (JAXBElement<?>)obj;
+				if(jaxbObj != null && jaxbObj.getValue() != null && jaxbObj.getValue() instanceof ExtrinsicObjectType) {
+					Document doc = new Document();
+					DocumentIdentifier docId = new DocumentIdentifier();
+					ExtrinsicObjectType extObj = (ExtrinsicObjectType)jaxbObj.getValue();
+					//home community id
+					docId.setHomeCommunityId(extObj.getHome());
+					
+					//doc name
+					List<LocalizedStringType> docNameLocals = extObj.getName().getLocalizedString();
+					if(docNameLocals != null && docNameLocals.size() > 0) {
+						doc.setName(docNameLocals.get(0).getValue());
+					}
+					//description
+					List<LocalizedStringType> descLocals = extObj.getDescription().getLocalizedString();
+					if(descLocals != null && descLocals.size() > 0) {
+						doc.setDescription(descLocals.get(0).getValue());
+					}
+					
+					//slots
+					List<SlotType1> slots = extObj.getSlot();
+					for(SlotType1 slot : slots) {
+						if(slot.getName().equalsIgnoreCase("repositoryUniqueId")) {
+							ValueListType values = slot.getValueList();
+							List<String> valueStrings = values.getValue();
+							//TODO: just use the first one for now. how do we handle multiples?
+							if(valueStrings.size() > 0) {
+								docId.setRepositoryUniqueId(valueStrings.get(0));
+							}
+						} else if(slot.getName().equalsIgnoreCase("creationTime")) {
+							ValueListType values = slot.getValueList();
+							List<String> valueStrings = values.getValue();
+							//TODO: just use the first one for now. how do we handle multiples?
+							if(valueStrings.size() > 0) {
+								doc.setCreationTime(valueStrings.get(0));
+							}
+						}  else if(slot.getName().equalsIgnoreCase("size")) {
+							ValueListType values = slot.getValueList();
+							List<String> valueStrings = values.getValue();
+							//TODO: just use the first one for now. how do we handle multiples?
+							if(valueStrings.size() > 0) {
+								doc.setSize(valueStrings.get(0));
+							}
+						}
+					}
+					
+					//classifications
+					List<ClassificationType> classifications = extObj.getClassification();
+					for(ClassificationType classification : classifications) {
+						InternationalStringType classStr = classification.getName();
+						if(classStr != null) {
+							List<LocalizedStringType> classLocal = classStr.getLocalizedString();
+							if(classLocal != null && classLocal.size() > 0 && !StringUtils.isEmpty(classLocal.get(0).getValue())) {
+								switch(classification.getClassificationScheme()) {
+								case "urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a":
+									//class code
+									doc.setClassName(classLocal.get(0).getValue());
+									break;
+								case "urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f":
+									//confidentiality
+									doc.setConfidentiality(classLocal.get(0).getValue());
+									break;
+								case "urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d":
+									//format
+									doc.setFormat(classLocal.get(0).getValue());
+									break;
+								}		
+							}
+						}
+					}
+					
+					//set the document unique id. 
+					List<ExternalIdentifierType> extIds = extObj.getExternalIdentifier();
+					for(ExternalIdentifierType extId : extIds) {
+						InternationalStringType nameHolder = extId.getName();
+						if(nameHolder != null) {
+							List<LocalizedStringType> nameLocals = nameHolder.getLocalizedString();
+							for(LocalizedStringType nameLocal : nameLocals) {
+								if(nameLocal.getValue().equals("XDSDocumentEntry.uniqueId") &&
+									StringUtils.isEmpty(docId.getDocumentUniqueId())) {
+									docId.setDocumentUniqueId(extId.getValue());
+								}
+							}
+						}
+					}
+					doc.setIdentifier(docId);
+					documents.add(doc);	
+				}
+			}
+		}
+		return documents;
+	}
+	
 	public DocumentRetrieve convertToDocumentSetRequest(RetrieveDocumentSetRequestType request){
 		DocumentRetrieve dr = new DocumentRetrieve();
 		dr.setDocRequests(request.getDocumentRequest());
 		return dr;
 	}
 
+	public List<DocumentResponse> convertToDocumentSetResponse(RetrieveDocumentSetResponseType response) {
+		return response.getDocumentResponse();
+	}
 }

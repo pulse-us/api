@@ -24,6 +24,14 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		DocumentEntity doc = new DocumentEntity();
 		doc.setName(dto.getName());
 		doc.setFormat(dto.getFormat());
+		doc.setClassName(dto.getClassName());
+		doc.setConfidentiality(dto.getConfidentiality());
+		doc.setCreationTime(dto.getCreationTime());
+		doc.setDescription(dto.getDescription());
+		doc.setDocumentUniqueId(dto.getDocumentUniqueId());
+		doc.setHomeCommunityId(dto.getHomeCommunityId());
+		doc.setRepositoryUniqueId(dto.getRepositoryUniqueId());
+		doc.setSize(dto.getSize());
 		doc.setContents(dto.getContents());
 		doc.setLastReadDate(new Date());
 		doc.setPatientOrgMapId(dto.getPatientOrgMapId());
@@ -39,6 +47,13 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		DocumentEntity doc = this.getEntityById(dto.getId());		
 		doc.setName(dto.getName());
 		doc.setFormat(dto.getFormat());
+		doc.setConfidentiality(dto.getConfidentiality());
+		doc.setCreationTime(dto.getCreationTime());
+		doc.setDescription(dto.getDescription());
+		doc.setDocumentUniqueId(dto.getDocumentUniqueId());
+		doc.setHomeCommunityId(dto.getHomeCommunityId());
+		doc.setRepositoryUniqueId(dto.getRepositoryUniqueId());
+		doc.setSize(dto.getSize());
 		doc.setContents(dto.getContents());
 		doc.setLastReadDate(new Date());
 		doc.setPatientOrgMapId(dto.getPatientOrgMapId());
