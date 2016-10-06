@@ -1,11 +1,17 @@
 package gov.ca.emsa.pulse.broker.adapter;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.activation.DataHandler;
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.SOAPException;
 
+import org.apache.commons.codec.binary.Base64InputStream;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hl7.v3.PRPAIN201305UV02;
@@ -22,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
+import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
@@ -32,6 +39,9 @@ import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
@@ -120,9 +130,81 @@ public class EHealthAdapter implements Adapter {
 					records.add(record);
 				}
 			} catch(SAMLException | SOAPException ex) {
-				logger.error("Exception unmarshalling patient discovery response", ex);
+				logger.error("Exception unmarshalling document discovery response", ex);
 			}
 		}
 		return records;
+	}
+	
+	/**
+	 * get all of the document contents available from the given organization
+	 * @param orgMap
+	 * @param documents
+	 * @return
+	 */
+	@Override
+	public void retrieveDocumentsContents(OrganizationDTO org, List<DocumentDTO> documents, SAMLInput samlInput) {
+		List<Document> docsToSearch = new ArrayList<Document>();
+		for(DocumentDTO docDto : documents) {
+			Document doc = DtoToDomainConverter.convert(docDto);
+			docsToSearch.add(doc);
+		}
+		RetrieveDocumentSetRequestType requestBody = jsonConverterService.convertToRetrieveDocumentSetRequest(docsToSearch);
+		String requestBodyXml = null;
+		try {
+			requestBodyXml = queryProducer.marshallDocumentSetRequest(samlInput, requestBody);
+		} catch(JAXBException ex) {
+			logger.error(ex.getMessage(), ex);
+		}
+		
+		String postUrl = org.getEndpointUrl() + "/retrieveDocumentSet";
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_XML);   
+		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
+
+		String searchResults = null;
+		try {
+			RestTemplate restTemplate = new RestTemplate();
+			searchResults = restTemplate.postForObject(postUrl, request, String.class);
+		} catch(Exception ex) {
+			logger.error("Exception when querying " + postUrl, ex);
+			throw ex;
+		}
+		
+		if(!StringUtils.isEmpty(searchResults)) {
+			try {
+				RetrieveDocumentSetResponseType resultObj = queryProducer.unMarshallDocumentSetRetrieveResponseObject(searchResults);
+				List<DocumentResponse> documentResponses = soapConverterService.convertToDocumentSetResponse(resultObj);
+				for(DocumentResponse docResponse : documentResponses) {
+					//find the matching DocumentDTO that we sent in
+					DocumentDTO matchingDto = null;
+					for(int i = 0; i < documents.size() && matchingDto == null; i++) {
+						DocumentDTO currDto = documents.get(i);
+						if(currDto.getRepositoryUniqueId().equals(docResponse.getRepositoryUniqueId()) && 
+							currDto.getHomeCommunityId().equals(docResponse.getHomeCommunityId()) &&
+							currDto.getDocumentUniqueId().equals(docResponse.getDocumentUniqueId())) {
+							matchingDto = currDto;
+						}
+					}
+					
+					if(matchingDto != null) {
+						//read the binary document data from this DocumentResponse
+						DataHandler dh = docResponse.getDocument();
+						try {
+						InputStream in = dh.getDataSource().getInputStream();
+						Base64InputStream is = new Base64InputStream(in, false); //false to decode
+						StringWriter writer = new StringWriter();
+						IOUtils.copy(is, writer, java.nio.charset.Charset.forName("UTF-8"));
+						logger.info(writer.toString());
+						matchingDto.setContents(writer.toString().getBytes());
+						} catch(IOException ex) {
+							logger.error("Could not read data from document content " + ex.getMessage(), ex);
+						}
+					}
+				}
+			} catch(SAMLException ex) {
+				logger.error("Exception unmarshalling document retrieve response", ex);
+			}
+		}
 	}
 }

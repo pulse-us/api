@@ -1,21 +1,21 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.opensaml.common.binding.SAMLMessageContext;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
+import gov.ca.emsa.pulse.broker.adapter.Adapter;
+import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
@@ -28,11 +28,14 @@ import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 
 @Service
 public class DocumentManagerImpl implements DocumentManager {
+	private static final Logger logger = LogManager.getLogger(DocumentManagerImpl.class);
+
 	@Autowired private PatientManager patientManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private DocumentDAO docDao;
 	@Autowired private PatientDAO patientDao;
-	@Autowired private OrganizationDAO orgDao;
+	@Autowired private AdapterFactory adapterFactory;
+
 	private final ExecutorService pool;
 
 	public DocumentManagerImpl() {
@@ -46,7 +49,6 @@ public class DocumentManagerImpl implements DocumentManager {
 	}
 	
 	@Override
-	@Transactional
 	public void queryForDocuments(SAMLInput samlInput, PatientOrganizationMapDTO dto) {
 		DocumentQueryService service = getDocumentQueryService();
 		service.setSamlInput(samlInput);
@@ -60,43 +62,65 @@ public class DocumentManagerImpl implements DocumentManager {
 		return docDao.getByPatientId(patientId);
 	}
 	
+	//for the time being, we want this method to be synchronous 
+	//we are using it to get just one document at a time but it could accept
+	//multiple documents from the same organization if we want to do that in the future
 	@Override
-	public String getDocumentById(String samlMessage, Long documentId) {
-		String docContents = "";		
-		
-		DocumentDTO cachedDoc = docDao.getById(documentId);
-		//update patient last read time when document is cached or viewed
-		if(cachedDoc != null) {
-			PatientOrganizationMapDTO patientOrgMap = patientDao.getPatientOrgMapById(cachedDoc.getPatientOrgMapId());
-			PatientDTO patient = patientDao.getById(patientOrgMap.getPatientId());
-			patient.setLastReadDate(new Date());
-			patientManager.update(patient);
-			
-			if(patient.getAcf() != null) {
-				patient.getAcf().setLastReadDate(new Date());
-				acfManager.update(patient.getAcf());
+	@Transactional
+	public void queryForDocumentContents(SAMLInput samlInput, OrganizationDTO org, List<DocumentDTO> docsFromOrg) {
+		boolean querySuccess = true;
+		Adapter adapter = adapterFactory.getAdapter(org);
+		if(adapter != null) {
+			logger.info("Starting query to " + org.getAdapter() + " for document contents.");
+			try {
+				adapter.retrieveDocumentsContents(org, docsFromOrg, samlInput);
+			} catch(Exception ex) {
+				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
+				querySuccess = false;
 			}
 		}
 		
-		if(cachedDoc != null && cachedDoc.getContents() != null && cachedDoc.getContents().length > 0) {
-			docContents = new String(cachedDoc.getContents());
-		} else if(cachedDoc != null) {
-			PatientOrganizationMapDTO patientOrgMap = patientDao.getPatientOrgMapById(cachedDoc.getPatientOrgMapId());
-			if(patientOrgMap != null && patientOrgMap.getOrg() != null) {
-				OrganizationDTO org = patientOrgMap.getOrg();
-				if(org != null && org.getEndpointUrl() != null) {
-					String url = org.getEndpointUrl() + "/mock/ehealthexchange/document?name=" + cachedDoc.getName();
-					MultiValueMap<String,String> parameters = new LinkedMultiValueMap<String,String>();
-					parameters.add("samlMessage", samlMessage);
-					RestTemplate restTemplate = new RestTemplate();
-					String remoteDocContents = restTemplate.postForObject(url, parameters, String.class);
-					if(cachedDoc != null) {
-						cachedDoc.setContents(remoteDocContents.getBytes());
-						docDao.update(cachedDoc);
-					}
-					docContents = remoteDocContents;
-				}	
+		if(querySuccess) {
+			//store the returned document contents
+			for(DocumentDTO doc : docsFromOrg) {
+				if(doc.getContents() != null && doc.getContents().length > 0) {
+					docDao.update(doc);
+				}
 			}
+			
+			logger.info("Completed query to " + org.getAdapter() + " for contents of " + docsFromOrg.size() + " documents.");
+		}
+	}
+	
+	@Override
+	public String getDocumentById(SAMLInput samlInput, Long documentId) {
+		String docContents = "";		
+		
+		DocumentDTO cachedDoc = docDao.getById(documentId);
+		if(cachedDoc == null) {
+			logger.error("Could not find the document with id " + documentId);
+			return null;
+		}
+		
+		//update patient last read time when document is cached or viewed
+		PatientOrganizationMapDTO patientOrgMap = patientDao.getPatientOrgMapById(cachedDoc.getPatientOrgMapId());
+		PatientDTO patient = patientDao.getById(patientOrgMap.getPatientId());
+		patient.setLastReadDate(new Date());
+		patientManager.update(patient);
+		if(patient.getAcf() != null) {
+			patient.getAcf().setLastReadDate(new Date());
+			acfManager.update(patient.getAcf());
+		}
+		
+		
+		if(cachedDoc.getContents() != null && cachedDoc.getContents().length > 0) {
+			docContents = new String(cachedDoc.getContents());
+		} else {
+			List<DocumentDTO> docsToGet = new ArrayList<DocumentDTO>();
+			docsToGet.add(cachedDoc);
+			queryForDocumentContents(samlInput, patientOrgMap.getOrg(), docsToGet);
+			byte[] retrievedContents = docsToGet.get(0).getContents();
+			docContents = retrievedContents == null ? "" : new String(retrievedContents);
 		}
 		return docContents;
 	}

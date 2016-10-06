@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,11 +35,13 @@ import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
@@ -166,14 +169,42 @@ public class JSONToSoapTest {
 		assertEquals(1, docs.size());
 		Document doc = docs.get(0);
 		assertEquals("20080516", doc.getCreationTime());
-		assertEquals("urn:oid:2.16.840.1.113883.3.166", doc.getHomeCommunityId());
-		assertEquals("2.16.840.1.113883.3.166.3.1", doc.getRepositoryUniqueId());
+		assertEquals("urn:oid:2.16.840.1.113883.3.166", doc.getIdentifier().getHomeCommunityId());
+		assertEquals("2.16.840.1.113883.3.166.3.1", doc.getIdentifier().getRepositoryUniqueId());
 		assertEquals("35452", doc.getSize());
 		assertEquals("Physical Test", doc.getName());
 		assertNull(doc.getDescription());
 		assertEquals("SUMMARIZATION OF EPISODE NOTE", doc.getClassName());
 		assertEquals("Normal", doc.getConfidentiality());
 		assertEquals("HL7 CCD Document", doc.getFormat());
-		assertEquals("129.6.58.92.147", doc.getDocumentUniqueId());
+		assertEquals("129.6.58.92.147", doc.getIdentifier().getDocumentUniqueId());
+	}
+	
+	@Test
+	public void testCreateDocumentRetrieveRequest() throws JAXBException, 
+		SAMLException, SOAPException, JWTValidationException {
+		List<Document> docs = new ArrayList<Document>();
+		Document doc = new Document();
+		DocumentIdentifier docId = new DocumentIdentifier();
+		docId.setHomeCommunityId("1.1.1.1");
+		docId.setRepositoryUniqueId("2.2.2.2.2");
+		docId.setDocumentUniqueId("3.3.3.3.3");
+		doc.setIdentifier(docId);
+		docs.add(doc);
+		
+		SAMLInput input = new SAMLInput();
+		input.setStrIssuer("https://idp.dhv.gov");
+		input.setStrNameID("UserBrianLindsey");
+		input.setStrNameQualifier("My Website");
+		input.setSessionId("abcdedf1234567");
+		HashMap<String, String> customAttributes = new HashMap<String,String>();
+		customAttributes.put("RequesterFirstName", "Katy");
+		customAttributes.put("RequestReason", "Patient is bleeding.");
+		input.setAttributes(customAttributes);
+
+		RetrieveDocumentSetRequestType request = service.convertToRetrieveDocumentSetRequest(docs);
+		String requestXml = ehealthService.marshallDocumentSetRequest(input, request);
+		Assert.notNull(requestXml);
+		System.out.println(requestXml);
 	}
 }

@@ -18,9 +18,8 @@ public class Document {
 	private String creationTime;
 	
 	//required to get the document back later
-	private String homeCommunityId; //64 chars
-	private String repositoryUniqueId;
-	private String documentUniqueId;
+	//identifies a document uniquely to an organization
+	private DocumentIdentifier identifier;
 		
 	public Document() {}
 	
@@ -67,33 +66,6 @@ public class Document {
 		this.size = size;
 	}
 
-	@XmlTransient
-	public String getHomeCommunityId() {
-		return homeCommunityId;
-	}
-
-	public void setHomeCommunityId(String homeCommunityId) {
-		this.homeCommunityId = homeCommunityId;
-	}
-
-	public String getRepositoryUniqueId() {
-		return repositoryUniqueId;
-	}
-
-	@XmlTransient
-	public void setRepositoryUniqueId(String repositoryUniqueId) {
-		this.repositoryUniqueId = repositoryUniqueId;
-	}
-
-	public String getDocumentUniqueId() {
-		return documentUniqueId;
-	}
-
-	@XmlTransient
-	public void setDocumentUniqueId(String documentUniqueId) {
-		this.documentUniqueId = documentUniqueId;
-	}
-
 	public String getClassName() {
 		return className;
 	}
@@ -132,6 +104,15 @@ public class Document {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@XmlTransient
+	public DocumentIdentifier getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(DocumentIdentifier identifier) {
+		this.identifier = identifier;
 	}
 	
 }

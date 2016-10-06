@@ -37,7 +37,6 @@ public class DocumentQueryService implements Runnable {
 	private SAMLInput samlInput;
 	
 	@Override
-	@Transactional
 	public void run() {
 		//query this organization directly for 
 		boolean querySuccess = true;

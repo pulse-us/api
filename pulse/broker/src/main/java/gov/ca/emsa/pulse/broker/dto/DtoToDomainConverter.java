@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.Organization;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientOrganizationMap;
@@ -216,10 +217,13 @@ public class DtoToDomainConverter {
 		result.setConfidentiality(dtoObj.getConfidentiality());
 		result.setCreationTime(dtoObj.getCreationTime());
 		result.setDescription(dtoObj.getDescription());
-		result.setDocumentUniqueId(dtoObj.getDocumentUniqueId());
-		result.setHomeCommunityId(dtoObj.getHomeCommunityId());
-		result.setRepositoryUniqueId(dtoObj.getRepositoryUniqueId());
 		result.setSize(dtoObj.getSize());
+
+		DocumentIdentifier docId = new DocumentIdentifier();
+		docId.setDocumentUniqueId(dtoObj.getDocumentUniqueId());
+		docId.setHomeCommunityId(dtoObj.getHomeCommunityId());
+		docId.setRepositoryUniqueId(dtoObj.getRepositoryUniqueId());
+		result.setIdentifier(docId);
 		return result;
 	}
 }

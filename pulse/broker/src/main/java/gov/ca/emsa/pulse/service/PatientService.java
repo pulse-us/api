@@ -101,19 +101,11 @@ public class PatientService {
 		customAttributes.put("PatientSSN", "123456789");
 		input.setAttributes(customAttributes);
 
-		String samlMessage = null;
-
-		try {
-			samlMessage = samlGenerator.createSAML(input);
-		} catch (MarshallingException e) {
-			e.printStackTrace();
-		}
-
 		String result = "";
 		if(cacheOnly == null || cacheOnly.booleanValue() == false) {
-			result = docManager.getDocumentById(samlMessage, documentId);
+			result = docManager.getDocumentById(input, documentId);
 		} else {
-			docManager.getDocumentById(samlMessage, documentId);
+			docManager.getDocumentById(input, documentId);
 		}
 		return result;
 	}
