@@ -3,7 +3,9 @@ package gov.ca.emsa.pulse.broker.adapter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import javax.activation.DataHandler;
@@ -189,16 +191,21 @@ public class EHealthAdapter implements Adapter {
 					
 					if(matchingDto != null) {
 						//read the binary document data from this DocumentResponse
-						DataHandler dh = docResponse.getDocument();
+						DataHandler dataHandler = docResponse.getDocument();
+						InputStream in = null;
 						try {
-						InputStream in = dh.getDataSource().getInputStream();
-						Base64InputStream is = new Base64InputStream(in, false); //false to decode
-						StringWriter writer = new StringWriter();
-						IOUtils.copy(is, writer, java.nio.charset.Charset.forName("UTF-8"));
-						logger.info(writer.toString());
-						matchingDto.setContents(writer.toString().getBytes());
-						} catch(IOException ex) {
-							logger.error("Could not read data from document content " + ex.getMessage(), ex);
+							in = dataHandler.getDataSource().getInputStream();
+							StringWriter writer = new StringWriter();
+							IOUtils.copy(in, writer, Charset.forName("UTF-8"));
+							String dataStr = base64DecodeMessage(writer.toString());
+							logger.debug("Converted binary to " + dataStr);
+							matchingDto.setContents(dataStr.getBytes());
+						} catch(IOException e) {
+							e.printStackTrace();
+						} finally {
+							try {
+								if(in != null) { in.close(); }
+							} catch(Exception ignore) {}
 						}
 					}
 				}
@@ -207,4 +214,10 @@ public class EHealthAdapter implements Adapter {
 			}
 		}
 	}
+	    
+	 private String base64DecodeMessage(String encodedMessage){       
+		 byte[] decoded = Base64.getDecoder().decode(encodedMessage);
+		 String decodedMessage = new String(decoded, Charset.forName("UTF-8"));
+		 return decodedMessage;
+	 }
 }
