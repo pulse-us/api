@@ -46,6 +46,9 @@ public class PatientNameEntity {
 	@Column(name="prefix")
 	private String prefix;
 	
+	@Column(name = "prof_suffix")
+	private String profSuffix;
+	
 	@Column(name="name_type_code")
 	private String nameTypeCode;
 	
@@ -207,6 +210,14 @@ public class PatientNameEntity {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getProfSuffix() {
+		return profSuffix;
+	}
+
+	public void setProfSuffix(String profSuffix) {
+		this.profSuffix = profSuffix;
 	}
 	
 	

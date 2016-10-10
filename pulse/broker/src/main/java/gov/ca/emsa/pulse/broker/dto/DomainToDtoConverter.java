@@ -40,8 +40,8 @@ public class DomainToDtoConverter {
 				result.getPatientName().setSuffix(domainObj.getPatientName().getSuffix());
 			if(domainObj.getPatientName().getPrefix() != null)
 				result.getPatientName().setPrefix(domainObj.getPatientName().getPrefix());
-			if(domainObj.getPatientName().getNameTypeCode() != null)
-				result.getPatientName().setNameTypeCode(domainObj.getPatientName().getNameTypeCode());
+			if(domainObj.getPatientName().getNameType() != null)
+				result.getPatientName().setNameTypeCode(domainObj.getPatientName().getNameType());
 			if(domainObj.getPatientName().getNameTypeCodeDescription() != null)
 				result.getPatientName().setNameTypeCodeDescription(domainObj.getPatientName().getNameTypeCodeDescription());
 			if(domainObj.getPatientName().getNameRepresentationCode() != null)
@@ -122,8 +122,8 @@ public class DomainToDtoConverter {
 				result.getPatientName().setSuffix(domainObj.getPatientName().getSuffix());
 			if(domainObj.getPatientName().getPrefix() != null)
 				result.getPatientName().setPrefix(domainObj.getPatientName().getPrefix());
-			if(domainObj.getPatientName().getNameTypeCode() != null)
-				result.getPatientName().setNameTypeCode(domainObj.getPatientName().getNameTypeCode());
+			if(domainObj.getPatientName().getNameType() != null)
+				result.getPatientName().setNameTypeCode(domainObj.getPatientName().getNameType());
 			if(domainObj.getPatientName().getNameTypeCodeDescription() != null)
 				result.getPatientName().setNameTypeCodeDescription(domainObj.getPatientName().getNameTypeCodeDescription());
 			if(domainObj.getPatientName().getNameRepresentationCode() != null)

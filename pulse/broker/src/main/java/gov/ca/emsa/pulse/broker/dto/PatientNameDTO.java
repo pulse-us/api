@@ -15,6 +15,7 @@ public class PatientNameDTO {
 	private String familyName;
 	private String suffix;
 	private String prefix;
+	private String profSuffix;
 	private String nameTypeCode;
 	private String nameTypeCodeDescription;
 	private String nameRepresentationCode;
@@ -142,4 +143,13 @@ public class PatientNameDTO {
 		this.expirationDate = expirationDate;
 	}
 
+	public String getProfSuffix() {
+		return profSuffix;
+	}
+
+	public void setProfSuffix(String profSuffix) {
+		this.profSuffix = profSuffix;
+	}
+
+	
 }

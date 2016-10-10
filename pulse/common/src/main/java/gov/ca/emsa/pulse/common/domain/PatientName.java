@@ -6,11 +6,12 @@ import java.util.Date;
 public class PatientName {
 	
 	private String id;
-	private ArrayList<GivenName> givenName;
-	private String familyName;
+	private ArrayList<GivenName> givens;
+	private String family;
 	private String suffix;
 	private String prefix;
-	private String nameTypeCode;
+	private String profSuffix;
+	private String nameType;
 	private String nameTypeCodeDescription;
 	private String nameRepresentationCode;
 	private String nameRepresentationCodeDescription;
@@ -20,7 +21,7 @@ public class PatientName {
 	private Date expirationDate;
 	
 	public PatientName(){
-		this.givenName = new ArrayList<GivenName>();
+		this.givens = new ArrayList<GivenName>();
 	}
 	
 	public String getId() {
@@ -30,16 +31,16 @@ public class PatientName {
 		this.id = id;
 	}
 	public ArrayList<GivenName> getGivenName() {
-		return givenName;
+		return givens;
 	}
 	public void setGivenName(ArrayList<GivenName> givens) {
-		this.givenName = givens;
+		this.givens = givens;
 	}
 	public String getFamilyName() {
-		return familyName;
+		return family;
 	}
 	public void setFamilyName(String familyName) {
-		this.familyName = familyName;
+		this.family = familyName;
 	}
 	public String getSuffix() {
 		return suffix;
@@ -53,11 +54,11 @@ public class PatientName {
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
-	public String getNameTypeCode() {
-		return nameTypeCode;
+	public String getNameType() {
+		return nameType;
 	}
-	public void setNameTypeCode(String nameTypeCode) {
-		this.nameTypeCode = nameTypeCode;
+	public void setNameTypeCode(String nameType) {
+		this.nameType = nameType;
 	}
 	public String getNameTypeCodeDescription() {
 		return nameTypeCodeDescription;
@@ -103,5 +104,15 @@ public class PatientName {
 	public void setExpirationDate(Date expirationDate) {
 		this.expirationDate = expirationDate;
 	}
+
+	public String getProfSuffix() {
+		return profSuffix;
+	}
+
+	public void setProfSuffix(String profSuffix) {
+		this.profSuffix = profSuffix;
+	}
+	
+	
 
 }

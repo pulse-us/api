@@ -37,7 +37,7 @@ public class SearchResultConverter {
 			patientName.setGivenName(givens);
 			patientName.setSuffix(domainObj.getPatientName().getSuffix());
 			patientName.setPrefix(domainObj.getPatientName().getPrefix());
-			patientName.setNameTypeCode(domainObj.getPatientName().getNameTypeCode());
+			patientName.setNameTypeCode(domainObj.getPatientName().getNameType());
 			patientName.setNameTypeCodeDescription(domainObj.getPatientName().getNameTypeCodeDescription());
 			patientName.setNameRepresentationCode(domainObj.getPatientName().getNameRepresentationCode());
 			patientName.setNameRepresentationCodeDescription(domainObj.getPatientName().getNameRepresentationCodeDescription());

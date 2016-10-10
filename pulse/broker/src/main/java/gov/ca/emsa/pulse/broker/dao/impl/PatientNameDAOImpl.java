@@ -57,6 +57,7 @@ public class PatientNameDAOImpl extends BaseDAOImpl implements PatientNameDAO {
 		}
 		patient.setSuffix(dto.getSuffix());
 		patient.setPrefix(dto.getPrefix());
+		patient.setProfSuffix(dto.getProfSuffix());
 		patient.setNameTypeCode(dto.getNameTypeCode());
 		patient.setNameTypeCodeDescription(dto.getNameTypeCodeDescription());
 		patient.setNameRepresentationCode(dto.getNameRepresentationCode());
