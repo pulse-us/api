@@ -14,25 +14,39 @@ import org.springframework.stereotype.Repository;
 import gov.ca.emsa.pulse.broker.dao.AddressDAO;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientNameDAO;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientNameDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.common.domain.PatientName;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import gov.ca.emsa.pulse.broker.entity.AddressEntity;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
+import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 
 @Repository
 public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	private static final Logger logger = LogManager.getLogger(PatientDAOImpl.class);
 	@Autowired AddressDAO addrDao;
+	@Autowired PatientNameDAO nameDao;
 	
 	@Override
 	public PatientDTO create(PatientDTO dto) {
 		PatientEntity patient = new PatientEntity();
-		patient.setGivenName(dto.getGivenName());
-		patient.setFamilyName(dto.getFamilyName());
+		if(dto.getPatientName() != null){
+			if(dto.getPatientName().getId() == null){
+				PatientNameDTO nameDto = nameDao.create(dto.getPatientName());
+				dto.setPatientName(nameDto);
+			}
+			//patient name entity should exist now
+			PatientNameEntity name = entityManager.find(PatientNameEntity.class, dto.getPatientName().getId());
+			patient.setPatientName(name);
+		}
 		if(dto.getDateOfBirth() != null) {
 			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
 		}
@@ -79,8 +93,36 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	@Override
 	public PatientDTO update(PatientDTO dto) {
 		PatientEntity patient = this.getEntityById(dto.getId());
-		patient.setGivenName(dto.getGivenName());
-		patient.setFamilyName(dto.getFamilyName());
+		patient.getPatientName().setFamilyName(dto.getPatientName().getFamilyName());
+		ArrayList<GivenNameEntity> givens = new ArrayList<GivenNameEntity>();
+		for(GivenNameDTO givenDto : dto.getPatientName().getGivenName()){
+			GivenNameEntity givenName = new GivenNameEntity();
+			givenName.setGivenName(givenDto.getGivenName());
+			givenName.setId(givenDto.getId());
+			givenName.setPatientNameId(givenDto.getPatientNameId());
+			givens.add(givenName);
+		}
+		patient.getPatientName().setGivenNames(givens);
+		if(dto.getPatientName().getSuffix() != null)
+			patient.getPatientName().setSuffix(dto.getPatientName().getSuffix());
+		if(dto.getPatientName().getPrefix() != null)
+			patient.getPatientName().setPrefix(dto.getPatientName().getPrefix());
+		if(dto.getPatientName().getNameTypeCode() != null)
+			patient.getPatientName().setNameTypeCode(dto.getPatientName().getNameTypeCode());
+		if(dto.getPatientName().getNameTypeCodeDescription() != null)
+			patient.getPatientName().setNameTypeCodeDescription(dto.getPatientName().getNameTypeCodeDescription());
+		if(dto.getPatientName().getNameRepresentationCode() != null)
+			patient.getPatientName().setNameRepresentationCode(dto.getPatientName().getNameRepresentationCode());
+		if(dto.getPatientName().getNameRepresentationCodeDescription() != null)
+			patient.getPatientName().setNameRepresentationCodeDescription(dto.getPatientName().getNameRepresentationCodeDescription());
+		if(dto.getPatientName().getNameAssemblyOrderCode() != null)
+			patient.getPatientName().setNameAssemblyOrderCode(dto.getPatientName().getNameAssemblyOrderCode());
+		if(dto.getPatientName().getNameAssemblyOrderCodeDescription() != null)
+			patient.getPatientName().setNameAssemblyOrderCodeDescription(dto.getPatientName().getNameAssemblyOrderCodeDescription());
+		if(dto.getPatientName().getEffectiveDate() != null)
+			patient.getPatientName().setEffectiveDate(dto.getPatientName().getEffectiveDate());
+		if(dto.getPatientName().getExpirationDate() != null)
+			patient.getPatientName().setExpirationDate(dto.getPatientName().getExpirationDate());
 		if(dto.getDateOfBirth() != null) {
 			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
 		} else {

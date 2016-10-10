@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.broker.dao;
 
+import java.util.ArrayList;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,12 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import junit.framework.TestCase;
 
@@ -72,8 +76,15 @@ public class PatientDaoTest extends TestCase {
 	public void testCreatePatientNoAddress() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setGivenName("Jonathan");
-		toCreate.setFamilyName("Smith");
+		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+		GivenNameDTO given = new GivenNameDTO();
+		given.setGivenName("Jonathon");
+		givens.add(given);
+		toCreate.getPatientName().setGivenName(givens);
+		toCreate.getPatientName().setFamilyName("Smith");
+		toCreate.getPatientName().setSuffix("MD");
+		toCreate.getPatientName().setPrefix("Dr.");
+		toCreate.getPatientName().setNameTypeCode("G");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -94,6 +105,9 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
 		assertEquals(0, selected.getOrgMaps().size());
+		assertEquals(toCreate.getPatientName().getFamilyName(), selected.getPatientName().getFamilyName());
+		assertEquals(toCreate.getPatientName().getSuffix(), selected.getPatientName().getSuffix());
+		assertEquals(toCreate.getPatientName().getNameTypeCode(), selected.getPatientName().getNameTypeCode());
 	}
 	
 	@Test
@@ -117,8 +131,13 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setGivenName("Jonathan");
-		toCreate.setFamilyName("Smith");
+		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+		GivenNameDTO given = new GivenNameDTO();
+		given.setGivenName("Jonathon");
+		givens.add(given);
+		toCreate.getPatientName().setGivenName(givens);
+		toCreate.getPatientName().setFamilyName("Smith");
+		toCreate.getPatientName().setNameTypeCode("L");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -164,8 +183,13 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setGivenName("Jonathan");
-		toCreate.setFamilyName("Smith");
+		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+		GivenNameDTO given = new GivenNameDTO();
+		given.setGivenName("Jonathon");
+		givens.add(given);
+		toCreate.getPatientName().setGivenName(givens);
+		toCreate.getPatientName().setFamilyName("Smith");
+		toCreate.getPatientName().setNameTypeCode("L");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -203,8 +227,13 @@ public class PatientDaoTest extends TestCase {
 	public void testCreatePatientWithOrgMaps() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setGivenName("Jonathan");
-		toCreate.setFamilyName("Smith");
+		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+		GivenNameDTO given = new GivenNameDTO();
+		given.setGivenName("Jonathon");
+		givens.add(given);
+		toCreate.getPatientName().setGivenName(givens);
+		toCreate.getPatientName().setFamilyName("Smith");
+		toCreate.getPatientName().setNameTypeCode("L");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -257,19 +286,28 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setGivenName("Jonathan");
-		toCreate.setFamilyName("Smith");
+		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+		GivenNameDTO given = new GivenNameDTO();
+		given.setGivenName("Johnathan");
+		givens.add(given);
+		toCreate.getPatientName().setGivenName(givens);
+		toCreate.getPatientName().setFamilyName("Smith");
+		toCreate.getPatientName().setNameTypeCode("L");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		toCreate.setAddress(addrDto);
 		
 		PatientDTO created = patientDao.create(toCreate);
-		created.setGivenName("Johnathan");
+		givens.remove(0);
+		GivenNameDTO given2 = new GivenNameDTO();
+		given.setGivenName("Johnathan");
+		givens.add(given2);
+		toCreate.getPatientName().setGivenName(givens);
 		PatientDTO updated = patientDao.update(created);
 		assertNotNull(updated);
 		assertEquals(updated.getId().longValue(), created.getId().longValue());
-		assertEquals("Johnathan", updated.getGivenName());
+		assertEquals("Johnathan", updated.getPatientName().getGivenName().get(0).getGivenName());
 	}
 	
 	@Test
@@ -293,8 +331,13 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setGivenName("Jonathan");
-		toCreate.setFamilyName("Smith");
+		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+		GivenNameDTO given = new GivenNameDTO();
+		given.setGivenName("Jonathon");
+		givens.add(given);
+		toCreate.getPatientName().setGivenName(givens);
+		toCreate.getPatientName().setFamilyName("Smith");
+		toCreate.getPatientName().setNameTypeCode("L");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");

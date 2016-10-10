@@ -16,8 +16,8 @@ public class MockBroker {
 	@RequestMapping("/search")
 	public String provideActiveQueryForTesting(@RequestBody PatientSearch patientSearch){
 		if(patientSearch.getDob().equals("05/02/1993") &&
-				patientSearch.getFamilyName().equals("Doe") &&
-				patientSearch.getGivenName().equals("John") &&
+				patientSearch.getPatientName().getFamilyName().equals("Doe") &&
+				patientSearch.getPatientName().getGivenName().get(0).equals("John") &&
 				patientSearch.getGender().equals("M")){
 			return brokerSearchActiveQueryResponse;
 		}

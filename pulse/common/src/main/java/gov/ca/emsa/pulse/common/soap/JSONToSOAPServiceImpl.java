@@ -58,8 +58,8 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 			PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent registrationEvent = new PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent();
 			PRPAIN201310UV02MFMIMT700711UV01Subject2 subject1 = new PRPAIN201310UV02MFMIMT700711UV01Subject2();
 			PRPAMT201304UV02Patient patient = new PRPAMT201304UV02Patient();
-			JAXBElement<EnExplicitGiven> given = new JAXBElement(new QName("given"), String.class, record.getGivenName());
-			JAXBElement<EnExplicitFamily> family = new JAXBElement(new QName("family"), String.class, record.getFamilyName());
+			JAXBElement<EnExplicitGiven> given = new JAXBElement(new QName("given"), String.class, record.getPatientName().getGivenName());
+			JAXBElement<EnExplicitFamily> family = new JAXBElement(new QName("family"), String.class, record.getPatientName().getFamilyName());
 			PNExplicit pnGiven = new PNExplicit();
 			PNExplicit pnFamily = new PNExplicit();
 			pnGiven.getContent().add(given);
@@ -85,11 +85,11 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		PRPAMT201306UV02QueryByParameter queryByParameter1 = new PRPAMT201306UV02QueryByParameter();
 		PRPAMT201306UV02ParameterList parameterList = new PRPAMT201306UV02ParameterList();
 		
-		if(!StringUtils.isEmpty(search.getGivenName()) || !StringUtils.isEmpty(search.getFamilyName())) {
+		if(!StringUtils.isEmpty(search.getPatientName().getGivenName()) || !StringUtils.isEmpty(search.getPatientName().getFamilyName())) {
 			PRPAMT201306UV02LivingSubjectName name = new PRPAMT201306UV02LivingSubjectName();
 			ENExplicit nameValue = new ENExplicit();
-			nameValue.getContent().add(new JAXBElement<String>(new QName("given"), String.class, search.getGivenName()));
-			nameValue.getContent().add(new JAXBElement<String>(new QName("family"), String.class, search.getFamilyName()));
+			nameValue.getContent().add(new JAXBElement<String>(new QName("given"), String.class, search.getPatientName().getGivenName().get(0).getGivenName()));
+			nameValue.getContent().add(new JAXBElement<String>(new QName("family"), String.class, search.getPatientName().getFamilyName()));
 			name.getValue().add(nameValue);
 			parameterList.getLivingSubjectName().add(name);
 		}

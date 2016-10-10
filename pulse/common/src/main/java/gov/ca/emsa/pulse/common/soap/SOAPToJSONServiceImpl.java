@@ -33,6 +33,7 @@ import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
 import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
+import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -67,9 +68,13 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 			for(Serializable nameInList: names){
 				if(nameInList instanceof JAXBElement<?>){
 					if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("given")){
-						ps.setGivenName(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
+						ArrayList<GivenName> givens = new ArrayList<GivenName>();
+						GivenName given = new GivenName();
+						given.setGivenName(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
+						givens.add(given);
+						ps.getPatientName().setGivenName(givens);
 					}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("family")){
-						ps.setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
+						ps.getPatientName().setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
 					}
 				}
 			}
@@ -95,9 +100,13 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					for(Serializable namePart : nameParts) {
 						if(namePart instanceof JAXBElement<?>) {
 							if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("given")) {
-								patientRecord.setGivenName(((JAXBElement<EnExplicitGiven>)namePart).getValue().getContent());
+								ArrayList<GivenName> givens = new ArrayList<GivenName>();
+								GivenName given = new GivenName();
+								given.setGivenName(((JAXBElement<EnExplicitGiven>) namePart).getValue().getContent());
+								givens.add(given);
+								patientRecord.getPatientName().setGivenName(givens);
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
-								patientRecord.setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+								patientRecord.getPatientName().setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
 							}
 						}
 					}
@@ -174,9 +183,12 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					for(Serializable namePart : nameParts) {
 						if(namePart instanceof JAXBElement<?>) {
 							if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("given")) {
-								patient.setGivenName(((JAXBElement<EnExplicitGiven>)namePart).getValue().getContent());
+								ArrayList<GivenName> givens = new ArrayList<GivenName>();
+								GivenName given = new GivenName();
+								given.setGivenName(((JAXBElement<EnExplicitGiven>) namePart).getValue().getContent());
+								givens.add(given);
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
-								patient.setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+								patient.getPatientName().setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
 							}
 						}
 					}

@@ -6,13 +6,16 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
+import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 
@@ -24,8 +27,38 @@ public class DomainToDtoConverter {
 		if(domainObj.getId() != null) {
 			result.setId(new Long(domainObj.getId()));
 		}
-		result.setGivenName(domainObj.getGivenName());
-		result.setFamilyName(domainObj.getFamilyName());
+		if(domainObj.getPatientName() != null){
+			result.getPatientName().setFamilyName(domainObj.getPatientName().getFamilyName());
+			ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+			for(GivenName givenDto : domainObj.getPatientName().getGivenName()){
+				GivenNameDTO givenName = new GivenNameDTO();
+				givenName.setGivenName(givenDto.getGivenName());
+				givenName.setId(givenDto.getId());
+				givenName.setPatientNameId(givenDto.getPatientNameId());
+				givens.add(givenName);
+			}
+			result.getPatientName().setGivenName(givens);
+			if(domainObj.getPatientName().getSuffix() != null)
+				result.getPatientName().setSuffix(domainObj.getPatientName().getSuffix());
+			if(domainObj.getPatientName().getPrefix() != null)
+				result.getPatientName().setPrefix(domainObj.getPatientName().getPrefix());
+			if(domainObj.getPatientName().getNameTypeCode() != null)
+				result.getPatientName().setNameTypeCode(domainObj.getPatientName().getNameTypeCode());
+			if(domainObj.getPatientName().getNameTypeCodeDescription() != null)
+				result.getPatientName().setNameTypeCodeDescription(domainObj.getPatientName().getNameTypeCodeDescription());
+			if(domainObj.getPatientName().getNameRepresentationCode() != null)
+				result.getPatientName().setNameRepresentationCode(domainObj.getPatientName().getNameRepresentationCode());
+			if(domainObj.getPatientName().getNameRepresentationCodeDescription() != null)
+				result.getPatientName().setNameRepresentationCodeDescription(domainObj.getPatientName().getNameRepresentationCodeDescription());
+			if(domainObj.getPatientName().getNameAssemblyOrderCode() != null)
+				result.getPatientName().setNameAssemblyOrderCode(domainObj.getPatientName().getNameAssemblyOrderCode());
+			if(domainObj.getPatientName().getNameAssemblyOrderCodeDescription() != null)
+				result.getPatientName().setNameAssemblyOrderCodeDescription(domainObj.getPatientName().getNameAssemblyOrderCodeDescription());
+			if(domainObj.getPatientName().getEffectiveDate() != null)
+				result.getPatientName().setEffectiveDate(domainObj.getPatientName().getEffectiveDate());
+			if(domainObj.getPatientName().getExpirationDate() != null)
+				result.getPatientName().setExpirationDate(domainObj.getPatientName().getExpirationDate());
+		}
 		result.setGender(domainObj.getGender());
 		if(!StringUtils.isEmpty(domainObj.getDateOfBirth())) {
 			LocalDate patientDob = null;
@@ -76,8 +109,38 @@ public class DomainToDtoConverter {
 		if(domainObj.getId() != null) {
 			result.setId(new Long(domainObj.getId()));
 		}
-		result.setGivenName(domainObj.getGivenName());
-		result.setFamilyName(domainObj.getFamilyName());
+		if(domainObj.getPatientName() != null){
+			result.getPatientName().setFamilyName(domainObj.getPatientName().getFamilyName());
+			ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+			for(GivenName givenDto : domainObj.getPatientName().getGivenName()){
+				GivenNameDTO givenName = new GivenNameDTO();
+				givenName.setGivenName(givenDto.getGivenName());
+				givenName.setId(givenDto.getId());
+				givenName.setPatientNameId(givenDto.getPatientNameId());
+				givens.add(givenName);
+			}
+			result.getPatientName().setGivenName(givens);
+			if(domainObj.getPatientName().getSuffix() != null)
+				result.getPatientName().setSuffix(domainObj.getPatientName().getSuffix());
+			if(domainObj.getPatientName().getPrefix() != null)
+				result.getPatientName().setPrefix(domainObj.getPatientName().getPrefix());
+			if(domainObj.getPatientName().getNameTypeCode() != null)
+				result.getPatientName().setNameTypeCode(domainObj.getPatientName().getNameTypeCode());
+			if(domainObj.getPatientName().getNameTypeCodeDescription() != null)
+				result.getPatientName().setNameTypeCodeDescription(domainObj.getPatientName().getNameTypeCodeDescription());
+			if(domainObj.getPatientName().getNameRepresentationCode() != null)
+				result.getPatientName().setNameRepresentationCode(domainObj.getPatientName().getNameRepresentationCode());
+			if(domainObj.getPatientName().getNameRepresentationCodeDescription() != null)
+				result.getPatientName().setNameRepresentationCodeDescription(domainObj.getPatientName().getNameRepresentationCodeDescription());
+			if(domainObj.getPatientName().getNameAssemblyOrderCode() != null)
+				result.getPatientName().setNameAssemblyOrderCode(domainObj.getPatientName().getNameAssemblyOrderCode());
+			if(domainObj.getPatientName().getNameAssemblyOrderCodeDescription() != null)
+				result.getPatientName().setNameAssemblyOrderCodeDescription(domainObj.getPatientName().getNameAssemblyOrderCodeDescription());
+			if(domainObj.getPatientName().getEffectiveDate() != null)
+				result.getPatientName().setEffectiveDate(domainObj.getPatientName().getEffectiveDate());
+			if(domainObj.getPatientName().getExpirationDate() != null)
+				result.getPatientName().setExpirationDate(domainObj.getPatientName().getExpirationDate());
+		}
 		result.setGender(domainObj.getGender());
 		if(!StringUtils.isEmpty(domainObj.getDateOfBirth())) {
 			LocalDate patientDob = null;

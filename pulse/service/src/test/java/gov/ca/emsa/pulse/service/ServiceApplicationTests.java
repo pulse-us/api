@@ -4,6 +4,7 @@ import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
 import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
 import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
+import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -264,14 +265,18 @@ public class ServiceApplicationTests {
 				,MediaType.APPLICATION_JSON));
 
 		PatientSearch patientSearch = createPatientSearchObject();
-
+		ArrayList<GivenName> givens = new ArrayList<GivenName>();
+		GivenName given = new GivenName();
+		given.setGivenName("John");
+		patientSearch.getPatientName().setGivenName(givens);
+		patientSearch.getPatientName().setFamilyName("Doe");
 		pss.searchForPatientWithTerms(mockRestTemplate, patientSearch);
 
 		Future<List<QueryOrganization>> future = executor.submit(pss);
 
 		assertNotNull(future.get());
-		assertEquals(future.get().get(0).getResults().get(0).getFamilyName(),"Doe");
-		assertEquals(future.get().get(0).getResults().get(0).getGivenName(),"John");
+		assertEquals(future.get().get(0).getResults().get(0).getPatientName().getFamilyName(),"Doe");
+		assertEquals(future.get().get(0).getResults().get(0).getPatientName().getGivenName().get(0),"John");
 		assertEquals(future.get().get(0).getResults().get(0).getPhoneNumber(),"3517869574");
 	}
 
@@ -286,12 +291,20 @@ public class ServiceApplicationTests {
 		PatientRecord pr1 = new PatientRecord();
 		PatientRecord pr2 = new PatientRecord();
 		pr1.setDateOfBirth("2016-09-19");
-		pr1.setFamilyName("Lindsey");
-		pr1.setGivenName("Brian");
+		pr1.getPatientName().setFamilyName("Lindsey");
+		ArrayList<GivenName> givens = new ArrayList<GivenName>();
+		GivenName given = new GivenName();
+		given.setGivenName("Brian");
+		givens.add(given);
+		pr1.getPatientName().setGivenName(givens);
 		pr1.setGender("M");
 		pr2.setDateOfBirth("2016-09-19");
-		pr2.setFamilyName("Snow");
-		pr2.setGivenName("John");
+		pr2.getPatientName().setFamilyName("Snow");
+		givens.remove(0);
+		GivenName given2 = new GivenName();
+		given2.setGivenName("John");
+		givens.add(given);
+		pr2.getPatientName().setGivenName(givens);
 		pr2.setGender("M");
 		records.add(pr1);
 		records.add(pr2);

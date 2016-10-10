@@ -2,15 +2,17 @@ package gov.ca.emsa.pulse.broker.dto;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 
+import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
+import gov.ca.emsa.pulse.common.domain.PatientName;
 
 public class PatientRecordDTO {
 	private Long id;
 	private String orgPatientId;
-	private String givenName;
-	private String familyName;
+	private PatientNameDTO patientName;
 	private LocalDate dateOfBirth;
 	private String ssn;
 	private String gender;
@@ -19,13 +21,31 @@ public class PatientRecordDTO {
 	private Long queryOrganizationId;
 	
 	public PatientRecordDTO() {
+		patientName = new PatientNameDTO();
 	}
 	
 	public PatientRecordDTO(PatientRecordEntity entity) {
 		this.id = entity.getId();
 		this.orgPatientId = entity.getOrgPatientId();
-		this.givenName = entity.getGivenName();
-		this.familyName = entity.getFamilyName();
+		this.patientName = new PatientNameDTO();
+		this.patientName.setFamilyName(entity.getPatientName().getFamilyName());
+		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+		for(GivenNameEntity given : entity.getPatientName().getGivenNames()){
+			GivenNameDTO givenDTO = new GivenNameDTO(given);
+			givens.add(givenDTO);
+		}
+		this.patientName.setGivenName(givens);
+		this.patientName.setSuffix(entity.getPatientName().getSuffix());
+		this.patientName.setPrefix(entity.getPatientName().getPrefix());
+		this.patientName.setNameTypeCode(entity.getPatientName().getNameTypeCode());
+		this.patientName.setNameTypeCodeDescription(entity.getPatientName().getNameTypeCodeDescription());
+		this.patientName.setNameRepresentationCode(entity.getPatientName().getNameRepresentationCode());
+		this.patientName.setNameRepresentationCodeDescription(entity.getPatientName().getNameRepresentationCodeDescription());
+		this.patientName.setNameAssemblyOrderCode(entity.getPatientName().getNameAssemblyOrderCode());
+		this.patientName.setNameAssemblyOrderCodeDescription(entity.getPatientName().getNameAssemblyOrderCodeDescription());
+		this.patientName.setEffectiveDate(entity.getPatientName().getEffectiveDate());
+		this.patientName.setExpirationDate(entity.getPatientName().getExpirationDate());
+		
 		if(entity.getDateOfBirth() != null) {
 			this.dateOfBirth = entity.getDateOfBirth().toLocalDate();
 		}
@@ -97,19 +117,12 @@ public class PatientRecordDTO {
 		this.queryOrganizationId = queryOrganizationId;
 	}
 
-	public String getGivenName() {
-		return givenName;
+	public PatientNameDTO getPatientName() {
+		return patientName;
 	}
 
-	public void setGivenName(String givenName) {
-		this.givenName = givenName;
+	public void setPatientName(PatientNameDTO patientName) {
+		this.patientName = patientName;
 	}
-
-	public String getFamilyName() {
-		return familyName;
-	}
-
-	public void setFamilyName(String familyName) {
-		this.familyName = familyName;
-	}
+	
 }

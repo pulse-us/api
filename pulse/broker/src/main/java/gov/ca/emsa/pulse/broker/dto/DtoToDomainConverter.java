@@ -2,15 +2,18 @@ package gov.ca.emsa.pulse.broker.dto;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Organization;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientOrganizationMap;
@@ -26,8 +29,38 @@ public class DtoToDomainConverter {
 	public static Patient convert(PatientDTO dtoObj) {
 		Patient result = new Patient();
 		result.setId(dtoObj.getId());
-		result.setGivenName(dtoObj.getGivenName());
-		result.setFamilyName(dtoObj.getFamilyName());
+		if(dtoObj.getPatientName() != null){
+			result.getPatientName().setFamilyName(dtoObj.getPatientName().getFamilyName());
+			ArrayList<GivenName> givens = new ArrayList<GivenName>();
+			for(GivenNameDTO givenDto : dtoObj.getPatientName().getGivenName()){
+				GivenName givenName = new GivenName();
+				givenName.setGivenName(givenDto.getGivenName());
+				givenName.setId(givenDto.getId());
+				givenName.setPatientNameId(givenDto.getPatientNameId());
+				givens.add(givenName);
+			}
+			result.getPatientName().setGivenName(givens);
+			if(dtoObj.getPatientName().getSuffix() != null)
+				result.getPatientName().setSuffix(dtoObj.getPatientName().getSuffix());
+			if(dtoObj.getPatientName().getPrefix() != null)
+				result.getPatientName().setPrefix(dtoObj.getPatientName().getPrefix());
+			if(dtoObj.getPatientName().getNameTypeCode() != null)
+				result.getPatientName().setNameTypeCode(dtoObj.getPatientName().getNameTypeCode());
+			if(dtoObj.getPatientName().getNameTypeCodeDescription() != null)
+				result.getPatientName().setNameTypeCodeDescription(dtoObj.getPatientName().getNameTypeCodeDescription());
+			if(dtoObj.getPatientName().getNameRepresentationCode() != null)
+				result.getPatientName().setNameRepresentationCode(dtoObj.getPatientName().getNameRepresentationCode());
+			if(dtoObj.getPatientName().getNameRepresentationCodeDescription() != null)
+				result.getPatientName().setNameRepresentationCodeDescription(dtoObj.getPatientName().getNameRepresentationCodeDescription());
+			if(dtoObj.getPatientName().getNameAssemblyOrderCode() != null)
+				result.getPatientName().setNameAssemblyOrderCode(dtoObj.getPatientName().getNameAssemblyOrderCode());
+			if(dtoObj.getPatientName().getNameAssemblyOrderCodeDescription() != null)
+				result.getPatientName().setNameAssemblyOrderCodeDescription(dtoObj.getPatientName().getNameAssemblyOrderCodeDescription());
+			if(dtoObj.getPatientName().getEffectiveDate() != null)
+				result.getPatientName().setEffectiveDate(dtoObj.getPatientName().getEffectiveDate());
+			if(dtoObj.getPatientName().getExpirationDate() != null)
+				result.getPatientName().setExpirationDate(dtoObj.getPatientName().getExpirationDate());
+		}
 		result.setGender(dtoObj.getGender());
 		if(dtoObj.getDateOfBirth() != null) {
 			result.setDateOfBirth(outFormatter.format(dtoObj.getDateOfBirth()));
@@ -159,8 +192,38 @@ public class DtoToDomainConverter {
 		PatientRecord pr = new PatientRecord();
 		pr.setId(prDto.getId());
 		pr.setSsn(prDto.getSsn());
-		pr.setGivenName(prDto.getGivenName());
-		pr.setFamilyName(prDto.getFamilyName());
+		if(prDto.getPatientName() != null){
+			pr.getPatientName().setFamilyName(prDto.getPatientName().getFamilyName());
+			ArrayList<GivenName> givens = new ArrayList<GivenName>();
+			for(GivenNameDTO givenDto : prDto.getPatientName().getGivenName()){
+				GivenName givenName = new GivenName();
+				givenName.setGivenName(givenDto.getGivenName());
+				givenName.setId(givenDto.getId());
+				givenName.setPatientNameId(givenDto.getPatientNameId());
+				givens.add(givenName);
+			}
+			pr.getPatientName().setGivenName(givens);
+			if(prDto.getPatientName().getSuffix() != null)
+				pr.getPatientName().setSuffix(prDto.getPatientName().getSuffix());
+			if(prDto.getPatientName().getPrefix() != null)
+				pr.getPatientName().setPrefix(prDto.getPatientName().getPrefix());
+			if(prDto.getPatientName().getNameTypeCode() != null)
+				pr.getPatientName().setNameTypeCode(prDto.getPatientName().getNameTypeCode());
+			if(prDto.getPatientName().getNameTypeCodeDescription() != null)
+				pr.getPatientName().setNameTypeCodeDescription(prDto.getPatientName().getNameTypeCodeDescription());
+			if(prDto.getPatientName().getNameRepresentationCode() != null)
+				pr.getPatientName().setNameRepresentationCode(prDto.getPatientName().getNameRepresentationCode());
+			if(prDto.getPatientName().getNameRepresentationCodeDescription() != null)
+				pr.getPatientName().setNameRepresentationCodeDescription(prDto.getPatientName().getNameRepresentationCodeDescription());
+			if(prDto.getPatientName().getNameAssemblyOrderCode() != null)
+				pr.getPatientName().setNameAssemblyOrderCode(prDto.getPatientName().getNameAssemblyOrderCode());
+			if(prDto.getPatientName().getNameAssemblyOrderCodeDescription() != null)
+				pr.getPatientName().setNameAssemblyOrderCodeDescription(prDto.getPatientName().getNameAssemblyOrderCodeDescription());
+			if(prDto.getPatientName().getEffectiveDate() != null)
+				pr.getPatientName().setEffectiveDate(prDto.getPatientName().getEffectiveDate());
+			if(prDto.getPatientName().getExpirationDate() != null)
+				pr.getPatientName().setExpirationDate(prDto.getPatientName().getExpirationDate());
+		}
 		pr.setGender(prDto.getGender());
 		pr.setPhoneNumber(prDto.getPhoneNumber());
 		if(prDto.getDateOfBirth() != null) {

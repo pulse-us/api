@@ -1,7 +1,10 @@
 package gov.ca.emsa.pulse.broker.entity;
 
+import gov.ca.emsa.pulse.common.domain.PatientName;
+
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,6 +14,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(name="patient_record")
@@ -24,11 +30,13 @@ public class PatientRecordEntity {
 	@Column(name = "organization_patient_id")
 	private String orgPatientId;
 	
-	@Column(name="given_name")
-	private String givenName;
+	@Column(name = "patient_name_id")
+	private Long patientNameId;
 	
-	@Column(name = "family_name")
-	private String familyName;
+	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@Fetch(FetchMode.JOIN)
+	@JoinColumn(name = "patient_name_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private PatientNameEntity patientName;
 	
 	@Column(name = "dob")
 	private java.sql.Date dateOfBirth;
@@ -201,19 +209,13 @@ public class PatientRecordEntity {
 		this.queryOrganization = queryOrganization;
 	}
 
-	public String getGivenName() {
-		return givenName;
+	public PatientNameEntity getPatientName() {
+		return patientName;
 	}
 
-	public void setGivenName(String givenName) {
-		this.givenName = givenName;
+	public void setPatientName(PatientNameEntity patientName) {
+		this.patientName = patientName;
 	}
 
-	public String getFamilyName() {
-		return familyName;
-	}
-
-	public void setFamilyName(String familyName) {
-		this.familyName = familyName;
-	}
+	
 }

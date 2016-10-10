@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.manager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -18,6 +19,7 @@ import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
@@ -97,8 +99,13 @@ public class PatientManagerTest extends TestCase {
 		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
 		
 		queryResult1 = new PatientRecordDTO();
-		queryResult1.setGivenName("John");
-		queryResult1.setFamilyName("Smith");
+		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+		GivenNameDTO given = new GivenNameDTO();
+		given.setGivenName("Jonathon");
+		givens.add(given);
+		queryResult1.getPatientName().setGivenName(givens);
+		queryResult1.getPatientName().setFamilyName("Smith");
+		queryResult1.getPatientName().setNameTypeCode("L");
 		queryResult1.setGender("Male");
 		queryResult1.setOrgPatientId("JS1");
 		queryResult1.setQueryOrganizationId(orgQuery1.getId());
@@ -110,8 +117,9 @@ public class PatientManagerTest extends TestCase {
 		assertTrue(queryResult1.getId().longValue() > 0);
 		
 		queryResult2 = new PatientRecordDTO();
-		queryResult2.setGivenName("John");
-		queryResult2.setFamilyName("Smith");
+		queryResult2.getPatientName().setGivenName(givens);
+		queryResult2.getPatientName().setFamilyName("Smith");
+		queryResult2.getPatientName().setNameTypeCode("L");
 		queryResult2.setGender("Male");
 		queryResult2.setOrgPatientId("JSMITH15");
 		queryResult2.setQueryOrganizationId(orgQuery2.getId());
@@ -129,8 +137,13 @@ public class PatientManagerTest extends TestCase {
 	public void testCreatePatientWithOrg() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setGivenName("Jonathan");
-		toCreate.setFamilyName("Smith");
+		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+		GivenNameDTO given = new GivenNameDTO();
+		given.setGivenName("Jonathon");
+		givens.add(given);
+		toCreate.getPatientName().setGivenName(givens);
+		toCreate.getPatientName().setFamilyName("Smith");
+		toCreate.getPatientName().setNameTypeCode("L");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -168,8 +181,13 @@ public class PatientManagerTest extends TestCase {
 	public void testGetPatientsAtAcf() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setGivenName("Jonathan");
-		toCreate.setFamilyName("Smith");
+		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+		GivenNameDTO given = new GivenNameDTO();
+		given.setGivenName("Jonathon");
+		givens.add(given);
+		toCreate.getPatientName().setGivenName(givens);
+		toCreate.getPatientName().setFamilyName("Smith");
+		toCreate.getPatientName().setNameTypeCode("L");
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");

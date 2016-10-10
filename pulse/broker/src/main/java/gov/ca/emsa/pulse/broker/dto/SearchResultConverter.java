@@ -7,12 +7,15 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
+import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
 
 public class SearchResultConverter {
@@ -20,8 +23,30 @@ public class SearchResultConverter {
 
 	public static PatientRecordDTO convertToPatientRecord(Patient domainObj) {
 		PatientRecordDTO result = new PatientRecordDTO();
-		result.setGivenName(domainObj.getGivenName());
-		result.setFamilyName(domainObj.getFamilyName());
+		if(domainObj.getPatientName() != null){
+			PatientNameDTO patientName = new PatientNameDTO();
+			patientName.setFamilyName(domainObj.getPatientName().getFamilyName());
+			ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+			for(GivenName givenDto : domainObj.getPatientName().getGivenName()){
+				GivenNameDTO givenName = new GivenNameDTO();
+				givenName.setGivenName(givenDto.getGivenName());
+				givenName.setId(givenDto.getId());
+				givenName.setPatientNameId(givenDto.getPatientNameId());
+				givens.add(givenName);
+			}
+			patientName.setGivenName(givens);
+			patientName.setSuffix(domainObj.getPatientName().getSuffix());
+			patientName.setPrefix(domainObj.getPatientName().getPrefix());
+			patientName.setNameTypeCode(domainObj.getPatientName().getNameTypeCode());
+			patientName.setNameTypeCodeDescription(domainObj.getPatientName().getNameTypeCodeDescription());
+			patientName.setNameRepresentationCode(domainObj.getPatientName().getNameRepresentationCode());
+			patientName.setNameRepresentationCodeDescription(domainObj.getPatientName().getNameRepresentationCodeDescription());
+			patientName.setNameAssemblyOrderCode(domainObj.getPatientName().getNameAssemblyOrderCode());
+			patientName.setNameAssemblyOrderCodeDescription(domainObj.getPatientName().getNameAssemblyOrderCodeDescription());
+			patientName.setEffectiveDate(domainObj.getPatientName().getEffectiveDate());
+			patientName.setExpirationDate(domainObj.getPatientName().getExpirationDate());
+			result.setPatientName(patientName);
+		}
 		result.setGender(domainObj.getGender());
 		if(!StringUtils.isEmpty(domainObj.getDateOfBirth())) {
 			LocalDate patientDob = null;

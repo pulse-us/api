@@ -8,11 +8,11 @@ import java.util.List;
 
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+import gov.ca.emsa.pulse.common.domain.PatientName;
 
 public class PatientDTO {
 	private Long id;
-	private String givenName;
-	private String familyName;
+	private PatientNameDTO patientName;
 	private LocalDate dateOfBirth;
 	private String ssn;
 	private String gender;
@@ -24,13 +24,15 @@ public class PatientDTO {
 	
 	public PatientDTO() {
 		orgMaps = new ArrayList<PatientOrganizationMapDTO>();
+		patientName = new PatientNameDTO();
 	}
 	
 	public PatientDTO(PatientEntity entity) {
 		this();
 		this.id = entity.getId();
-		this.givenName = entity.getGivenName();
-		this.familyName = entity.getFamilyName();
+		if(entity.getPatientName() != null){
+			this.patientName = new PatientNameDTO(entity.getPatientName());
+		}
 		if(entity.getDateOfBirth() != null) {
 			this.dateOfBirth = entity.getDateOfBirth().toLocalDate();
 		}
@@ -112,19 +114,12 @@ public class PatientDTO {
 		this.orgMaps = orgMaps;
 	}
 
-	public String getGivenName() {
-		return givenName;
+	public PatientNameDTO getPatientName() {
+		return patientName;
 	}
 
-	public void setGivenName(String givenName) {
-		this.givenName = givenName;
+	public void setPatientName(PatientNameDTO patientName) {
+		this.patientName = patientName;
 	}
-
-	public String getFamilyName() {
-		return familyName;
-	}
-
-	public void setFamilyName(String familyName) {
-		this.familyName = familyName;
-	}
+	
 }

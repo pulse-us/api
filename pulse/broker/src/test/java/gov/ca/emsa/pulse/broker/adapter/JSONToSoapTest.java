@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,9 +32,11 @@ import com.google.common.io.Resources;
 import gov.ca.emsa.pulse.auth.jwt.JWTValidationException;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -72,9 +75,15 @@ public class JSONToSoapTest {
 	public void testCreatePatientDiscoveryRequest() throws JAXBException, 
 		SAMLException, SOAPException, JWTValidationException {
 		PatientSearch ps = new PatientSearch();
+		Patient toCreate = new Patient();
 		ps.setDob("19830205");
-		ps.setGivenName("Kathryn");
-		ps.setFamilyName("Ekey");
+		ArrayList<GivenName> givens = new ArrayList<GivenName>();
+		GivenName given = new GivenName();
+		given.setGivenName("Kathryn");
+		givens.add(given);
+		toCreate.getPatientName().setGivenName(givens);
+		ps.getPatientName().setGivenName(givens);
+		ps.getPatientName().setFamilyName("Ekey");
 		ps.setGender("F");
 		
 		SAMLInput input = new SAMLInput();
@@ -85,8 +94,8 @@ public class JSONToSoapTest {
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
 		customAttributes.put("RequesterFirstName", "Katy");
 		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientGivenName", ps.getGivenName());
-		customAttributes.put("PatientFamilyName", ps.getFamilyName());
+		customAttributes.put("PatientGivenName", ps.getPatientName().getGivenName().get(0).getGivenName());
+		customAttributes.put("PatientFamilyName", ps.getPatientName().getFamilyName());
 		customAttributes.put("PatientDOB", ps.getDob());
 		customAttributes.put("PatientGender", ps.getGender());
 		customAttributes.put("PatientHomeZip", ps.getZip());
@@ -101,8 +110,8 @@ public class JSONToSoapTest {
 		assertNotNull(unmarshalledRequest);
 		PatientSearch unmarshalledSearch = reverseService.convertToPatientSearch(unmarshalledRequest);
 		assertNotNull(unmarshalledSearch);
-		assertEquals(ps.getGivenName(), unmarshalledSearch.getGivenName());
-		assertEquals(ps.getFamilyName(), unmarshalledSearch.getFamilyName());
+		assertEquals(ps.getPatientName().getGivenName().get(0).getGivenName(), unmarshalledSearch.getPatientName().getGivenName().get(0).getGivenName());
+		assertEquals(ps.getPatientName().getFamilyName(), unmarshalledSearch.getPatientName().getFamilyName());
 		assertEquals(ps.getDob(), unmarshalledSearch.getDob());
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
 	}
@@ -118,8 +127,8 @@ public class JSONToSoapTest {
 		assertEquals(2, patientRecords.size());
 		
 		PatientRecord firstPatient = patientRecords.get(0);
-		assertEquals("James", firstPatient.getGivenName());
-		assertEquals("Jones", firstPatient.getFamilyName());
+		assertEquals("James", firstPatient.getPatientName().getGivenName().get(0).getGivenName());
+		assertEquals("Jones", firstPatient.getPatientName().getFamilyName());
 		assertEquals("tel:+1-481-555-7684;ext=2342", firstPatient.getPhoneNumber());
 		assertEquals("19630804", firstPatient.getDateOfBirth());
 		assertEquals("M", firstPatient.getGender());

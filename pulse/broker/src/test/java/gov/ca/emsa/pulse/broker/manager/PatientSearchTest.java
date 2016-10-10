@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.manager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
@@ -35,6 +37,7 @@ import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
+import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 
@@ -63,7 +66,11 @@ public class PatientSearchTest {
 		insertOrganizations();
 
 		PatientSearch toSearch = new PatientSearch();
-		toSearch.setGivenName("John");
+		ArrayList<GivenName> givens = new ArrayList<GivenName>();
+		GivenName given = new GivenName();
+		given.setGivenName("Jonathon");
+		givens.add(given);
+		toSearch.getPatientName().setGivenName(givens);
 
 		 mockServer
 		 	.expect(MockRestRequestMatchers.requestTo(org1.getEndpointUrl()))
@@ -215,7 +222,11 @@ public class PatientSearchTest {
 
 	private QueryDTO createQuery(CommonUser user) throws JsonProcessingException {
 		Patient queryTerms = new Patient();
-		queryTerms.setGivenName("John");
+		ArrayList<GivenName> givens = new ArrayList<GivenName>();
+		GivenName given = new GivenName();
+		given.setGivenName("Jonathon");
+		givens.add(given);
+		queryTerms.getPatientName().setGivenName(givens);
 		String queryTermsJson = JSONUtils.toJSON(queryTerms);
 
 		QueryDTO query = new QueryDTO();
