@@ -8,17 +8,14 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
-import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
 import gov.ca.emsa.pulse.broker.auth.AcfLastAccessFilter;
 import gov.ca.emsa.pulse.broker.cache.CacheCleanupJob;
+import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
@@ -41,7 +38,6 @@ public class BrokerApplication {
 	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private PatientManager patientManager;
 	@Autowired private QueryManager queryManager;
-	@Autowired private AlternateCareFacilityDAO acfDao;
 	
 	@Value("${persistenceUnitName}")
 	private String persistenceUnitName;

@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
 
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
 import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
 import gov.ca.emsa.pulse.common.domain.GivenName;
@@ -38,6 +39,8 @@ import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
@@ -286,9 +289,10 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				JAXBElement<?> jaxbObj = (JAXBElement<?>)obj;
 				if(jaxbObj != null && jaxbObj.getValue() != null && jaxbObj.getValue() instanceof ExtrinsicObjectType) {
 					Document doc = new Document();
+					DocumentIdentifier docId = new DocumentIdentifier();
 					ExtrinsicObjectType extObj = (ExtrinsicObjectType)jaxbObj.getValue();
 					//home community id
-					doc.setHomeCommunityId(extObj.getHome());
+					docId.setHomeCommunityId(extObj.getHome());
 					
 					//doc name
 					List<LocalizedStringType> docNameLocals = extObj.getName().getLocalizedString();
@@ -309,7 +313,7 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 							List<String> valueStrings = values.getValue();
 							//TODO: just use the first one for now. how do we handle multiples?
 							if(valueStrings.size() > 0) {
-								doc.setRepositoryUniqueId(valueStrings.get(0));
+								docId.setRepositoryUniqueId(valueStrings.get(0));
 							}
 						} else if(slot.getName().equalsIgnoreCase("creationTime")) {
 							ValueListType values = slot.getValueList();
@@ -361,12 +365,13 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 							List<LocalizedStringType> nameLocals = nameHolder.getLocalizedString();
 							for(LocalizedStringType nameLocal : nameLocals) {
 								if(nameLocal.getValue().equals("XDSDocumentEntry.uniqueId") &&
-									StringUtils.isEmpty(doc.getDocumentUniqueId())) {
-									doc.setDocumentUniqueId(extId.getValue());
+									StringUtils.isEmpty(docId.getDocumentUniqueId())) {
+									docId.setDocumentUniqueId(extId.getValue());
 								}
 							}
 						}
 					}
+					doc.setIdentifier(docId);
 					documents.add(doc);	
 				}
 			}
@@ -380,4 +385,7 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		return dr;
 	}
 
+	public List<DocumentResponse> convertToDocumentSetResponse(RetrieveDocumentSetResponseType response) {
+		return response.getDocumentResponse();
+	}
 }
