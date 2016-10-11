@@ -1,9 +1,7 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientNameEntity;
-import gov.ca.emsa.pulse.common.domain.GivenName;
 
 import java.util.ArrayList;
 import java.util.Date;

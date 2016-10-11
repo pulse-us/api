@@ -1,5 +1,9 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import gov.ca.emsa.pulse.broker.dao.GivenNameDAO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
+import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
+
 import java.util.List;
 
 import javax.persistence.Query;
@@ -7,10 +11,6 @@ import javax.persistence.Query;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
-
-import gov.ca.emsa.pulse.broker.dao.GivenNameDAO;
-import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
-import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 
 @Repository
 public class GivenNameDAOImpl extends BaseDAOImpl implements GivenNameDAO {

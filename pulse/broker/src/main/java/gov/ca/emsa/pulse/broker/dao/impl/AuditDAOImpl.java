@@ -1,5 +1,9 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import gov.ca.emsa.pulse.broker.dao.AuditDAO;
+import gov.ca.emsa.pulse.broker.dto.AuditDTO;
+import gov.ca.emsa.pulse.broker.entity.AuditEntity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,9 +12,6 @@ import javax.persistence.Query;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
-import gov.ca.emsa.pulse.broker.dao.AuditDAO;
-import gov.ca.emsa.pulse.broker.dto.AuditDTO;
-import gov.ca.emsa.pulse.broker.entity.AuditEntity;
 
 @Repository
 public class AuditDAOImpl extends BaseDAOImpl implements AuditDAO {

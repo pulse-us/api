@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.auth.jwt;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,8 +1,8 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import java.util.Date;
-
 import gov.ca.emsa.pulse.broker.entity.AddressEntity;
+
+import java.util.Date;
 
 public class AddressDTO {
 

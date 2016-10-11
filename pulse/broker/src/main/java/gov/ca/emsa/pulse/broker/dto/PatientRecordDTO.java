@@ -1,13 +1,10 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
-import gov.ca.emsa.pulse.common.domain.PatientName;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class PatientRecordDTO {
 	private Long id;

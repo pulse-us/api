@@ -1,7 +1,8 @@
 package gov.ca.emsa.pulse.common.domain;
 
-import java.util.List;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.DocumentRequest;
+
+import java.util.List;
 
 public class DocumentRetrieve {
 	private List<DocumentRequest> docRequests;
