@@ -30,12 +30,9 @@ public class PatientEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "patient_name_id")
-	private Long patientNameId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@Fetch(FetchMode.JOIN)
-	@JoinColumn(name = "patient_name_id", unique=true, nullable = true, insertable=false, updatable= false)
+	@JoinColumn(name = "id", unique=true, nullable = true, insertable=false, updatable= false)
 	private PatientNameEntity patientName;
 	
 	@Column(name = "dob")

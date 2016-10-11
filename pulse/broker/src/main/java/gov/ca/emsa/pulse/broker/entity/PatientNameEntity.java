@@ -30,11 +30,8 @@ public class PatientNameEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "given_name_id")
-	private Long givenNameId;
-	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientNameId", cascade = CascadeType.ALL  )
-	@Column( name = "given_name_id", nullable = false  )
+	@OneToMany( fetch = FetchType.LAZY, cascade = CascadeType.ALL  )
+	@Column( name = "id", nullable = false  )
 	private List<GivenNameEntity> givenNames = new ArrayList<GivenNameEntity>();
 	
 	@Column(name="family_name")

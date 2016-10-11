@@ -97,7 +97,6 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 			GivenNameEntity givenName = new GivenNameEntity();
 			givenName.setGivenName(givenDto.getGivenName());
 			givenName.setId(givenDto.getId());
-			givenName.setPatientNameId(givenDto.getPatientNameId());
 			givens.add(givenName);
 		}
 		patient.getPatientName().setGivenNames(givens);

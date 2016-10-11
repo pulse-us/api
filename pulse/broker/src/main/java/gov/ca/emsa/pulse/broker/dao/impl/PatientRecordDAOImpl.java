@@ -71,7 +71,6 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 				GivenNameEntity givenName = new GivenNameEntity();
 				givenName.setGivenName(givenDto.getGivenName());
 				givenName.setId(givenDto.getId());
-				givenName.setPatientNameId(givenDto.getPatientNameId());
 				givens.add(givenName);
 			}
 			patient.getPatientName().setGivenNames(givens);

@@ -18,9 +18,6 @@ public class GivenNameEntity {
 	
 	@Column(name = "name", nullable = false)
 	private String givenName;
-	
-	@Column(name = "patient_name_id", nullable = false)
-	private Long patientNameId;
 
 	public Long getId() {
 		return id;
@@ -36,14 +33,6 @@ public class GivenNameEntity {
 
 	public void setGivenName(String givenName) {
 		this.givenName = givenName;
-	}
-
-	public Long getPatientNameId() {
-		return patientNameId;
-	}
-
-	public void setPatientNameId(Long patientNameId) {
-		this.patientNameId = patientNameId;
 	}
 	
 }
