@@ -1,8 +1,14 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
+import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
+import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.GivenName;
+import gov.ca.emsa.pulse.common.domain.NameAssembly;
+import gov.ca.emsa.pulse.common.domain.NameRepresentation;
+import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 
@@ -38,18 +44,27 @@ public class DomainToDtoConverter {
 				result.getPatientName().setSuffix(domainObj.getPatientName().getSuffix());
 			if(domainObj.getPatientName().getPrefix() != null)
 				result.getPatientName().setPrefix(domainObj.getPatientName().getPrefix());
-			if(domainObj.getPatientName().getNameType() != null)
-				result.getPatientName().setNameTypeCode(domainObj.getPatientName().getNameType());
-			if(domainObj.getPatientName().getNameTypeCodeDescription() != null)
-				result.getPatientName().setNameTypeCodeDescription(domainObj.getPatientName().getNameTypeCodeDescription());
-			if(domainObj.getPatientName().getNameRepresentationCode() != null)
-				result.getPatientName().setNameRepresentationCode(domainObj.getPatientName().getNameRepresentationCode());
-			if(domainObj.getPatientName().getNameRepresentationCodeDescription() != null)
-				result.getPatientName().setNameRepresentationCodeDescription(domainObj.getPatientName().getNameRepresentationCodeDescription());
-			if(domainObj.getPatientName().getNameAssemblyOrderCode() != null)
-				result.getPatientName().setNameAssemblyOrderCode(domainObj.getPatientName().getNameAssemblyOrderCode());
-			if(domainObj.getPatientName().getNameAssemblyOrderCodeDescription() != null)
-				result.getPatientName().setNameAssemblyOrderCodeDescription(domainObj.getPatientName().getNameAssemblyOrderCodeDescription());
+			if(domainObj.getPatientName().getNameType() != null){
+				NameTypeDTO nameType = new NameTypeDTO();
+				nameType.setCode(domainObj.getPatientName().getNameType().getCode());
+				nameType.setDescription(domainObj.getPatientName().getNameType().getDescription());
+				nameType.setId(domainObj.getPatientName().getNameType().getId());
+				result.getPatientName().setNameType(nameType);
+			}
+			if(domainObj.getPatientName().getNameRepresentation() != null){
+				NameRepresentationDTO nameRep = new NameRepresentationDTO();
+				nameRep.setCode(domainObj.getPatientName().getNameType().getCode());
+				nameRep.setDescription(domainObj.getPatientName().getNameType().getDescription());
+				nameRep.setId(domainObj.getPatientName().getNameType().getId());
+				result.getPatientName().setNameRepresentation(nameRep);
+			}
+			if(domainObj.getPatientName().getNameAssembly() != null){
+				NameAssemblyDTO nameAssembly = new NameAssemblyDTO();
+				nameAssembly.setCode(domainObj.getPatientName().getNameType().getCode());
+				nameAssembly.setDescription(domainObj.getPatientName().getNameType().getDescription());
+				nameAssembly.setId(domainObj.getPatientName().getNameType().getId());
+				result.getPatientName().setNameAssembly(nameAssembly);
+			}
 			if(domainObj.getPatientName().getEffectiveDate() != null)
 				result.getPatientName().setEffectiveDate(domainObj.getPatientName().getEffectiveDate());
 			if(domainObj.getPatientName().getExpirationDate() != null)
@@ -120,18 +135,27 @@ public class DomainToDtoConverter {
 				result.getPatientName().setSuffix(domainObj.getPatientName().getSuffix());
 			if(domainObj.getPatientName().getPrefix() != null)
 				result.getPatientName().setPrefix(domainObj.getPatientName().getPrefix());
-			if(domainObj.getPatientName().getNameType() != null)
-				result.getPatientName().setNameTypeCode(domainObj.getPatientName().getNameType());
-			if(domainObj.getPatientName().getNameTypeCodeDescription() != null)
-				result.getPatientName().setNameTypeCodeDescription(domainObj.getPatientName().getNameTypeCodeDescription());
-			if(domainObj.getPatientName().getNameRepresentationCode() != null)
-				result.getPatientName().setNameRepresentationCode(domainObj.getPatientName().getNameRepresentationCode());
-			if(domainObj.getPatientName().getNameRepresentationCodeDescription() != null)
-				result.getPatientName().setNameRepresentationCodeDescription(domainObj.getPatientName().getNameRepresentationCodeDescription());
-			if(domainObj.getPatientName().getNameAssemblyOrderCode() != null)
-				result.getPatientName().setNameAssemblyOrderCode(domainObj.getPatientName().getNameAssemblyOrderCode());
-			if(domainObj.getPatientName().getNameAssemblyOrderCodeDescription() != null)
-				result.getPatientName().setNameAssemblyOrderCodeDescription(domainObj.getPatientName().getNameAssemblyOrderCodeDescription());
+			if(domainObj.getPatientName().getNameType() != null){
+				NameTypeDTO nameType = new NameTypeDTO();
+				nameType.setCode(domainObj.getPatientName().getNameType().getCode());
+				nameType.setDescription(domainObj.getPatientName().getNameType().getDescription());
+				nameType.setId(domainObj.getPatientName().getNameType().getId());
+				result.getPatientName().setNameType(nameType);
+			}
+			if(domainObj.getPatientName().getNameRepresentation() != null){
+				NameRepresentationDTO nameRep = new NameRepresentationDTO();
+				nameRep.setCode(domainObj.getPatientName().getNameType().getCode());
+				nameRep.setDescription(domainObj.getPatientName().getNameType().getDescription());
+				nameRep.setId(domainObj.getPatientName().getNameType().getId());
+				result.getPatientName().setNameRepresentation(nameRep);
+			}
+			if(domainObj.getPatientName().getNameAssembly() != null){
+				NameAssemblyDTO nameAssembly = new NameAssemblyDTO();
+				nameAssembly.setCode(domainObj.getPatientName().getNameType().getCode());
+				nameAssembly.setDescription(domainObj.getPatientName().getNameType().getDescription());
+				nameAssembly.setId(domainObj.getPatientName().getNameType().getId());
+				result.getPatientName().setNameAssembly(nameAssembly);
+			}
 			if(domainObj.getPatientName().getEffectiveDate() != null)
 				result.getPatientName().setEffectiveDate(domainObj.getPatientName().getEffectiveDate());
 			if(domainObj.getPatientName().getExpirationDate() != null)

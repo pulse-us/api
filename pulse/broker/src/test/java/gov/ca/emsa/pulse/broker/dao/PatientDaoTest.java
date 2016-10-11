@@ -4,10 +4,12 @@ import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
+import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.common.domain.NameType;
 
 import java.util.ArrayList;
 
@@ -81,7 +83,9 @@ public class PatientDaoTest extends TestCase {
 		toCreate.getPatientName().setFamilyName("Smith");
 		toCreate.getPatientName().setSuffix("MD");
 		toCreate.getPatientName().setPrefix("Dr.");
-		toCreate.getPatientName().setNameTypeCode("G");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
+		toCreate.getPatientName().setNameType(nameTypeDTO);
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -104,7 +108,7 @@ public class PatientDaoTest extends TestCase {
 		assertEquals(0, selected.getOrgMaps().size());
 		assertEquals(toCreate.getPatientName().getFamilyName(), selected.getPatientName().getFamilyName());
 		assertEquals(toCreate.getPatientName().getSuffix(), selected.getPatientName().getSuffix());
-		assertEquals(toCreate.getPatientName().getNameTypeCode(), selected.getPatientName().getNameTypeCode());
+		assertEquals(toCreate.getPatientName().getNameType().getCode(), selected.getPatientName().getNameType().getCode());
 	}
 	
 	@Test
@@ -134,8 +138,9 @@ public class PatientDaoTest extends TestCase {
 		givens.add(given);
 		toCreate.getPatientName().setGivenName(givens);
 		toCreate.getPatientName().setFamilyName("Smith");
-		toCreate.getPatientName().setNameTypeCode("L");
-		toCreate.setPhoneNumber("4105554444");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
+		toCreate.getPatientName().setNameType(nameTypeDTO);		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		toCreate.setAddress(addrDto);
@@ -186,8 +191,9 @@ public class PatientDaoTest extends TestCase {
 		givens.add(given);
 		toCreate.getPatientName().setGivenName(givens);
 		toCreate.getPatientName().setFamilyName("Smith");
-		toCreate.getPatientName().setNameTypeCode("L");
-		toCreate.setPhoneNumber("4105554444");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
+		toCreate.getPatientName().setNameType(nameTypeDTO);		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		toCreate.setAddress(addrDto);
@@ -230,7 +236,9 @@ public class PatientDaoTest extends TestCase {
 		givens.add(given);
 		toCreate.getPatientName().setGivenName(givens);
 		toCreate.getPatientName().setFamilyName("Smith");
-		toCreate.getPatientName().setNameTypeCode("L");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
+		toCreate.getPatientName().setNameType(nameTypeDTO);
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -289,7 +297,9 @@ public class PatientDaoTest extends TestCase {
 		givens.add(given);
 		toCreate.getPatientName().setGivenName(givens);
 		toCreate.getPatientName().setFamilyName("Smith");
-		toCreate.getPatientName().setNameTypeCode("L");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
+		toCreate.getPatientName().setNameType(nameTypeDTO);
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -334,7 +344,9 @@ public class PatientDaoTest extends TestCase {
 		givens.add(given);
 		toCreate.getPatientName().setGivenName(givens);
 		toCreate.getPatientName().setFamilyName("Smith");
-		toCreate.getPatientName().setNameTypeCode("L");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
+		toCreate.getPatientName().setNameType(nameTypeDTO);
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");

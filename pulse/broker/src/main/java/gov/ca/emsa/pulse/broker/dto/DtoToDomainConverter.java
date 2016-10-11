@@ -5,6 +5,9 @@ import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.GivenName;
+import gov.ca.emsa.pulse.common.domain.NameAssembly;
+import gov.ca.emsa.pulse.common.domain.NameRepresentation;
+import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.Organization;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientOrganizationMap;
@@ -44,18 +47,27 @@ public class DtoToDomainConverter {
 				result.getPatientName().setSuffix(dtoObj.getPatientName().getSuffix());
 			if(dtoObj.getPatientName().getPrefix() != null)
 				result.getPatientName().setPrefix(dtoObj.getPatientName().getPrefix());
-			if(dtoObj.getPatientName().getNameTypeCode() != null)
-				result.getPatientName().setNameTypeCode(dtoObj.getPatientName().getNameTypeCode());
-			if(dtoObj.getPatientName().getNameTypeCodeDescription() != null)
-				result.getPatientName().setNameTypeCodeDescription(dtoObj.getPatientName().getNameTypeCodeDescription());
-			if(dtoObj.getPatientName().getNameRepresentationCode() != null)
-				result.getPatientName().setNameRepresentationCode(dtoObj.getPatientName().getNameRepresentationCode());
-			if(dtoObj.getPatientName().getNameRepresentationCodeDescription() != null)
-				result.getPatientName().setNameRepresentationCodeDescription(dtoObj.getPatientName().getNameRepresentationCodeDescription());
-			if(dtoObj.getPatientName().getNameAssemblyOrderCode() != null)
-				result.getPatientName().setNameAssemblyOrderCode(dtoObj.getPatientName().getNameAssemblyOrderCode());
-			if(dtoObj.getPatientName().getNameAssemblyOrderCodeDescription() != null)
-				result.getPatientName().setNameAssemblyOrderCodeDescription(dtoObj.getPatientName().getNameAssemblyOrderCodeDescription());
+			if(dtoObj.getPatientName().getNameType() != null){
+				NameType nameType = new NameType();
+				nameType.setCode(dtoObj.getPatientName().getNameType().getCode());
+				nameType.setDescription(dtoObj.getPatientName().getNameType().getDescription());
+				nameType.setId(dtoObj.getPatientName().getNameType().getId());
+				result.getPatientName().setNameType(nameType);
+			}
+			if(dtoObj.getPatientName().getNameRepresentation() != null){
+				NameRepresentation nameRep = new NameRepresentation();
+				nameRep.setCode(dtoObj.getPatientName().getNameType().getCode());
+				nameRep.setDescription(dtoObj.getPatientName().getNameType().getDescription());
+				nameRep.setId(dtoObj.getPatientName().getNameType().getId());
+				result.getPatientName().setNameRepresentation(nameRep);
+			}
+			if(dtoObj.getPatientName().getNameAssembly() != null){
+				NameAssembly nameAssembly = new NameAssembly();
+				nameAssembly.setCode(dtoObj.getPatientName().getNameType().getCode());
+				nameAssembly.setDescription(dtoObj.getPatientName().getNameType().getDescription());
+				nameAssembly.setId(dtoObj.getPatientName().getNameType().getId());
+				result.getPatientName().setNameAssembly(nameAssembly);
+			}
 			if(dtoObj.getPatientName().getEffectiveDate() != null)
 				result.getPatientName().setEffectiveDate(dtoObj.getPatientName().getEffectiveDate());
 			if(dtoObj.getPatientName().getExpirationDate() != null)
@@ -207,18 +219,27 @@ public class DtoToDomainConverter {
 				pr.getPatientName().setSuffix(prDto.getPatientName().getSuffix());
 			if(prDto.getPatientName().getPrefix() != null)
 				pr.getPatientName().setPrefix(prDto.getPatientName().getPrefix());
-			if(prDto.getPatientName().getNameTypeCode() != null)
-				pr.getPatientName().setNameTypeCode(prDto.getPatientName().getNameTypeCode());
-			if(prDto.getPatientName().getNameTypeCodeDescription() != null)
-				pr.getPatientName().setNameTypeCodeDescription(prDto.getPatientName().getNameTypeCodeDescription());
-			if(prDto.getPatientName().getNameRepresentationCode() != null)
-				pr.getPatientName().setNameRepresentationCode(prDto.getPatientName().getNameRepresentationCode());
-			if(prDto.getPatientName().getNameRepresentationCodeDescription() != null)
-				pr.getPatientName().setNameRepresentationCodeDescription(prDto.getPatientName().getNameRepresentationCodeDescription());
-			if(prDto.getPatientName().getNameAssemblyOrderCode() != null)
-				pr.getPatientName().setNameAssemblyOrderCode(prDto.getPatientName().getNameAssemblyOrderCode());
-			if(prDto.getPatientName().getNameAssemblyOrderCodeDescription() != null)
-				pr.getPatientName().setNameAssemblyOrderCodeDescription(prDto.getPatientName().getNameAssemblyOrderCodeDescription());
+			if(prDto.getPatientName().getNameType() != null){
+				NameType nameType = new NameType();
+				nameType.setCode(prDto.getPatientName().getNameType().getCode());
+				nameType.setDescription(prDto.getPatientName().getNameType().getDescription());
+				nameType.setId(prDto.getPatientName().getNameType().getId());
+				pr.getPatientName().setNameType(nameType);
+			}
+			if(prDto.getPatientName().getNameRepresentation() != null){
+				NameRepresentation nameRep = new NameRepresentation();
+				nameRep.setCode(prDto.getPatientName().getNameType().getCode());
+				nameRep.setDescription(prDto.getPatientName().getNameType().getDescription());
+				nameRep.setId(prDto.getPatientName().getNameType().getId());
+				pr.getPatientName().setNameRepresentation(nameRep);
+			}
+			if(prDto.getPatientName().getNameAssembly() != null){
+				NameAssembly nameAssembly = new NameAssembly();
+				nameAssembly.setCode(prDto.getPatientName().getNameType().getCode());
+				nameAssembly.setDescription(prDto.getPatientName().getNameType().getDescription());
+				nameAssembly.setId(prDto.getPatientName().getNameType().getId());
+				pr.getPatientName().setNameAssembly(nameAssembly);
+			}
 			if(prDto.getPatientName().getEffectiveDate() != null)
 				pr.getPatientName().setEffectiveDate(prDto.getPatientName().getEffectiveDate());
 			if(prDto.getPatientName().getExpirationDate() != null)

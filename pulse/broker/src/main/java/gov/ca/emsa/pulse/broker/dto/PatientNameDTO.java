@@ -14,12 +14,9 @@ public class PatientNameDTO {
 	private String suffix;
 	private String prefix;
 	private String profSuffix;
-	private String nameTypeCode;
-	private String nameTypeCodeDescription;
-	private String nameRepresentationCode;
-	private String nameRepresentationCodeDescription;
-	private String nameAssemblyOrderCode;
-	private String nameAssemblyOrderCodeDescription;
+	private NameTypeDTO nameType;
+	private NameRepresentationDTO nameRepresentation;
+	private NameAssemblyDTO nameAssembly;
 	private Date effectiveDate;
 	private Date expirationDate;
 
@@ -41,18 +38,18 @@ public class PatientNameDTO {
 				this.suffix = entity.getSuffix();
 			if(entity.getPrefix() != null)
 				this.prefix = entity.getPrefix();
-			if(entity.getNameTypeCode() != null)
-				this.nameTypeCode = entity.getNameTypeCode();
-			if(entity.getNameTypeCodeDescription() != null)
-				this.nameTypeCodeDescription = entity.getNameTypeCodeDescription();
-			if(entity.getNameRepresentationCode() != null)
-				this.nameRepresentationCode = entity.getNameRepresentationCode();
-			if(entity.getNameRepresentationCodeDescription() != null)
-				this.nameRepresentationCodeDescription = entity.getNameRepresentationCodeDescription();
-			if(entity.getNameAssemblyOrderCode() != null)
-				this.nameAssemblyOrderCode = entity.getNameAssemblyOrderCode();
-			if(entity.getNameAssemblyOrderCodeDescription() != null)
-				this.nameAssemblyOrderCodeDescription = entity.getNameAssemblyOrderCodeDescription();
+			if(entity.getNameType() != null){
+				NameTypeDTO nameTypeDTO = new NameTypeDTO(entity.getNameType());
+				this.nameType = nameTypeDTO;
+			}
+			if(entity.getNameRepresentation() != null){
+				NameRepresentationDTO nameRepresentationDTO = new NameRepresentationDTO(entity.getNameRepresentation());
+				this.nameRepresentation = nameRepresentationDTO;
+			}
+			if(entity.getNameAssembly() != null){
+				NameAssemblyDTO nameAssemblyDTO = new NameAssemblyDTO(entity.getNameAssembly());
+				this.nameAssembly = nameAssemblyDTO;
+			}
 			if(entity.getEffectiveDate() != null)
 				this.effectiveDate = entity.getEffectiveDate();
 			if(entity.getExpirationDate() != null)
@@ -90,44 +87,30 @@ public class PatientNameDTO {
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
-	public String getNameTypeCode() {
-		return nameTypeCode;
+	public NameTypeDTO getNameType() {
+		return nameType;
 	}
-	public void setNameTypeCode(String nameTypeCode) {
-		this.nameTypeCode = nameTypeCode;
+
+	public void setNameType(NameTypeDTO nameType) {
+		this.nameType = nameType;
 	}
-	public String getNameTypeCodeDescription() {
-		return nameTypeCodeDescription;
+
+	public NameRepresentationDTO getNameRepresentation() {
+		return nameRepresentation;
 	}
-	public void setNameTypeCodeDescription(String nameTypeCodeDescription) {
-		this.nameTypeCodeDescription = nameTypeCodeDescription;
+
+	public void setNameRepresentation(NameRepresentationDTO nameRepresentation) {
+		this.nameRepresentation = nameRepresentation;
 	}
-	public String getNameRepresentationCode() {
-		return nameRepresentationCode;
+
+	public NameAssemblyDTO getNameAssembly() {
+		return nameAssembly;
 	}
-	public void setNameRepresentationCode(String nameRepresentationCode) {
-		this.nameRepresentationCode = nameRepresentationCode;
+
+	public void setNameAssembly(NameAssemblyDTO nameAssembly) {
+		this.nameAssembly = nameAssembly;
 	}
-	public String getNameRepresentationCodeDescription() {
-		return nameRepresentationCodeDescription;
-	}
-	public void setNameRepresentationCodeDescription(
-			String nameRepresentationCodeDescription) {
-		this.nameRepresentationCodeDescription = nameRepresentationCodeDescription;
-	}
-	public String getNameAssemblyOrderCode() {
-		return nameAssemblyOrderCode;
-	}
-	public void setNameAssemblyOrderCode(String nameAssemblyOrderCode) {
-		this.nameAssemblyOrderCode = nameAssemblyOrderCode;
-	}
-	public String getNameAssemblyOrderCodeDescription() {
-		return nameAssemblyOrderCodeDescription;
-	}
-	public void setNameAssemblyOrderCodeDescription(
-			String nameAssemblyOrderCodeDescription) {
-		this.nameAssemblyOrderCodeDescription = nameAssemblyOrderCodeDescription;
-	}
+
 	public Date getEffectiveDate() {
 		return effectiveDate;
 	}

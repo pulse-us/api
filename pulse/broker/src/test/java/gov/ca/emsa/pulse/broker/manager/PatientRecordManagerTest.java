@@ -7,6 +7,7 @@ import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
+import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
@@ -114,7 +115,9 @@ public class PatientRecordManagerTest extends TestCase {
 		dto.getPatientName().setGivenName(givens);
 		dto.getPatientName().setSuffix("MD");
 		dto.getPatientName().setPrefix("Dr.");
-		dto.getPatientName().setNameTypeCode("G");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
+		dto.getPatientName().setNameType(nameTypeDTO);
 		dto.setOrgPatientId("123-456-78");
 		dto.setPhoneNumber("443-745-0888");
 		dto.setQueryOrganizationId(orgQuery1.getId());

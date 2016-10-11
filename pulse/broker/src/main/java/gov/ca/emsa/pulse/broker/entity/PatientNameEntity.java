@@ -11,7 +11,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -42,23 +44,17 @@ public class PatientNameEntity {
 	@Column(name = "prof_suffix")
 	private String profSuffix;
 	
-	@Column(name="name_type_code")
-	private String nameTypeCode;
+	@OneToOne
+	@JoinColumn(name="id")
+	private NameTypeEntity nameType;
 	
-	@Column(name="name_type_code_description")
-	private String nameTypeCodeDescription;
+	@OneToOne
+	@JoinColumn(name="id")
+	private NameRepresentationEntity nameRepresentation;
 	
-	@Column(name="name_representation_code")
-	private String nameRepresentationCode;
-	
-	@Column(name="name_representation_code_description")
-	private String nameRepresentationCodeDescription;
-	
-	@Column(name="name_assembly_order_code")
-	private String nameAssemblyOrderCode;
-	
-	@Column(name="name_assembly_oder_code_description")
-	private String nameAssemblyOrderCodeDescription;
+	@OneToOne
+	@JoinColumn(name="id")
+	private NameAssemblyEntity nameAssembly;
 	
 	@Column(name="effective_date")
 	private Date effectiveDate;
@@ -115,54 +111,36 @@ public class PatientNameEntity {
 		this.prefix = prefix;
 	}
 
-	public String getNameTypeCode() {
-		return nameTypeCode;
+	public Long getGivenNameId() {
+		return givenNameId;
 	}
 
-	public void setNameTypeCode(String nameTypeCode) {
-		this.nameTypeCode = nameTypeCode;
+	public void setGivenNameId(Long givenNameId) {
+		this.givenNameId = givenNameId;
 	}
 
-	public String getNameTypeCodeDescription() {
-		return nameTypeCodeDescription;
+	public NameTypeEntity getNameType() {
+		return nameType;
 	}
 
-	public void setNameTypeCodeDescription(String nameTypeCodeDescription) {
-		this.nameTypeCodeDescription = nameTypeCodeDescription;
+	public void setNameType(NameTypeEntity nameTypeCode) {
+		this.nameType = nameTypeCode;
 	}
 
-	public String getNameRepresentationCode() {
-		return nameRepresentationCode;
+	public NameRepresentationEntity getNameRepresentation() {
+		return nameRepresentation;
 	}
 
-	public void setNameRepresentationCode(String nameRepresentationCode) {
-		this.nameRepresentationCode = nameRepresentationCode;
+	public void setNameRepresentation(NameRepresentationEntity nameRepresentation) {
+		this.nameRepresentation = nameRepresentation;
 	}
 
-	public String getNameRepresentationCodeDescription() {
-		return nameRepresentationCodeDescription;
+	public NameAssemblyEntity getNameAssembly() {
+		return nameAssembly;
 	}
 
-	public void setNameRepresentationCodeDescription(
-			String nameRepresentationCodeDescription) {
-		this.nameRepresentationCodeDescription = nameRepresentationCodeDescription;
-	}
-
-	public String getNameAssemblyOrderCode() {
-		return nameAssemblyOrderCode;
-	}
-
-	public void setNameAssemblyOrderCode(String nameAssemblyOrderCode) {
-		this.nameAssemblyOrderCode = nameAssemblyOrderCode;
-	}
-
-	public String getNameAssemblyOrderCodeDescription() {
-		return nameAssemblyOrderCodeDescription;
-	}
-
-	public void setNameAssemblyOrderCodeDescription(
-			String nameAssemblyOrderCodeDescription) {
-		this.nameAssemblyOrderCodeDescription = nameAssemblyOrderCodeDescription;
+	public void setNameAssembly(NameAssemblyEntity nameAssembly) {
+		this.nameAssembly = nameAssembly;
 	}
 
 	public Date getEffectiveDate() {

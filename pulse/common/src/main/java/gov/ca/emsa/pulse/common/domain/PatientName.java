@@ -11,12 +11,9 @@ public class PatientName {
 	private String suffix;
 	private String prefix;
 	private String profSuffix;
-	private String nameType;
-	private String nameTypeCodeDescription;
-	private String nameRepresentationCode;
-	private String nameRepresentationCodeDescription;
-	private String nameAssemblyOrderCode;
-	private String nameAssemblyOrderCodeDescription;
+	private NameType nameType;
+	private NameRepresentation nameRepresentation;
+	private NameAssembly nameAssembly;
 	private Date effectiveDate;
 	private Date expirationDate;
 	
@@ -54,44 +51,31 @@ public class PatientName {
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
-	public String getNameType() {
+	
+	public NameType getNameType() {
 		return nameType;
 	}
-	public void setNameTypeCode(String nameType) {
+
+	public void setNameType(NameType nameType) {
 		this.nameType = nameType;
 	}
-	public String getNameTypeCodeDescription() {
-		return nameTypeCodeDescription;
+
+	public NameRepresentation getNameRepresentation() {
+		return nameRepresentation;
 	}
-	public void setNameTypeCodeDescription(String nameTypeCodeDescription) {
-		this.nameTypeCodeDescription = nameTypeCodeDescription;
+
+	public void setNameRepresentation(NameRepresentation nameRepresentation) {
+		this.nameRepresentation = nameRepresentation;
 	}
-	public String getNameRepresentationCode() {
-		return nameRepresentationCode;
+
+	public NameAssembly getNameAssembly() {
+		return nameAssembly;
 	}
-	public void setNameRepresentationCode(String nameRepresentationCode) {
-		this.nameRepresentationCode = nameRepresentationCode;
+
+	public void setNameAssembly(NameAssembly nameAssembly) {
+		this.nameAssembly = nameAssembly;
 	}
-	public String getNameRepresentationCodeDescription() {
-		return nameRepresentationCodeDescription;
-	}
-	public void setNameRepresentationCodeDescription(
-			String nameRepresentationCodeDescription) {
-		this.nameRepresentationCodeDescription = nameRepresentationCodeDescription;
-	}
-	public String getNameAssemblyOrderCode() {
-		return nameAssemblyOrderCode;
-	}
-	public void setNameAssemblyOrderCode(String nameAssemblyOrderCode) {
-		this.nameAssemblyOrderCode = nameAssemblyOrderCode;
-	}
-	public String getNameAssemblyOrderCodeDescription() {
-		return nameAssemblyOrderCodeDescription;
-	}
-	public void setNameAssemblyOrderCodeDescription(
-			String nameAssemblyOrderCodeDescription) {
-		this.nameAssemblyOrderCodeDescription = nameAssemblyOrderCodeDescription;
-	}
+
 	public Date getEffectiveDate() {
 		return effectiveDate;
 	}
