@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.ca.emsa.pulse.broker.dao.AddressDAO;
-import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientNameDAO;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
@@ -20,7 +19,6 @@ import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientNameDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
-import gov.ca.emsa.pulse.common.domain.PatientName;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import gov.ca.emsa.pulse.broker.entity.AddressEntity;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;

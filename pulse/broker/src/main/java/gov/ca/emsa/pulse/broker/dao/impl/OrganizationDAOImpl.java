@@ -7,8 +7,6 @@ import java.util.Objects;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-
 import org.springframework.stereotype.Repository;
 
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
