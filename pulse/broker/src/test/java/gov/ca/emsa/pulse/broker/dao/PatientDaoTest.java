@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -71,7 +72,80 @@ public class PatientDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
-	@Rollback(true)
+	//@Rollback(false)
+	public void testCreatePatientMultipleGivens() {		
+		PatientDTO toCreate = new PatientDTO();
+		toCreate.setAcf(acf);
+		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+		GivenNameDTO given = new GivenNameDTO();
+		given.setGivenName("Jonathon");
+		GivenNameDTO given2 = new GivenNameDTO();
+		given2.setGivenName("Johnathon");
+		GivenNameDTO given3 = new GivenNameDTO();
+		given3.setGivenName("Jonny");
+		givens.add(given);
+		givens.add(given2);
+		givens.add(given3);
+		toCreate.getPatientName().setGivenName(givens);
+		toCreate.getPatientName().setFamilyName("Smith");
+		toCreate.getPatientName().setSuffix("MD");
+		toCreate.getPatientName().setPrefix("Dr.");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
+		toCreate.getPatientName().setNameType(nameTypeDTO);
+		toCreate.setPhoneNumber("4105554444");
+		toCreate.setSsn("111223344");
+		toCreate.setGender("Male");
+		
+		String streetLine1 = "1000 Hilltop Circle";
+		String city = "Baltimore";
+		String state = "MD";
+		String zip = "21227";
+		AddressDTO addrDto = new AddressDTO();
+		addrDto.setStreetLineOne(streetLine1);
+		addrDto.setCity(city);
+		addrDto.setState(state);
+		addrDto.setZipcode(zip);
+		addrDto = addrDao.create(addrDto);
+		Assert.assertNotNull(addrDto);
+		Assert.assertNotNull(addrDto.getId());
+		Assert.assertTrue(addrDto.getId().longValue() > 0);
+		long existingAddrId = addrDto.getId().longValue();
+		toCreate.setAddress(addrDto);
+		
+		PatientDTO created = patientDao.create(toCreate);
+		assertNotNull(created);
+		assertNotNull(created.getId());
+		assertTrue(created.getId().longValue() > 0);
+		assertNotNull(created.getAcf());
+		assertNotNull(created.getAcf().getId());
+		assertEquals(created.getAcf().getId().longValue(), acf.getId().longValue());
+		
+		PatientDTO selected = patientDao.getById(created.getId());
+		assertNotNull(selected);
+		assertNotNull(selected.getId());
+		assertTrue(selected.getId().longValue() > 0);
+		assertNotNull(selected.getAcf());
+		assertNotNull(selected.getAcf().getId());
+		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
+		assertEquals(0, selected.getOrgMaps().size());
+		assertEquals(toCreate.getPatientName().getFamilyName(), selected.getPatientName().getFamilyName());
+		assertEquals(toCreate.getPatientName().getSuffix(), selected.getPatientName().getSuffix());
+		assertEquals(toCreate.getPatientName().getNameType().getCode(), selected.getPatientName().getNameType().getCode());
+		ArrayList<String> selectedNames = new ArrayList<String>();
+		for(GivenNameDTO selectedName : selected.getPatientName().getGivenName()){
+			selectedNames.add(selectedName.getGivenName());
+		}
+		ArrayList<String> insertedNames = new ArrayList<String>();
+		for(GivenNameDTO insertedName : toCreate.getPatientName().getGivenName()){
+			insertedNames.add(insertedName.getGivenName());
+		}
+		assertTrue(insertedNames.containsAll(selectedNames));
+	}
+	
+	@Test
+	@Transactional
+	//@Rollback(true)
 	public void testCreatePatientNoAddress() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
@@ -113,7 +187,7 @@ public class PatientDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
-	@Rollback(true)
+	//@Rollback(true)
 	public void testCreatePatientWithExistingAddress() {		
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -140,7 +214,8 @@ public class PatientDaoTest extends TestCase {
 		toCreate.getPatientName().setFamilyName("Smith");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
-		toCreate.getPatientName().setNameType(nameTypeDTO);		toCreate.setPhoneNumber("4105554444");
+		toCreate.getPatientName().setNameType(nameTypeDTO);
+		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		toCreate.setAddress(addrDto);
@@ -171,7 +246,7 @@ public class PatientDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
-	@Rollback(true)
+	//@Rollback(true)
 	public void testCreatePatientWithNewAddress() {		
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -193,7 +268,8 @@ public class PatientDaoTest extends TestCase {
 		toCreate.getPatientName().setFamilyName("Smith");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
-		toCreate.getPatientName().setNameType(nameTypeDTO);		toCreate.setPhoneNumber("4105554444");
+		toCreate.getPatientName().setNameType(nameTypeDTO);
+		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		toCreate.setAddress(addrDto);
@@ -226,7 +302,7 @@ public class PatientDaoTest extends TestCase {
 	//but they do appear when making calls via POSTman.. can't figure out the disconnect
 	@Test
 	@Transactional
-	@Rollback(true)
+	//@Rollback(true)
 	public void testCreatePatientWithOrgMaps() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
@@ -272,7 +348,7 @@ public class PatientDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
-	@Rollback(true)
+	//@Rollback(true)
 	public void testUpdatePatientFirstName() {		
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -319,7 +395,8 @@ public class PatientDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
-	@Rollback(true)
+	//@Rollback(true)
+	@Commit
 	public void testDeletePatient() {		
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";

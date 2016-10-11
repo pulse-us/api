@@ -18,7 +18,7 @@ public class GivenNameEntity {
 	
 	@Column(name = "name", nullable = false)
 	private String givenName;
-
+	
 	public Long getId() {
 		return id;
 	}

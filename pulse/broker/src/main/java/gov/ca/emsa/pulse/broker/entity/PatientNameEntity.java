@@ -25,8 +25,7 @@ public class PatientNameEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@OneToMany( fetch = FetchType.LAZY, cascade = CascadeType.ALL  )
-	@Column( name = "id", nullable = false  )
+	@OneToMany( fetch = FetchType.LAZY, mappedBy="id", cascade = CascadeType.ALL)
 	private List<GivenNameEntity> givenNames = new ArrayList<GivenNameEntity>();
 	
 	@Column(name="family_name")
@@ -75,7 +74,7 @@ public class PatientNameEntity {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+	
 	public List<GivenNameEntity> getGivenNames() {
 		return givenNames;
 	}
@@ -107,15 +106,7 @@ public class PatientNameEntity {
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
-
-	public Long getGivenNameId() {
-		return givenNameId;
-	}
-
-	public void setGivenNameId(Long givenNameId) {
-		this.givenNameId = givenNameId;
-	}
-
+	
 	public NameTypeEntity getNameType() {
 		return nameType;
 	}
