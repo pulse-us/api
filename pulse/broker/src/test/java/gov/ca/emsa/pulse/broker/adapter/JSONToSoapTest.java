@@ -4,6 +4,20 @@ package gov.ca.emsa.pulse.broker.adapter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import gov.ca.emsa.pulse.auth.jwt.JWTValidationException;
+import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
+import gov.ca.emsa.pulse.common.domain.GivenName;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
+import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +26,9 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.SOAPException;
+
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
@@ -28,24 +45,6 @@ import org.springframework.util.Assert;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-
-import gov.ca.emsa.pulse.auth.jwt.JWTValidationException;
-import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
-import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
-import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
-import gov.ca.emsa.pulse.broker.saml.SAMLInput;
-import gov.ca.emsa.pulse.common.domain.Address;
-import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.GivenName;
-import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientRecord;
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
-import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

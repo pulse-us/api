@@ -1,7 +1,5 @@
 package gov.ca.emsa.pulse.broker.entity;
 
-import gov.ca.emsa.pulse.common.domain.PatientName;
-
 import java.util.Date;
 
 import javax.persistence.CascadeType;

@@ -1,11 +1,11 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 
 public class PatientOrganizationMapDTO {
 	private Long id;

@@ -1,11 +1,11 @@
 package gov.ca.emsa.pulse.broker.cache;
 
+import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import gov.ca.emsa.pulse.common.domain.Organization;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TimerTask;
-
-import gov.ca.emsa.pulse.common.domain.Organization;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

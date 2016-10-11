@@ -1,5 +1,9 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.entity.OrganizationEntity;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,11 +11,8 @@ import java.util.Objects;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.Query;
-import org.springframework.stereotype.Repository;
 
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.entity.OrganizationEntity;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO {

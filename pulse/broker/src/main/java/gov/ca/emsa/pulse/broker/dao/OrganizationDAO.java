@@ -1,9 +1,9 @@
 package gov.ca.emsa.pulse.broker.dao;
 
-import java.util.List;
-
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.entity.OrganizationEntity;
+
+import java.util.List;
 
 public interface OrganizationDAO {
 	

@@ -1,7 +1,25 @@
 package gov.ca.emsa.pulse.broker.manager;
 
+import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
+import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
+import gov.ca.emsa.pulse.broker.dao.QueryDAO;
+import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
+import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,23 +29,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
-import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
-import gov.ca.emsa.pulse.broker.dao.QueryDAO;
-import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
-import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
-import gov.ca.emsa.pulse.common.domain.QueryStatus;
-import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
@@ -105,7 +106,9 @@ public class PatientManagerTest extends TestCase {
 		givens.add(given);
 		queryResult1.getPatientName().setGivenName(givens);
 		queryResult1.getPatientName().setFamilyName("Smith");
-		queryResult1.getPatientName().setNameTypeCode("L");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
+		queryResult1.getPatientName().setNameType(nameTypeDTO);
 		queryResult1.setGender("Male");
 		queryResult1.setOrgPatientId("JS1");
 		queryResult1.setQueryOrganizationId(orgQuery1.getId());
@@ -119,7 +122,9 @@ public class PatientManagerTest extends TestCase {
 		queryResult2 = new PatientRecordDTO();
 		queryResult2.getPatientName().setGivenName(givens);
 		queryResult2.getPatientName().setFamilyName("Smith");
-		queryResult2.getPatientName().setNameTypeCode("L");
+		NameTypeDTO nameTypeDTO2 = new NameTypeDTO();
+		nameTypeDTO2.setCode("L");
+		queryResult2.getPatientName().setNameType(nameTypeDTO2);
 		queryResult2.setGender("Male");
 		queryResult2.setOrgPatientId("JSMITH15");
 		queryResult2.setQueryOrganizationId(orgQuery2.getId());
@@ -143,7 +148,9 @@ public class PatientManagerTest extends TestCase {
 		givens.add(given);
 		toCreate.getPatientName().setGivenName(givens);
 		toCreate.getPatientName().setFamilyName("Smith");
-		toCreate.getPatientName().setNameTypeCode("L");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
+		toCreate.getPatientName().setNameType(nameTypeDTO);
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
@@ -187,7 +194,9 @@ public class PatientManagerTest extends TestCase {
 		givens.add(given);
 		toCreate.getPatientName().setGivenName(givens);
 		toCreate.getPatientName().setFamilyName("Smith");
-		toCreate.getPatientName().setNameTypeCode("L");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
+		toCreate.getPatientName().setNameType(nameTypeDTO);
 		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");

@@ -1,5 +1,22 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import gov.ca.emsa.pulse.broker.dao.GivenNameDAO;
+import gov.ca.emsa.pulse.broker.dao.NameAssemblyDAO;
+import gov.ca.emsa.pulse.broker.dao.NameRepresentationDAO;
+import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientNameDAO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
+import gov.ca.emsa.pulse.broker.dto.NameAssemblyDTO;
+import gov.ca.emsa.pulse.broker.dto.NameRepresentationDTO;
+import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientNameDTO;
+import gov.ca.emsa.pulse.broker.entity.AddressEntity;
+import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
+import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
+import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
+import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientNameEntity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,17 +27,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.ca.emsa.pulse.broker.dao.GivenNameDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientNameDAO;
-import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientNameDTO;
-import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientNameEntity;
-
 @Repository
 public class PatientNameDAOImpl extends BaseDAOImpl implements PatientNameDAO {
 	private static final Logger logger = LogManager.getLogger(PatientNameDAOImpl.class);
 	@Autowired GivenNameDAO givenDAO;
+	@Autowired NameTypeDAO nameTypeDAO;
+	@Autowired NameRepresentationDAO nameRepDAO;
+	@Autowired NameAssemblyDAO nameAssemblyDAO;
 
 	@Override
 	public PatientNameDTO create(PatientNameDTO dto) {
@@ -46,12 +59,30 @@ public class PatientNameDAOImpl extends BaseDAOImpl implements PatientNameDAO {
 		patient.setSuffix(dto.getSuffix());
 		patient.setPrefix(dto.getPrefix());
 		patient.setProfSuffix(dto.getProfSuffix());
-		patient.setNameTypeCode(dto.getNameTypeCode());
-		patient.setNameTypeCodeDescription(dto.getNameTypeCodeDescription());
-		patient.setNameRepresentationCode(dto.getNameRepresentationCode());
-		patient.setNameRepresentationCodeDescription(dto.getNameRepresentationCodeDescription());
-		patient.setNameAssemblyOrderCode(dto.getNameAssemblyOrderCode());
-		patient.setNameAssemblyOrderCodeDescription(dto.getNameAssemblyOrderCodeDescription());
+		if(dto.getNameType() != null){
+			if(dto.getNameType().getId() == null){
+				NameTypeDTO nameTypeDTO = nameTypeDAO.create(dto.getNameType());
+				dto.setNameType(nameTypeDTO);
+			}
+			NameTypeEntity nameType = entityManager.find(NameTypeEntity.class, dto.getNameType().getId());
+			patient.setNameType(nameType);
+		}
+		if(dto.getNameRepresentation() != null){
+			if(dto.getNameType().getId() == null){
+				NameRepresentationDTO nameRep = nameRepDAO.create(dto.getNameRepresentation());
+				dto.setNameRepresentation(nameRep);
+			}
+			NameRepresentationEntity nameRep = entityManager.find(NameRepresentationEntity.class, dto.getNameRepresentation().getId());
+			patient.setNameRepresentation(nameRep);
+		}
+		if(dto.getNameAssembly() != null){
+			if(dto.getNameType().getId() == null){
+				NameAssemblyDTO nameAssembly = nameAssemblyDAO.create(dto.getNameAssembly());
+				dto.setNameAssembly(nameAssembly);
+			}
+			NameAssemblyEntity assembly = entityManager.find(NameAssemblyEntity.class, dto.getNameAssembly().getId());
+			patient.setNameAssembly(assembly);
+		}
 		patient.setEffectiveDate(dto.getEffectiveDate());
 		patient.setExpirationDate(dto.getExpirationDate());
 
@@ -76,18 +107,27 @@ public class PatientNameDAOImpl extends BaseDAOImpl implements PatientNameDAO {
 			patient.setSuffix(dto.getSuffix());
 		if(dto.getPrefix() != null)
 			patient.setPrefix(dto.getPrefix());
-		if(dto.getNameTypeCode() != null)
-			patient.setNameTypeCode(dto.getNameTypeCode());
-		if(dto.getNameTypeCodeDescription() != null)
-			patient.setNameTypeCodeDescription(dto.getNameTypeCodeDescription());
-		if(dto.getNameRepresentationCode() != null)
-			patient.setNameRepresentationCode(dto.getNameRepresentationCode());
-		if(dto.getNameRepresentationCodeDescription() != null)
-			patient.setNameRepresentationCodeDescription(dto.getNameRepresentationCodeDescription());
-		if(dto.getNameAssemblyOrderCode() != null)
-			patient.setNameAssemblyOrderCode(dto.getNameAssemblyOrderCode());
-		if(dto.getNameAssemblyOrderCodeDescription() != null)
-			patient.setNameAssemblyOrderCodeDescription(dto.getNameAssemblyOrderCodeDescription());
+		if(dto.getNameType() != null){
+			NameTypeEntity nameType = new NameTypeEntity();
+			nameType.setCode(dto.getNameType().getCode());
+			nameType.setDescription(dto.getNameType().getDescription());
+			nameType.setId(dto.getNameType().getId());
+			patient.setNameType(nameType);
+		}
+		if(dto.getNameRepresentation() != null){
+			NameRepresentationEntity nameRep = new NameRepresentationEntity();
+			nameRep.setCode(dto.getNameType().getCode());
+			nameRep.setDescription(dto.getNameType().getDescription());
+			nameRep.setId(dto.getNameType().getId());
+			patient.setNameRepresentation(nameRep);
+		}
+		if(dto.getNameAssembly() != null){
+			NameAssemblyEntity nameAssembly = new NameAssemblyEntity();
+			nameAssembly.setCode(dto.getNameType().getCode());
+			nameAssembly.setDescription(dto.getNameType().getDescription());
+			nameAssembly.setId(dto.getNameType().getId());
+			patient.setNameAssembly(nameAssembly);
+		}
 		if(dto.getEffectiveDate() != null)
 			patient.setEffectiveDate(dto.getEffectiveDate());
 		if(dto.getExpirationDate() != null)

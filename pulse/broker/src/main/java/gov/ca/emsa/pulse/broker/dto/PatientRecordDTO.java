@@ -1,13 +1,10 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
-import gov.ca.emsa.pulse.common.domain.PatientName;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class PatientRecordDTO {
 	private Long id;
@@ -37,12 +34,18 @@ public class PatientRecordDTO {
 		this.patientName.setGivenName(givens);
 		this.patientName.setSuffix(entity.getPatientName().getSuffix());
 		this.patientName.setPrefix(entity.getPatientName().getPrefix());
-		this.patientName.setNameTypeCode(entity.getPatientName().getNameTypeCode());
-		this.patientName.setNameTypeCodeDescription(entity.getPatientName().getNameTypeCodeDescription());
-		this.patientName.setNameRepresentationCode(entity.getPatientName().getNameRepresentationCode());
-		this.patientName.setNameRepresentationCodeDescription(entity.getPatientName().getNameRepresentationCodeDescription());
-		this.patientName.setNameAssemblyOrderCode(entity.getPatientName().getNameAssemblyOrderCode());
-		this.patientName.setNameAssemblyOrderCodeDescription(entity.getPatientName().getNameAssemblyOrderCodeDescription());
+		if(entity.getPatientName().getNameType() != null){
+			NameTypeDTO nameType = new NameTypeDTO(entity.getPatientName().getNameType());
+			this.patientName.setNameType(nameType);
+		}
+		if(entity.getPatientName().getNameRepresentation() != null){
+			NameRepresentationDTO nameRep = new NameRepresentationDTO(entity.getPatientName().getNameRepresentation());
+			this.patientName.setNameRepresentation(nameRep);
+		}
+		if(entity.getPatientName().getNameAssembly() != null){
+			NameAssemblyDTO nameAssembly = new NameAssemblyDTO(entity.getPatientName().getNameAssembly());
+			this.patientName.setNameAssembly(nameAssembly);
+		}
 		this.patientName.setEffectiveDate(entity.getPatientName().getEffectiveDate());
 		this.patientName.setExpirationDate(entity.getPatientName().getExpirationDate());
 		

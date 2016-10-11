@@ -1,6 +1,5 @@
 package gov.ca.emsa.pulse.common.domain;
 
-import java.util.Date;
 
 public class PatientRecord {
 	private Long id;

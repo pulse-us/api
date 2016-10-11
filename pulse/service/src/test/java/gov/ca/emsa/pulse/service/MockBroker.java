@@ -1,12 +1,11 @@
 package gov.ca.emsa.pulse.service;
 
-import org.springframework.context.annotation.Profile;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
 
 @RestController
 public class MockBroker {
