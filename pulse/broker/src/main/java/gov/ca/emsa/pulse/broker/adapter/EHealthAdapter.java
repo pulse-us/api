@@ -73,6 +73,7 @@ public class EHealthAdapter implements Adapter {
 		String searchResults = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
+			logger.info("Querying " + postUrl + " with request " + request);
 			searchResults = restTemplate.postForObject(postUrl, request, String.class);
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + postUrl, ex);
@@ -116,6 +117,7 @@ public class EHealthAdapter implements Adapter {
 		String searchResults = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
+			logger.info("Querying " + postUrl + " with request " + request);
 			searchResults = restTemplate.postForObject(postUrl, request, String.class);
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + postUrl, ex);
@@ -167,6 +169,7 @@ public class EHealthAdapter implements Adapter {
 		String searchResults = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
+			logger.info("Querying " + postUrl + " with request " + request);
 			searchResults = restTemplate.postForObject(postUrl, request, String.class);
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + postUrl, ex);
