@@ -11,6 +11,7 @@ import gov.ca.emsa.pulse.broker.dto.SearchResultConverter;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
@@ -83,9 +84,9 @@ public class EHealthAdapter implements Adapter {
 		if(!StringUtils.isEmpty(searchResults)) {
 			try {
 				PRPAIN201306UV02 resultObj = queryProducer.unMarshallPatientDiscoveryResponseObject(searchResults);
-				List<Patient> patientResults = soapConverterService.convertToPatients(resultObj);
+				List<PatientRecord> patientResults = soapConverterService.convertToPatientRecords(resultObj);
 				for(int i = 0; i < patientResults.size(); i++) {
-					PatientRecordDTO record = SearchResultConverter.convertToPatientRecord(patientResults.get(i));
+					PatientRecordDTO record = DomainToDtoConverter.convertToPatientRecord(patientResults.get(i));
 					records.add(record);
 				}
 			} catch(SAMLException | SOAPException ex) {

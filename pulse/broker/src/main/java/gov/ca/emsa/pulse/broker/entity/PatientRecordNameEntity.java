@@ -17,19 +17,43 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="patient_name")
-public class PatientNameEntity {
+@Table(name="patient_record_name")
+public class PatientRecordNameEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy="id", cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordNameId", cascade = CascadeType.ALL)
 	private List<GivenNameEntity> givenNames = new ArrayList<GivenNameEntity>();
+	
+	@Column(name = "patient_record_id")
+	private Long patientRecordId;
+	
+	@Column(name = "name_type_id")
+	private Long nameTypeId;
+	
+	@OneToOne
+	@JoinColumn(name="id")
+	private NameTypeEntity nameType;
 	
 	@Column(name="family_name")
 	private String familyName;
+	
+	@Column(name = "name_representation_id")
+	private Long nameRepresentationId;
+	
+	@OneToOne
+	@JoinColumn(name="id")
+	private NameRepresentationEntity nameRepresentation;
+	
+	@Column(name = "name_assembly_id")
+	private Long nameAssemblyId;
+	
+	@OneToOne
+	@JoinColumn(name="id")
+	private NameAssemblyEntity nameAssembly;
 	
 	@Column(name="suffix")
 	private String suffix;
@@ -39,18 +63,6 @@ public class PatientNameEntity {
 	
 	@Column(name = "prof_suffix")
 	private String profSuffix;
-	
-	@OneToOne
-	@JoinColumn(name="id")
-	private NameTypeEntity nameType;
-	
-	@OneToOne
-	@JoinColumn(name="id")
-	private NameRepresentationEntity nameRepresentation;
-	
-	@OneToOne
-	@JoinColumn(name="id")
-	private NameAssemblyEntity nameAssembly;
 	
 	@Column(name="effective_date")
 	private Date effectiveDate;

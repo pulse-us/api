@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
 
 import java.time.LocalDate;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 public class PatientRecordDTO {
 	private Long id;
 	private String orgPatientId;
-	private PatientNameDTO patientName;
+	private ArrayList<PatientRecordNameDTO> PatientRecordName;
 	private LocalDate dateOfBirth;
 	private String ssn;
 	private String gender;
@@ -18,37 +19,38 @@ public class PatientRecordDTO {
 	private Long queryOrganizationId;
 	
 	public PatientRecordDTO() {
-		patientName = new PatientNameDTO();
+		PatientRecordName = new ArrayList<PatientRecordNameDTO>();
 	}
 	
 	public PatientRecordDTO(PatientRecordEntity entity) {
 		this.id = entity.getId();
 		this.orgPatientId = entity.getOrgPatientId();
-		this.patientName = new PatientNameDTO();
-		this.patientName.setFamilyName(entity.getPatientName().getFamilyName());
-		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-		for(GivenNameEntity given : entity.getPatientName().getGivenNames()){
-			GivenNameDTO givenDTO = new GivenNameDTO(given);
-			givens.add(givenDTO);
+		for(PatientRecordNameEntity PatientRecordNameEntity : entity.getPatientRecordName()){
+			PatientRecordNameDTO PatientRecordNameDTO = new PatientRecordNameDTO();
+			PatientRecordNameDTO.setFamilyName(PatientRecordNameEntity.getFamilyName());
+			ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+			for(GivenNameEntity given : PatientRecordNameEntity.getGivenNames()){
+				GivenNameDTO givenDTO = new GivenNameDTO(given);
+				givens.add(givenDTO);
+			}
+			PatientRecordNameDTO.setGivenName(givens);
+			PatientRecordNameDTO.setSuffix(PatientRecordNameEntity.getSuffix());
+			PatientRecordNameDTO.setPrefix(PatientRecordNameEntity.getPrefix());
+			if(PatientRecordNameEntity.getNameType() != null){
+				NameTypeDTO nameType = new NameTypeDTO(PatientRecordNameEntity.getNameType());
+				PatientRecordNameDTO.setNameType(nameType);
+			}
+			if(PatientRecordNameEntity.getNameRepresentation() != null){
+				NameRepresentationDTO nameRep = new NameRepresentationDTO(PatientRecordNameEntity.getNameRepresentation());
+				PatientRecordNameDTO.setNameRepresentation(nameRep);
+			}
+			if(PatientRecordNameEntity.getNameAssembly() != null){
+				NameAssemblyDTO nameAssembly = new NameAssemblyDTO(PatientRecordNameEntity.getNameAssembly());
+				PatientRecordNameDTO.setNameAssembly(nameAssembly);
+			}
+			PatientRecordNameDTO.setEffectiveDate(PatientRecordNameEntity.getEffectiveDate());
+			PatientRecordNameDTO.setExpirationDate(PatientRecordNameEntity.getExpirationDate());
 		}
-		this.patientName.setGivenName(givens);
-		this.patientName.setSuffix(entity.getPatientName().getSuffix());
-		this.patientName.setPrefix(entity.getPatientName().getPrefix());
-		if(entity.getPatientName().getNameType() != null){
-			NameTypeDTO nameType = new NameTypeDTO(entity.getPatientName().getNameType());
-			this.patientName.setNameType(nameType);
-		}
-		if(entity.getPatientName().getNameRepresentation() != null){
-			NameRepresentationDTO nameRep = new NameRepresentationDTO(entity.getPatientName().getNameRepresentation());
-			this.patientName.setNameRepresentation(nameRep);
-		}
-		if(entity.getPatientName().getNameAssembly() != null){
-			NameAssemblyDTO nameAssembly = new NameAssemblyDTO(entity.getPatientName().getNameAssembly());
-			this.patientName.setNameAssembly(nameAssembly);
-		}
-		this.patientName.setEffectiveDate(entity.getPatientName().getEffectiveDate());
-		this.patientName.setExpirationDate(entity.getPatientName().getExpirationDate());
-		
 		if(entity.getDateOfBirth() != null) {
 			this.dateOfBirth = entity.getDateOfBirth().toLocalDate();
 		}
@@ -120,12 +122,12 @@ public class PatientRecordDTO {
 		this.queryOrganizationId = queryOrganizationId;
 	}
 
-	public PatientNameDTO getPatientName() {
-		return patientName;
+	public ArrayList<PatientRecordNameDTO> getPatientRecordName() {
+		return PatientRecordName;
 	}
 
-	public void setPatientName(PatientNameDTO patientName) {
-		this.patientName = patientName;
+	public void setPatientRecordName(ArrayList<PatientRecordNameDTO> PatientRecordName) {
+		this.PatientRecordName = PatientRecordName;
 	}
 	
 }

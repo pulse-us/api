@@ -1,12 +1,12 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientNameEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-public class PatientNameDTO {
+public class PatientRecordNameDTO {
 
 	private Long id;
 	private ArrayList<GivenNameDTO> givenName;
@@ -20,11 +20,11 @@ public class PatientNameDTO {
 	private Date effectiveDate;
 	private Date expirationDate;
 
-	public PatientNameDTO(){
+	public PatientRecordNameDTO(){
 		givenName = new ArrayList<GivenNameDTO>();
 	}
 
-	public PatientNameDTO(PatientNameEntity entity)
+	public PatientRecordNameDTO(PatientRecordNameEntity entity)
 	{
 		if(entity != null) {
 			this.id = entity.getId();

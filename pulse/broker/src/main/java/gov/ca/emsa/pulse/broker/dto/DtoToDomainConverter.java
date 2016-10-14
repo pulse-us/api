@@ -10,6 +10,7 @@ import gov.ca.emsa.pulse.common.domain.NameRepresentation;
 import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.Organization;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientOrganizationMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -28,59 +29,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class DtoToDomainConverter {
 	private static final Logger logger = LogManager.getLogger(DtoToDomainConverter.class);
 	private static final DateTimeFormatter outFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	
+
 	public static Patient convert(PatientDTO dtoObj) {
 		Patient result = new Patient();
 		result.setId(dtoObj.getId());
-		if(dtoObj.getPatientName() != null){
-			result.getPatientName().setFamilyName(dtoObj.getPatientName().getFamilyName());
-			ArrayList<GivenName> givens = new ArrayList<GivenName>();
-			for(GivenNameDTO givenDto : dtoObj.getPatientName().getGivenName()){
-				GivenName givenName = new GivenName();
-				givenName.setGivenName(givenDto.getGivenName());
-				givenName.setId(givenDto.getId());
-				givenName.setPatientNameId(givenDto.getPatientNameId());
-				givens.add(givenName);
-			}
-			result.getPatientName().setGivenName(givens);
-			if(dtoObj.getPatientName().getSuffix() != null)
-				result.getPatientName().setSuffix(dtoObj.getPatientName().getSuffix());
-			if(dtoObj.getPatientName().getPrefix() != null)
-				result.getPatientName().setPrefix(dtoObj.getPatientName().getPrefix());
-			if(dtoObj.getPatientName().getNameType() != null){
-				NameType nameType = new NameType();
-				nameType.setCode(dtoObj.getPatientName().getNameType().getCode());
-				nameType.setDescription(dtoObj.getPatientName().getNameType().getDescription());
-				nameType.setId(dtoObj.getPatientName().getNameType().getId());
-				result.getPatientName().setNameType(nameType);
-			}
-			if(dtoObj.getPatientName().getNameRepresentation() != null){
-				NameRepresentation nameRep = new NameRepresentation();
-				nameRep.setCode(dtoObj.getPatientName().getNameType().getCode());
-				nameRep.setDescription(dtoObj.getPatientName().getNameType().getDescription());
-				nameRep.setId(dtoObj.getPatientName().getNameType().getId());
-				result.getPatientName().setNameRepresentation(nameRep);
-			}
-			if(dtoObj.getPatientName().getNameAssembly() != null){
-				NameAssembly nameAssembly = new NameAssembly();
-				nameAssembly.setCode(dtoObj.getPatientName().getNameType().getCode());
-				nameAssembly.setDescription(dtoObj.getPatientName().getNameType().getDescription());
-				nameAssembly.setId(dtoObj.getPatientName().getNameType().getId());
-				result.getPatientName().setNameAssembly(nameAssembly);
-			}
-			if(dtoObj.getPatientName().getEffectiveDate() != null)
-				result.getPatientName().setEffectiveDate(dtoObj.getPatientName().getEffectiveDate());
-			if(dtoObj.getPatientName().getExpirationDate() != null)
-				result.getPatientName().setExpirationDate(dtoObj.getPatientName().getExpirationDate());
-		}
+		result.setFullName(dtoObj.getFullName());
+		result.setFriendlyName(dtoObj.getFriendlyName());
 		result.setGender(dtoObj.getGender());
 		if(dtoObj.getDateOfBirth() != null) {
 			result.setDateOfBirth(outFormatter.format(dtoObj.getDateOfBirth()));
 		}
-		result.setPhoneNumber(dtoObj.getPhoneNumber());
 		result.setSsn(dtoObj.getSsn());
 		result.setLastRead(dtoObj.getLastReadDate());
-		
 		if(dtoObj.getAcf() != null) {
 			AlternateCareFacility acf = new AlternateCareFacility();
 			acf.setId(dtoObj.getAcf().getId());
@@ -92,22 +52,17 @@ public class DtoToDomainConverter {
 			}
 			result.setAcf(acf);
 		}
-		
-		if(dtoObj.getAddress() != null) {
-			Address addr = convert(dtoObj.getAddress());
-			result.setAddress(addr);
-		}
-		
+
 		if(dtoObj.getOrgMaps() != null && dtoObj.getOrgMaps().size() > 0) {
 			for(PatientOrganizationMapDTO orgMapDto : dtoObj.getOrgMaps()) {
 				PatientOrganizationMap orgMap = DtoToDomainConverter.convert(orgMapDto);
 				result.getOrgMaps().add(orgMap);
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public static PatientOrganizationMap convert(PatientOrganizationMapDTO dto) {	
 		PatientOrganizationMap result = new PatientOrganizationMap();
 		result.setId(dto.getId());
@@ -132,7 +87,7 @@ public class DtoToDomainConverter {
 		}
 		return result;
 	}
-	
+
 	public static Address convert(AddressDTO addressDto){
 		Address address = new Address();
 		address.setId(addressDto.getId());
@@ -145,7 +100,7 @@ public class DtoToDomainConverter {
 		address.setCountry(addressDto.getCountry());
 		return address;
 	}
-	
+
 	public static AlternateCareFacility convert(AlternateCareFacilityDTO acfDto){
 		AlternateCareFacility acf = new AlternateCareFacility();
 		if(acfDto.getAddress() != null){
@@ -157,7 +112,7 @@ public class DtoToDomainConverter {
 		acf.setLastRead(acfDto.getLastReadDate());
 		return acf;
 	}
-	
+
 	public static Query convert(QueryDTO queryDto){
 		Query query = new Query();
 		query.setId(queryDto.getId());
@@ -171,7 +126,7 @@ public class DtoToDomainConverter {
 		} catch(IOException ioex) {
 			logger.error("Could not read " + queryDto.getTerms() + " as JSON.");
 		}
-		
+
 		query.setUserToken(queryDto.getUserId());
 		for(QueryOrganizationDTO qOrgDto : queryDto.getOrgStatuses()){
 			QueryOrganization qOrg = DtoToDomainConverter.convert(qOrgDto);
@@ -179,15 +134,15 @@ public class DtoToDomainConverter {
 		}
 		return query;
 	}
-	
+
 	public static QueryOrganization convert(QueryOrganizationDTO qOrgDto){
 		QueryOrganization qOrg = new QueryOrganization();
 		qOrg.setId(qOrgDto.getId());
-		
+
 		if(qOrgDto.getOrg() != null) {
 			qOrg.setOrg(convert(qOrgDto.getOrg()));
 		}
-		
+
 		qOrg.setQueryId(qOrgDto.getQueryId());
 		for(PatientRecordDTO prDto : qOrgDto.getResults()){
 			PatientRecord pr = DtoToDomainConverter.convert(prDto);
@@ -199,51 +154,54 @@ public class DtoToDomainConverter {
 		qOrg.setSuccess(qOrgDto.getSuccess());
 		return qOrg;
 	}
-	
+
 	public static PatientRecord convert(PatientRecordDTO prDto){
 		PatientRecord pr = new PatientRecord();
 		pr.setId(prDto.getId());
 		pr.setSsn(prDto.getSsn());
-		if(prDto.getPatientName() != null){
-			pr.getPatientName().setFamilyName(prDto.getPatientName().getFamilyName());
-			ArrayList<GivenName> givens = new ArrayList<GivenName>();
-			for(GivenNameDTO givenDto : prDto.getPatientName().getGivenName()){
-				GivenName givenName = new GivenName();
-				givenName.setGivenName(givenDto.getGivenName());
-				givenName.setId(givenDto.getId());
-				givenName.setPatientNameId(givenDto.getPatientNameId());
-				givens.add(givenName);
+		if(prDto.getPatientRecordName() != null){
+			for(PatientRecordNameDTO PatientRecordNameDTO : prDto.getPatientRecordName()){
+				PatientRecordName patient = new PatientRecordName();
+				patient.setFamilyName(PatientRecordNameDTO.getFamilyName());
+				ArrayList<GivenName> givens = new ArrayList<GivenName>();
+				for(GivenNameDTO givenDto : PatientRecordNameDTO.getGivenName()){
+					GivenName givenName = new GivenName();
+					givenName.setGivenName(givenDto.getGivenName());
+					givenName.setId(givenDto.getId());
+					givenName.setPatientRecordNameId(givenDto.getPatientRecordNameId());
+					givens.add(givenName);
+				}
+				patient.setGivenName(givens);
+				if(PatientRecordNameDTO.getSuffix() != null)
+					patient.setSuffix(PatientRecordNameDTO.getSuffix());
+				if(PatientRecordNameDTO.getPrefix() != null)
+					patient.setPrefix(PatientRecordNameDTO.getPrefix());
+				if(PatientRecordNameDTO.getNameType() != null){
+					NameType nameType = new NameType();
+					nameType.setCode(PatientRecordNameDTO.getNameType().getCode());
+					nameType.setDescription(PatientRecordNameDTO.getNameType().getDescription());
+					nameType.setId(PatientRecordNameDTO.getNameType().getId());
+					patient.setNameType(nameType);
+				}
+				if(PatientRecordNameDTO.getNameRepresentation() != null){
+					NameRepresentation nameRep = new NameRepresentation();
+					nameRep.setCode(PatientRecordNameDTO.getNameType().getCode());
+					nameRep.setDescription(PatientRecordNameDTO.getNameType().getDescription());
+					nameRep.setId(PatientRecordNameDTO.getNameType().getId());
+					patient.setNameRepresentation(nameRep);
+				}
+				if(PatientRecordNameDTO.getNameAssembly() != null){
+					NameAssembly nameAssembly = new NameAssembly();
+					nameAssembly.setCode(PatientRecordNameDTO.getNameType().getCode());
+					nameAssembly.setDescription(PatientRecordNameDTO.getNameType().getDescription());
+					nameAssembly.setId(PatientRecordNameDTO.getNameType().getId());
+					patient.setNameAssembly(nameAssembly);
+				}
+				if(PatientRecordNameDTO.getEffectiveDate() != null)
+					patient.setEffectiveDate(PatientRecordNameDTO.getEffectiveDate());
+				if(PatientRecordNameDTO.getExpirationDate() != null)
+					patient.setExpirationDate(PatientRecordNameDTO.getExpirationDate());
 			}
-			pr.getPatientName().setGivenName(givens);
-			if(prDto.getPatientName().getSuffix() != null)
-				pr.getPatientName().setSuffix(prDto.getPatientName().getSuffix());
-			if(prDto.getPatientName().getPrefix() != null)
-				pr.getPatientName().setPrefix(prDto.getPatientName().getPrefix());
-			if(prDto.getPatientName().getNameType() != null){
-				NameType nameType = new NameType();
-				nameType.setCode(prDto.getPatientName().getNameType().getCode());
-				nameType.setDescription(prDto.getPatientName().getNameType().getDescription());
-				nameType.setId(prDto.getPatientName().getNameType().getId());
-				pr.getPatientName().setNameType(nameType);
-			}
-			if(prDto.getPatientName().getNameRepresentation() != null){
-				NameRepresentation nameRep = new NameRepresentation();
-				nameRep.setCode(prDto.getPatientName().getNameType().getCode());
-				nameRep.setDescription(prDto.getPatientName().getNameType().getDescription());
-				nameRep.setId(prDto.getPatientName().getNameType().getId());
-				pr.getPatientName().setNameRepresentation(nameRep);
-			}
-			if(prDto.getPatientName().getNameAssembly() != null){
-				NameAssembly nameAssembly = new NameAssembly();
-				nameAssembly.setCode(prDto.getPatientName().getNameType().getCode());
-				nameAssembly.setDescription(prDto.getPatientName().getNameType().getDescription());
-				nameAssembly.setId(prDto.getPatientName().getNameType().getId());
-				pr.getPatientName().setNameAssembly(nameAssembly);
-			}
-			if(prDto.getPatientName().getEffectiveDate() != null)
-				pr.getPatientName().setEffectiveDate(prDto.getPatientName().getEffectiveDate());
-			if(prDto.getPatientName().getExpirationDate() != null)
-				pr.getPatientName().setExpirationDate(prDto.getPatientName().getExpirationDate());
 		}
 		pr.setGender(prDto.getGender());
 		pr.setPhoneNumber(prDto.getPhoneNumber());
@@ -262,7 +220,7 @@ public class DtoToDomainConverter {
 		}
 		return pr;
 	}
-	
+
 	public static Organization convert(OrganizationDTO orgDto){
 		Organization org = new Organization();
 		org.setId(orgDto.getId());
@@ -287,7 +245,7 @@ public class DtoToDomainConverter {
 		}
 		return org;
 	}
-	
+
 	public static Document convert(DocumentDTO dtoObj) {
 		Document result = new Document();
 		result.setId(dtoObj.getId()+"");
@@ -295,7 +253,7 @@ public class DtoToDomainConverter {
 		result.setFormat(dtoObj.getFormat());
 		result.setCached(dtoObj.getContents() != null && dtoObj.getContents().length > 0);
 		result.setOrgMapId(dtoObj.getPatientOrgMapId());
-		
+
 		result.setClassName(dtoObj.getClassName());
 		result.setConfidentiality(dtoObj.getConfidentiality());
 		result.setCreationTime(dtoObj.getCreationTime());

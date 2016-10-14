@@ -76,42 +76,11 @@ public class PatientDaoTest extends TestCase {
 	public void testCreatePatientMultipleGivens() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-		GivenNameDTO given = new GivenNameDTO();
-		given.setGivenName("Jonathon");
-		GivenNameDTO given2 = new GivenNameDTO();
-		given2.setGivenName("Johnathon");
-		GivenNameDTO given3 = new GivenNameDTO();
-		given3.setGivenName("Jonny");
-		givens.add(given);
-		givens.add(given2);
-		givens.add(given3);
-		toCreate.getPatientName().setGivenName(givens);
-		toCreate.getPatientName().setFamilyName("Smith");
-		toCreate.getPatientName().setSuffix("MD");
-		toCreate.getPatientName().setPrefix("Dr.");
+		toCreate.setFullName("Brian Lindsey");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
-		toCreate.getPatientName().setNameType(nameTypeDTO);
-		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
-		
-		String streetLine1 = "1000 Hilltop Circle";
-		String city = "Baltimore";
-		String state = "MD";
-		String zip = "21227";
-		AddressDTO addrDto = new AddressDTO();
-		addrDto.setStreetLineOne(streetLine1);
-		addrDto.setCity(city);
-		addrDto.setState(state);
-		addrDto.setZipcode(zip);
-		addrDto = addrDao.create(addrDto);
-		Assert.assertNotNull(addrDto);
-		Assert.assertNotNull(addrDto.getId());
-		Assert.assertTrue(addrDto.getId().longValue() > 0);
-		long existingAddrId = addrDto.getId().longValue();
-		toCreate.setAddress(addrDto);
 		
 		PatientDTO created = patientDao.create(toCreate);
 		assertNotNull(created);
@@ -129,18 +98,7 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
 		assertEquals(0, selected.getOrgMaps().size());
-		assertEquals(toCreate.getPatientName().getFamilyName(), selected.getPatientName().getFamilyName());
-		assertEquals(toCreate.getPatientName().getSuffix(), selected.getPatientName().getSuffix());
-		assertEquals(toCreate.getPatientName().getNameType().getCode(), selected.getPatientName().getNameType().getCode());
-		ArrayList<String> selectedNames = new ArrayList<String>();
-		for(GivenNameDTO selectedName : selected.getPatientName().getGivenName()){
-			selectedNames.add(selectedName.getGivenName());
-		}
-		ArrayList<String> insertedNames = new ArrayList<String>();
-		for(GivenNameDTO insertedName : toCreate.getPatientName().getGivenName()){
-			insertedNames.add(insertedName.getGivenName());
-		}
-		assertTrue(insertedNames.containsAll(selectedNames));
+		assertEquals(toCreate.getFullName(), selected.getFullName());
 	}
 	
 	@Test
@@ -153,14 +111,9 @@ public class PatientDaoTest extends TestCase {
 		GivenNameDTO given = new GivenNameDTO();
 		given.setGivenName("Jonathon");
 		givens.add(given);
-		toCreate.getPatientName().setGivenName(givens);
-		toCreate.getPatientName().setFamilyName("Smith");
-		toCreate.getPatientName().setSuffix("MD");
-		toCreate.getPatientName().setPrefix("Dr.");
+		toCreate.setFullName("Brian Lindsey");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
-		toCreate.getPatientName().setNameType(nameTypeDTO);
-		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		
@@ -180,9 +133,7 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
 		assertEquals(0, selected.getOrgMaps().size());
-		assertEquals(toCreate.getPatientName().getFamilyName(), selected.getPatientName().getFamilyName());
-		assertEquals(toCreate.getPatientName().getSuffix(), selected.getPatientName().getSuffix());
-		assertEquals(toCreate.getPatientName().getNameType().getCode(), selected.getPatientName().getNameType().getCode());
+		assertEquals(toCreate.getFullName(), selected.getFullName());
 	}
 	
 	@Test
@@ -207,26 +158,16 @@ public class PatientDaoTest extends TestCase {
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
 		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-		GivenNameDTO given = new GivenNameDTO();
-		given.setGivenName("Jonathon");
-		givens.add(given);
-		toCreate.getPatientName().setGivenName(givens);
-		toCreate.getPatientName().setFamilyName("Smith");
+		toCreate.setFullName("Brian Lindsey");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
-		toCreate.getPatientName().setNameType(nameTypeDTO);
-		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
-		toCreate.setAddress(addrDto);
 		
 		PatientDTO created = patientDao.create(toCreate);
 		assertNotNull(created);
 		assertNotNull(created.getId());
 		assertTrue(created.getId().longValue() > 0);
-		assertNotNull(created.getAddress());
-		assertNotNull(created.getAddress().getId());
-		assertEquals(existingAddrId, created.getAddress().getId().longValue());
 		assertNotNull(created.getAcf());
 		assertNotNull(created.getAcf().getId());
 		assertEquals(created.getAcf().getId().longValue(), acf.getId().longValue());
@@ -235,9 +176,6 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getAddress());
-		assertNotNull(selected.getAddress().getId());
-		assertEquals(existingAddrId, selected.getAddress().getId().longValue());
 		assertNotNull(selected.getAcf());
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
@@ -260,27 +198,16 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-		GivenNameDTO given = new GivenNameDTO();
-		given.setGivenName("Jonathon");
-		givens.add(given);
-		toCreate.getPatientName().setGivenName(givens);
-		toCreate.getPatientName().setFamilyName("Smith");
+		toCreate.setFriendlyName("Brian Lindsey");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
-		toCreate.getPatientName().setNameType(nameTypeDTO);
-		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
-		toCreate.setAddress(addrDto);
 		
 		PatientDTO created = patientDao.create(toCreate);
 		assertNotNull(created);
 		assertNotNull(created.getId());
 		assertTrue(created.getId().longValue() > 0);
-		assertNotNull(created.getAddress());
-		assertNotNull(created.getAddress().getId());
-		assertTrue(created.getAddress().getId().longValue() > 0);
 		assertNotNull(created.getAcf());
 		assertNotNull(created.getAcf().getId());
 		assertEquals(created.getAcf().getId().longValue(), acf.getId().longValue());
@@ -289,9 +216,6 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getAddress());
-		assertNotNull(selected.getAddress().getId());
-		assertTrue(selected.getAddress().getId().longValue() > 0);
 		assertNotNull(selected.getAcf());
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
@@ -306,16 +230,7 @@ public class PatientDaoTest extends TestCase {
 	public void testCreatePatientWithOrgMaps() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-		GivenNameDTO given = new GivenNameDTO();
-		given.setGivenName("Jonathon");
-		givens.add(given);
-		toCreate.getPatientName().setGivenName(givens);
-		toCreate.getPatientName().setFamilyName("Smith");
-		NameTypeDTO nameTypeDTO = new NameTypeDTO();
-		nameTypeDTO.setCode("L");
-		toCreate.getPatientName().setNameType(nameTypeDTO);
-		toCreate.setPhoneNumber("4105554444");
+		toCreate.setFullName("Brian Lindsey");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		
@@ -367,30 +282,16 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-		GivenNameDTO given = new GivenNameDTO();
-		given.setGivenName("Johnathan");
-		givens.add(given);
-		toCreate.getPatientName().setGivenName(givens);
-		toCreate.getPatientName().setFamilyName("Smith");
-		NameTypeDTO nameTypeDTO = new NameTypeDTO();
-		nameTypeDTO.setCode("L");
-		toCreate.getPatientName().setNameType(nameTypeDTO);
-		toCreate.setPhoneNumber("4105554444");
+		toCreate.setFullName("Brian Lindsey");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
-		toCreate.setAddress(addrDto);
 		
 		PatientDTO created = patientDao.create(toCreate);
-		givens.remove(0);
-		GivenNameDTO given2 = new GivenNameDTO();
-		given.setGivenName("Johnathan");
-		givens.add(given2);
-		toCreate.getPatientName().setGivenName(givens);
+		created.setFullName("Katy Ekey");
 		PatientDTO updated = patientDao.update(created);
 		assertNotNull(updated);
 		assertEquals(updated.getId().longValue(), created.getId().longValue());
-		assertEquals("Johnathan", updated.getPatientName().getGivenName().get(0).getGivenName());
+		assertEquals("Katy Ekey", updated.getFullName());
 	}
 	
 	@Test
@@ -415,19 +316,9 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-		GivenNameDTO given = new GivenNameDTO();
-		given.setGivenName("Jonathon");
-		givens.add(given);
-		toCreate.getPatientName().setGivenName(givens);
-		toCreate.getPatientName().setFamilyName("Smith");
-		NameTypeDTO nameTypeDTO = new NameTypeDTO();
-		nameTypeDTO.setCode("L");
-		toCreate.getPatientName().setNameType(nameTypeDTO);
-		toCreate.setPhoneNumber("4105554444");
+		toCreate.setFullName("Brian Lindsey");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
-		toCreate.setAddress(addrDto);
 		
 		PatientDTO created = patientDao.create(toCreate);
 		patientDao.delete(created.getId());

@@ -62,14 +62,7 @@ public class PatientManagerImpl implements PatientManager {
 	@Override
 	@Transactional
 	public PatientDTO update(PatientDTO toUpdate) {
-		if(toUpdate.getAddress() != null) {
-			if(toUpdate.getAddress().getId() != null) {
-				addressDao.update(toUpdate.getAddress());
-			} else {
-				AddressDTO createdAddress = addressDao.create(toUpdate.getAddress());
-				toUpdate.setAddress(createdAddress);
-			}
-		}
+		
 		toUpdate.setLastReadDate(new Date());
 		return patientDao.update(toUpdate);
 	}

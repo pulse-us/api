@@ -78,13 +78,7 @@ public class JSONToSoapTest {
 		PatientSearch ps = new PatientSearch();
 		Patient toCreate = new Patient();
 		ps.setDob("19830205");
-		ArrayList<GivenName> givens = new ArrayList<GivenName>();
-		GivenName given = new GivenName();
-		given.setGivenName("Kathryn");
-		givens.add(given);
-		toCreate.getPatientName().setGivenName(givens);
-		ps.getPatientName().setGivenName(givens);
-		ps.getPatientName().setFamilyName("Ekey");
+		toCreate.setFullName("Brian Lindsey");
 		ps.setGender("F");
 		
 		SAMLInput input = new SAMLInput();
@@ -95,8 +89,7 @@ public class JSONToSoapTest {
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
 		customAttributes.put("RequesterFirstName", "Katy");
 		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientGivenName", ps.getPatientName().getGivenName().get(0).getGivenName());
-		customAttributes.put("PatientFamilyName", ps.getPatientName().getFamilyName());
+		customAttributes.put("PatientFullName", ps.getPatient().getFullName());
 		customAttributes.put("PatientDOB", ps.getDob());
 		customAttributes.put("PatientGender", ps.getGender());
 		customAttributes.put("PatientHomeZip", ps.getZip());
@@ -111,8 +104,7 @@ public class JSONToSoapTest {
 		assertNotNull(unmarshalledRequest);
 		PatientSearch unmarshalledSearch = reverseService.convertToPatientSearch(unmarshalledRequest);
 		assertNotNull(unmarshalledSearch);
-		assertEquals(ps.getPatientName().getGivenName().get(0).getGivenName(), unmarshalledSearch.getPatientName().getGivenName().get(0).getGivenName());
-		assertEquals(ps.getPatientName().getFamilyName(), unmarshalledSearch.getPatientName().getFamilyName());
+		assertEquals(ps.getPatient().getFullName(), unmarshalledSearch.getPatient().getFullName());
 		assertEquals(ps.getDob(), unmarshalledSearch.getDob());
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
 	}
@@ -128,8 +120,8 @@ public class JSONToSoapTest {
 		assertEquals(2, patientRecords.size());
 		
 		PatientRecord firstPatient = patientRecords.get(0);
-		assertEquals("James", firstPatient.getPatientName().getGivenName().get(0).getGivenName());
-		assertEquals("Jones", firstPatient.getPatientName().getFamilyName());
+		assertEquals("James", firstPatient.getPatientRecordName().get(0).getGivenName().get(0).getGivenName());
+		assertEquals("Jones", firstPatient.getPatientRecordName().get(0).getFamilyName());
 		assertEquals("tel:+1-481-555-7684;ext=2342", firstPatient.getPhoneNumber());
 		assertEquals("19630804", firstPatient.getDateOfBirth());
 		assertEquals("M", firstPatient.getGender());

@@ -64,11 +64,7 @@ public class PatientSearchTest {
 		insertOrganizations();
 
 		PatientSearch toSearch = new PatientSearch();
-		ArrayList<GivenName> givens = new ArrayList<GivenName>();
-		GivenName given = new GivenName();
-		given.setGivenName("Jonathon");
-		givens.add(given);
-		toSearch.getPatientName().setGivenName(givens);
+		toSearch.getPatient().setFullName("Jonathon");
 
 		 mockServer
 		 	.expect(MockRestRequestMatchers.requestTo(org1.getEndpointUrl()))
@@ -220,11 +216,7 @@ public class PatientSearchTest {
 
 	private QueryDTO createQuery(CommonUser user) throws JsonProcessingException {
 		Patient queryTerms = new Patient();
-		ArrayList<GivenName> givens = new ArrayList<GivenName>();
-		GivenName given = new GivenName();
-		given.setGivenName("Jonathon");
-		givens.add(given);
-		queryTerms.getPatientName().setGivenName(givens);
+		queryTerms.setFullName("Jonathon");
 		String queryTermsJson = JSONUtils.toJSON(queryTerms);
 
 		QueryDTO query = new QueryDTO();

@@ -4,18 +4,18 @@ import gov.ca.emsa.pulse.broker.dao.GivenNameDAO;
 import gov.ca.emsa.pulse.broker.dao.NameAssemblyDAO;
 import gov.ca.emsa.pulse.broker.dao.NameRepresentationDAO;
 import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientNameDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
 import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.NameAssemblyDTO;
 import gov.ca.emsa.pulse.broker.dto.NameRepresentationDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientNameDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
 import gov.ca.emsa.pulse.broker.entity.AddressEntity;
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
 import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
 import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientNameEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,16 +28,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class PatientNameDAOImpl extends BaseDAOImpl implements PatientNameDAO {
-	private static final Logger logger = LogManager.getLogger(PatientNameDAOImpl.class);
+public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientRecordNameDAO {
+	private static final Logger logger = LogManager.getLogger(PatientRecordNameDAOImpl.class);
 	@Autowired GivenNameDAO givenDAO;
 	@Autowired NameTypeDAO nameTypeDAO;
 	@Autowired NameRepresentationDAO nameRepDAO;
 	@Autowired NameAssemblyDAO nameAssemblyDAO;
 
 	@Override
-	public PatientNameDTO create(PatientNameDTO dto) {
-		PatientNameEntity patient = new PatientNameEntity();
+	public PatientRecordNameDTO create(PatientRecordNameDTO dto) {
+		PatientRecordNameEntity patient = new PatientRecordNameEntity();
 		patient.setFamilyName(dto.getFamilyName());
 		ArrayList<GivenNameDTO> givensDTO = new ArrayList<GivenNameDTO>();
 		if(dto.getGivenName() != null){
@@ -88,12 +88,12 @@ public class PatientNameDAOImpl extends BaseDAOImpl implements PatientNameDAO {
 
 		entityManager.persist(patient);
 		entityManager.flush();
-		return new PatientNameDTO(patient);
+		return new PatientRecordNameDTO(patient);
 	}
 
 	@Override
-	public PatientNameDTO update(PatientNameDTO dto) {
-		PatientNameEntity patient = this.getEntityById(dto.getId());
+	public PatientRecordNameDTO update(PatientRecordNameDTO dto) {
+		PatientRecordNameEntity patient = this.getEntityById(dto.getId());
 		patient.setFamilyName(dto.getFamilyName());
 		ArrayList<GivenNameEntity> givens = new ArrayList<GivenNameEntity>();
 		for(GivenNameDTO givenDto : dto.getGivenName()){
@@ -135,12 +135,12 @@ public class PatientNameDAOImpl extends BaseDAOImpl implements PatientNameDAO {
 
 		patient = entityManager.merge(patient);
 		entityManager.flush();
-		return new PatientNameDTO(patient);
+		return new PatientRecordNameDTO(patient);
 	}
 
 	@Override
 	public void delete(Long id) {
-		PatientNameEntity toDelete = getEntityById(id);
+		PatientRecordNameEntity toDelete = getEntityById(id);
 		if(toDelete != null) {
 			try {
 				entityManager.remove(toDelete);
@@ -153,25 +153,25 @@ public class PatientNameDAOImpl extends BaseDAOImpl implements PatientNameDAO {
 
 
 	@Override
-	public PatientNameDTO getById(Long id) {
-		PatientNameDTO dto = null;
-		PatientNameEntity pe = this.getEntityById(id);
+	public PatientRecordNameDTO getById(Long id) {
+		PatientRecordNameDTO dto = null;
+		PatientRecordNameEntity pe = this.getEntityById(id);
 
 		if (pe != null){
-			dto = new PatientNameDTO(pe); 
+			dto = new PatientRecordNameDTO(pe); 
 		}
 		return dto;
 	}
 
-	private PatientNameEntity getEntityById(Long id) {
-		PatientNameEntity entity = null;
+	private PatientRecordNameEntity getEntityById(Long id) {
+		PatientRecordNameEntity entity = null;
 
-		Query query = entityManager.createQuery( "SELECT distinct patName from PatientNameEntity patName "
+		Query query = entityManager.createQuery( "SELECT distinct patName from PatientRecordNameEntity patName "
 				+ "where patName.id = :entityid) ", 
-				PatientNameEntity.class );
+				PatientRecordNameEntity.class );
 
 		query.setParameter("entityid", id);
-		List<PatientNameEntity> patients = query.getResultList();
+		List<PatientRecordNameEntity> patients = query.getResultList();
 		if(patients.size() != 0) {
 			entity = patients.get(0);
 		}

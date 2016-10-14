@@ -104,11 +104,11 @@ public class PatientManagerTest extends TestCase {
 		GivenNameDTO given = new GivenNameDTO();
 		given.setGivenName("Jonathon");
 		givens.add(given);
-		queryResult1.getPatientName().setGivenName(givens);
-		queryResult1.getPatientName().setFamilyName("Smith");
+		queryResult1.getPatientRecordName().get(0).setGivenName(givens);
+		queryResult1.getPatientRecordName().get(0).setFamilyName("Smith");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
-		queryResult1.getPatientName().setNameType(nameTypeDTO);
+		queryResult1.getPatientRecordName().get(0).setNameType(nameTypeDTO);
 		queryResult1.setGender("Male");
 		queryResult1.setOrgPatientId("JS1");
 		queryResult1.setQueryOrganizationId(orgQuery1.getId());
@@ -120,11 +120,11 @@ public class PatientManagerTest extends TestCase {
 		assertTrue(queryResult1.getId().longValue() > 0);
 		
 		queryResult2 = new PatientRecordDTO();
-		queryResult2.getPatientName().setGivenName(givens);
-		queryResult2.getPatientName().setFamilyName("Smith");
+		queryResult2.getPatientRecordName().get(0).setGivenName(givens);
+		queryResult2.getPatientRecordName().get(0).setFamilyName("Smith");
 		NameTypeDTO nameTypeDTO2 = new NameTypeDTO();
 		nameTypeDTO2.setCode("L");
-		queryResult2.getPatientName().setNameType(nameTypeDTO2);
+		queryResult2.getPatientRecordName().get(0).setNameType(nameTypeDTO2);
 		queryResult2.setGender("Male");
 		queryResult2.setOrgPatientId("JSMITH15");
 		queryResult2.setQueryOrganizationId(orgQuery2.getId());
@@ -142,16 +142,7 @@ public class PatientManagerTest extends TestCase {
 	public void testCreatePatientWithOrg() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-		GivenNameDTO given = new GivenNameDTO();
-		given.setGivenName("Jonathon");
-		givens.add(given);
-		toCreate.getPatientName().setGivenName(givens);
-		toCreate.getPatientName().setFamilyName("Smith");
-		NameTypeDTO nameTypeDTO = new NameTypeDTO();
-		nameTypeDTO.setCode("L");
-		toCreate.getPatientName().setNameType(nameTypeDTO);
-		toCreate.setPhoneNumber("4105554444");
+		toCreate.setFullName("Jon Snow");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		
@@ -188,16 +179,9 @@ public class PatientManagerTest extends TestCase {
 	public void testGetPatientsAtAcf() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-		GivenNameDTO given = new GivenNameDTO();
-		given.setGivenName("Jonathon");
-		givens.add(given);
-		toCreate.getPatientName().setGivenName(givens);
-		toCreate.getPatientName().setFamilyName("Smith");
+		toCreate.setFullName("Brian Lindsey");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
-		toCreate.getPatientName().setNameType(nameTypeDTO);
-		toCreate.setPhoneNumber("4105554444");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		

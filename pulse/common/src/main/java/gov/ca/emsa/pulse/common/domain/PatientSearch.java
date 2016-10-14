@@ -1,14 +1,14 @@
 package gov.ca.emsa.pulse.common.domain;
 
 public class PatientSearch {
-	private PatientName patientName;
+	private Patient patient;
 	private String dob;
 	private String ssn;
 	private String gender;
 	private String zip;
 	
 	public PatientSearch(){
-		patientName = new PatientName();
+		patient = new Patient();
 	}
 	
 	public String getDob() {
@@ -35,11 +35,13 @@ public class PatientSearch {
 	public void setZip(String zip) {
 		this.zip = zip;
 	}
-	public PatientName getPatientName() {
-		return patientName;
+
+	public Patient getPatient() {
+		return patient;
 	}
-	public void setPatientName(PatientName patientName) {
-		this.patientName = patientName;
+
+	public void setPatient(Patient patient) {
+		this.patient = patient;
 	}
 	
 }

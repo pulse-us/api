@@ -3,7 +3,7 @@ package gov.ca.emsa.pulse.common.domain;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class PatientName {
+public class PatientRecordName {
 	
 	private String id;
 	private ArrayList<GivenName> givens;
@@ -17,7 +17,7 @@ public class PatientName {
 	private Date effectiveDate;
 	private Date expirationDate;
 	
-	public PatientName(){
+	public PatientRecordName(){
 		this.givens = new ArrayList<GivenName>();
 	}
 	

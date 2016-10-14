@@ -76,9 +76,9 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 						GivenName given = new GivenName();
 						given.setGivenName(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
 						givens.add(given);
-						ps.getPatientName().setGivenName(givens);
+						ps.getPatientRecordName().setGivenName(givens);
 					}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("family")){
-						ps.getPatientName().setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
+						ps.getPatientRecordName().setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
 					}
 				}
 			}
@@ -108,9 +108,9 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 								GivenName given = new GivenName();
 								given.setGivenName(((JAXBElement<EnExplicitGiven>) namePart).getValue().getContent());
 								givens.add(given);
-								patientRecord.getPatientName().setGivenName(givens);
+								patientRecord.getPatientRecordName().get(0).setGivenName(givens);
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
-								patientRecord.getPatientName().setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+								patientRecord.getPatientRecordName().get(0).setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
 							}
 						}
 					}
@@ -190,9 +190,8 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 								ArrayList<GivenName> givens = new ArrayList<GivenName>();
 								GivenName given = new GivenName();
 								given.setGivenName(((JAXBElement<EnExplicitGiven>) namePart).getValue().getContent());
-								givens.add(given);
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
-								patient.getPatientName().setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+								patient.setFullName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
 							}
 						}
 					}

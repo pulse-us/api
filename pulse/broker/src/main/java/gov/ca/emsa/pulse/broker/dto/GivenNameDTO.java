@@ -9,7 +9,7 @@ public class GivenNameDTO {
 	
 	private String givenName;
 	
-	private Long patientNameId;
+	private Long PatientRecordNameId;
 	
 	public GivenNameDTO(){
 		
@@ -36,12 +36,12 @@ public class GivenNameDTO {
 		this.givenName = givenName;
 	}
 
-	public Long getPatientNameId() {
-		return patientNameId;
+	public Long getPatientRecordNameId() {
+		return PatientRecordNameId;
 	}
 
-	public void setPatientNameId(Long patientNameId) {
-		this.patientNameId = patientNameId;
+	public void setPatientRecordNameId(Long PatientRecordNameId) {
+		this.PatientRecordNameId = PatientRecordNameId;
 	}
 
 }

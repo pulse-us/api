@@ -1,6 +1,9 @@
 package gov.ca.emsa.pulse.broker.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,11 +13,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import org.hibernate.mapping.Collection;
 
 @Entity
 @Table(name="patient_record")
@@ -25,16 +28,11 @@ public class PatientRecordEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="id", cascade = CascadeType.ALL)
+	private List<PatientRecordNameEntity> patientRecordName = new ArrayList<PatientRecordNameEntity>();
+	
 	@Column(name = "organization_patient_id")
 	private String orgPatientId;
-	
-	@Column(name = "patient_name_id")
-	private Long patientNameId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@Fetch(FetchMode.JOIN)
-	@JoinColumn(name = "patient_name_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private PatientNameEntity patientName;
 	
 	@Column(name = "dob")
 	private java.sql.Date dateOfBirth;
@@ -206,14 +204,13 @@ public class PatientRecordEntity {
 	public void setQueryOrganization(QueryOrganizationEntity queryOrganization) {
 		this.queryOrganization = queryOrganization;
 	}
-
-	public PatientNameEntity getPatientName() {
-		return patientName;
+	
+	public List<PatientRecordNameEntity> getPatientRecordName() {
+		return patientRecordName;
 	}
 
-	public void setPatientName(PatientNameEntity patientName) {
-		this.patientName = patientName;
+	public void setPatientRecordName(List<PatientRecordNameEntity> PatientRecordName) {
+		this.patientRecordName = PatientRecordName;
 	}
-
 	
 }
