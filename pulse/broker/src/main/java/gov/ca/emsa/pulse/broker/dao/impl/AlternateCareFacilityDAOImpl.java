@@ -11,13 +11,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.ca.emsa.pulse.broker.dao.AddressDAO;
+import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityAddressLineDAO;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
-import gov.ca.emsa.pulse.broker.dto.AddressDTO;
+import gov.ca.emsa.pulse.broker.dto.AddressLineDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.entity.AddressEntity;
+import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityAddressLineEntity;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
 
 @Repository
@@ -25,7 +24,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	private static final Logger logger = LogManager.getLogger(AlternateCareFacilityDAOImpl.class);
 
 	@Autowired PatientDAO patientDao;
-	@Autowired AddressDAO addrDao;
+	@Autowired AlternateCareFacilityAddressLineDAO addressLineDao;
 	
 	@Override
 	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO dto) {
@@ -33,17 +32,22 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		toInsert.setName(dto.getName());
 		toInsert.setPhoneNumber(dto.getPhoneNumber());
 		toInsert.setLastReadDate(new Date());
-		if(dto.getAddress() != null) {
-			if(dto.getAddress().getId() == null) {
-				AddressDTO addrDto = addrDao.create(dto.getAddress());
-				dto.setAddress(addrDto);
-			} 
-			//address entity should exist now
-			AddressEntity addr = entityManager.find(AddressEntity.class, dto.getAddress().getId());
-			toInsert.setAddress(addr);
-		}
-		
+		toInsert.setCity(dto.getCity());
+		toInsert.setState(dto.getState());
+		toInsert.setZipcode(dto.getZipcode());
+		toInsert.setCountry(dto.getCountry());
 		entityManager.persist(toInsert);
+
+		if(dto.getLines() != null && dto.getLines().size() > 0) {
+			for(int i = 0; i < dto.getLines().size(); i++) {
+				AlternateCareFacilityAddressLineEntity addrLine = new AlternateCareFacilityAddressLineEntity();
+				addrLine.setAcfId(toInsert.getId());
+				addrLine.setOrder(i);
+				addrLine.setLine(dto.getLines().get(i).getLine());	
+				entityManager.persist(addrLine);
+				toInsert.getLines().add(addrLine);
+			}
+		}
 		entityManager.flush();
 		return new AlternateCareFacilityDTO(toInsert);
 	}
@@ -54,21 +58,26 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		toUpdate.setName(dto.getName());
 		toUpdate.setPhoneNumber(dto.getPhoneNumber());
 		toUpdate.setLastReadDate(dto.getLastReadDate());
-		if(dto.getAddress() != null) {
-			if(dto.getAddress().getId() == null) {
-				AddressDTO addrDto = addrDao.create(dto.getAddress());
-				dto.setAddress(addrDto);
-			} else {
-				addrDao.update(dto.getAddress());
+		toUpdate.setCity(dto.getCity());
+		toUpdate.setState(dto.getState());
+		toUpdate.setZipcode(dto.getZipcode());
+		toUpdate.setCountry(dto.getCountry());
+		toUpdate = entityManager.merge(toUpdate);
+		
+		//delete all address lines and re-add them
+		addressLineDao.deleteAllForAcf(dto.getId());
+		toUpdate.getLines().clear();
+		if(dto.getLines() != null && dto.getLines().size() > 0) {
+			for(int i = 0; i < dto.getLines().size(); i++) {
+				AlternateCareFacilityAddressLineEntity addrLine = new AlternateCareFacilityAddressLineEntity();
+				addrLine.setAcfId(toUpdate.getId());
+				addrLine.setOrder(i);
+				addrLine.setLine(dto.getLines().get(i).getLine());	
+				entityManager.persist(addrLine);
+				toUpdate.getLines().add(addrLine);
 			}
-			//address entity should exist now
-			AddressEntity addr = entityManager.find(AddressEntity.class, dto.getAddress().getId());
-			toUpdate.setAddress(addr);
-		} else {
-			toUpdate.setAddress(null);
 		}
 		
-		toUpdate = entityManager.merge(toUpdate);
 		return new AlternateCareFacilityDTO(toUpdate);
 	}
 
@@ -83,7 +92,8 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		List<AlternateCareFacilityEntity> result = this.findAllEntities();
 		List<AlternateCareFacilityDTO> dtos = new ArrayList<AlternateCareFacilityDTO>(result.size());
 		for(AlternateCareFacilityEntity entity : result) {
-			dtos.add(new AlternateCareFacilityDTO(entity));
+			AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO(entity);
+			dtos.add(dto);
 		}
 		return dtos;
 	}
@@ -113,8 +123,8 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	
 	@Override
 	public void deleteItemsOlderThan(Date oldestItem) {
-		Query query = entityManager.createQuery( "from AlternateCareFacilityEntity acf "
-				+ "LEFT OUTER JOIN FETCH acf.address "
+		Query query = entityManager.createQuery( "SELECT acf "
+				+ "FROM AlternateCareFacilityEntity acf "
 				+ " WHERE acf.lastReadDate <= :cacheDate");
 		
 		query.setParameter("cacheDate", oldestItem);
@@ -130,17 +140,21 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	}
 	
 	private List<AlternateCareFacilityEntity> findAllEntities() {
-		Query query = entityManager.createQuery("SELECT a from AlternateCareFacilityEntity a "
-				+ "LEFT OUTER JOIN FETCH a.address");
+		Query query = entityManager.createQuery("SELECT DISTINCT a "
+				+ "FROM AlternateCareFacilityEntity a "
+				+ "LEFT OUTER JOIN FETCH a.lines lines "
+				+ "ORDER BY lines.order");
 		return query.getResultList();
 	}
 	
 	private AlternateCareFacilityEntity getEntityById(Long id) {
 		AlternateCareFacilityEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT a from AlternateCareFacilityEntity a "
-				+ "LEFT OUTER JOIN FETCH a.address "
-				+ "where a.id = :entityid", AlternateCareFacilityEntity.class );
+		Query query = entityManager.createQuery( "SELECT distinct a "
+				+ "FROM AlternateCareFacilityEntity a "
+				+ "LEFT JOIN FETCH a.lines lines "
+				+ "where a.id = :entityid "
+				+ "ORDER BY lines.order", AlternateCareFacilityEntity.class );
 		query.setParameter("entityid", id);
 		
 		List<AlternateCareFacilityEntity> result = query.getResultList();
@@ -152,11 +166,11 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	}
 	
 	private List<AlternateCareFacilityEntity> getEntityByName(String name) {
-		AlternateCareFacilityEntity entity = null;
-		
-		Query query = entityManager.createQuery( "from AlternateCareFacilityEntity a "
-				+ "LEFT OUTER JOIN FETCH a.address "
-				+ "where (a.name LIKE :name) ", AlternateCareFacilityEntity.class );
+		Query query = entityManager.createQuery( "SELECT DISTINCT a "
+				+ "FROM AlternateCareFacilityEntity a "
+				+ "LEFT OUTER JOIN FETCH a.lines lines "
+				+ "where (a.name LIKE :name) "
+				+ "ORDER BY lines.order", AlternateCareFacilityEntity.class );
 		query.setParameter("name", name);
 		return query.getResultList();
 	}
