@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.AddressLine;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
@@ -38,14 +39,7 @@ public class DtoToDomainConverter {
 		result.setLastRead(dtoObj.getLastReadDate());
 		
 		if(dtoObj.getAcf() != null) {
-			AlternateCareFacility acf = new AlternateCareFacility();
-			acf.setId(dtoObj.getAcf().getId());
-			acf.setName(dtoObj.getAcf().getName());
-			if(dtoObj.getAcf().getAddress() != null)  {
-				AddressDTO acfAddrDto = dtoObj.getAcf().getAddress();
-				Address acfAddr = convert(acfAddrDto);
-				acf.setAddress(acfAddr);
-			}
+			AlternateCareFacility acf = convert(dtoObj.getAcf());
 			result.setAcf(acf);
 		}
 		
@@ -104,13 +98,27 @@ public class DtoToDomainConverter {
 	
 	public static AlternateCareFacility convert(AlternateCareFacilityDTO acfDto){
 		AlternateCareFacility acf = new AlternateCareFacility();
-		if(acfDto.getAddress() != null){
-			acf.setAddress(convert(acfDto.getAddress()));
-		}
 		acf.setId(acfDto.getId());
 		acf.setName(acfDto.getName());
 		acf.setPhoneNumber(acfDto.getPhoneNumber());
 		acf.setLastRead(acfDto.getLastReadDate());
+		
+		if(acfDto.hasAddressParts())  {
+			Address acfAddr = new Address();
+			if(acfDto.getLines() != null) {
+				for(AddressLineDTO lineDto : acfDto.getLines()) {
+					AddressLine line = new AddressLine();
+					line.setId(lineDto.getId());
+					line.setLine(lineDto.getLine());
+					acfAddr.getLines().add(line);
+				}
+			}
+			acfAddr.setCity(acfDto.getCity());
+			acfAddr.setState(acfDto.getState());
+			acfAddr.setZipcode(acfDto.getZipcode());
+			acfAddr.setCountry(acfDto.getCountry());
+			acf.setAddress(acfAddr);
+		}
 		return acf;
 	}
 	
