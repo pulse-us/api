@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Address {
 	private Long id;
-	private List<AddressLine> lines;
+	private List<String> lines;
 	
 	//not deleting this fields yet only because they are still used
 	//in the patient and patient record objects. when those address
@@ -20,7 +20,7 @@ public class Address {
 	private String country;
 	
 	public Address(){
-		this.lines = new ArrayList<AddressLine>();
+		this.lines = new ArrayList<String>();
 	}
 	
 	public Long getId() {
@@ -57,11 +57,11 @@ public class Address {
 		this.country = country;
 	}
 
-	public List<AddressLine> getLines() {
+	public List<String> getLines() {
 		return lines;
 	}
 
-	public void setLines(List<AddressLine> lines) {
+	public void setLines(List<String> lines) {
 		this.lines = lines;
 	}
 

@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.ca.emsa.pulse.common.domain.Address;
-import gov.ca.emsa.pulse.common.domain.AddressLine;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
@@ -106,11 +105,8 @@ public class DtoToDomainConverter {
 		if(acfDto.hasAddressParts())  {
 			Address acfAddr = new Address();
 			if(acfDto.getLines() != null) {
-				for(AddressLineDTO lineDto : acfDto.getLines()) {
-					AddressLine line = new AddressLine();
-					line.setId(lineDto.getId());
-					line.setLine(lineDto.getLine());
-					acfAddr.getLines().add(line);
+				for(AddressLineDTO lineDto : acfDto.getLines()) {;
+					acfAddr.getLines().add(lineDto.getLine());
 				}
 			}
 			acfAddr.setCity(acfDto.getCity());
