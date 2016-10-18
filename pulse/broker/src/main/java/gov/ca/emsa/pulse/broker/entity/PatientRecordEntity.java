@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -32,6 +33,7 @@ public class PatientRecordEntity {
 	private Long id;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId", cascade = CascadeType.ALL)
+	@Column(name = "patient_record_id")
 	private Set<PatientRecordNameEntity> patientRecordName = new HashSet<PatientRecordNameEntity>();
 	
 	@Column(name = "organization_patient_id")

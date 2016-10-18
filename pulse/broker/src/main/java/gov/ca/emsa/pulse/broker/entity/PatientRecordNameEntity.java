@@ -27,7 +27,8 @@ public class PatientRecordNameEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientRecordNameId"  )
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "patientRecordNameId")
+	@Column(name = "patient_record_name_id")
 	private Set<GivenNameEntity> givenNames = new HashSet<GivenNameEntity>();
 	
 	@Column(name = "patient_record_id")
