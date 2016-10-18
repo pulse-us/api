@@ -8,7 +8,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
-import gov.ca.emsa.pulse.common.domain.AddressLine;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Patient;
@@ -116,10 +115,9 @@ public class DomainToDtoConverter {
 		result.setPhoneNumber(domainObj.getPhoneNumber());
 		if(domainObj.getAddress() != null) {
 			if(domainObj.getAddress().getLines() != null) {
-				for(AddressLine line : domainObj.getAddress().getLines()) {
+				for(String line : domainObj.getAddress().getLines()) {
 					AddressLineDTO lineDto = new AddressLineDTO();
-					lineDto.setId(line.getId());
-					lineDto.setLine(line.getLine());
+					lineDto.setLine(line);
 					result.getLines().add(lineDto);
 				}
 			}
