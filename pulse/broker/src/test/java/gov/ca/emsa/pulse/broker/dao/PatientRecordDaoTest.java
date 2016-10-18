@@ -212,9 +212,9 @@ public class PatientRecordDaoTest extends TestCase {
 		//assertEquals(orgMap.getId().longValue(), selected.getOrgMaps().get(0).getId().longValue());
 	}
 	
-	//@Test
-	//@Transactional
-	//@Rollback(true)
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void testUpdatePatientRecordFirstName() {		
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -249,7 +249,7 @@ public class PatientRecordDaoTest extends TestCase {
 		givens.remove(0);
 		givens.add(given2);
 		prn.getGivenName().addAll(givens);
-		toCreate.getPatientRecordName().add(prn);;
+		toCreate.getPatientRecordName().add(prn);
 		PatientRecordDTO updated = patientRecordDao.update(created);
 		assertNotNull(updated);
 		assertEquals(updated.getId().longValue(), created.getId().longValue());

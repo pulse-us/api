@@ -30,10 +30,7 @@ public class PatientRecordEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false )
 	private Long id;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId", cascade = CascadeType.ALL)
-	private Set<PatientRecordNameEntity> patientRecordName = new HashSet<PatientRecordNameEntity>();
-	
+
 	@Column(name = "organization_patient_id")
 	private String orgPatientId;
 	
@@ -74,8 +71,12 @@ public class PatientRecordEntity {
 	@JoinColumn(name = "query_organization_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private QueryOrganizationEntity queryOrganization;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="id", cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientId", cascade = CascadeType.ALL)
 	private Set<PatientOrganizationMapEntity> orgMaps = new HashSet<PatientOrganizationMapEntity>();
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId")
+	@Column( name = "patient_record_id", nullable = false  )
+	private Set<PatientRecordNameEntity> patientRecordName = new HashSet<PatientRecordNameEntity>();
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -223,8 +224,8 @@ public class PatientRecordEntity {
 		return patientRecordName;
 	}
 
-	public void setPatientRecordName(Set<PatientRecordNameEntity> PatientRecordName) {
-		this.patientRecordName = PatientRecordName;
+	public void setPatientRecordName(Set<PatientRecordNameEntity> patientRecordName) {
+		this.patientRecordName = patientRecordName;
 	}
 	
 }
