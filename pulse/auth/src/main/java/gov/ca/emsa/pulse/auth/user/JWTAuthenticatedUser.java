@@ -1,14 +1,14 @@
 package gov.ca.emsa.pulse.auth.user;
 
+import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
+import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
-import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JWTAuthenticatedUser implements User {
 

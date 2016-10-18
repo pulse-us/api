@@ -1,9 +1,8 @@
 package gov.ca.emsa.pulse.broker.dao;
 
-import java.util.Date;
-import java.util.List;
-
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
+
+import java.util.List;
 
 public interface DocumentDAO {
 	public DocumentDTO create(DocumentDTO dto);

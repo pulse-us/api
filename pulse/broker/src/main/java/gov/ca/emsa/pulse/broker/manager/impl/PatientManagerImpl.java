@@ -1,12 +1,5 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import gov.ca.emsa.pulse.broker.dao.AddressDAO;
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
@@ -20,6 +13,13 @@ import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PatientManagerImpl implements PatientManager {
@@ -62,14 +62,7 @@ public class PatientManagerImpl implements PatientManager {
 	@Override
 	@Transactional
 	public PatientDTO update(PatientDTO toUpdate) {
-		if(toUpdate.getAddress() != null) {
-			if(toUpdate.getAddress().getId() != null) {
-				addressDao.update(toUpdate.getAddress());
-			} else {
-				AddressDTO createdAddress = addressDao.create(toUpdate.getAddress());
-				toUpdate.setAddress(createdAddress);
-			}
-		}
+		
 		toUpdate.setLastReadDate(new Date());
 		return patientDao.update(toUpdate);
 	}

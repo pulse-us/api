@@ -1,8 +1,18 @@
 package gov.ca.emsa.pulse.service.controller;
 
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentQuery;
+import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
+import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import gov.ca.emsa.pulse.service.DocumentQueryService;
+import gov.ca.emsa.pulse.service.EHealthQueryConsumerService;
+
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
+
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -16,15 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
-import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.DocumentQuery;
-import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
-import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
-import gov.ca.emsa.pulse.service.DocumentQueryService;
-import gov.ca.emsa.pulse.service.EHealthQueryConsumerService;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 @RestController
 public class DocumentQueryController {

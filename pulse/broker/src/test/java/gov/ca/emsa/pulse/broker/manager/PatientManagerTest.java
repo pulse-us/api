@@ -1,6 +1,27 @@
 package gov.ca.emsa.pulse.broker.manager;
 
+import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
+import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
+import gov.ca.emsa.pulse.broker.dao.QueryDAO;
+import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
+import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,22 +31,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
-import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
-import gov.ca.emsa.pulse.broker.dao.QueryDAO;
-import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
-import gov.ca.emsa.pulse.common.domain.QueryStatus;
-import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
@@ -97,8 +102,15 @@ public class PatientManagerTest extends TestCase {
 		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
 		
 		queryResult1 = new PatientRecordDTO();
-		queryResult1.setGivenName("John");
-		queryResult1.setFamilyName("Smith");
+		GivenNameDTO given = new GivenNameDTO();
+		given.setGivenName("Jonathon");
+		PatientRecordNameDTO prn = new PatientRecordNameDTO();
+		prn.getGivenName().add(given);
+		queryResult1.getPatientRecordName().add(prn);
+		queryResult1.getPatientRecordName().get(0).setFamilyName("Smith");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
+		queryResult1.getPatientRecordName().get(0).setNameType(nameTypeDTO);
 		queryResult1.setGender("Male");
 		queryResult1.setOrgPatientId("JS1");
 		queryResult1.setQueryOrganizationId(orgQuery1.getId());
@@ -110,8 +122,13 @@ public class PatientManagerTest extends TestCase {
 		assertTrue(queryResult1.getId().longValue() > 0);
 		
 		queryResult2 = new PatientRecordDTO();
-		queryResult2.setGivenName("John");
-		queryResult2.setFamilyName("Smith");
+		PatientRecordNameDTO prn2 = new PatientRecordNameDTO();
+		prn2.getGivenName().add(given);
+		queryResult2.getPatientRecordName().add(prn2);
+		queryResult2.getPatientRecordName().get(0).setFamilyName("Smith");
+		NameTypeDTO nameTypeDTO2 = new NameTypeDTO();
+		nameTypeDTO2.setCode("L");
+		queryResult2.getPatientRecordName().get(0).setNameType(nameTypeDTO2);
 		queryResult2.setGender("Male");
 		queryResult2.setOrgPatientId("JSMITH15");
 		queryResult2.setQueryOrganizationId(orgQuery2.getId());
@@ -129,9 +146,7 @@ public class PatientManagerTest extends TestCase {
 	public void testCreatePatientWithOrg() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setGivenName("Jonathan");
-		toCreate.setFamilyName("Smith");
-		toCreate.setPhoneNumber("4105554444");
+		toCreate.setFullName("Jon Snow");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		
@@ -168,9 +183,9 @@ public class PatientManagerTest extends TestCase {
 	public void testGetPatientsAtAcf() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setGivenName("Jonathan");
-		toCreate.setFamilyName("Smith");
-		toCreate.setPhoneNumber("4105554444");
+		toCreate.setFullName("Brian Lindsey");
+		NameTypeDTO nameTypeDTO = new NameTypeDTO();
+		nameTypeDTO.setCode("L");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		

@@ -1,10 +1,37 @@
 package gov.ca.emsa.pulse.common.soap;
 
+import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
+import gov.ca.emsa.pulse.common.domain.DocumentQuery;
+import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
+import gov.ca.emsa.pulse.common.domain.GivenName;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.PatientSearchName;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
+
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExternalIdentifierType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.InternationalStringType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.LocalizedStringType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 
 import org.hl7.v3.ADExplicit;
 import org.hl7.v3.AdxpExplicitCity;
@@ -29,29 +56,6 @@ import org.hl7.v3.TELExplicit;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import gov.ca.emsa.pulse.common.domain.Address;
-import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
-import gov.ca.emsa.pulse.common.domain.DocumentQuery;
-import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientRecord;
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExternalIdentifierType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.InternationalStringType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.LocalizedStringType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
-
 @Service
 public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 	private final static String PATIENT_ID_PARAMETER = "$XDSDocumentEntryPatientId";
@@ -70,9 +74,15 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 			for(Serializable nameInList: names){
 				if(nameInList instanceof JAXBElement<?>){
 					if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("given")){
-						ps.setGivenName(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
+						ArrayList<String> givens = new ArrayList<String>();
+						givens.add(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
+						PatientSearchName psn = new PatientSearchName();
+						psn.setGivenName(givens);
+						ArrayList<PatientSearchName> arr = new ArrayList<PatientSearchName>();
+						arr.add(psn);
+						ps.setPatientNames(arr);
 					}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("family")){
-						ps.setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
+						ps.getPatientNames().get(0).setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
 					}
 				}
 			}
@@ -98,9 +108,13 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					for(Serializable namePart : nameParts) {
 						if(namePart instanceof JAXBElement<?>) {
 							if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("given")) {
-								patientRecord.setGivenName(((JAXBElement<EnExplicitGiven>)namePart).getValue().getContent());
+								GivenName given = new GivenName();
+								given.setGivenName(((JAXBElement<EnExplicitGiven>) namePart).getValue().getContent());
+								PatientRecordName prn = new PatientRecordName();
+								prn.getGivenName().add(given);
+								patientRecord.getPatientRecordName().add(prn);
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
-								patientRecord.setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+								patientRecord.getPatientRecordName().get(0).setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
 							}
 						}
 					}
@@ -177,9 +191,11 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					for(Serializable namePart : nameParts) {
 						if(namePart instanceof JAXBElement<?>) {
 							if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("given")) {
-								patient.setGivenName(((JAXBElement<EnExplicitGiven>)namePart).getValue().getContent());
+								ArrayList<GivenName> givens = new ArrayList<GivenName>();
+								GivenName given = new GivenName();
+								given.setGivenName(((JAXBElement<EnExplicitGiven>) namePart).getValue().getContent());
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
-								patient.setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+								patient.setFullName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
 							}
 						}
 					}

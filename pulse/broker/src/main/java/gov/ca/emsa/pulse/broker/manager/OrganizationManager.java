@@ -1,10 +1,10 @@
 package gov.ca.emsa.pulse.broker.manager;
 
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.common.domain.Organization;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import gov.ca.emsa.pulse.common.domain.Organization;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 
 public interface OrganizationManager {
 	public OrganizationDTO getById(Long id);

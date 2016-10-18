@@ -1,7 +1,12 @@
 package gov.ca.emsa.pulse.broker.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,8 +14,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.FetchMode;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.mapping.Collection;
 
 @Entity
 @Table(name="patient_record")
@@ -21,14 +31,11 @@ public class PatientRecordEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId", cascade = CascadeType.ALL)
+	private Set<PatientRecordNameEntity> patientRecordName = new HashSet<PatientRecordNameEntity>();
+	
 	@Column(name = "organization_patient_id")
 	private String orgPatientId;
-	
-	@Column(name="given_name")
-	private String givenName;
-	
-	@Column(name = "family_name")
-	private String familyName;
 	
 	@Column(name = "dob")
 	private java.sql.Date dateOfBirth;
@@ -67,6 +74,9 @@ public class PatientRecordEntity {
 	@JoinColumn(name = "query_organization_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private QueryOrganizationEntity queryOrganization;
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="id", cascade = CascadeType.ALL)
+	private Set<PatientOrganizationMapEntity> orgMaps = new HashSet<PatientOrganizationMapEntity>();
+	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
@@ -87,6 +97,14 @@ public class PatientRecordEntity {
 
 	public void setDateOfBirth(java.sql.Date dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
+	}
+	
+	public Set<PatientOrganizationMapEntity> getOrgMaps() {
+		return orgMaps;
+	}
+
+	public void setOrgMaps(Set<PatientOrganizationMapEntity> orgMaps) {
+		this.orgMaps = orgMaps;
 	}
 
 	public String getSsn() {
@@ -200,20 +218,13 @@ public class PatientRecordEntity {
 	public void setQueryOrganization(QueryOrganizationEntity queryOrganization) {
 		this.queryOrganization = queryOrganization;
 	}
-
-	public String getGivenName() {
-		return givenName;
+	
+	public Set<PatientRecordNameEntity> getPatientRecordName() {
+		return patientRecordName;
 	}
 
-	public void setGivenName(String givenName) {
-		this.givenName = givenName;
+	public void setPatientRecordName(Set<PatientRecordNameEntity> PatientRecordName) {
+		this.patientRecordName = PatientRecordName;
 	}
-
-	public String getFamilyName() {
-		return familyName;
-	}
-
-	public void setFamilyName(String familyName) {
-		this.familyName = familyName;
-	}
+	
 }

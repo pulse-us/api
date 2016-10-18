@@ -9,4 +9,5 @@ public interface PatientRecordDAO {
 	public PatientRecordDTO update(PatientRecordDTO dto);
 	public void delete(Long id);
 	public PatientRecordDTO getById(Long id);
+	PatientOrganizationMapDTO createOrgMap(PatientOrganizationMapDTO toCreate);
 }

@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.broker;
 
+import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
+
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.EnvironmentAware;
@@ -8,8 +10,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 
 @PropertySource("classpath:/application-test.properties")
 @EnableTransactionManagement(proxyTargetClass=true)

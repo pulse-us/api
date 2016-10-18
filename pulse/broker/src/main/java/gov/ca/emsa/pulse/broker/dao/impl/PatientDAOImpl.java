@@ -1,5 +1,24 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import gov.ca.emsa.pulse.broker.dao.AddressDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
+import gov.ca.emsa.pulse.broker.dto.AddressDTO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.entity.AddressEntity;
+import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
+import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
+import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
+import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
+import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,50 +30,29 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.ca.emsa.pulse.broker.dao.AddressDAO;
-import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientDAO;
-import gov.ca.emsa.pulse.broker.dto.AddressDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
-import gov.ca.emsa.pulse.common.domain.QueryStatus;
-import gov.ca.emsa.pulse.broker.entity.AddressEntity;
-import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
-
 @Repository
 public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	private static final Logger logger = LogManager.getLogger(PatientDAOImpl.class);
 	@Autowired AddressDAO addrDao;
-	
+	@Autowired PatientRecordNameDAO nameDao;
+
 	@Override
 	public PatientDTO create(PatientDTO dto) {
 		PatientEntity patient = new PatientEntity();
-		patient.setGivenName(dto.getGivenName());
-		patient.setFamilyName(dto.getFamilyName());
+		patient.setFullName(dto.getFullName());
+		patient.setFriendlyName(dto.getFriendlyName());
 		if(dto.getDateOfBirth() != null) {
 			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
 		}
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
-		patient.setPhoneNumber(dto.getPhoneNumber());
 		if(dto.getAcf() != null) {
 			patient.setAcfId(dto.getAcf().getId());
 			AlternateCareFacilityEntity acf = entityManager.find(AlternateCareFacilityEntity.class, dto.getAcf().getId());
 			patient.setAcf(acf);
 		}
 		patient.setLastReadDate(new Date());
-		if(dto.getAddress() != null) {
-			if(dto.getAddress().getId() == null) {
-				AddressDTO addrDto = addrDao.create(dto.getAddress());
-				dto.setAddress(addrDto);
-			} 
-			//address entity should exist now
-			AddressEntity addr = entityManager.find(AddressEntity.class, dto.getAddress().getId());
-			patient.setAddress(addr);
-		}
-		
+
 		entityManager.persist(patient);
 		entityManager.flush();
 		return new PatientDTO(patient);
@@ -70,17 +68,17 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		orgMap.setOrganizationId(toCreate.getOrganizationId());
 		orgMap.setOrganizationPatientId(toCreate.getOrgPatientId());
 		orgMap.setPatientId(toCreate.getPatientId());
-		
+
 		entityManager.persist(orgMap);
 		entityManager.flush();
 		return new PatientOrganizationMapDTO(orgMap);
 	}
-	
+
 	@Override
 	public PatientDTO update(PatientDTO dto) {
 		PatientEntity patient = this.getEntityById(dto.getId());
-		patient.setGivenName(dto.getGivenName());
-		patient.setFamilyName(dto.getFamilyName());
+		patient.setFriendlyName(dto.getFriendlyName());
+		patient.setFullName(dto.getFullName());
 		if(dto.getDateOfBirth() != null) {
 			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
 		} else {
@@ -88,19 +86,12 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		}
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
-		patient.setPhoneNumber(dto.getPhoneNumber());
 		if(dto.getAcf() != null) {
 			patient.setAcfId(dto.getAcf().getId());
 		} else {
 			patient.setAcfId(null);
 		}
 		patient.setLastReadDate(dto.getLastReadDate());
-		if(dto.getAddress() != null) {
-			patient.setAddressId(dto.getAddress().getId());
-		} else {
-			patient.setAddressId(null);
-		}
-		
 		patient = entityManager.merge(patient);
 		entityManager.flush();
 		return new PatientDTO(patient);
@@ -113,7 +104,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		if(orgMap == null) {
 			logger.error("Could not find patient org map with id " + toUpdate.getId());
 		}
-		
+
 		orgMap.setDocumentsQueryStatus(toUpdate.getDocumentsQueryStatus());
 		orgMap.setDocumentsQuerySuccess(toUpdate.getDocumentsQuerySuccess());
 		orgMap.setDocumentsQueryStart(toUpdate.getDocumentsQueryStart());
@@ -121,12 +112,12 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		orgMap.setOrganizationId(toUpdate.getOrganizationId());
 		orgMap.setOrganizationPatientId(toUpdate.getOrgPatientId());
 		orgMap.setPatientId(toUpdate.getPatientId());
-		
+
 		entityManager.merge(orgMap);
 		entityManager.flush();
 		return new PatientOrganizationMapDTO(orgMap);
 	}
-	
+
 	@Override
 	public void delete(Long id) {
 		PatientEntity toDelete = getEntityById(id);
@@ -140,46 +131,45 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		}
 	}
 
-	
+
 	@Override
 	public PatientDTO getById(Long id) {
 		PatientDTO dto = null;
 		PatientEntity pe = this.getEntityById(id);
-		
+
 		if (pe != null){
 			dto = new PatientDTO(pe); 
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public PatientOrganizationMapDTO getPatientOrgMapById(Long id) {
 		PatientOrganizationMapEntity entity = null;
-		
+
 		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
 				+ "LEFT OUTER JOIN FETCH pat.organization "
 				+ "where pat.id = :entityid) ", 
 				PatientOrganizationMapEntity.class );
-		
+
 		query.setParameter("entityid", id);
 		List<PatientOrganizationMapEntity> result = query.getResultList();
 		if(result.size() == 1) {
 			entity = result.get(0);
 		}
-		
+
 		return new PatientOrganizationMapDTO(entity);
 	}
-		
+
 	@Override
 	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.acf "
-				+ "LEFT OUTER JOIN FETCH pat.address "
 				+ "LEFT OUTER JOIN FETCH pat.orgMaps "
 				+ "where pat.acfId = :acfId) ", 
 				PatientEntity.class );
-		
+
 		query.setParameter("acfId", acfId);
 		List<PatientEntity> patients = query.getResultList();
 		List<PatientDTO> results = new ArrayList<PatientDTO>();
@@ -188,12 +178,12 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		}
 		return results;
 	}
-	
+
 	@Override
 	public void deleteItemsOlderThan(Date oldestDate) {			
 		Query query = entityManager.createQuery( "DELETE from PatientEntity pat "
 				+ " WHERE pat.lastReadDate <= :cacheDate");
-		
+
 		query.setParameter("cacheDate", oldestDate);
 		int deletedCount = query.executeUpdate();		
 		logger.info("Deleted " + deletedCount + " patients from the cache.");
@@ -201,14 +191,13 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 
 	private PatientEntity getEntityById(Long id) {
 		PatientEntity entity = null;
-		
+
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.acf "
-				+ "LEFT OUTER JOIN FETCH pat.address "
 				+ "LEFT OUTER JOIN FETCH pat.orgMaps "
 				+ "where pat.id = :entityid) ", 
 				PatientEntity.class );
-		
+
 		query.setParameter("entityid", id);
 		List<PatientEntity> patients = query.getResultList();
 		if(patients.size() != 0) {
@@ -216,7 +205,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		}
 		return entity;
 	}
-	
+
 	private PatientOrganizationMapEntity getOrgMapById(Long id) {		
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientOrganizationMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.organization "
@@ -224,9 +213,9 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 				+ "LEFT OUTER JOIN FETCH pat.documents "
 				+ "where pat.id = :entityid) ", 
 				PatientOrganizationMapEntity.class );
-		
+
 		query.setParameter("entityid", id);
-		
+
 		PatientOrganizationMapEntity entity = null;
 		List<PatientOrganizationMapEntity> orgMaps = query.getResultList();
 		if(orgMaps.size() != 0) {

@@ -1,12 +1,12 @@
 package gov.ca.emsa.pulse.broker.cache;
 
+import gov.ca.emsa.pulse.broker.manager.CachedDataManager;
+
 import java.util.Date;
 import java.util.TimerTask;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
-import gov.ca.emsa.pulse.broker.manager.CachedDataManager;
 
 public class CacheCleanupJob extends TimerTask {
 	private static final Logger logger = LogManager.getLogger(CacheCleanupJob.class);
