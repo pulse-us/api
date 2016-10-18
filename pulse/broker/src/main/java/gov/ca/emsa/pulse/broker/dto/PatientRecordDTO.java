@@ -1,25 +1,28 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PatientRecordDTO {
 	private Long id;
 	private String orgPatientId;
-	private ArrayList<PatientRecordNameDTO> PatientRecordName;
+	private ArrayList<PatientRecordNameDTO> patientRecordName;
 	private LocalDate dateOfBirth;
 	private String ssn;
 	private String gender;
 	private String phoneNumber;
 	private AddressDTO address;
 	private Long queryOrganizationId;
+	private List<PatientOrganizationMapDTO> orgMaps;
 	
 	public PatientRecordDTO() {
-		PatientRecordName = new ArrayList<PatientRecordNameDTO>();
+		patientRecordName = new ArrayList<PatientRecordNameDTO>();
 	}
 	
 	public PatientRecordDTO(PatientRecordEntity entity) {
@@ -50,6 +53,13 @@ public class PatientRecordDTO {
 			}
 			PatientRecordNameDTO.setEffectiveDate(PatientRecordNameEntity.getEffectiveDate());
 			PatientRecordNameDTO.setExpirationDate(PatientRecordNameEntity.getExpirationDate());
+			this.patientRecordName.add(PatientRecordNameDTO);
+		}
+		if(entity.getOrgMaps() != null && entity.getOrgMaps().size() > 0) {
+			for(PatientOrganizationMapEntity orgMap : entity.getOrgMaps()) {
+				PatientOrganizationMapDTO orgMapDto = new PatientOrganizationMapDTO(orgMap);
+				this.orgMaps.add(orgMapDto);
+			}
 		}
 		if(entity.getDateOfBirth() != null) {
 			this.dateOfBirth = entity.getDateOfBirth().toLocalDate();
@@ -123,11 +133,19 @@ public class PatientRecordDTO {
 	}
 
 	public ArrayList<PatientRecordNameDTO> getPatientRecordName() {
-		return PatientRecordName;
+		return patientRecordName;
 	}
 
-	public void setPatientRecordName(ArrayList<PatientRecordNameDTO> PatientRecordName) {
-		this.PatientRecordName = PatientRecordName;
+	public void setPatientRecordName(ArrayList<PatientRecordNameDTO> patientRecordName) {
+		this.patientRecordName = patientRecordName;
+	}
+
+	public List<PatientOrganizationMapDTO> getOrgMaps() {
+		return orgMaps;
+	}
+
+	public void setOrgMaps(List<PatientOrganizationMapDTO> orgMaps) {
+		this.orgMaps = orgMaps;
 	}
 	
 }

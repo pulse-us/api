@@ -8,7 +8,9 @@ import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
 import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.PatientSearchName;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
@@ -72,13 +74,15 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 			for(Serializable nameInList: names){
 				if(nameInList instanceof JAXBElement<?>){
 					if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("given")){
-						ArrayList<GivenName> givens = new ArrayList<GivenName>();
-						GivenName given = new GivenName();
-						given.setGivenName(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
-						givens.add(given);
-						ps.getPatientRecordName().setGivenName(givens);
+						ArrayList<String> givens = new ArrayList<String>();
+						givens.add(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
+						PatientSearchName psn = new PatientSearchName();
+						psn.setGivenName(givens);
+						ArrayList<PatientSearchName> arr = new ArrayList<PatientSearchName>();
+						arr.add(psn);
+						ps.setPatientNames(arr);
 					}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("family")){
-						ps.getPatientRecordName().setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
+						ps.getPatientNames().get(0).setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
 					}
 				}
 			}
@@ -104,11 +108,11 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					for(Serializable namePart : nameParts) {
 						if(namePart instanceof JAXBElement<?>) {
 							if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("given")) {
-								ArrayList<GivenName> givens = new ArrayList<GivenName>();
 								GivenName given = new GivenName();
 								given.setGivenName(((JAXBElement<EnExplicitGiven>) namePart).getValue().getContent());
-								givens.add(given);
-								patientRecord.getPatientRecordName().get(0).setGivenName(givens);
+								PatientRecordName prn = new PatientRecordName();
+								prn.getGivenName().add(given);
+								patientRecord.getPatientRecordName().add(prn);
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
 								patientRecord.getPatientRecordName().get(0).setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
 							}

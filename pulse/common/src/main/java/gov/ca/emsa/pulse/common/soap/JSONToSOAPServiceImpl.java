@@ -87,11 +87,11 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		PRPAMT201306UV02QueryByParameter queryByParameter1 = new PRPAMT201306UV02QueryByParameter();
 		PRPAMT201306UV02ParameterList parameterList = new PRPAMT201306UV02ParameterList();
 		
-		if(!StringUtils.isEmpty(search.getPatientRecordName().getGivenName()) || !StringUtils.isEmpty(search.getPatientRecordName().getFamilyName())) {
+		if(!search.getPatientNames().get(0).getGivenName().isEmpty() || !StringUtils.isEmpty(search.getPatientNames().get(0).getFamilyName())) {
 			PRPAMT201306UV02LivingSubjectName name = new PRPAMT201306UV02LivingSubjectName();
 			ENExplicit nameValue = new ENExplicit();
-			nameValue.getContent().add(new JAXBElement<String>(new QName("given"), String.class, search.getPatientRecordName().getGivenName().get(0).getGivenName()));
-			nameValue.getContent().add(new JAXBElement<String>(new QName("family"), String.class, search.getPatientRecordName().getFamilyName()));
+			nameValue.getContent().add(new JAXBElement<String>(new QName("given"), String.class, search.getPatientNames().get(0).getGivenName().get(0)));
+			nameValue.getContent().add(new JAXBElement<String>(new QName("family"), String.class, search.getPatientNames().get(0).getFamilyName()));
 			name.getValue().add(nameValue);
 			parameterList.getLivingSubjectName().add(name);
 		}

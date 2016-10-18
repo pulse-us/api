@@ -45,9 +45,10 @@ public class PatientService {
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
 	public @ResponseBody Query searchPatients(@RequestBody PatientSearch patientSearchTerms) throws JsonProcessingException {
 		Query returnQuery;
-		if(patientSearchTerms.getPatientName() != null
-				&& patientSearchTerms.getDob() != null && patientSearchTerms.getPatientName().getFamilyName() != null
-				&& patientSearchTerms.getPatientName().getGivenName() != null && patientSearchTerms.getGender() != null){
+		if(!patientSearchTerms.getPatientNames().isEmpty() && patientSearchTerms.getDob() != null &&
+				patientSearchTerms.getPatientNames().get(0).getFamilyName() != null
+				&& patientSearchTerms.getPatientNames().get(0).getGivenName() != null
+				&& patientSearchTerms.getGender() != null){
 			
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 			ObjectMapper mapper = new ObjectMapper();

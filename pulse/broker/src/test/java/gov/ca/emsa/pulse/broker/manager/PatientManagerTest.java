@@ -12,8 +12,10 @@ import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.util.ArrayList;
@@ -100,11 +102,11 @@ public class PatientManagerTest extends TestCase {
 		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
 		
 		queryResult1 = new PatientRecordDTO();
-		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
 		GivenNameDTO given = new GivenNameDTO();
 		given.setGivenName("Jonathon");
-		givens.add(given);
-		queryResult1.getPatientRecordName().get(0).setGivenName(givens);
+		PatientRecordNameDTO prn = new PatientRecordNameDTO();
+		prn.getGivenName().add(given);
+		queryResult1.getPatientRecordName().add(prn);
 		queryResult1.getPatientRecordName().get(0).setFamilyName("Smith");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
@@ -120,7 +122,9 @@ public class PatientManagerTest extends TestCase {
 		assertTrue(queryResult1.getId().longValue() > 0);
 		
 		queryResult2 = new PatientRecordDTO();
-		queryResult2.getPatientRecordName().get(0).setGivenName(givens);
+		PatientRecordNameDTO prn2 = new PatientRecordNameDTO();
+		prn2.getGivenName().add(given);
+		queryResult2.getPatientRecordName().add(prn2);
 		queryResult2.getPatientRecordName().get(0).setFamilyName("Smith");
 		NameTypeDTO nameTypeDTO2 = new NameTypeDTO();
 		nameTypeDTO2.setCode("L");

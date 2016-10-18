@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +18,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.FetchMode;
+import org.hibernate.annotations.Fetch;
 import org.hibernate.mapping.Collection;
 
 @Entity
@@ -28,8 +31,8 @@ public class PatientRecordEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="id", cascade = CascadeType.ALL)
-	private List<PatientRecordNameEntity> patientRecordName = new ArrayList<PatientRecordNameEntity>();
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId", cascade = CascadeType.ALL)
+	private Set<PatientRecordNameEntity> patientRecordName = new HashSet<PatientRecordNameEntity>();
 	
 	@Column(name = "organization_patient_id")
 	private String orgPatientId;
@@ -71,6 +74,9 @@ public class PatientRecordEntity {
 	@JoinColumn(name = "query_organization_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private QueryOrganizationEntity queryOrganization;
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="id", cascade = CascadeType.ALL)
+	private Set<PatientOrganizationMapEntity> orgMaps = new HashSet<PatientOrganizationMapEntity>();
+	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
@@ -91,6 +97,14 @@ public class PatientRecordEntity {
 
 	public void setDateOfBirth(java.sql.Date dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
+	}
+	
+	public Set<PatientOrganizationMapEntity> getOrgMaps() {
+		return orgMaps;
+	}
+
+	public void setOrgMaps(Set<PatientOrganizationMapEntity> orgMaps) {
+		this.orgMaps = orgMaps;
 	}
 
 	public String getSsn() {
@@ -205,11 +219,11 @@ public class PatientRecordEntity {
 		this.queryOrganization = queryOrganization;
 	}
 	
-	public List<PatientRecordNameEntity> getPatientRecordName() {
+	public Set<PatientRecordNameEntity> getPatientRecordName() {
 		return patientRecordName;
 	}
 
-	public void setPatientRecordName(List<PatientRecordNameEntity> PatientRecordName) {
+	public void setPatientRecordName(Set<PatientRecordNameEntity> PatientRecordName) {
 		this.patientRecordName = PatientRecordName;
 	}
 	

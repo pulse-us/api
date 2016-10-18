@@ -72,11 +72,12 @@ public class PatientDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
-	//@Rollback(false)
+	@Rollback(true)
 	public void testCreatePatientMultipleGivens() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
 		toCreate.setFullName("Brian Lindsey");
+		toCreate.setFriendlyName("Bri");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
 		toCreate.setSsn("111223344");
@@ -103,7 +104,7 @@ public class PatientDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
-	//@Rollback(true)
+	@Rollback(true)
 	public void testCreatePatientNoAddress() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
@@ -112,6 +113,7 @@ public class PatientDaoTest extends TestCase {
 		given.setGivenName("Jonathon");
 		givens.add(given);
 		toCreate.setFullName("Brian Lindsey");
+		toCreate.setFriendlyName("Bri");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
 		toCreate.setSsn("111223344");
@@ -138,7 +140,7 @@ public class PatientDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
-	//@Rollback(true)
+	@Rollback(true)
 	public void testCreatePatientWithExistingAddress() {		
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -159,6 +161,7 @@ public class PatientDaoTest extends TestCase {
 		toCreate.setAcf(acf);
 		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
 		toCreate.setFullName("Brian Lindsey");
+		toCreate.setFriendlyName("Bri");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
 		toCreate.setSsn("111223344");
@@ -184,7 +187,7 @@ public class PatientDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
-	//@Rollback(true)
+	@Rollback(true)
 	public void testCreatePatientWithNewAddress() {		
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -198,7 +201,8 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setFriendlyName("Brian Lindsey");
+		toCreate.setFullName("Brian Lindsey");
+		toCreate.setFriendlyName("Bri");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
 		toCreate.setSsn("111223344");
@@ -226,11 +230,12 @@ public class PatientDaoTest extends TestCase {
 	//but they do appear when making calls via POSTman.. can't figure out the disconnect
 	@Test
 	@Transactional
-	//@Rollback(true)
+	@Rollback(true)
 	public void testCreatePatientWithOrgMaps() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
 		toCreate.setFullName("Brian Lindsey");
+		toCreate.setFriendlyName("Bri");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		
@@ -263,7 +268,7 @@ public class PatientDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
-	//@Rollback(true)
+	@Rollback(true)
 	public void testUpdatePatientFirstName() {		
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -283,6 +288,7 @@ public class PatientDaoTest extends TestCase {
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
 		toCreate.setFullName("Brian Lindsey");
+		toCreate.setFriendlyName("Bri");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		
@@ -296,8 +302,7 @@ public class PatientDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
-	//@Rollback(true)
-	@Commit
+	@Rollback(true)
 	public void testDeletePatient() {		
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -317,6 +322,7 @@ public class PatientDaoTest extends TestCase {
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
 		toCreate.setFullName("Brian Lindsey");
+		toCreate.setFriendlyName("Bri");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		
@@ -325,8 +331,6 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO selected = patientDao.getById(created.getId());
 		assertNull(selected);
-		AddressDTO selectedAddress = addrDao.getById(existingAddrId);
-		assertNull(selectedAddress);
 		
 		AlternateCareFacilityDTO selectedAcf = acfDao.getById(acf.getId());
 		assertNotNull(selectedAcf);

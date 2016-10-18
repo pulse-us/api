@@ -69,7 +69,7 @@ public class SearchService {
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
 		customAttributes.put("RequesterFirstName", user.getFirstName());
 		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientGivenName", toSearch.getPatient().getFullName());
+		customAttributes.put("PatientGivenName", toSearch.getPatientNames().get(0).getGivenName().get(0));
 		customAttributes.put("PatientDOB", toSearch.getDob());
 		customAttributes.put("PatientGender", toSearch.getGender());
 		customAttributes.put("PatientHomeZip", toSearch.getZip());

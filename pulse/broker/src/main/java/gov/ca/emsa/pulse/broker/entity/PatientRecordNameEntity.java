@@ -2,7 +2,9 @@ package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -25,8 +27,8 @@ public class PatientRecordNameEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordNameId", cascade = CascadeType.ALL)
-	private List<GivenNameEntity> givenNames = new ArrayList<GivenNameEntity>();
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientRecordNameId"  )
+	private Set<GivenNameEntity> givenNames = new HashSet<GivenNameEntity>();
 	
 	@Column(name = "patient_record_id")
 	private Long patientRecordId;
@@ -87,11 +89,19 @@ public class PatientRecordNameEntity {
 		this.id = id;
 	}
 	
-	public List<GivenNameEntity> getGivenNames() {
+	public Long getPatientRecordId(){
+		return patientRecordId;
+	}
+	
+	public void setPatientRecordId(Long patientRecordId){
+		this.patientRecordId = patientRecordId;
+	}
+	
+	public Set<GivenNameEntity> getGivenNames() {
 		return givenNames;
 	}
 
-	public void setGivenNames(List<GivenNameEntity> givenNames) {
+	public void setGivenNames(Set<GivenNameEntity> givenNames) {
 		this.givenNames = givenNames;
 	}
 
@@ -190,6 +200,29 @@ public class PatientRecordNameEntity {
 	public void setProfSuffix(String profSuffix) {
 		this.profSuffix = profSuffix;
 	}
-	
+
+	public Long getNameTypeId() {
+		return nameTypeId;
+	}
+
+	public void setNameTypeId(Long nameTypeId) {
+		this.nameTypeId = nameTypeId;
+	}
+
+	public Long getNameRepresentationId() {
+		return nameRepresentationId;
+	}
+
+	public void setNameRepresentationId(Long nameRepresentationId) {
+		this.nameRepresentationId = nameRepresentationId;
+	}
+
+	public Long getNameAssemblyId() {
+		return nameAssemblyId;
+	}
+
+	public void setNameAssemblyId(Long nameAssemblyId) {
+		this.nameAssemblyId = nameAssemblyId;
+	}
 	
 }

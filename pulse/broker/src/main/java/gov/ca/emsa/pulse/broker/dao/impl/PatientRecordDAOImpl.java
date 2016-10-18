@@ -7,17 +7,23 @@ import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.NameAssemblyDTO;
 import gov.ca.emsa.pulse.broker.dto.NameRepresentationDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
 import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
 import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 
@@ -31,6 +37,22 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 	private static final Logger logger = LogManager.getLogger(PatientRecordDAOImpl.class);
 	@Autowired OrganizationDAO orgDao;
 	@Autowired PatientRecordNameDAO nameDao;
+	
+	@Override
+	public PatientOrganizationMapDTO createOrgMap(PatientOrganizationMapDTO toCreate) {
+		PatientOrganizationMapEntity orgMap = new PatientOrganizationMapEntity();
+		orgMap.setDocumentsQueryStatus(QueryStatus.ACTIVE.name());
+		orgMap.setDocumentsQuerySuccess(null);
+		orgMap.setDocumentsQueryStart(new Date());
+		orgMap.setDocumentsQueryEnd(null);
+		orgMap.setOrganizationId(toCreate.getOrganizationId());
+		orgMap.setOrganizationPatientId(toCreate.getOrgPatientId());
+		orgMap.setPatientId(toCreate.getPatientId());
+		
+		entityManager.persist(orgMap);
+		entityManager.flush();
+		return new PatientOrganizationMapDTO(orgMap);
+	}
 
 	@Override
 	public PatientRecordDTO create(PatientRecordDTO dto) {
@@ -75,7 +97,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 			for(PatientRecordNameDTO PatientRecordNameDTO : dto.getPatientRecordName()){
 				PatientRecordNameEntity PatientRecordNameEntity = new PatientRecordNameEntity();
 				PatientRecordNameEntity.setFamilyName(PatientRecordNameDTO.getFamilyName());
-				ArrayList<GivenNameEntity> givens = new ArrayList<GivenNameEntity>();
+				Set<GivenNameEntity> givens = new HashSet<GivenNameEntity>();
 				for(GivenNameDTO givenDto : PatientRecordNameDTO.getGivenName()){
 					GivenNameEntity givenName = new GivenNameEntity();
 					givenName.setGivenName(givenDto.getGivenName());
@@ -161,10 +183,11 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 
 	private PatientRecordEntity getEntityById(Long id) {
 		PatientRecordEntity entity = null;
-
+		
 		Query query = entityManager.createQuery( "SELECT pat from PatientRecordEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.queryOrganization "
-				+ "where pat.id = :entityid) ", 
+				+ "LEFT OUTER JOIN FETCH pat.patientRecordName "
+				+ "where pat.id = :entityid ", 
 				PatientRecordEntity.class );
 
 		query.setParameter("entityid", id);

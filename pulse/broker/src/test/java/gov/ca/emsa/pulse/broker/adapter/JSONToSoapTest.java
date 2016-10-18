@@ -15,6 +15,7 @@ import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.PatientSearchName;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
@@ -76,10 +77,14 @@ public class JSONToSoapTest {
 	public void testCreatePatientDiscoveryRequest() throws JAXBException, 
 		SAMLException, SOAPException, JWTValidationException {
 		PatientSearch ps = new PatientSearch();
-		Patient toCreate = new Patient();
+		PatientSearchName toCreate = new PatientSearchName();
+		toCreate.setFamilyName("Lindsey");
 		ps.setDob("19830205");
-		toCreate.setFullName("Brian Lindsey");
 		ps.setGender("F");
+		ArrayList<PatientSearchName> names = new ArrayList<PatientSearchName>();
+		names.add(toCreate);
+		ps.setPatientNames(names);
+		ps.getPatientNames().get(0).getGivenName().add("Brian");
 		
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
@@ -89,7 +94,7 @@ public class JSONToSoapTest {
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
 		customAttributes.put("RequesterFirstName", "Katy");
 		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientFullName", ps.getPatient().getFullName());
+		customAttributes.put("PatientFamilyName", ps.getPatientNames().get(0).getFamilyName());
 		customAttributes.put("PatientDOB", ps.getDob());
 		customAttributes.put("PatientGender", ps.getGender());
 		customAttributes.put("PatientHomeZip", ps.getZip());
@@ -104,7 +109,7 @@ public class JSONToSoapTest {
 		assertNotNull(unmarshalledRequest);
 		PatientSearch unmarshalledSearch = reverseService.convertToPatientSearch(unmarshalledRequest);
 		assertNotNull(unmarshalledSearch);
-		assertEquals(ps.getPatient().getFullName(), unmarshalledSearch.getPatient().getFullName());
+		assertEquals(ps.getPatientNames().get(0).getFamilyName(), unmarshalledSearch.getPatientNames().get(0).getFamilyName());
 		assertEquals(ps.getDob(), unmarshalledSearch.getDob());
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
 	}

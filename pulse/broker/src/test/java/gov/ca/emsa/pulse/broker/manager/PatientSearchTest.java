@@ -13,6 +13,7 @@ import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.PatientSearchName;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.util.ArrayList;
@@ -64,7 +65,9 @@ public class PatientSearchTest {
 		insertOrganizations();
 
 		PatientSearch toSearch = new PatientSearch();
-		toSearch.getPatient().setFullName("Jonathon");
+		PatientSearchName psn = new PatientSearchName();
+		psn.getGivenName().add("Jonathon");
+		toSearch.getPatientNames().add(psn);
 
 		 mockServer
 		 	.expect(MockRestRequestMatchers.requestTo(org1.getEndpointUrl()))

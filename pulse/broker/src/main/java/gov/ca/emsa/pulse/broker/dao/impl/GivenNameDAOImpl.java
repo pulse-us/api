@@ -20,6 +20,7 @@ public class GivenNameDAOImpl extends BaseDAOImpl implements GivenNameDAO {
 	public GivenNameDTO create(GivenNameDTO dto) {
 		GivenNameEntity patient = new GivenNameEntity();
 		patient.setGivenName(dto.getGivenName());
+		patient.setPatientRecordNameId(dto.getPatientRecordNameId());
 		
 		entityManager.persist(patient);
 		entityManager.flush();
@@ -31,6 +32,9 @@ public class GivenNameDAOImpl extends BaseDAOImpl implements GivenNameDAO {
 		GivenNameEntity patient = this.getEntityById(dto.getId());
 		if(dto.getGivenName() != null){
 			patient.setGivenName(dto.getGivenName());
+		}
+		if(dto.getPatientRecordNameId() != null){
+			patient.setPatientRecordNameId(dto.getPatientRecordNameId());
 		}
 
 		patient = entityManager.merge(patient);

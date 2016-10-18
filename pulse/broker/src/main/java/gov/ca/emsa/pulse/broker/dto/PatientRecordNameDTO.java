@@ -10,12 +10,16 @@ public class PatientRecordNameDTO {
 
 	private Long id;
 	private ArrayList<GivenNameDTO> givenName;
+	private Long patientRecordId;
 	private String familyName;
 	private String suffix;
 	private String prefix;
 	private String profSuffix;
+	private Long nameTypeId;
 	private NameTypeDTO nameType;
+	private Long nameRepresentationId;
 	private NameRepresentationDTO nameRepresentation;
+	private Long nameAssemblyId;
 	private NameAssemblyDTO nameAssembly;
 	private Date effectiveDate;
 	private Date expirationDate;
@@ -29,6 +33,7 @@ public class PatientRecordNameDTO {
 		if(entity != null) {
 			this.id = entity.getId();
 			givenName = new ArrayList<GivenNameDTO>();
+			this.patientRecordId = entity.getPatientRecordId();
 			for(GivenNameEntity givenName: entity.getGivenNames()){
 				GivenNameDTO givenNameDTO = new GivenNameDTO(givenName);
 				this.givenName.add(givenNameDTO);
@@ -41,14 +46,17 @@ public class PatientRecordNameDTO {
 			if(entity.getNameType() != null){
 				NameTypeDTO nameTypeDTO = new NameTypeDTO(entity.getNameType());
 				this.nameType = nameTypeDTO;
+				this.nameTypeId = entity.getNameTypeId();
 			}
 			if(entity.getNameRepresentation() != null){
 				NameRepresentationDTO nameRepresentationDTO = new NameRepresentationDTO(entity.getNameRepresentation());
 				this.nameRepresentation = nameRepresentationDTO;
+				this.nameRepresentationId = entity.getNameRepresentationId();
 			}
 			if(entity.getNameAssembly() != null){
 				NameAssemblyDTO nameAssemblyDTO = new NameAssemblyDTO(entity.getNameAssembly());
 				this.nameAssembly = nameAssemblyDTO;
+				this.nameTypeId = entity.getNameTypeId();
 			}
 			if(entity.getEffectiveDate() != null)
 				this.effectiveDate = entity.getEffectiveDate();
@@ -68,6 +76,13 @@ public class PatientRecordNameDTO {
 	}
 	public void setGivenName(ArrayList<GivenNameDTO> givenName) {
 		this.givenName = givenName;
+	}
+	public Long getPatientRecordId() {
+		return patientRecordId;
+	}
+
+	public void setPatientRecordId(Long patientRecordId) {
+		this.patientRecordId = patientRecordId;
 	}
 	public String getFamilyName() {
 		return familyName;
@@ -89,6 +104,30 @@ public class PatientRecordNameDTO {
 	}
 	public NameTypeDTO getNameType() {
 		return nameType;
+	}
+	
+	public Long getNameTypeId() {
+		return nameTypeId;
+	}
+
+	public void setNameTypeId(Long nameTypeId) {
+		this.nameTypeId = nameTypeId;
+	}
+
+	public Long getNameRepresentationId() {
+		return nameRepresentationId;
+	}
+
+	public void setNameRepresentationId(Long nameRepresentationId) {
+		this.nameRepresentationId = nameRepresentationId;
+	}
+
+	public Long getNameAssemblyId() {
+		return nameAssemblyId;
+	}
+
+	public void setNameAssemblyId(Long nameAssemblyId) {
+		this.nameAssemblyId = nameAssemblyId;
 	}
 
 	public void setNameType(NameTypeDTO nameType) {

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class PatientRecord {
 	private Long id;
-	private ArrayList<PatientRecordName> PatientRecordName;
+	private ArrayList<PatientRecordName> patientRecordName;
 	private String dateOfBirth;
 	private String gender;
 	private String phoneNumber;
@@ -13,7 +13,7 @@ public class PatientRecord {
 	private String ssn;
 	
 	public PatientRecord() {
-		PatientRecordName = new ArrayList<PatientRecordName>();
+		patientRecordName = new ArrayList<PatientRecordName>();
 	}
 	
 	public Long getId() {
@@ -55,11 +55,11 @@ public class PatientRecord {
 	}
 
 	public ArrayList<PatientRecordName> getPatientRecordName() {
-		return PatientRecordName;
+		return patientRecordName;
 	}
 
-	public void setPatientRecordName(ArrayList<PatientRecordName> PatientRecordName) {
-		this.PatientRecordName = PatientRecordName;
+	public void setPatientRecordName(ArrayList<PatientRecordName> patientRecordName) {
+		this.patientRecordName = patientRecordName;
 	}
 	
 	

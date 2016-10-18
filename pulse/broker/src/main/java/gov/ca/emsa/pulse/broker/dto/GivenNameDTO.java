@@ -18,6 +18,7 @@ public class GivenNameDTO {
 	public GivenNameDTO(GivenNameEntity entity){
 		this.id = entity.getId();
 		this.givenName = entity.getGivenName();
+		this.PatientRecordNameId = entity.getPatientRecordNameId();
 	}
 
 	public Long getId() {

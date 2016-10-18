@@ -18,7 +18,9 @@ import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 
@@ -39,6 +41,7 @@ public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientReco
 	public PatientRecordNameDTO create(PatientRecordNameDTO dto) {
 		PatientRecordNameEntity patient = new PatientRecordNameEntity();
 		patient.setFamilyName(dto.getFamilyName());
+		patient.setPatientRecordId(dto.getPatientRecordId());
 		ArrayList<GivenNameDTO> givensDTO = new ArrayList<GivenNameDTO>();
 		if(dto.getGivenName() != null){
 			for(GivenNameDTO givenDto : dto.getGivenName()){
@@ -49,7 +52,7 @@ public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientReco
 			}
 			dto.setGivenName(givensDTO);
 			//given name entities should exist now
-			ArrayList<GivenNameEntity> givensEntity = new ArrayList<GivenNameEntity>();
+			Set<GivenNameEntity> givensEntity = new HashSet<GivenNameEntity>();
 			for(GivenNameDTO given: dto.getGivenName()){
 				GivenNameEntity name = entityManager.find(GivenNameEntity.class, given.getId());
 				givensEntity.add(name);
@@ -60,28 +63,19 @@ public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientReco
 		patient.setPrefix(dto.getPrefix());
 		patient.setProfSuffix(dto.getProfSuffix());
 		if(dto.getNameType() != null){
-			if(dto.getNameType().getId() == null){
-				NameTypeDTO nameTypeDTO = nameTypeDAO.create(dto.getNameType());
-				dto.setNameType(nameTypeDTO);
-			}
 			NameTypeEntity nameType = entityManager.find(NameTypeEntity.class, dto.getNameType().getId());
 			patient.setNameType(nameType);
+			patient.setNameTypeId(nameType.getId());
 		}
 		if(dto.getNameRepresentation() != null){
-			if(dto.getNameType().getId() == null){
-				NameRepresentationDTO nameRep = nameRepDAO.create(dto.getNameRepresentation());
-				dto.setNameRepresentation(nameRep);
-			}
 			NameRepresentationEntity nameRep = entityManager.find(NameRepresentationEntity.class, dto.getNameRepresentation().getId());
 			patient.setNameRepresentation(nameRep);
+			patient.setNameTypeId(nameRep.getId());
 		}
 		if(dto.getNameAssembly() != null){
-			if(dto.getNameType().getId() == null){
-				NameAssemblyDTO nameAssembly = nameAssemblyDAO.create(dto.getNameAssembly());
-				dto.setNameAssembly(nameAssembly);
-			}
 			NameAssemblyEntity assembly = entityManager.find(NameAssemblyEntity.class, dto.getNameAssembly().getId());
 			patient.setNameAssembly(assembly);
+			patient.setNameTypeId(assembly.getId());
 		}
 		patient.setEffectiveDate(dto.getEffectiveDate());
 		patient.setExpirationDate(dto.getExpirationDate());
@@ -95,7 +89,8 @@ public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientReco
 	public PatientRecordNameDTO update(PatientRecordNameDTO dto) {
 		PatientRecordNameEntity patient = this.getEntityById(dto.getId());
 		patient.setFamilyName(dto.getFamilyName());
-		ArrayList<GivenNameEntity> givens = new ArrayList<GivenNameEntity>();
+		patient.setPatientRecordId(dto.getPatientRecordId());
+		Set<GivenNameEntity> givens = new HashSet<GivenNameEntity>();
 		for(GivenNameDTO givenDto : dto.getGivenName()){
 			GivenNameEntity givenName = new GivenNameEntity();
 			givenName.setGivenName(givenDto.getGivenName());
@@ -113,6 +108,7 @@ public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientReco
 			nameType.setDescription(dto.getNameType().getDescription());
 			nameType.setId(dto.getNameType().getId());
 			patient.setNameType(nameType);
+			patient.setNameTypeId(nameType.getId());
 		}
 		if(dto.getNameRepresentation() != null){
 			NameRepresentationEntity nameRep = new NameRepresentationEntity();
@@ -120,6 +116,7 @@ public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientReco
 			nameRep.setDescription(dto.getNameType().getDescription());
 			nameRep.setId(dto.getNameType().getId());
 			patient.setNameRepresentation(nameRep);
+			patient.setNameTypeId(nameRep.getId());
 		}
 		if(dto.getNameAssembly() != null){
 			NameAssemblyEntity nameAssembly = new NameAssemblyEntity();
@@ -127,6 +124,7 @@ public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientReco
 			nameAssembly.setDescription(dto.getNameType().getDescription());
 			nameAssembly.setId(dto.getNameType().getId());
 			patient.setNameAssembly(nameAssembly);
+			patient.setNameTypeId(nameAssembly.getId());
 		}
 		if(dto.getEffectiveDate() != null)
 			patient.setEffectiveDate(dto.getEffectiveDate());
@@ -167,7 +165,8 @@ public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientReco
 		PatientRecordNameEntity entity = null;
 
 		Query query = entityManager.createQuery( "SELECT distinct patName from PatientRecordNameEntity patName "
-				+ "where patName.id = :entityid) ", 
+				+ "LEFT OUTER JOIN FETCH patName.givenNames "
+				+ "where patName.id = :entityid)", 
 				PatientRecordNameEntity.class );
 
 		query.setParameter("entityid", id);
