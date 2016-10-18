@@ -104,7 +104,7 @@ public class PatientRecordManagerTest extends TestCase {
 
 	}
 	
-	//@Test
+	@Test
 	@Transactional
 	@Rollback(true)
 	public void testCreatePatientRecord() {
@@ -120,7 +120,7 @@ public class PatientRecordManagerTest extends TestCase {
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
 		dto.getPatientRecordName().get(0).setNameType(nameTypeDTO);
-		dto.setOrgPatientId("123-456-78");
+		dto.setOrgPatientRecordId("123-456-78");
 		dto.setPhoneNumber("443-745-0888");
 		dto.setQueryOrganizationId(orgQuery1.getId());
 		dto.setSsn("555-55-5555");

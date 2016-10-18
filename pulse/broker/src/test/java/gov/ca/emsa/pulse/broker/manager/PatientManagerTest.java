@@ -52,109 +52,18 @@ public class PatientManagerTest extends TestCase {
 		assertNotNull(acf);
 		assertNotNull(acf.getId());
 		assertTrue(acf.getId().longValue() > 0);
-		
-		org1 = new OrganizationDTO();
-		org1.setOrganizationId(1L);
-		org1.setName("IHE Org");
-		org1.setAdapter("IHE");
-		org1.setEndpointUrl("http://www.localhost.com");
-		org1.setPassword("pwd");
-		org1.setUsername("kekey");
-		org1.setActive(true);
-		org1 = orgDao.create(org1);
-		
-		org2 = new OrganizationDTO();
-		org2.setOrganizationId(2L);
-		org2.setName("eHealth Org");
-		org2.setAdapter("eHealth");
-		org2.setEndpointUrl("http://www.localhost.com");
-		org2.setPassword("pwd");
-		org2.setUsername("kekey");
-		org2.setActive(true);
-		org2 = orgDao.create(org2);
-		
-		QueryDTO toInsert = new QueryDTO();
-		toInsert.setStatus(QueryStatus.ACTIVE.name());
-		toInsert.setTerms("terms");
-		toInsert.setUserId("kekey");
-		
-		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
-		orgQuery1.setOrgId(org1.getId());
-		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
-		toInsert.getOrgStatuses().add(orgQuery1);
-		
-		QueryOrganizationDTO orgQuery2 = new QueryOrganizationDTO();
-		orgQuery2.setOrgId(org2.getId());
-		orgQuery2.setStatus(QueryStatus.ACTIVE.name());
-		toInsert.getOrgStatuses().add(orgQuery2);
-		
-		QueryDTO inserted = queryDao.create(toInsert);
-		assertNotNull(inserted);
-		assertNotNull(inserted.getId());
-		assertTrue(inserted.getId().longValue() > 0);
-		assertNotNull(inserted.getOrgStatuses());
-		assertEquals(2, inserted.getOrgStatuses().size());
-		orgQuery1 = inserted.getOrgStatuses().get(0);
-		assertNotNull(inserted.getOrgStatuses().get(0).getId());
-		assertTrue(inserted.getOrgStatuses().get(0).getId().longValue() > 0);
-		orgQuery2 = inserted.getOrgStatuses().get(1);
-		assertNotNull(inserted.getOrgStatuses().get(1).getId());
-		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
-		
-		queryResult1 = new PatientRecordDTO();
-		GivenNameDTO given = new GivenNameDTO();
-		given.setGivenName("Jonathon");
-		PatientRecordNameDTO prn = new PatientRecordNameDTO();
-		prn.getGivenName().add(given);
-		queryResult1.getPatientRecordName().add(prn);
-		queryResult1.getPatientRecordName().get(0).setFamilyName("Smith");
-		NameTypeDTO nameTypeDTO = new NameTypeDTO();
-		nameTypeDTO.setCode("L");
-		queryResult1.getPatientRecordName().get(0).setNameType(nameTypeDTO);
-		queryResult1.setGender("Male");
-		queryResult1.setOrgPatientId("JS1");
-		queryResult1.setQueryOrganizationId(orgQuery1.getId());
-		queryResult1.setSsn("111223333");
-		queryResult1.setPhoneNumber("5555555555");
-		queryResult1 = prDao.create(queryResult1);
-		assertNotNull(queryResult1);
-		assertNotNull(queryResult1.getId());
-		assertTrue(queryResult1.getId().longValue() > 0);
-		
-		queryResult2 = new PatientRecordDTO();
-		PatientRecordNameDTO prn2 = new PatientRecordNameDTO();
-		prn2.getGivenName().add(given);
-		queryResult2.getPatientRecordName().add(prn2);
-		queryResult2.getPatientRecordName().get(0).setFamilyName("Smith");
-		NameTypeDTO nameTypeDTO2 = new NameTypeDTO();
-		nameTypeDTO2.setCode("L");
-		queryResult2.getPatientRecordName().get(0).setNameType(nameTypeDTO2);
-		queryResult2.setGender("Male");
-		queryResult2.setOrgPatientId("JSMITH15");
-		queryResult2.setQueryOrganizationId(orgQuery2.getId());
-		queryResult2.setSsn("111223344");
-		queryResult2.setPhoneNumber("5555555555");
-		queryResult2 = prDao.create(queryResult1);
-		assertNotNull(queryResult2);
-		assertNotNull(queryResult2.getId());
-		assertTrue(queryResult2.getId().longValue() > 0);
 	}
 	
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testCreatePatientWithOrg() {		
+	public void testCreatePatient() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
 		toCreate.setFullName("Jon Snow");
+		toCreate.setFriendlyName("Bri");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
-		
-		PatientOrganizationMapDTO orgMap = new PatientOrganizationMapDTO();
-		orgMap.setOrg(org1);
-		orgMap.setOrganizationId(org1.getId());
-		orgMap.setOrgPatientId(queryResult1.getOrgPatientId());
-		toCreate.getOrgMaps().add(orgMap);
 		
 		PatientDTO created = patientManager.create(toCreate);
 		assertNotNull(created);
@@ -164,15 +73,6 @@ public class PatientManagerTest extends TestCase {
 		assertNotNull(created.getAcf().getId());
 		assertEquals(created.getAcf().getId().longValue(), acf.getId().longValue());
 
-		patientManager.createOrganizationMapFromPatientRecord(created, queryResult1.getId());
-		
-		PatientDTO selected = patientManager.getPatientById(created.getId());
-		assertNotNull(selected);
-		assertNotNull(selected.getId());
-		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getAcf());
-		assertNotNull(selected.getAcf().getId());
-		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
 		//TODO: why is this coming back empty?? It works when the service is called
 		//assertEquals(1, selected.getOrgMaps().size());
 	}
@@ -182,18 +82,9 @@ public class PatientManagerTest extends TestCase {
 	@Rollback(true)
 	public void testGetPatientsAtAcf() {		
 		PatientDTO toCreate = new PatientDTO();
+		toCreate.setFriendlyName("Bri");
 		toCreate.setAcf(acf);
 		toCreate.setFullName("Brian Lindsey");
-		NameTypeDTO nameTypeDTO = new NameTypeDTO();
-		nameTypeDTO.setCode("L");
-		toCreate.setSsn("111223344");
-		toCreate.setGender("Male");
-		
-		PatientOrganizationMapDTO orgMap = new PatientOrganizationMapDTO();
-		orgMap.setOrg(org1);
-		orgMap.setOrganizationId(org1.getId());
-		orgMap.setOrgPatientId(queryResult1.getOrgPatientId());
-		toCreate.getOrgMaps().add(orgMap);
 		
 		patientManager.create(toCreate);
 		

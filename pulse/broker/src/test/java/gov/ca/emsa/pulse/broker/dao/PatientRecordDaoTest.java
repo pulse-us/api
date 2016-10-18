@@ -89,7 +89,7 @@ public class PatientRecordDaoTest extends TestCase {
 		
 		toCreate.setSsn("111223344");
 		toCreate.setGender("M");
-		toCreate.setOrgPatientId("123-456-78");
+		toCreate.setOrgPatientRecordId("123-456-78");
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
 		assertNotNull(created);
@@ -131,9 +131,9 @@ public class PatientRecordDaoTest extends TestCase {
 	}
 	
 	
-	//@Test
-	//@Transactional
-	//@Rollback(true)
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void testCreatePatientRecordWithNewAddress() {		
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -146,47 +146,42 @@ public class PatientRecordDaoTest extends TestCase {
 		addrDto.setZipcode(zip);
 		
 		PatientRecordDTO toCreate = new PatientRecordDTO();
-		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-		GivenNameDTO given = new GivenNameDTO();
-		given.setGivenName("Jonathon");
-		givens.add(given);
-		PatientRecordNameDTO prn = new PatientRecordNameDTO();
-		prn.getGivenName().addAll(givens);
-		toCreate.getPatientRecordName().add(prn);
 		
-		NameTypeDTO nameTypeDTO = new NameTypeDTO();
-		nameTypeDTO.setCode("L");
 		toCreate.setSsn("111223344");
-		toCreate.setGender("Male");
+		toCreate.setGender("M");
+		toCreate.setOrgPatientRecordId("123-456-78");
+		toCreate.setAddress(addrDto);
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
 		assertNotNull(created);
 		assertNotNull(created.getId());
 		assertTrue(created.getId().longValue() > 0);
 		
-		PatientRecordDTO selected = patientRecordDao.getById(created.getId());
-		assertNotNull(selected);
-		assertNotNull(selected.getId());
-		assertTrue(selected.getId().longValue() > 0);
+		PatientRecordNameDTO prnDto = new PatientRecordNameDTO();
+		prnDto.setFamilyName("Lindsey");
+		prnDto.setExpirationDate(new Date());
+		prnDto.setPatientRecordId(created.getId());
+		prnDto.setNameType(nameTypeCodeLegal);
+		PatientRecordNameDTO prnCreated = prNameDao.create(prnDto);
+		
+		assertNotNull(prnCreated);
+		assertEquals("Lindsey", prnCreated.getFamilyName());
+		
+		GivenNameDTO given1 = new GivenNameDTO();
+		given1.setGivenName("Brian");
+		given1.setPatientRecordNameId(prnCreated.getId());
+		GivenNameDTO givenCreated = givenNameDao.create(given1);
 	}
 	
 	//TODO: the org maps aren't coming back from the create or select 
 	//but they do appear when making calls via POSTman.. can't figure out the disconnect
-	//@Test
-	//@Transactional
-	//@Rollback(true)
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void testCreatePatientRecordWithOrgMaps() {		
 		PatientRecordDTO toCreate = new PatientRecordDTO();
-		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-		GivenNameDTO given = new GivenNameDTO();
-		given.setGivenName("Jonathon");
-		givens.add(given);
-		PatientRecordNameDTO prn = new PatientRecordNameDTO();
-		prn.getGivenName().addAll(givens);
-		toCreate.getPatientRecordName().add(prn);
-		
 		toCreate.setSsn("111223344");
-		toCreate.setGender("Male");
+		toCreate.setGender("M");
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
 		assertNotNull(created);
@@ -196,9 +191,24 @@ public class PatientRecordDaoTest extends TestCase {
 		PatientOrganizationMapDTO orgMap = new PatientOrganizationMapDTO();
 		orgMap.setOrg(org1);
 		orgMap.setOrganizationId(org1.getId());
-		orgMap.setOrgPatientId("JSMITH1");
+		orgMap.setOrgPatientRecordId("JSMITH1");
 		orgMap.setPatientId(created.getId());
 		orgMap = patientRecordDao.createOrgMap(orgMap);
+		
+		PatientRecordNameDTO prnDto = new PatientRecordNameDTO();
+		prnDto.setFamilyName("Lindsey");
+		prnDto.setExpirationDate(new Date());
+		prnDto.setPatientRecordId(created.getId());
+		prnDto.setNameType(nameTypeCodeLegal);
+		PatientRecordNameDTO prnCreated = prNameDao.create(prnDto);
+		
+		assertNotNull(prnCreated);
+		assertEquals("Lindsey", prnCreated.getFamilyName());
+		
+		GivenNameDTO given1 = new GivenNameDTO();
+		given1.setGivenName("Brian");
+		given1.setPatientRecordNameId(prnCreated.getId());
+		GivenNameDTO givenCreated = givenNameDao.create(given1);
 		
 		assertNotNull(orgMap);
 		assertNotNull(orgMap.getId());
@@ -212,9 +222,9 @@ public class PatientRecordDaoTest extends TestCase {
 		//assertEquals(orgMap.getId().longValue(), selected.getOrgMaps().get(0).getId().longValue());
 	}
 	
-	//@Test
-	//@Transactional
-	//@Rollback(true)
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void testUpdatePatientRecordFirstName() {		
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -232,33 +242,35 @@ public class PatientRecordDaoTest extends TestCase {
 		long existingAddrId = addrDto.getId().longValue();
 		
 		PatientRecordDTO toCreate = new PatientRecordDTO();
-		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-		GivenNameDTO given = new GivenNameDTO();
-		given.setGivenName("Jonathon");
-		givens.add(given);
-		PatientRecordNameDTO prn = new PatientRecordNameDTO();
-		prn.getGivenName().addAll(givens);
-		toCreate.getPatientRecordName().add(prn);
 		
 		toCreate.setSsn("111223344");
-		toCreate.setGender("Male");
+		toCreate.setGender("M");
+		toCreate.setOrgPatientRecordId("123-456-78");
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
-		GivenNameDTO given2 = new GivenNameDTO();
-		given2.setGivenName("Johnathon");
-		givens.remove(0);
-		givens.add(given2);
-		prn.getGivenName().addAll(givens);
-		toCreate.getPatientRecordName().add(prn);;
-		PatientRecordDTO updated = patientRecordDao.update(created);
-		assertNotNull(updated);
-		assertEquals(updated.getId().longValue(), created.getId().longValue());
-		assertEquals("Johnathon", updated.getPatientRecordName().get(0).getGivenName().get(0));
+		assertNotNull(created);
+		assertNotNull(created.getId());
+		assertTrue(created.getId().longValue() > 0);
+		
+		PatientRecordNameDTO prnDto = new PatientRecordNameDTO();
+		prnDto.setFamilyName("Lindsey");
+		prnDto.setExpirationDate(new Date());
+		prnDto.setPatientRecordId(created.getId());
+		prnDto.setNameType(nameTypeCodeLegal);
+		PatientRecordNameDTO prnCreated = prNameDao.create(prnDto);
+		
+		assertNotNull(prnCreated);
+		assertEquals("Lindsey", prnCreated.getFamilyName());
+		
+		GivenNameDTO given1 = new GivenNameDTO();
+		given1.setGivenName("Brian");
+		given1.setPatientRecordNameId(prnCreated.getId());
+		GivenNameDTO givenCreated = givenNameDao.create(given1);
 	}
 	
-	//@Test
-	//@Transactional
-	//@Rollback(true)
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void testDeletePatientRecord() {		
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";

@@ -46,10 +46,32 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		orgMap.setDocumentsQueryStart(new Date());
 		orgMap.setDocumentsQueryEnd(null);
 		orgMap.setOrganizationId(toCreate.getOrganizationId());
-		orgMap.setOrganizationPatientId(toCreate.getOrgPatientId());
-		orgMap.setPatientId(toCreate.getPatientId());
+		orgMap.setOrganizationPatientRecordId(toCreate.getOrgPatientRecordId());
+		orgMap.setPatientRecordId(toCreate.getPatientId());
 		
 		entityManager.persist(orgMap);
+		entityManager.flush();
+		return new PatientOrganizationMapDTO(orgMap);
+	}
+	
+	
+	@Override
+	public PatientOrganizationMapDTO updateOrgMap(PatientOrganizationMapDTO toUpdate) {
+		logger.debug("Looking up patient org map with id " + toUpdate.getId());
+		PatientOrganizationMapEntity orgMap = getOrgMapById(toUpdate.getId());
+		if(orgMap == null) {
+			logger.error("Could not find patient org map with id " + toUpdate.getId());
+		}
+
+		orgMap.setDocumentsQueryStatus(toUpdate.getDocumentsQueryStatus());
+		orgMap.setDocumentsQuerySuccess(toUpdate.getDocumentsQuerySuccess());
+		orgMap.setDocumentsQueryStart(toUpdate.getDocumentsQueryStart());
+		orgMap.setDocumentsQueryEnd(toUpdate.getDocumentsQueryEnd());
+		orgMap.setOrganizationId(toUpdate.getOrganizationId());
+		orgMap.setOrganizationPatientRecordId(toUpdate.getOrgPatientRecordId());
+		orgMap.setPatientRecordId(toUpdate.getPatientId());
+
+		entityManager.merge(orgMap);
 		entityManager.flush();
 		return new PatientOrganizationMapDTO(orgMap);
 	}
@@ -74,7 +96,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setOrgPatientId(dto.getOrgPatientId());
+		patient.setOrgPatientRecordId(dto.getOrgPatientRecordId());
 		if(dto.getAddress() != null) {
 			patient.setStreetLineOne(dto.getAddress().getStreetLineOne());
 			patient.setStreetLineTwo(dto.getAddress().getStreetLineTwo());
@@ -145,7 +167,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setOrgPatientId(dto.getOrgPatientId());
+		patient.setOrgPatientRecordId(dto.getOrgPatientRecordId());
 		if(dto.getAddress() != null) {
 			patient.setStreetLineOne(dto.getAddress().getStreetLineOne());
 			patient.setStreetLineTwo(dto.getAddress().getStreetLineTwo());
@@ -180,11 +202,49 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		}
 		return dto;
 	}
+	
+	@Override
+	public PatientOrganizationMapDTO getPatientOrgMapById(Long id) {
+		PatientOrganizationMapEntity entity = null;
+
+		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "
+				+ "LEFT OUTER JOIN FETCH pat.patient "
+				+ "LEFT OUTER JOIN FETCH pat.organization "
+				+ "where pat.id = :entityid) ", 
+				PatientOrganizationMapEntity.class );
+
+		query.setParameter("entityid", id);
+		List<PatientOrganizationMapEntity> result = query.getResultList();
+		if(result.size() == 1) {
+			entity = result.get(0);
+		}
+
+		return new PatientOrganizationMapDTO(entity);
+	}
+	
+	private PatientOrganizationMapEntity getOrgMapById(Long id) {		
+		Query query = entityManager.createQuery( "SELECT distinct pat from PatientOrganizationMapEntity pat "
+				+ "LEFT OUTER JOIN FETCH pat.organization "
+				+ "LEFT OUTER JOIN FETCH pat.patient "
+				+ "LEFT OUTER JOIN FETCH pat.documents "
+				+ "where pat.id = :entityid) ", 
+				PatientOrganizationMapEntity.class );
+
+		query.setParameter("entityid", id);
+
+		PatientOrganizationMapEntity entity = null;
+		List<PatientOrganizationMapEntity> orgMaps = query.getResultList();
+		if(orgMaps.size() != 0) {
+			entity = orgMaps.get(0);
+		}
+		return entity;
+	}
 
 	private PatientRecordEntity getEntityById(Long id) {
 		PatientRecordEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT distinct pat from PatientRecordEntity pat "
+		Query query = entityManager.createQuery( "SELECT DISTINCT pat "
+				+ "FROM PatientRecordEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.queryOrganization "
 				+ "LEFT OUTER JOIN FETCH pat.patientRecordName "
 				+ "where pat.id = :entityid ", 

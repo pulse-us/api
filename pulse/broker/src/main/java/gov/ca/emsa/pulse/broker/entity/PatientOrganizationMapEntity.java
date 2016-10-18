@@ -25,12 +25,12 @@ public class PatientOrganizationMapEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "patient_id")
-	private Long patientId;
+	@Column(name = "patient_record_id")
+	private Long patientRecordId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private PatientEntity patient;
+	@JoinColumn(name = "patient_record_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private PatientRecordEntity patientRecord;
 	
 	@Column(name = "organization_id")
 	private Long organizationId;
@@ -39,8 +39,8 @@ public class PatientOrganizationMapEntity {
 	@JoinColumn(name = "organization_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private OrganizationEntity organization;
 	
-	@Column(name = "organization_patient_id")
-	private String organizationPatientId;
+	@Column(name = "organization_patient_record_id")
+	private String organizationPatientRecordId;
 	
 	@Column(name = "documents_query_status")
 	private String documentsQueryStatus;
@@ -72,20 +72,20 @@ public class PatientOrganizationMapEntity {
 		this.id = id;
 	}
 
-	public Long getPatientId() {
-		return patientId;
+	public Long getPatientRecordId() {
+		return patientRecordId;
 	}
 
-	public void setPatientId(Long patientId) {
-		this.patientId = patientId;
+	public void setPatientRecordId(Long patientId) {
+		this.patientRecordId = patientId;
 	}
 
-	public PatientEntity getPatient() {
-		return patient;
+	public PatientRecordEntity getPatientRecord() {
+		return patientRecord;
 	}
 
-	public void setPatient(PatientEntity patient) {
-		this.patient = patient;
+	public void setPatientRecord(PatientRecordEntity patient) {
+		this.patientRecord = patient;
 	}
 
 	public Long getOrganizationId() {
@@ -104,12 +104,12 @@ public class PatientOrganizationMapEntity {
 		this.organization = organization;
 	}
 
-	public String getOrganizationPatientId() {
-		return organizationPatientId;
+	public String getOrganizationPatientRecordId() {
+		return organizationPatientRecordId;
 	}
 
-	public void setOrganizationPatientId(String organizationPatientId) {
-		this.organizationPatientId = organizationPatientId;
+	public void setOrganizationPatientRecordId(String organizationPatientRecordId) {
+		this.organizationPatientRecordId = organizationPatientRecordId;
 	}
 
 	public String getDocumentsQueryStatus() {

@@ -39,7 +39,7 @@ public class SearchResultConverter {
 		}
 		result.setPhoneNumber(domainObj.getPhoneNumber());
 		result.setSsn(domainObj.getSsn());
-		result.setOrgPatientId(domainObj.getOrgPatientId());
+		result.setOrgPatientRecordId(domainObj.getOrgPatientId());
 
 		if(domainObj.getAddress() != null) {
 			AddressDTO address = new AddressDTO();

@@ -7,12 +7,13 @@ import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PatientRecordDTO {
 	private Long id;
-	private String orgPatientId;
-	private ArrayList<PatientRecordNameDTO> patientRecordName;
+	private String orgPatientRecordId;
+	private List<PatientRecordNameDTO> patientRecordName;
 	private LocalDate dateOfBirth;
 	private String ssn;
 	private String gender;
@@ -20,40 +21,44 @@ public class PatientRecordDTO {
 	private AddressDTO address;
 	private Long queryOrganizationId;
 	private List<PatientOrganizationMapDTO> orgMaps;
+	private Date lastModifiedDate;
 	
 	public PatientRecordDTO() {
 		patientRecordName = new ArrayList<PatientRecordNameDTO>();
 	}
 	
 	public PatientRecordDTO(PatientRecordEntity entity) {
+		this();
 		this.id = entity.getId();
-		this.orgPatientId = entity.getOrgPatientId();
-		for(PatientRecordNameEntity PatientRecordNameEntity : entity.getPatientRecordName()){
-			PatientRecordNameDTO PatientRecordNameDTO = new PatientRecordNameDTO();
-			PatientRecordNameDTO.setFamilyName(PatientRecordNameEntity.getFamilyName());
-			ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-			for(GivenNameEntity given : PatientRecordNameEntity.getGivenNames()){
-				GivenNameDTO givenDTO = new GivenNameDTO(given);
-				givens.add(givenDTO);
+		this.orgPatientRecordId = entity.getOrgPatientRecordId();
+		if(entity.getPatientRecordName() != null && entity.getPatientRecordName().size() > 0) {
+			for(PatientRecordNameEntity patientRecordNameEntity : entity.getPatientRecordName()){
+				PatientRecordNameDTO patientRecordNameDTO = new PatientRecordNameDTO();
+				patientRecordNameDTO.setFamilyName(patientRecordNameEntity.getFamilyName());
+				ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
+				for(GivenNameEntity given : patientRecordNameEntity.getGivenNames()){
+					GivenNameDTO givenDTO = new GivenNameDTO(given);
+					givens.add(givenDTO);
+				}
+				patientRecordNameDTO.setGivenName(givens);
+				patientRecordNameDTO.setSuffix(patientRecordNameEntity.getSuffix());
+				patientRecordNameDTO.setPrefix(patientRecordNameEntity.getPrefix());
+				if(patientRecordNameEntity.getNameType() != null){
+					NameTypeDTO nameType = new NameTypeDTO(patientRecordNameEntity.getNameType());
+					patientRecordNameDTO.setNameType(nameType);
+				}
+				if(patientRecordNameEntity.getNameRepresentation() != null){
+					NameRepresentationDTO nameRep = new NameRepresentationDTO(patientRecordNameEntity.getNameRepresentation());
+					patientRecordNameDTO.setNameRepresentation(nameRep);
+				}
+				if(patientRecordNameEntity.getNameAssembly() != null){
+					NameAssemblyDTO nameAssembly = new NameAssemblyDTO(patientRecordNameEntity.getNameAssembly());
+					patientRecordNameDTO.setNameAssembly(nameAssembly);
+				}
+				patientRecordNameDTO.setEffectiveDate(patientRecordNameEntity.getEffectiveDate());
+				patientRecordNameDTO.setExpirationDate(patientRecordNameEntity.getExpirationDate());
+				this.patientRecordName.add(patientRecordNameDTO);
 			}
-			PatientRecordNameDTO.setGivenName(givens);
-			PatientRecordNameDTO.setSuffix(PatientRecordNameEntity.getSuffix());
-			PatientRecordNameDTO.setPrefix(PatientRecordNameEntity.getPrefix());
-			if(PatientRecordNameEntity.getNameType() != null){
-				NameTypeDTO nameType = new NameTypeDTO(PatientRecordNameEntity.getNameType());
-				PatientRecordNameDTO.setNameType(nameType);
-			}
-			if(PatientRecordNameEntity.getNameRepresentation() != null){
-				NameRepresentationDTO nameRep = new NameRepresentationDTO(PatientRecordNameEntity.getNameRepresentation());
-				PatientRecordNameDTO.setNameRepresentation(nameRep);
-			}
-			if(PatientRecordNameEntity.getNameAssembly() != null){
-				NameAssemblyDTO nameAssembly = new NameAssemblyDTO(PatientRecordNameEntity.getNameAssembly());
-				PatientRecordNameDTO.setNameAssembly(nameAssembly);
-			}
-			PatientRecordNameDTO.setEffectiveDate(PatientRecordNameEntity.getEffectiveDate());
-			PatientRecordNameDTO.setExpirationDate(PatientRecordNameEntity.getExpirationDate());
-			this.patientRecordName.add(PatientRecordNameDTO);
 		}
 		if(entity.getOrgMaps() != null && entity.getOrgMaps().size() > 0) {
 			for(PatientOrganizationMapEntity orgMap : entity.getOrgMaps()) {
@@ -77,6 +82,7 @@ public class PatientRecordDTO {
 		this.address.setCountry(entity.getCountry());
 		
 		this.queryOrganizationId = entity.getQueryOrganizationId();
+		this.lastModifiedDate = entity.getLastModifiedDate();
 	}
 	
 	public Long getId() {
@@ -116,12 +122,12 @@ public class PatientRecordDTO {
 		this.address = address;
 	}
 
-	public String getOrgPatientId() {
-		return orgPatientId;
+	public String getOrgPatientRecordId() {
+		return orgPatientRecordId;
 	}
 
-	public void setOrgPatientId(String orgPatientId) {
-		this.orgPatientId = orgPatientId;
+	public void setOrgPatientRecordId(String orgPatientRecordId) {
+		this.orgPatientRecordId = orgPatientRecordId;
 	}
 
 	public Long getQueryOrganizationId() {
@@ -132,11 +138,11 @@ public class PatientRecordDTO {
 		this.queryOrganizationId = queryOrganizationId;
 	}
 
-	public ArrayList<PatientRecordNameDTO> getPatientRecordName() {
+	public List<PatientRecordNameDTO> getPatientRecordName() {
 		return patientRecordName;
 	}
 
-	public void setPatientRecordName(ArrayList<PatientRecordNameDTO> patientRecordName) {
+	public void setPatientRecordName(List<PatientRecordNameDTO> patientRecordName) {
 		this.patientRecordName = patientRecordName;
 	}
 
@@ -146,6 +152,14 @@ public class PatientRecordDTO {
 
 	public void setOrgMaps(List<PatientOrganizationMapDTO> orgMaps) {
 		this.orgMaps = orgMaps;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
 	}
 	
 }

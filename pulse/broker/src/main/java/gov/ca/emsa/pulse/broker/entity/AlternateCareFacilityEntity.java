@@ -1,16 +1,18 @@
 package gov.ca.emsa.pulse.broker.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -28,9 +30,21 @@ public class AlternateCareFacilityEntity {
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
-	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "address_id", unique=true, nullable = true)
-	private AddressEntity address;
+ 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "acfId"  )
+	@Column( name = "alternate_care_facility_id", nullable = false  )
+	private List<AlternateCareFacilityAddressLineEntity> lines = new ArrayList<AlternateCareFacilityAddressLineEntity>();
+ 	
+ 	@Column(name = "city")
+	private String city;
+	
+	@Column(name = "state")
+	private String state;
+	
+	@Column(name = "zipcode")
+	private String zipcode;
+	
+	@Column(name = "country")
+	private String country;
 	
 	@Column(name = "last_read_date")
 	private Date lastReadDate;
@@ -81,27 +95,51 @@ public class AlternateCareFacilityEntity {
 		this.lastReadDate = lastReadDate;
 	}
 
-//	public Long getAddressId() {
-//		return addressId;
-//	}
-//
-//	public void setAddressId(Long addressId) {
-//		this.addressId = addressId;
-//	}
-
-	public AddressEntity getAddress() {
-		return address;
-	}
-
-	public void setAddress(AddressEntity address) {
-		this.address = address;
-	}
-
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	public List<AlternateCareFacilityAddressLineEntity> getLines() {
+		return lines;
+	}
+
+	public void setLines(List<AlternateCareFacilityAddressLineEntity> lines) {
+		this.lines = lines;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getZipcode() {
+		return zipcode;
+	}
+
+	public void setZipcode(String zipcode) {
+		this.zipcode = zipcode;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
 	}
 }

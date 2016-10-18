@@ -104,7 +104,7 @@ public class QueryService {
 			HashMap<String, String> customAttributes = new HashMap<String,String>();
 			customAttributes.put("RequesterFirstName", user.getFirstName());
 			customAttributes.put("RequestReason", "Get patient documents");
-			customAttributes.put("PatientId", orgMapDto.getOrgPatientId());
+			customAttributes.put("PatientRecordId", orgMapDto.getOrgPatientRecordId());
 			input.setAttributes(customAttributes);
 
 			patient.getOrgMaps().add(orgMapDto);

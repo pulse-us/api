@@ -9,10 +9,10 @@ import java.util.List;
 
 public class PatientOrganizationMapDTO {
 	private Long id;
-	private Long patientId;
+	private Long patientRecordId;
 	private Long organizationId;
 	private OrganizationDTO org;
-	private String orgPatientId;
+	private String orgPatientRecordId;
 	private String documentsQueryStatus;
 	private Boolean documentsQuerySuccess;
 	private Date documentsQueryStart;
@@ -26,12 +26,12 @@ public class PatientOrganizationMapDTO {
 	public PatientOrganizationMapDTO(PatientOrganizationMapEntity entity) {
 		this();
 		this.id = entity.getId();
-		this.patientId = entity.getPatientId();
+		this.patientRecordId = entity.getPatientRecordId();
 		this.organizationId = entity.getOrganizationId();
 		if(entity.getOrganization() != null) {
 			this.org = new OrganizationDTO(entity.getOrganization());
 		}
-		this.orgPatientId = entity.getOrganizationPatientId();
+		this.orgPatientRecordId = entity.getOrganizationPatientRecordId();
 		this.documentsQueryStatus = entity.getDocumentsQueryStatus();
 		this.documentsQuerySuccess = entity.getDocumentsQuerySuccess();
 		this.documentsQueryStart = entity.getDocumentsQueryStart();
@@ -51,10 +51,10 @@ public class PatientOrganizationMapDTO {
 		this.id = id;
 	}
 	public Long getPatientId() {
-		return patientId;
+		return patientRecordId;
 	}
-	public void setPatientId(Long patientId) {
-		this.patientId = patientId;
+	public void setPatientId(Long patientRecordId) {
+		this.patientRecordId = patientRecordId;
 	}
 	public Long getOrganizationId() {
 		return organizationId;
@@ -62,11 +62,11 @@ public class PatientOrganizationMapDTO {
 	public void setOrganizationId(Long organizationId) {
 		this.organizationId = organizationId;
 	}
-	public String getOrgPatientId() {
-		return orgPatientId;
+	public String getOrgPatientRecordId() {
+		return orgPatientRecordId;
 	}
-	public void setOrgPatientId(String orgPatientId) {
-		this.orgPatientId = orgPatientId;
+	public void setOrgPatientRecordId(String orgPatientId) {
+		this.orgPatientRecordId = orgPatientRecordId;
 	}
 	public String getDocumentsQueryStatus() {
 		return documentsQueryStatus;
@@ -107,5 +107,13 @@ public class PatientOrganizationMapDTO {
 
 	public void setDocuments(List<DocumentDTO> documents) {
 		this.documents = documents;
+	}
+
+	public Long getPatientRecordId() {
+		return patientRecordId;
+	}
+
+	public void setPatientRecordId(Long patientRecordId) {
+		this.patientRecordId = patientRecordId;
 	}
 }

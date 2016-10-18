@@ -74,6 +74,7 @@ public class EHealthAdapter implements Adapter {
 		String searchResults = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
+			logger.info("Querying " + postUrl + " with request " + request);
 			searchResults = restTemplate.postForObject(postUrl, request, String.class);
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + postUrl, ex);
@@ -100,7 +101,7 @@ public class EHealthAdapter implements Adapter {
 	@Override
 	public List<DocumentDTO> queryDocuments(OrganizationDTO org, PatientOrganizationMapDTO toSearch, SAMLInput samlInput) {
 		Patient patientToSearch = new Patient();
-		toSearch.setOrgPatientId(toSearch.getOrgPatientId());
+		toSearch.setOrgPatientRecordId(toSearch.getOrgPatientRecordId());
 		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientToSearch);
 		String requestBodyXml = null;
 		try {
@@ -117,6 +118,7 @@ public class EHealthAdapter implements Adapter {
 		String searchResults = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
+			logger.info("Querying " + postUrl + " with request " + request);
 			searchResults = restTemplate.postForObject(postUrl, request, String.class);
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + postUrl, ex);
@@ -168,6 +170,7 @@ public class EHealthAdapter implements Adapter {
 		String searchResults = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
+			logger.info("Querying " + postUrl + " with request " + request);
 			searchResults = restTemplate.postForObject(postUrl, request, String.class);
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + postUrl, ex);

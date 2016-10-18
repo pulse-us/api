@@ -142,20 +142,6 @@ public class PatientDaoTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testCreatePatientWithExistingAddress() {		
-		String streetLine1 = "1000 Hilltop Circle";
-		String city = "Baltimore";
-		String state = "MD";
-		String zip = "21227";
-		AddressDTO addrDto = new AddressDTO();
-		addrDto.setStreetLineOne(streetLine1);
-		addrDto.setCity(city);
-		addrDto.setState(state);
-		addrDto.setZipcode(zip);
-		addrDto = addrDao.create(addrDto);
-		Assert.assertNotNull(addrDto);
-		Assert.assertNotNull(addrDto.getId());
-		Assert.assertTrue(addrDto.getId().longValue() > 0);
-		long existingAddrId = addrDto.getId().longValue();
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
@@ -189,15 +175,6 @@ public class PatientDaoTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testCreatePatientWithNewAddress() {		
-		String streetLine1 = "1000 Hilltop Circle";
-		String city = "Baltimore";
-		String state = "MD";
-		String zip = "21227";
-		AddressDTO addrDto = new AddressDTO();
-		addrDto.setStreetLineOne(streetLine1);
-		addrDto.setCity(city);
-		addrDto.setState(state);
-		addrDto.setZipcode(zip);
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
@@ -247,17 +224,6 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(created.getAcf().getId());
 		assertEquals(created.getAcf().getId().longValue(), acf.getId().longValue());
 		
-		PatientOrganizationMapDTO orgMap = new PatientOrganizationMapDTO();
-		orgMap.setOrg(org1);
-		orgMap.setOrganizationId(org1.getId());
-		orgMap.setOrgPatientId("JSMITH1");
-		orgMap.setPatientId(created.getId());
-		orgMap = patientDao.createOrgMap(orgMap);
-		
-		assertNotNull(orgMap);
-		assertNotNull(orgMap.getId());
-		assertTrue(orgMap.getId().longValue() > 0);
-		
 		PatientDTO selected = patientDao.getById(created.getId());
 		assertNotNull(selected);
 		assertNotNull(selected.getOrgMaps());
@@ -270,20 +236,6 @@ public class PatientDaoTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testUpdatePatientFirstName() {		
-		String streetLine1 = "1000 Hilltop Circle";
-		String city = "Baltimore";
-		String state = "MD";
-		String zip = "21227";
-		AddressDTO addrDto = new AddressDTO();
-		addrDto.setStreetLineOne(streetLine1);
-		addrDto.setCity(city);
-		addrDto.setState(state);
-		addrDto.setZipcode(zip);
-		addrDto = addrDao.create(addrDto);
-		Assert.assertNotNull(addrDto);
-		Assert.assertNotNull(addrDto.getId());
-		Assert.assertTrue(addrDto.getId().longValue() > 0);
-		long existingAddrId = addrDto.getId().longValue();
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);

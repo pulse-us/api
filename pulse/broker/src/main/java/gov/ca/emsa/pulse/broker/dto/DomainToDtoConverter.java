@@ -22,6 +22,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
+import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
+
 public class DomainToDtoConverter {
 	private static final Logger logger = LogManager.getLogger(DomainToDtoConverter.class);
 
@@ -45,20 +47,7 @@ public class DomainToDtoConverter {
 		result.setSsn(domainObj.getSsn());
 
 		if(domainObj.getAcf() != null) {
-			AlternateCareFacilityDTO acf = new AlternateCareFacilityDTO();
-			acf.setId(domainObj.getAcf().getId());
-			acf.setName(domainObj.getAcf().getName());
-			if(domainObj.getAcf().getAddress() != null) {
-				Address acfAddress = domainObj.getAcf().getAddress();
-				AddressDTO acfAddrDto = new AddressDTO();
-				acfAddrDto.setStreetLineOne(acfAddress.getStreet1());
-				acfAddrDto.setStreetLineTwo(acfAddress.getStreet2());
-				acfAddrDto.setCity(acfAddress.getCity());
-				acfAddrDto.setState(acfAddress.getState());
-				acfAddrDto.setZipcode(acfAddress.getZipcode());
-				acfAddrDto.setCountry(acfAddress.getCountry());
-				acf.setAddress(acfAddrDto);
-			}
+			AlternateCareFacilityDTO acf = convert(domainObj.getAcf());
 			result.setAcf(acf);
 		}
 
@@ -156,6 +145,27 @@ public class DomainToDtoConverter {
 			result.setDocumentUniqueId(domainObj.getIdentifier().getDocumentUniqueId());
 			result.setHomeCommunityId(domainObj.getIdentifier().getHomeCommunityId());
 			result.setRepositoryUniqueId(domainObj.getIdentifier().getRepositoryUniqueId());
+		}
+		return result;
+	}
+	
+	public static AlternateCareFacilityDTO convert(AlternateCareFacility domainObj) {
+		AlternateCareFacilityDTO result = new AlternateCareFacilityDTO();
+		result.setId(domainObj.getId());
+		result.setName(domainObj.getName());
+		result.setPhoneNumber(domainObj.getPhoneNumber());
+		if(domainObj.getAddress() != null) {
+			if(domainObj.getAddress().getLines() != null) {
+				for(String line : domainObj.getAddress().getLines()) {
+					AddressLineDTO lineDto = new AddressLineDTO();
+					lineDto.setLine(line);
+					result.getLines().add(lineDto);
+				}
+			}
+			result.setCity(domainObj.getAddress().getCity());
+			result.setState(domainObj.getAddress().getState());
+			result.setZipcode(domainObj.getAddress().getZipcode());
+			result.setCountry(domainObj.getAddress().getCountry());
 		}
 		return result;
 	}
