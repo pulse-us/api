@@ -90,7 +90,6 @@ public class PatientRecordDaoTest extends TestCase {
 		
 		toCreate.setSsn("111223344");
 		toCreate.setGender("M");
-		toCreate.setOrgPatientRecordId("123-456-78");
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
 		assertNotNull(created);
@@ -150,7 +149,6 @@ public class PatientRecordDaoTest extends TestCase {
 		
 		toCreate.setSsn("111223344");
 		toCreate.setGender("M");
-		toCreate.setOrgPatientRecordId("123-456-78");
 		toCreate.setAddress(addrDto);
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
@@ -172,42 +170,6 @@ public class PatientRecordDaoTest extends TestCase {
 		given1.setGivenName("Brian");
 		given1.setPatientRecordNameId(prnCreated.getId());
 		GivenNameDTO givenCreated = givenNameDao.create(given1);
-	}
-	
-	//TODO: the org maps aren't coming back from the create or select 
-	//but they do appear when making calls via POSTman.. can't figure out the disconnect
-	@Test
-	@Transactional
-	@Rollback(true)
-	@Commit
-	public void testCreatePatientRecordWithOrgMaps() {		
-		PatientRecordDTO toCreate = new PatientRecordDTO();
-		toCreate.setSsn("111223344");
-		toCreate.setGender("M");
-		toCreate.setOrgPatientRecordId("123-456-78");
-		
-		PatientRecordDTO created = patientRecordDao.create(toCreate);
-		assertNotNull(created);
-		assertNotNull(created.getId());
-		assertTrue(created.getId().longValue() > 0);
-		
-		PatientOrganizationMapDTO orgMap = new PatientOrganizationMapDTO();
-		orgMap.setOrg(org1);
-		orgMap.setOrganizationId(org1.getId());
-		orgMap.setOrgPatientRecordId("123-456-78");
-		orgMap.setPatientId(created.getId());
-		orgMap = patientDao.createOrgMap(orgMap);
-		
-		assertNotNull(orgMap);
-		assertNotNull(orgMap.getId());
-		assertTrue(orgMap.getId().longValue() > 0);
-		
-		PatientRecordDTO selected = patientRecordDao.getById(created.getId());
-		assertNotNull(selected);
-		//assertNotNull(selected.getOrgMaps());
-		//TODO: this is not working but should be
-		//assertTrue(selected.getOrgMaps().size() == 1);
-		//assertEquals(orgMap.getId().longValue(), selected.getOrgMaps().get(0).getId().longValue());
 	}
 	
 	@Test
@@ -233,7 +195,6 @@ public class PatientRecordDaoTest extends TestCase {
 		
 		toCreate.setSsn("111223344");
 		toCreate.setGender("M");
-		toCreate.setOrgPatientRecordId("123-456-78");
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
 		assertNotNull(created);
@@ -261,7 +222,6 @@ public class PatientRecordDaoTest extends TestCase {
 	@Rollback(true)
 	public void testDeletePatientRecord() {
 		PatientRecordDTO toCreate = new PatientRecordDTO();
-		toCreate.setOrgPatientRecordId("123-456-78");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
 		

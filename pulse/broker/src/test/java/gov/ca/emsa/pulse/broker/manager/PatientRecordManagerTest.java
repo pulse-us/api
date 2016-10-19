@@ -112,7 +112,6 @@ public class PatientRecordManagerTest extends TestCase {
 		PatientRecordDTO dto = new PatientRecordDTO();
 		LocalDate date = LocalDate.parse("2016-01-10", DateTimeFormatter.ISO_DATE);
 		dto.setDateOfBirth(date);
-		dto.setOrgPatientRecordId("123-456-78");
 		dto.setPhoneNumber("443-745-0888");
 		dto.setQueryOrganizationId(orgQuery1.getId());
 		dto.setSsn("555-55-5555");

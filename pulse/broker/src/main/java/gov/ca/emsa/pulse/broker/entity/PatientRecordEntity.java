@@ -32,9 +32,6 @@ public class PatientRecordEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "organization_patient_record_id")
-	private String orgPatientRecordId;
-	
 	@Column(name = "dob")
 	private java.sql.Date dateOfBirth;
 	
@@ -74,10 +71,6 @@ public class PatientRecordEntity {
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId")
 	@Column( name = "patient_record_id", nullable = false  )
-	private Set<PatientOrganizationMapEntity> orgMaps = new HashSet<PatientOrganizationMapEntity>();
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId")
-	@Column( name = "patient_record_id", nullable = false  )
 	private Set<PatientRecordNameEntity> patientRecordName = new HashSet<PatientRecordNameEntity>();
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
@@ -100,14 +93,6 @@ public class PatientRecordEntity {
 
 	public void setDateOfBirth(java.sql.Date dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
-	}
-	
-	public Set<PatientOrganizationMapEntity> getOrgMaps() {
-		return orgMaps;
-	}
-
-	public void setOrgMaps(Set<PatientOrganizationMapEntity> orgMaps) {
-		this.orgMaps = orgMaps;
 	}
 
 	public String getSsn() {
@@ -148,14 +133,6 @@ public class PatientRecordEntity {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
-	}
-
-	public String getOrgPatientRecordId() {
-		return orgPatientRecordId;
-	}
-
-	public void setOrgPatientRecordId(String orgPatientRecordId) {
-		this.orgPatientRecordId = orgPatientRecordId;
 	}
 
 	public String getStreetLineOne() {

@@ -58,7 +58,6 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setOrgPatientRecordId(dto.getOrgPatientRecordId());
 		if(dto.getAddress() != null) {
 			patient.setStreetLineOne(dto.getAddress().getStreetLineOne());
 			patient.setStreetLineTwo(dto.getAddress().getStreetLineTwo());
@@ -129,7 +128,6 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setOrgPatientRecordId(dto.getOrgPatientRecordId());
 		if(dto.getAddress() != null) {
 			patient.setStreetLineOne(dto.getAddress().getStreetLineOne());
 			patient.setStreetLineTwo(dto.getAddress().getStreetLineTwo());
@@ -172,7 +170,6 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 				+ "FROM PatientRecordEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.queryOrganization "
 				+ "LEFT OUTER JOIN FETCH pat.patientRecordName "
-				+ "LEFT OUTER JOIN FETCH pat.orgMaps "
 				+ "where pat.id = :entityid ", 
 				PatientRecordEntity.class );
 

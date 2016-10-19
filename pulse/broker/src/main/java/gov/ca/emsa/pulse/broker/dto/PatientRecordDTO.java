@@ -20,7 +20,6 @@ public class PatientRecordDTO {
 	private String phoneNumber;
 	private AddressDTO address;
 	private Long queryOrganizationId;
-	private List<PatientOrganizationMapDTO> orgMaps;
 	private Date lastModifiedDate;
 	
 	public PatientRecordDTO() {
@@ -30,7 +29,6 @@ public class PatientRecordDTO {
 	public PatientRecordDTO(PatientRecordEntity entity) {
 		this();
 		this.id = entity.getId();
-		this.orgPatientRecordId = entity.getOrgPatientRecordId();
 		if(entity.getPatientRecordName() != null && entity.getPatientRecordName().size() > 0) {
 			for(PatientRecordNameEntity patientRecordNameEntity : entity.getPatientRecordName()){
 				PatientRecordNameDTO patientRecordNameDTO = new PatientRecordNameDTO();
@@ -58,12 +56,6 @@ public class PatientRecordDTO {
 				patientRecordNameDTO.setEffectiveDate(patientRecordNameEntity.getEffectiveDate());
 				patientRecordNameDTO.setExpirationDate(patientRecordNameEntity.getExpirationDate());
 				this.patientRecordName.add(patientRecordNameDTO);
-			}
-		}
-		if(entity.getOrgMaps() != null && entity.getOrgMaps().size() > 0) {
-			for(PatientOrganizationMapEntity orgMap : entity.getOrgMaps()) {
-				PatientOrganizationMapDTO orgMapDto = new PatientOrganizationMapDTO(orgMap);
-				this.orgMaps.add(orgMapDto);
 			}
 		}
 		if(entity.getDateOfBirth() != null) {
@@ -144,14 +136,6 @@ public class PatientRecordDTO {
 
 	public void setPatientRecordName(List<PatientRecordNameDTO> patientRecordName) {
 		this.patientRecordName = patientRecordName;
-	}
-
-	public List<PatientOrganizationMapDTO> getOrgMaps() {
-		return orgMaps;
-	}
-
-	public void setOrgMaps(List<PatientOrganizationMapDTO> orgMaps) {
-		this.orgMaps = orgMaps;
 	}
 
 	public Date getLastModifiedDate() {

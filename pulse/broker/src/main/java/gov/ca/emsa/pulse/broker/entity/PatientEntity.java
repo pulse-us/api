@@ -69,9 +69,9 @@ public class PatientEntity {
 	@Column(name = "last_read_date")
 	private Date lastReadDate;
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientRecordId"  )
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientId"  )
 	@Fetch(FetchMode.JOIN)
-	@Column( name = "patient_record_id", nullable = false  )
+	@Column( name = "patient_id", nullable = false  )
 	private Set<PatientOrganizationMapEntity> orgMaps = new HashSet<PatientOrganizationMapEntity>();
 	
 	public Long getId() {

@@ -76,7 +76,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		orgMap.setDocumentsQueryEnd(null);
 		orgMap.setOrganizationId(toCreate.getOrganizationId());
 		orgMap.setOrganizationPatientRecordId(toCreate.getOrgPatientRecordId());
-		orgMap.setPatientRecordId(toCreate.getPatientId());
+		orgMap.setPatientId(toCreate.getPatientId());
 
 		entityManager.persist(orgMap);
 		entityManager.flush();
@@ -125,7 +125,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		orgMap.setDocumentsQueryEnd(toUpdate.getDocumentsQueryEnd());
 		orgMap.setOrganizationId(toUpdate.getOrganizationId());
 		orgMap.setOrganizationPatientRecordId(toUpdate.getOrgPatientRecordId());
-		orgMap.setPatientRecordId(toUpdate.getPatientId());
+		orgMap.setPatientId(toUpdate.getPatientId());
 
 		entityManager.merge(orgMap);
 		entityManager.flush();
@@ -180,6 +180,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.acf "
+				+ "LEFT OUTER JOIN FETCH pat.address "
 				+ "LEFT OUTER JOIN FETCH pat.orgMaps "
 				+ "where pat.acfId = :acfId) ", 
 				PatientEntity.class );

@@ -25,12 +25,12 @@ public class PatientOrganizationMapEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "patient_record_id")
-	private Long patientRecordId;
+	@Column(name = "patient_id")
+	private Long patientId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "patient_record_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private PatientRecordEntity patientRecord;
+	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private PatientEntity patient;
 	
 	@Column(name = "organization_id")
 	private Long organizationId;
@@ -39,7 +39,7 @@ public class PatientOrganizationMapEntity {
 	@JoinColumn(name = "organization_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private OrganizationEntity organization;
 	
-	@Column(name = "organization_patient_record_id")
+	@Column(name = "organization_patient_id")
 	private String organizationPatientRecordId;
 	
 	@Column(name = "documents_query_status")
@@ -70,22 +70,6 @@ public class PatientOrganizationMapEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getPatientRecordId() {
-		return patientRecordId;
-	}
-
-	public void setPatientRecordId(Long patientId) {
-		this.patientRecordId = patientId;
-	}
-
-	public PatientRecordEntity getPatientRecord() {
-		return patientRecord;
-	}
-
-	public void setPatientRecord(PatientRecordEntity patient) {
-		this.patientRecord = patient;
 	}
 
 	public Long getOrganizationId() {
@@ -167,4 +151,21 @@ public class PatientOrganizationMapEntity {
 	public void setDocuments(Set<DocumentEntity> documents) {
 		this.documents = documents;
 	}
+
+	public Long getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(Long patientId) {
+		this.patientId = patientId;
+	}
+
+	public PatientEntity getPatient() {
+		return patient;
+	}
+
+	public void setPatient(PatientEntity patient) {
+		this.patient = patient;
+	}
+	
 }
