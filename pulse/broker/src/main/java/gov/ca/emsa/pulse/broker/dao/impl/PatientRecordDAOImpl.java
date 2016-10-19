@@ -164,43 +164,6 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		}
 		return dto;
 	}
-	
-	@Override
-	public PatientOrganizationMapDTO getPatientOrgMapById(Long id) {
-		PatientOrganizationMapEntity entity = null;
-
-		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "
-				+ "LEFT OUTER JOIN FETCH pat.patient "
-				+ "LEFT OUTER JOIN FETCH pat.organization "
-				+ "where pat.id = :entityid) ", 
-				PatientOrganizationMapEntity.class );
-
-		query.setParameter("entityid", id);
-		List<PatientOrganizationMapEntity> result = query.getResultList();
-		if(result.size() == 1) {
-			entity = result.get(0);
-		}
-
-		return new PatientOrganizationMapDTO(entity);
-	}
-	
-	private PatientOrganizationMapEntity getOrgMapById(Long id) {		
-		Query query = entityManager.createQuery( "SELECT distinct pat from PatientOrganizationMapEntity pat "
-				+ "LEFT OUTER JOIN FETCH pat.organization "
-				+ "LEFT OUTER JOIN FETCH pat.patient "
-				+ "LEFT OUTER JOIN FETCH pat.documents "
-				+ "where pat.id = :entityid) ", 
-				PatientOrganizationMapEntity.class );
-
-		query.setParameter("entityid", id);
-
-		PatientOrganizationMapEntity entity = null;
-		List<PatientOrganizationMapEntity> orgMaps = query.getResultList();
-		if(orgMaps.size() != 0) {
-			entity = orgMaps.get(0);
-		}
-		return entity;
-	}
 
 	private PatientRecordEntity getEntityById(Long id) {
 		PatientRecordEntity entity = null;
