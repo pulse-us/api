@@ -37,44 +37,6 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 	private static final Logger logger = LogManager.getLogger(PatientRecordDAOImpl.class);
 	@Autowired OrganizationDAO orgDao;
 	@Autowired PatientRecordNameDAO nameDao;
-	
-	@Override
-	public PatientOrganizationMapDTO createOrgMap(PatientOrganizationMapDTO toCreate) {
-		PatientOrganizationMapEntity orgMap = new PatientOrganizationMapEntity();
-		orgMap.setDocumentsQueryStatus(QueryStatus.ACTIVE.name());
-		orgMap.setDocumentsQuerySuccess(null);
-		orgMap.setDocumentsQueryStart(new Date());
-		orgMap.setDocumentsQueryEnd(null);
-		orgMap.setOrganizationId(toCreate.getOrganizationId());
-		orgMap.setOrganizationPatientRecordId(toCreate.getOrgPatientRecordId());
-		orgMap.setPatientRecordId(toCreate.getPatientId());
-		
-		entityManager.persist(orgMap);
-		entityManager.flush();
-		return new PatientOrganizationMapDTO(orgMap);
-	}
-	
-	
-	@Override
-	public PatientOrganizationMapDTO updateOrgMap(PatientOrganizationMapDTO toUpdate) {
-		logger.debug("Looking up patient org map with id " + toUpdate.getId());
-		PatientOrganizationMapEntity orgMap = getOrgMapById(toUpdate.getId());
-		if(orgMap == null) {
-			logger.error("Could not find patient org map with id " + toUpdate.getId());
-		}
-
-		orgMap.setDocumentsQueryStatus(toUpdate.getDocumentsQueryStatus());
-		orgMap.setDocumentsQuerySuccess(toUpdate.getDocumentsQuerySuccess());
-		orgMap.setDocumentsQueryStart(toUpdate.getDocumentsQueryStart());
-		orgMap.setDocumentsQueryEnd(toUpdate.getDocumentsQueryEnd());
-		orgMap.setOrganizationId(toUpdate.getOrganizationId());
-		orgMap.setOrganizationPatientRecordId(toUpdate.getOrgPatientRecordId());
-		orgMap.setPatientRecordId(toUpdate.getPatientId());
-
-		entityManager.merge(orgMap);
-		entityManager.flush();
-		return new PatientOrganizationMapDTO(orgMap);
-	}
 
 	@Override
 	public PatientRecordDTO create(PatientRecordDTO dto) {

@@ -38,6 +38,7 @@ public class PatientRecordDaoTest extends TestCase {
 	@Autowired OrganizationDAO orgDao;
 	@Autowired AlternateCareFacilityDAO acfDao;
 	@Autowired PatientRecordDAO patientRecordDao;
+	@Autowired PatientDAO patientDao;
 	@Autowired PatientRecordNameDAO prNameDao;
 	@Autowired GivenNameDAO givenNameDao;
 	@Autowired NameTypeDAO nameTypeDao;
@@ -195,7 +196,7 @@ public class PatientRecordDaoTest extends TestCase {
 		orgMap.setOrganizationId(org1.getId());
 		orgMap.setOrgPatientRecordId("123-456-78");
 		orgMap.setPatientId(created.getId());
-		orgMap = patientRecordDao.createOrgMap(orgMap);
+		orgMap = patientDao.createOrgMap(orgMap);
 		
 		assertNotNull(orgMap);
 		assertNotNull(orgMap.getId());
