@@ -247,6 +247,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 				+ "FROM PatientRecordEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.queryOrganization "
 				+ "LEFT OUTER JOIN FETCH pat.patientRecordName "
+				+ "LEFT OUTER JOIN FETCH pat.orgMaps "
 				+ "where pat.id = :entityid ", 
 				PatientRecordEntity.class );
 

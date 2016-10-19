@@ -108,24 +108,15 @@ public class PatientRecordManagerTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testCreatePatientRecord() {
-		GivenNameDTO givenName1 = new GivenNameDTO();
-		givenName1.setGivenName("Jonathon");
+		
 		PatientRecordDTO dto = new PatientRecordDTO();
 		LocalDate date = LocalDate.parse("2016-01-10", DateTimeFormatter.ISO_DATE);
 		dto.setDateOfBirth(date);
-		PatientRecordNameDTO prn = new PatientRecordNameDTO();
-		prn.setFamilyName("Ekey");
-		dto.getPatientRecordName().get(0).setSuffix("MD");
-		dto.getPatientRecordName().get(0).setPrefix("Dr.");
-		NameTypeDTO nameTypeDTO = new NameTypeDTO();
-		nameTypeDTO.setCode("L");
-		dto.getPatientRecordName().get(0).setNameType(nameTypeDTO);
 		dto.setOrgPatientRecordId("123-456-78");
 		dto.setPhoneNumber("443-745-0888");
 		dto.setQueryOrganizationId(orgQuery1.getId());
 		dto.setSsn("555-55-5555");
 		PatientRecordDTO added = queryManager.addPatientRecord(dto);
-		
 		
 		assertNotNull(added);
 		assertNotNull(added.getId());

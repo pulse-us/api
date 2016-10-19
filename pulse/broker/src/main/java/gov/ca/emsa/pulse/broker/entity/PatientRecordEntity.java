@@ -72,7 +72,8 @@ public class PatientRecordEntity {
 	@JoinColumn(name = "query_organization_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private QueryOrganizationEntity queryOrganization;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId", cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId")
+	@Column( name = "patient_record_id", nullable = false  )
 	private Set<PatientOrganizationMapEntity> orgMaps = new HashSet<PatientOrganizationMapEntity>();
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId")

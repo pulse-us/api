@@ -65,7 +65,7 @@ public class PatientOrganizationMapDTO {
 	public String getOrgPatientRecordId() {
 		return orgPatientRecordId;
 	}
-	public void setOrgPatientRecordId(String orgPatientId) {
+	public void setOrgPatientRecordId(String orgPatientRecordId) {
 		this.orgPatientRecordId = orgPatientRecordId;
 	}
 	public String getDocumentsQueryStatus() {
