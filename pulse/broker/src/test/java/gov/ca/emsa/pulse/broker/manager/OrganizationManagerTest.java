@@ -1,7 +1,13 @@
 package gov.ca.emsa.pulse.broker.manager;
 
+import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.common.domain.Organization;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,11 +16,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.common.domain.Organization;
-import junit.framework.TestCase;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

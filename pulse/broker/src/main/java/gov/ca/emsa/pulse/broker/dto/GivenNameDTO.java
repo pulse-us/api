@@ -9,7 +9,7 @@ public class GivenNameDTO {
 	
 	private String givenName;
 	
-	private Long patientNameId;
+	private Long PatientRecordNameId;
 	
 	public GivenNameDTO(){
 		
@@ -18,7 +18,7 @@ public class GivenNameDTO {
 	public GivenNameDTO(GivenNameEntity entity){
 		this.id = entity.getId();
 		this.givenName = entity.getGivenName();
-		this.patientNameId = entity.getPatientNameId();
+		this.PatientRecordNameId = entity.getPatientRecordNameId();
 	}
 
 	public Long getId() {
@@ -37,12 +37,12 @@ public class GivenNameDTO {
 		this.givenName = givenName;
 	}
 
-	public Long getPatientNameId() {
-		return patientNameId;
+	public Long getPatientRecordNameId() {
+		return PatientRecordNameId;
 	}
 
-	public void setPatientNameId(Long patientNameId) {
-		this.patientNameId = patientNameId;
+	public void setPatientRecordNameId(Long PatientRecordNameId) {
+		this.PatientRecordNameId = PatientRecordNameId;
 	}
 
 }

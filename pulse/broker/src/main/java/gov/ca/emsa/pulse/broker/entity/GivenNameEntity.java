@@ -19,9 +19,9 @@ public class GivenNameEntity {
 	@Column(name = "name", nullable = false)
 	private String givenName;
 	
-	@Column(name = "patient_name_id", nullable = false)
-	private Long patientNameId;
-
+	@Column(name = "patient_record_name_id")
+	private Long patientRecordNameId;
+	
 	public Long getId() {
 		return id;
 	}
@@ -38,12 +38,12 @@ public class GivenNameEntity {
 		this.givenName = givenName;
 	}
 
-	public Long getPatientNameId() {
-		return patientNameId;
+	public Long getPatientRecordNameId() {
+		return patientRecordNameId;
 	}
 
-	public void setPatientNameId(Long patientNameId) {
-		this.patientNameId = patientNameId;
+	public void setPatientRecordNameId(Long patientRecordNameId) {
+		this.patientRecordNameId = patientRecordNameId;
 	}
 	
 }

@@ -1,8 +1,29 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
+import gov.ca.emsa.pulse.broker.dto.NameAssemblyDTO;
+import gov.ca.emsa.pulse.broker.dto.NameRepresentationDTO;
+import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
+import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
+import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
+import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
+
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 
@@ -11,34 +32,25 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientNameDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
-import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientNameDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientNameEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
-
 @Repository
 public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDAO {
 	private static final Logger logger = LogManager.getLogger(PatientRecordDAOImpl.class);
 	@Autowired OrganizationDAO orgDao;
-	@Autowired PatientNameDAO nameDao;
+	@Autowired PatientRecordNameDAO nameDao;
 
 	@Override
 	public PatientRecordDTO create(PatientRecordDTO dto) {
-
 		PatientRecordEntity patient = new PatientRecordEntity();
-		if(dto.getPatientName() != null){
-			if(dto.getPatientName().getId() == null){
-				PatientNameDTO nameDto = nameDao.create(dto.getPatientName());
-				dto.setPatientName(nameDto);
+		if(dto.getPatientRecordName() != null){
+			for(PatientRecordNameDTO PatientRecordNameDTO : dto.getPatientRecordName()){
+				if(PatientRecordNameDTO.getId() == null){
+					PatientRecordNameDTO nameDto = nameDao.create(PatientRecordNameDTO);
+					dto.getPatientRecordName().add(nameDto);
+				}
+				//patient name entity should exist now
+				PatientRecordNameEntity name = entityManager.find(PatientRecordNameEntity.class, PatientRecordNameDTO.getId());
+				patient.getPatientRecordName().add(name);
 			}
-			//patient name entity should exist now
-			PatientNameEntity name = entityManager.find(PatientNameEntity.class, dto.getPatientName().getId());
-			patient.setPatientName(name);
 		}
 		if(dto.getDateOfBirth() != null) {
 			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
@@ -46,7 +58,6 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setOrgPatientId(dto.getOrgPatientId());
 		if(dto.getAddress() != null) {
 			patient.setStreetLineOne(dto.getAddress().getStreetLineOne());
 			patient.setStreetLineTwo(dto.getAddress().getStreetLineTwo());
@@ -65,37 +76,49 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 	@Override
 	public PatientRecordDTO update(PatientRecordDTO dto) {
 		PatientRecordEntity patient = this.getEntityById(dto.getId());
-		if(dto.getPatientName() != null){
-			patient.getPatientName().setFamilyName(dto.getPatientName().getFamilyName());
-			ArrayList<GivenNameEntity> givens = new ArrayList<GivenNameEntity>();
-			for(GivenNameDTO givenDto : dto.getPatientName().getGivenName()){
-				GivenNameEntity givenName = new GivenNameEntity();
-				givenName.setGivenName(givenDto.getGivenName());
-				givenName.setId(givenDto.getId());
-				givenName.setPatientNameId(givenDto.getPatientNameId());
-				givens.add(givenName);
+		if(dto.getPatientRecordName() != null){
+			for(PatientRecordNameDTO PatientRecordNameDTO : dto.getPatientRecordName()){
+				PatientRecordNameEntity PatientRecordNameEntity = new PatientRecordNameEntity();
+				PatientRecordNameEntity.setFamilyName(PatientRecordNameDTO.getFamilyName());
+				Set<GivenNameEntity> givens = new HashSet<GivenNameEntity>();
+				for(GivenNameDTO givenDto : PatientRecordNameDTO.getGivenName()){
+					GivenNameEntity givenName = new GivenNameEntity();
+					givenName.setGivenName(givenDto.getGivenName());
+					givenName.setId(givenDto.getId());
+					givens.add(givenName);
+				}
+				PatientRecordNameEntity.setGivenNames(givens);
+				if(PatientRecordNameDTO.getSuffix() != null)
+					PatientRecordNameEntity.setSuffix(PatientRecordNameDTO.getSuffix());
+				if(PatientRecordNameDTO.getPrefix() != null)
+					PatientRecordNameEntity.setPrefix(PatientRecordNameDTO.getPrefix());
+				if(PatientRecordNameDTO.getNameType() != null){
+					NameTypeEntity nameType = new NameTypeEntity();
+					nameType.setCode(PatientRecordNameDTO.getNameType().getCode());
+					nameType.setDescription(PatientRecordNameDTO.getNameType().getDescription());
+					nameType.setId(PatientRecordNameDTO.getNameType().getId());
+					PatientRecordNameEntity.setNameType(nameType);
+				}
+				if(PatientRecordNameDTO.getNameRepresentation() != null){
+					NameRepresentationEntity nameRep = new NameRepresentationEntity();
+					nameRep.setCode(PatientRecordNameDTO.getNameType().getCode());
+					nameRep.setDescription(PatientRecordNameDTO.getNameType().getDescription());
+					nameRep.setId(PatientRecordNameDTO.getNameType().getId());
+					PatientRecordNameEntity.setNameRepresentation(nameRep);
+				}
+				if(PatientRecordNameDTO.getNameAssembly() != null){
+					NameAssemblyEntity nameAssembly = new NameAssemblyEntity();
+					nameAssembly.setCode(PatientRecordNameDTO.getNameType().getCode());
+					nameAssembly.setDescription(PatientRecordNameDTO.getNameType().getDescription());
+					nameAssembly.setId(PatientRecordNameDTO.getNameType().getId());
+					PatientRecordNameEntity.setNameAssembly(nameAssembly);
+				}
+				if(PatientRecordNameDTO.getEffectiveDate() != null)
+					PatientRecordNameEntity.setEffectiveDate(PatientRecordNameDTO.getEffectiveDate());
+				if(PatientRecordNameDTO.getExpirationDate() != null)
+					PatientRecordNameEntity.setExpirationDate(PatientRecordNameDTO.getExpirationDate());
+				patient.getPatientRecordName().add(PatientRecordNameEntity);
 			}
-			patient.getPatientName().setGivenNames(givens);
-			if(dto.getPatientName().getSuffix() != null)
-				patient.getPatientName().setSuffix(dto.getPatientName().getSuffix());
-			if(dto.getPatientName().getPrefix() != null)
-				patient.getPatientName().setPrefix(dto.getPatientName().getPrefix());
-			if(dto.getPatientName().getNameTypeCode() != null)
-				patient.getPatientName().setNameTypeCode(dto.getPatientName().getNameTypeCode());
-			if(dto.getPatientName().getNameTypeCodeDescription() != null)
-				patient.getPatientName().setNameTypeCodeDescription(dto.getPatientName().getNameTypeCodeDescription());
-			if(dto.getPatientName().getNameRepresentationCode() != null)
-				patient.getPatientName().setNameRepresentationCode(dto.getPatientName().getNameRepresentationCode());
-			if(dto.getPatientName().getNameRepresentationCodeDescription() != null)
-				patient.getPatientName().setNameRepresentationCodeDescription(dto.getPatientName().getNameRepresentationCodeDescription());
-			if(dto.getPatientName().getNameAssemblyOrderCode() != null)
-				patient.getPatientName().setNameAssemblyOrderCode(dto.getPatientName().getNameAssemblyOrderCode());
-			if(dto.getPatientName().getNameAssemblyOrderCodeDescription() != null)
-				patient.getPatientName().setNameAssemblyOrderCodeDescription(dto.getPatientName().getNameAssemblyOrderCodeDescription());
-			if(dto.getPatientName().getEffectiveDate() != null)
-				patient.getPatientName().setEffectiveDate(dto.getPatientName().getEffectiveDate());
-			if(dto.getPatientName().getExpirationDate() != null)
-				patient.getPatientName().setExpirationDate(dto.getPatientName().getExpirationDate());
 		}
 		if(dto.getDateOfBirth() != null) {
 			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
@@ -105,7 +128,6 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setOrgPatientId(dto.getOrgPatientId());
 		if(dto.getAddress() != null) {
 			patient.setStreetLineOne(dto.getAddress().getStreetLineOne());
 			patient.setStreetLineTwo(dto.getAddress().getStreetLineTwo());
@@ -143,10 +165,12 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 
 	private PatientRecordEntity getEntityById(Long id) {
 		PatientRecordEntity entity = null;
-
-		Query query = entityManager.createQuery( "SELECT pat from PatientRecordEntity pat "
+		
+		Query query = entityManager.createQuery( "SELECT DISTINCT pat "
+				+ "FROM PatientRecordEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.queryOrganization "
-				+ "where pat.id = :entityid) ", 
+				+ "LEFT OUTER JOIN FETCH pat.patientRecordName "
+				+ "where pat.id = :entityid ", 
 				PatientRecordEntity.class );
 
 		query.setParameter("entityid", id);

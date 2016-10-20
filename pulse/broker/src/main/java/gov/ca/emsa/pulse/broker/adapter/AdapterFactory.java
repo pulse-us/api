@@ -1,11 +1,11 @@
 package gov.ca.emsa.pulse.broker.adapter;
 
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 
 @Component
 public class AdapterFactory {

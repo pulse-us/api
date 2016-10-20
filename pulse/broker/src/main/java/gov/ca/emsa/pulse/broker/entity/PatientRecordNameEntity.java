@@ -18,27 +18,45 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 @Entity
-@Table(name="patient_name")
-public class PatientNameEntity {
+@Table(name="patient_record_name")
+public class PatientRecordNameEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "given_name_id")
-	private Long givenNameId;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "patientRecordNameId")
+	@Column(name = "patient_record_name_id")
+	private Set<GivenNameEntity> givenNames = new HashSet<GivenNameEntity>();
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientNameId", cascade = CascadeType.ALL  )
-	@Column( name = "given_name_id", nullable = false  )
-	private List<GivenNameEntity> givenNames = new ArrayList<GivenNameEntity>();
+	@Column(name = "patient_record_id")
+	private Long patientRecordId;
+	
+	@Column(name = "name_type_id")
+	private Long nameTypeId;
+	
+	@OneToOne
+	@JoinColumn(name="id")
+	private NameTypeEntity nameType;
 	
 	@Column(name="family_name")
 	private String familyName;
+	
+	@Column(name = "name_representation_id")
+	private Long nameRepresentationId;
+	
+	@OneToOne
+	@JoinColumn(name="id")
+	private NameRepresentationEntity nameRepresentation;
+	
+	@Column(name = "name_assembly_id")
+	private Long nameAssemblyId;
+	
+	@OneToOne
+	@JoinColumn(name="id")
+	private NameAssemblyEntity nameAssembly;
 	
 	@Column(name="suffix")
 	private String suffix;
@@ -48,24 +66,6 @@ public class PatientNameEntity {
 	
 	@Column(name = "prof_suffix")
 	private String profSuffix;
-	
-	@Column(name="name_type_code")
-	private String nameTypeCode;
-	
-	@Column(name="name_type_code_description")
-	private String nameTypeCodeDescription;
-	
-	@Column(name="name_representation_code")
-	private String nameRepresentationCode;
-	
-	@Column(name="name_representation_code_description")
-	private String nameRepresentationCodeDescription;
-	
-	@Column(name="name_assembly_order_code")
-	private String nameAssemblyOrderCode;
-	
-	@Column(name="name_assembly_oder_code_description")
-	private String nameAssemblyOrderCodeDescription;
 	
 	@Column(name="effective_date")
 	private Date effectiveDate;
@@ -89,12 +89,20 @@ public class PatientNameEntity {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-	public List<GivenNameEntity> getGivenNames() {
+	
+	public Long getPatientRecordId(){
+		return patientRecordId;
+	}
+	
+	public void setPatientRecordId(Long patientRecordId){
+		this.patientRecordId = patientRecordId;
+	}
+	
+	public Set<GivenNameEntity> getGivenNames() {
 		return givenNames;
 	}
 
-	public void setGivenNames(List<GivenNameEntity> givenNames) {
+	public void setGivenNames(Set<GivenNameEntity> givenNames) {
 		this.givenNames = givenNames;
 	}
 
@@ -121,55 +129,29 @@ public class PatientNameEntity {
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
-
-	public String getNameTypeCode() {
-		return nameTypeCode;
+	
+	public NameTypeEntity getNameType() {
+		return nameType;
 	}
 
-	public void setNameTypeCode(String nameTypeCode) {
-		this.nameTypeCode = nameTypeCode;
+	public void setNameType(NameTypeEntity nameTypeCode) {
+		this.nameType = nameTypeCode;
 	}
 
-	public String getNameTypeCodeDescription() {
-		return nameTypeCodeDescription;
+	public NameRepresentationEntity getNameRepresentation() {
+		return nameRepresentation;
 	}
 
-	public void setNameTypeCodeDescription(String nameTypeCodeDescription) {
-		this.nameTypeCodeDescription = nameTypeCodeDescription;
+	public void setNameRepresentation(NameRepresentationEntity nameRepresentation) {
+		this.nameRepresentation = nameRepresentation;
 	}
 
-	public String getNameRepresentationCode() {
-		return nameRepresentationCode;
+	public NameAssemblyEntity getNameAssembly() {
+		return nameAssembly;
 	}
 
-	public void setNameRepresentationCode(String nameRepresentationCode) {
-		this.nameRepresentationCode = nameRepresentationCode;
-	}
-
-	public String getNameRepresentationCodeDescription() {
-		return nameRepresentationCodeDescription;
-	}
-
-	public void setNameRepresentationCodeDescription(
-			String nameRepresentationCodeDescription) {
-		this.nameRepresentationCodeDescription = nameRepresentationCodeDescription;
-	}
-
-	public String getNameAssemblyOrderCode() {
-		return nameAssemblyOrderCode;
-	}
-
-	public void setNameAssemblyOrderCode(String nameAssemblyOrderCode) {
-		this.nameAssemblyOrderCode = nameAssemblyOrderCode;
-	}
-
-	public String getNameAssemblyOrderCodeDescription() {
-		return nameAssemblyOrderCodeDescription;
-	}
-
-	public void setNameAssemblyOrderCodeDescription(
-			String nameAssemblyOrderCodeDescription) {
-		this.nameAssemblyOrderCodeDescription = nameAssemblyOrderCodeDescription;
+	public void setNameAssembly(NameAssemblyEntity nameAssembly) {
+		this.nameAssembly = nameAssembly;
 	}
 
 	public Date getEffectiveDate() {
@@ -219,6 +201,29 @@ public class PatientNameEntity {
 	public void setProfSuffix(String profSuffix) {
 		this.profSuffix = profSuffix;
 	}
-	
+
+	public Long getNameTypeId() {
+		return nameTypeId;
+	}
+
+	public void setNameTypeId(Long nameTypeId) {
+		this.nameTypeId = nameTypeId;
+	}
+
+	public Long getNameRepresentationId() {
+		return nameRepresentationId;
+	}
+
+	public void setNameRepresentationId(Long nameRepresentationId) {
+		this.nameRepresentationId = nameRepresentationId;
+	}
+
+	public Long getNameAssemblyId() {
+		return nameAssemblyId;
+	}
+
+	public void setNameAssemblyId(Long nameAssemblyId) {
+		this.nameAssemblyId = nameAssemblyId;
+	}
 	
 }

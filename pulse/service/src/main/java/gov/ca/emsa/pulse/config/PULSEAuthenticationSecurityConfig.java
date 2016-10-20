@@ -1,10 +1,10 @@
 package gov.ca.emsa.pulse.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import gov.ca.emsa.pulse.auth.authentication.JWTUserConverter;
 import gov.ca.emsa.pulse.auth.filter.JWTAuthenticationFilter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

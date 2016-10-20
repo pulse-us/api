@@ -1,17 +1,15 @@
 package gov.ca.emsa.pulse.broker.manager;
 
-import java.util.Date;
-import java.util.List;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+
+import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface QueryManager extends CachedDataManager {
 	public QueryDTO getById(Long id);

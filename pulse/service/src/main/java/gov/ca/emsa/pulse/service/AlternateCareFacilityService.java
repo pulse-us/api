@@ -1,7 +1,7 @@
 package gov.ca.emsa.pulse.service;
 
-import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -14,16 +14,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,8 +1,8 @@
 package gov.ca.emsa.pulse.broker.dao;
 
-import java.util.List;
-
 import gov.ca.emsa.pulse.broker.dto.AuditDTO;
+
+import java.util.List;
 
 public interface AuditDAO {
 	public AuditDTO create(AuditDTO dto);

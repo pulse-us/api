@@ -1,46 +1,43 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import gov.ca.emsa.pulse.broker.entity.PatientEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+import gov.ca.emsa.pulse.common.domain.Address;
+
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.ca.emsa.pulse.broker.entity.PatientEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
-import gov.ca.emsa.pulse.common.domain.PatientName;
-
 public class PatientDTO {
 	private Long id;
-	private PatientNameDTO patientName;
+	private String fullName;
+	private String friendlyName;
 	private LocalDate dateOfBirth;
 	private String ssn;
 	private String gender;
-	private String phoneNumber;
-	private Date lastReadDate;
 	private AddressDTO address;
+	private Date lastReadDate;
 	private AlternateCareFacilityDTO acf;
 	private List<PatientOrganizationMapDTO> orgMaps;
 	
 	public PatientDTO() {
 		orgMaps = new ArrayList<PatientOrganizationMapDTO>();
-		patientName = new PatientNameDTO();
 	}
 	
 	public PatientDTO(PatientEntity entity) {
 		this();
 		this.id = entity.getId();
-		if(entity.getPatientName() != null){
-			this.patientName = new PatientNameDTO(entity.getPatientName());
-		}
+		this.fullName = entity.getFullName();
+		this.friendlyName = entity.getFriendlyName();
 		if(entity.getDateOfBirth() != null) {
 			this.dateOfBirth = entity.getDateOfBirth().toLocalDate();
 		}
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
-		this.phoneNumber = entity.getPhoneNumber();
-		this.lastReadDate = entity.getLastReadDate();
 		this.address = new AddressDTO(entity.getAddress());
+		this.lastReadDate = entity.getLastReadDate();
 		if(entity.getAcf() != null) {
 			this.acf = new AlternateCareFacilityDTO(entity.getAcf());
 		}
@@ -77,18 +74,6 @@ public class PatientDTO {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-	public AddressDTO getAddress() {
-		return address;
-	}
-	public void setAddress(AddressDTO address) {
-		this.address = address;
-	}
 
 	public AlternateCareFacilityDTO getAcf() {
 		return acf;
@@ -114,12 +99,28 @@ public class PatientDTO {
 		this.orgMaps = orgMaps;
 	}
 
-	public PatientNameDTO getPatientName() {
-		return patientName;
+	public String getFullName() {
+		return fullName;
 	}
 
-	public void setPatientName(PatientNameDTO patientName) {
-		this.patientName = patientName;
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public String getFriendlyName() {
+		return friendlyName;
+	}
+
+	public void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
+	}
+
+	public AddressDTO getAddress() {
+		return address;
+	}
+
+	public void setAddress(AddressDTO address) {
+		this.address = address;
 	}
 	
 }

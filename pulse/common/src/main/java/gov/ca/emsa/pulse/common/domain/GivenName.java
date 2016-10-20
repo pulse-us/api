@@ -6,7 +6,7 @@ public class GivenName {
 	
 	private String givenName;
 	
-	private Long patientNameId;
+	private Long PatientRecordNameId;
 
 	public Long getId() {
 		return id;
@@ -24,11 +24,11 @@ public class GivenName {
 		this.givenName = givenName;
 	}
 
-	public Long getPatientNameId() {
-		return patientNameId;
+	public Long getPatientRecordNameId() {
+		return PatientRecordNameId;
 	}
 
-	public void setPatientNameId(Long patientNameId) {
-		this.patientNameId = patientNameId;
+	public void setPatientRecordNameId(Long PatientRecordNameId) {
+		this.PatientRecordNameId = PatientRecordNameId;
 	}
 }

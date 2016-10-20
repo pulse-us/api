@@ -1,10 +1,14 @@
 package gov.ca.emsa.pulse.broker.adapter.service;
 
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
@@ -25,11 +29,13 @@ import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
-import org.hl7.v3.PRPAIN201310UV02;
 import org.opensaml.common.SAMLException;
 import org.opensaml.xml.io.MarshallingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +44,6 @@ import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
-import gov.ca.emsa.pulse.broker.saml.SAMLInput;
-import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 @Service
 public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerService{

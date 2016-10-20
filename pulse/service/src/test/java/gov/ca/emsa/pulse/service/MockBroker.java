@@ -1,12 +1,11 @@
 package gov.ca.emsa.pulse.service;
 
-import org.springframework.context.annotation.Profile;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
 
 @RestController
 public class MockBroker {
@@ -16,8 +15,8 @@ public class MockBroker {
 	@RequestMapping("/search")
 	public String provideActiveQueryForTesting(@RequestBody PatientSearch patientSearch){
 		if(patientSearch.getDob().equals("05/02/1993") &&
-				patientSearch.getPatientName().getFamilyName().equals("Doe") &&
-				patientSearch.getPatientName().getGivenName().get(0).equals("John") &&
+				patientSearch.getPatientNames().get(0).getFamilyName().equals("Doe") &&
+				patientSearch.getPatientNames().get(0).getGivenName().equals("John") &&
 				patientSearch.getGender().equals("M")){
 			return brokerSearchActiveQueryResponse;
 		}

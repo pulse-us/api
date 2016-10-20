@@ -1,5 +1,15 @@
 package gov.ca.emsa.pulse.broker.app;
 
+import gov.ca.emsa.pulse.broker.auth.AcfLastAccessFilter;
+import gov.ca.emsa.pulse.broker.cache.CacheCleanupJob;
+import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
+import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
+import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.manager.impl.DocumentQueryService;
+import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
+
 import java.util.Timer;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +22,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import gov.ca.emsa.pulse.broker.auth.AcfLastAccessFilter;
-import gov.ca.emsa.pulse.broker.cache.CacheCleanupJob;
-import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
-import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
-import gov.ca.emsa.pulse.broker.manager.PatientManager;
-import gov.ca.emsa.pulse.broker.manager.QueryManager;
-import gov.ca.emsa.pulse.broker.manager.impl.DocumentQueryService;
-import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 
 @PropertySource("classpath:/application.properties")
 @EnableTransactionManagement(proxyTargetClass=true)

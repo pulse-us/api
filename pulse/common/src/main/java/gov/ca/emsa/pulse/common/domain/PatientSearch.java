@@ -1,14 +1,16 @@
 package gov.ca.emsa.pulse.common.domain;
 
+import java.util.ArrayList;
+
 public class PatientSearch {
-	private PatientName patientName;
+	private ArrayList<PatientSearchName> names;
 	private String dob;
 	private String ssn;
 	private String gender;
 	private String zip;
 	
 	public PatientSearch(){
-		patientName = new PatientName();
+		names = new ArrayList<PatientSearchName>();
 	}
 	
 	public String getDob() {
@@ -35,11 +37,13 @@ public class PatientSearch {
 	public void setZip(String zip) {
 		this.zip = zip;
 	}
-	public PatientName getPatientName() {
-		return patientName;
+
+	public ArrayList<PatientSearchName> getPatientNames() {
+		return names;
 	}
-	public void setPatientName(PatientName patientName) {
-		this.patientName = patientName;
+
+	public void setPatientNames(ArrayList<PatientSearchName> names) {
+		this.names = names;
 	}
 	
 }

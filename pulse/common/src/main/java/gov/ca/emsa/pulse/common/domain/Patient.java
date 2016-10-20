@@ -7,7 +7,8 @@ import java.util.List;
 public class Patient {
 	private Long id;
 	private String orgPatientId;
-	private PatientName patientName;
+	private String fullName;
+	private String friendlyName;
 	private String dateOfBirth;
 	private String gender;
 	private String phoneNumber;
@@ -19,7 +20,6 @@ public class Patient {
 	
 	public Patient() {
 		this.orgMaps = new ArrayList<PatientOrganizationMap>();
-		this.patientName = new PatientName();
 	}
 	
 	public Long getId() {
@@ -90,12 +90,20 @@ public class Patient {
 		this.lastRead = lastRead;
 	}
 
-	public PatientName getPatientName() {
-		return patientName;
+	public String getFullName() {
+		return fullName;
 	}
 
-	public void setPatientName(PatientName patientName) {
-		this.patientName = patientName;
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public String getFriendlyName() {
+		return friendlyName;
+	}
+
+	public void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
 	}
 
 }

@@ -1,4 +1,6 @@
 package gov.ca.emsa.pulse.service;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import gov.ca.emsa.pulse.ServiceApplicationTestConfig;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
@@ -7,10 +9,24 @@ import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.QueryOrganization;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.soap.SOAPException;
+
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
@@ -27,12 +43,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-
-import static org.junit.Assert.*;
-
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -41,20 +51,8 @@ import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.soap.SOAPException;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=ServiceApplicationTestConfig.class)
@@ -265,11 +263,8 @@ public class ServiceApplicationTests {
 				,MediaType.APPLICATION_JSON));
 
 		PatientSearch patientSearch = createPatientSearchObject();
-		ArrayList<GivenName> givens = new ArrayList<GivenName>();
-		GivenName given = new GivenName();
-		given.setGivenName("John");
-		patientSearch.getPatientName().setGivenName(givens);
-		patientSearch.getPatientName().setFamilyName("Doe");
+		patientSearch.getPatientNames();
+		patientSearch.getPatientNames().get(0).setFamilyName("Doe");
 		pss.searchForPatientWithTerms(mockRestTemplate, patientSearch);
 
 		Future<List<QueryOrganization>> future = executor.submit(pss);
@@ -290,21 +285,21 @@ public class ServiceApplicationTests {
 		List<PatientRecord> records = new ArrayList<PatientRecord>();
 		PatientRecord pr1 = new PatientRecord();
 		PatientRecord pr2 = new PatientRecord();
+		PatientRecordName name1 = new PatientRecordName();
+		PatientRecordName name2 = new PatientRecordName();
 		pr1.setDateOfBirth("2016-09-19");
-		pr1.getPatientName().setFamilyName("Lindsey");
-		ArrayList<GivenName> givens = new ArrayList<GivenName>();
-		GivenName given = new GivenName();
-		given.setGivenName("Brian");
-		givens.add(given);
-		pr1.getPatientName().setGivenName(givens);
+		name1.setFamilyName("Lindsey");
+		GivenName given1 = new GivenName();
+		given1.setGivenName("Brian");
+		name1.getGivenName().add(given1);
+		pr1.getPatientRecordName().add(name1);
 		pr1.setGender("M");
 		pr2.setDateOfBirth("2016-09-19");
-		pr2.getPatientName().setFamilyName("Snow");
-		givens.remove(0);
+		name2.setFamilyName("Lindsay");
 		GivenName given2 = new GivenName();
 		given2.setGivenName("John");
-		givens.add(given);
-		pr2.getPatientName().setGivenName(givens);
+		name2.getGivenName().add(given2);
+		pr2.getPatientRecordName().add(name2);
 		pr2.setGender("M");
 		records.add(pr1);
 		records.add(pr2);

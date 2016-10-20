@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.AuditEntity;
+
 import java.util.Date;
 
 public class AuditDTO {
