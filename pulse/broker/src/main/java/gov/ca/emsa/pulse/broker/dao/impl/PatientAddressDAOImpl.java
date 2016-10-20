@@ -52,50 +52,50 @@ public class PatientAddressDAOImpl extends BaseDAOImpl implements PatientAddress
 
 	@Override
 	public void delete(Long id) {
-		AddressEntity toDelete = getEntityById(id);
+		PatientAddressEntity toDelete = getEntityById(id);
 		entityManager.remove(toDelete);
 	}
 
 	@Override
-	public List<AddressDTO> findAll() {
-		List<AddressEntity> result = this.findAllEntities();
-		List<AddressDTO> dtos = new ArrayList<AddressDTO>(result.size());
-		for(AddressEntity entity : result) {
-			dtos.add(new AddressDTO(entity));
+	public List<PatientAddressDTO> findAll() {
+		List<PatientAddressEntity> result = this.findAllEntities();
+		List<PatientAddressDTO> dtos = new ArrayList<PatientAddressDTO>(result.size());
+		for(PatientAddressEntity entity : result) {
+			dtos.add(new PatientAddressDTO(entity));
 		}
 		return dtos;
 	}
 	
 	@Override
-	public AddressDTO getById(Long id) {
+	public PatientAddressDTO getById(Long id) {
 		
-		AddressDTO dto = null;
-		AddressEntity ae = this.getEntityById(id);
+		PatientAddressDTO dto = null;
+		PatientAddressEntity ae = this.getEntityById(id);
 		
 		if (ae != null){
-			dto = new AddressDTO(ae); 
+			dto = new PatientAddressDTO(ae); 
 		}
 		return dto;
 	}
 
 	@Override
-	public AddressDTO getByValues(AddressDTO address) {
-		AddressEntity ae = this.searchEntities(address);
+	public PatientAddressDTO getByValues(PatientAddressDTO address) {
+		PatientAddressEntity ae = this.searchEntities(address);
 		if(ae == null) {
 			return null;
 		}
-		return new AddressDTO(ae);
+		return new PatientAddressDTO(ae);
 	}
 	
-	private List<AddressEntity> findAllEntities() {
-		Query query = entityManager.createQuery("SELECT a from AddressEntity");
+	private List<PatientAddressEntity> findAllEntities() {
+		Query query = entityManager.createQuery("SELECT a from PatientAddressEntity");
 		return query.getResultList();
 	}
 	
 	private PatientAddressEntity getEntityById(Long id) {
 		PatientAddressEntity entity = null;
 		
-		Query query = entityManager.createQuery( "from AddressEntity a where (id = :entityid) ", PatientAddressEntity.class );
+		Query query = entityManager.createQuery( "from PatientAddressEntity a where (id = :entityid) ", PatientAddressEntity.class );
 		query.setParameter("entityid", id);
 		List<PatientAddressEntity> result = query.getResultList();
 		
@@ -129,7 +129,7 @@ public class PatientAddressDAOImpl extends BaseDAOImpl implements PatientAddress
 		
 		if (result.size() >= 1){
 			entity = result.get(0);
-		} 
+		}
 		
 		return entity;
 	}

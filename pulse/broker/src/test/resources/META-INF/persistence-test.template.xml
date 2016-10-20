@@ -9,11 +9,12 @@
     <class>gov.ca.emsa.pulse.broker.entity.QueryEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.AuditEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.AddressEntity</class>
-    <class>gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.PatientQueryResultEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.PatientRecordEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.QueryOrganizationEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.PatientAddressEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.PatientAddressLineEntity</class>
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
       <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
