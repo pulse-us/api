@@ -14,9 +14,11 @@ import org.springframework.stereotype.Repository;
 import gov.ca.emsa.pulse.broker.dao.AddressDAO;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
+import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import gov.ca.emsa.pulse.broker.entity.AddressEntity;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
@@ -27,6 +29,7 @@ import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	private static final Logger logger = LogManager.getLogger(PatientDAOImpl.class);
 	@Autowired AddressDAO addrDao;
+	@Autowired QueryStatusDAO statusDao;
 	
 	@Override
 	public PatientDTO create(PatientDTO dto) {
@@ -63,8 +66,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	@Override
 	public PatientOrganizationMapDTO createOrgMap(PatientOrganizationMapDTO toCreate) {
 		PatientOrganizationMapEntity orgMap = new PatientOrganizationMapEntity();
-		orgMap.setDocumentsQueryStatus(QueryStatus.ACTIVE.name());
-		orgMap.setDocumentsQuerySuccess(null);
+		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(QueryOrganizationStatus.Active.name()).getId());
 		orgMap.setDocumentsQueryStart(new Date());
 		orgMap.setDocumentsQueryEnd(null);
 		orgMap.setOrganizationId(toCreate.getOrganizationId());
@@ -114,8 +116,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 			logger.error("Could not find patient org map with id " + toUpdate.getId());
 		}
 		
-		orgMap.setDocumentsQueryStatus(toUpdate.getDocumentsQueryStatus());
-		orgMap.setDocumentsQuerySuccess(toUpdate.getDocumentsQuerySuccess());
+		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(toUpdate.getStatus().name()).getId());
 		orgMap.setDocumentsQueryStart(toUpdate.getDocumentsQueryStart());
 		orgMap.setDocumentsQueryEnd(toUpdate.getDocumentsQueryEnd());
 		orgMap.setOrganizationId(toUpdate.getOrganizationId());
@@ -159,6 +160,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
 				+ "LEFT OUTER JOIN FETCH pat.organization "
+				+ "LEFT OUTER JOIN FETCH pat.status "
 				+ "where pat.id = :entityid) ", 
 				PatientOrganizationMapEntity.class );
 		
@@ -221,7 +223,8 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientOrganizationMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.organization "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
-				+ "LEFT OUTER JOIN FETCH pat.documents "
+				+ "LEFT OUTER JOIN FETCH pat.documents " 
+				+ "LEFT OUTER JOIN FETCH pat.status "
 				+ "where pat.id = :entityid) ", 
 				PatientOrganizationMapEntity.class );
 		

@@ -24,6 +24,7 @@ import gov.ca.emsa.pulse.broker.dao.impl.QueryDAOImpl;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
@@ -95,6 +96,20 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 			query = queryDao.update(query);
 		}
 		return query;
+	}
+	
+	@Override
+	@Transactional
+	public QueryDTO cancelQueryToOrganization(Long queryId, Long orgId) {
+		QueryOrganizationDTO toUpdate = queryDao.getQueryOrganizationByQueryAndOrg(queryId, orgId);
+		if(toUpdate == null) {
+			logger.error("Could not find query organization for query ID " + queryId + " and org ID " + orgId);
+			return null;
+		}
+		toUpdate.setStatus(QueryOrganizationStatus.Cancelled);
+		queryDao.updateQueryOrganization(toUpdate);
+		
+		return updateQueryStatusFromOrganizations(queryId);
 	}
 	
 	@Override

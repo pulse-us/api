@@ -37,6 +37,7 @@ import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
@@ -230,7 +231,7 @@ public class PatientSearchTest {
 			QueryOrganizationDTO queryOrg = new QueryOrganizationDTO();
 			queryOrg.setOrgId(org.getId());
 			queryOrg.setQueryId(query.getId());
-			queryOrg.setStatus(QueryStatus.ACTIVE.name());
+			queryOrg.setStatus(QueryOrganizationStatus.Active);
 			queryOrg = queryManager.createOrUpdateQueryOrganization(queryOrg);
 			query.getOrgStatuses().add(queryOrg);
 		}

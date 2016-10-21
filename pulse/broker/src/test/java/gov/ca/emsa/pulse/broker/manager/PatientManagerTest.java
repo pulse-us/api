@@ -24,6 +24,7 @@ import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import junit.framework.TestCase;
 
@@ -75,12 +76,12 @@ public class PatientManagerTest extends TestCase {
 		
 		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
 		orgQuery1.setOrgId(org1.getId());
-		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
+		orgQuery1.setStatus(QueryOrganizationStatus.Active);
 		toInsert.getOrgStatuses().add(orgQuery1);
 		
 		QueryOrganizationDTO orgQuery2 = new QueryOrganizationDTO();
 		orgQuery2.setOrgId(org2.getId());
-		orgQuery2.setStatus(QueryStatus.ACTIVE.name());
+		orgQuery2.setStatus(QueryOrganizationStatus.Active);
 		toInsert.getOrgStatuses().add(orgQuery2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);

@@ -6,6 +6,7 @@ import java.util.List;
 
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
 import gov.ca.emsa.pulse.broker.entity.QueryOrganizationEntity;
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
 
 public class QueryOrganizationDTO {
 
@@ -13,10 +14,9 @@ public class QueryOrganizationDTO {
 	private Long queryId;
 	private Long orgId;
 	private OrganizationDTO org;
-	private String status;
+	private QueryOrganizationStatus status;
 	private Date startDate;
 	private Date endDate;
-	private Boolean success;
 	private List<PatientRecordDTO> results;
 	
 	public QueryOrganizationDTO(){
@@ -34,10 +34,11 @@ public class QueryOrganizationDTO {
 				this.org = new OrganizationDTO(entity.getOrg());
 			}
 			
-			this.status = entity.getStatus();
+			if(entity.getStatus() != null) {
+				this.status = entity.getStatus().getStatus();
+			}
 			this.startDate = entity.getStartDate();
 			this.endDate = entity.getEndDate();
-			this.success = entity.getSuccess();
 			
 			if(entity.getResults() != null && entity.getResults().size() > 0) {
 				for(PatientRecordEntity pr : entity.getResults()) {
@@ -71,11 +72,11 @@ public class QueryOrganizationDTO {
 		this.orgId = orgId;
 	}
 
-	public String getStatus() {
+	public QueryOrganizationStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(QueryOrganizationStatus status) {
 		this.status = status;
 	}
 
@@ -93,14 +94,6 @@ public class QueryOrganizationDTO {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-	}
-
-	public Boolean getSuccess() {
-		return success;
-	}
-
-	public void setSuccess(Boolean success) {
-		this.success = success;
 	}
 
 	public List<PatientRecordDTO> getResults() {

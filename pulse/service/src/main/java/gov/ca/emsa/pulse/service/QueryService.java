@@ -1,25 +1,15 @@
 package gov.ca.emsa.pulse.service;
 
-import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
-import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.Query;
-import io.swagger.annotations.Api;
-
-import io.swagger.annotations.ApiOperation;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.http.HttpStatus;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +20,13 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.Query;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Api(value="Queries")
 @RequestMapping(value="/queries")
@@ -103,6 +100,28 @@ public class QueryService {
 			headers.add("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<Void> entity = new HttpEntity<Void>(headers);
 			response = query.exchange(brokerUrl + "/queries/" + queryId + "/delete", HttpMethod.POST, entity, Void.class);
+			logger.info("Request sent to broker from services REST.");
+		}
+		
+		return response.getBody();
+	}
+	
+	@ApiOperation(value = "Cancel part of a patient discovery query that's going to a specific organization")
+	@RequestMapping(value = "/{queryId}/{organizationId}/cancel", method = RequestMethod.POST)
+	public Query cancelPatientDiscoveryRequestToOrganization(@PathVariable(value="queryId") Long queryId,
+			@PathVariable(value="organizationId") Long orgId) throws JsonProcessingException {
+		RestTemplate query = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
+
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		HttpEntity<Query> response = null;
+		if(jwtUser == null){
+			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.add("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Query> entity = new HttpEntity<Query>(headers);
+			response = query.exchange(brokerUrl + "/queries/" + queryId + "/" + orgId + "/cancel", HttpMethod.POST, entity, Query.class);
 			logger.info("Request sent to broker from services REST.");
 		}
 		

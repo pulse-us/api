@@ -7,20 +7,18 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
-import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
 
 @Component
 public class PatientQueryService implements Runnable {
@@ -72,9 +70,8 @@ public class PatientQueryService implements Runnable {
 		}
 		
 		synchronized(queryOrg.getQueryId()) {
-			queryOrg.setStatus(QueryStatus.COMPLETE.name());
+			queryOrg.setStatus(queryError ? QueryOrganizationStatus.Failed : QueryOrganizationStatus.Success);
 			queryOrg.setEndDate(new Date());
-			queryOrg.setSuccess(!queryError);
 			queryManager.createOrUpdateQueryOrganization(queryOrg);
 			queryManager.updateQueryStatusFromOrganizations(queryOrg.getQueryId());
 		}

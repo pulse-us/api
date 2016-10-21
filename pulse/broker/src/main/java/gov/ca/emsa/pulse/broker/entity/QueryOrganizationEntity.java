@@ -17,7 +17,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="query_organization", schema="pulse")
+@Table(name="query_organization")
 public class QueryOrganizationEntity {
 	
 	@Id 
@@ -36,17 +36,19 @@ public class QueryOrganizationEntity {
 	@JoinColumn(name = "organization_id", unique=true, nullable = true, insertable=false, updatable=false)
 	private OrganizationEntity org;
 	
-	@Column(name="status")
-	private String status;
+	@Column(name = "query_organization_status_id")
+	private Long statusId;
+	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "query_organization_status_id", unique=true, nullable = false, insertable=false, updatable= false)
+	private QueryOrganizationStatusEntity status;
 	
 	@Column(name = "start_date", insertable = false, updatable = false)
 	private Date startDate;
 	
 	@Column(name = "end_date")
 	private Date endDate;
-	
-	@Column(name = "success")
-	private Boolean success;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -82,11 +84,11 @@ public class QueryOrganizationEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public String getStatus() {
+	public QueryOrganizationStatusEntity getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(QueryOrganizationStatusEntity status) {
 		this.status = status;
 	}
 
@@ -130,19 +132,19 @@ public class QueryOrganizationEntity {
 		this.endDate = endDate;
 	}
 
-	public Boolean getSuccess() {
-		return success;
-	}
-
-	public void setSuccess(Boolean success) {
-		this.success = success;
-	}
-
 	public Set<PatientRecordEntity> getResults() {
 		return results;
 	}
 
 	public void setResults(Set<PatientRecordEntity> results) {
 		this.results = results;
+	}
+
+	public Long getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Long statusId) {
+		this.statusId = statusId;
 	}
 }

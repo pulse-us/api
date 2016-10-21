@@ -8,10 +8,9 @@ public class QueryOrganization {
 	private Long id;
 	private Long queryId;
 	private Organization org;
-	private String status;
+	private QueryOrganizationStatus status;
 	private Date startDate;
 	private Date endDate;
-	private Boolean success;
 	private List<PatientRecord> results;
 	
 	public QueryOrganization() {
@@ -34,11 +33,11 @@ public class QueryOrganization {
 		this.queryId = queryId;
 	}
 
-	public String getStatus() {
+	public QueryOrganizationStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(QueryOrganizationStatus status) {
 		this.status = status;
 	}
 
@@ -56,14 +55,6 @@ public class QueryOrganization {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-	}
-
-	public Boolean getSuccess() {
-		return success;
-	}
-
-	public void setSuccess(Boolean success) {
-		this.success = success;
 	}
 
 	public List<PatientRecord> getResults() {

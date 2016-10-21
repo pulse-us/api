@@ -6,6 +6,7 @@ import java.util.List;
 
 import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
 
 public class PatientOrganizationMapDTO {
 	private Long id;
@@ -13,8 +14,7 @@ public class PatientOrganizationMapDTO {
 	private Long organizationId;
 	private OrganizationDTO org;
 	private String orgPatientId;
-	private String documentsQueryStatus;
-	private Boolean documentsQuerySuccess;
+	private QueryOrganizationStatus status;
 	private Date documentsQueryStart;
 	private Date documentsQueryEnd;
 	private List<DocumentDTO> documents;
@@ -32,8 +32,9 @@ public class PatientOrganizationMapDTO {
 			this.org = new OrganizationDTO(entity.getOrganization());
 		}
 		this.orgPatientId = entity.getOrganizationPatientId();
-		this.documentsQueryStatus = entity.getDocumentsQueryStatus();
-		this.documentsQuerySuccess = entity.getDocumentsQuerySuccess();
+		if(entity.getStatus() != null) {
+			this.status = entity.getStatus().getStatus();
+		}
 		this.documentsQueryStart = entity.getDocumentsQueryStart();
 		this.documentsQueryEnd = entity.getDocumentsQueryEnd();
 		if(entity.getDocuments() != null && entity.getDocuments().size() > 0) {
@@ -68,18 +69,6 @@ public class PatientOrganizationMapDTO {
 	public void setOrgPatientId(String orgPatientId) {
 		this.orgPatientId = orgPatientId;
 	}
-	public String getDocumentsQueryStatus() {
-		return documentsQueryStatus;
-	}
-	public void setDocumentsQueryStatus(String documentsQueryStatus) {
-		this.documentsQueryStatus = documentsQueryStatus;
-	}
-	public Boolean getDocumentsQuerySuccess() {
-		return documentsQuerySuccess;
-	}
-	public void setDocumentsQuerySuccess(Boolean documentsQuerySuccess) {
-		this.documentsQuerySuccess = documentsQuerySuccess;
-	}
 	public Date getDocumentsQueryStart() {
 		return documentsQueryStart;
 	}
@@ -107,5 +96,13 @@ public class PatientOrganizationMapDTO {
 
 	public void setDocuments(List<DocumentDTO> documents) {
 		this.documents = documents;
+	}
+
+	public QueryOrganizationStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueryOrganizationStatus status) {
+		this.status = status;
 	}
 }

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,12 +42,14 @@ public class PatientOrganizationMapEntity {
 	
 	@Column(name = "organization_patient_id")
 	private String organizationPatientId;
+
+	@Column(name = "documents_query_status_id")
+	private Long documentsQueryStatusId;
 	
-	@Column(name = "documents_query_status")
-	private String documentsQueryStatus;
-	
-	@Column(name = "documents_query_success")
-	private Boolean documentsQuerySuccess;
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "documents_query_status_id", unique=true, nullable = false, insertable=false, updatable= false)
+	private QueryOrganizationStatusEntity status;
 	
 	@Column(name = "documents_query_start")
 	private Date documentsQueryStart;
@@ -112,22 +115,6 @@ public class PatientOrganizationMapEntity {
 		this.organizationPatientId = organizationPatientId;
 	}
 
-	public String getDocumentsQueryStatus() {
-		return documentsQueryStatus;
-	}
-
-	public void setDocumentsQueryStatus(String documentsQueryStatus) {
-		this.documentsQueryStatus = documentsQueryStatus;
-	}
-
-	public Boolean getDocumentsQuerySuccess() {
-		return documentsQuerySuccess;
-	}
-
-	public void setDocumentsQuerySuccess(Boolean documentsQuerySuccess) {
-		this.documentsQuerySuccess = documentsQuerySuccess;
-	}
-
 	public Date getDocumentsQueryStart() {
 		return documentsQueryStart;
 	}
@@ -166,5 +153,21 @@ public class PatientOrganizationMapEntity {
 
 	public void setDocuments(Set<DocumentEntity> documents) {
 		this.documents = documents;
+	}
+
+	public Long getDocumentsQueryStatusId() {
+		return documentsQueryStatusId;
+	}
+
+	public void setDocumentsQueryStatusId(Long documentsQueryStatusId) {
+		this.documentsQueryStatusId = documentsQueryStatusId;
+	}
+
+	public QueryOrganizationStatusEntity getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueryOrganizationStatusEntity status) {
+		this.status = status;
 	}
 }

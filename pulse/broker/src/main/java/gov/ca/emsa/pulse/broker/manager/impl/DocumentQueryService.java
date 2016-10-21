@@ -7,21 +7,18 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
-import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
-import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
-import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
 
 @Component
 public class DocumentQueryService implements Runnable {
@@ -61,9 +58,12 @@ public class DocumentQueryService implements Runnable {
 			}
 		} 
 		
-		patientOrgMap.setDocumentsQuerySuccess(querySuccess);
 		patientOrgMap.setDocumentsQueryEnd(new Date());
-		patientOrgMap.setDocumentsQueryStatus(QueryStatus.COMPLETE.name());
+		if(querySuccess) {
+			patientOrgMap.setStatus(QueryOrganizationStatus.Success);
+		} else {
+			patientOrgMap.setStatus(QueryOrganizationStatus.Failed);
+		}
 		//update patient org map
 		patientManager.updateOrganizationMap(patientOrgMap);
 		
