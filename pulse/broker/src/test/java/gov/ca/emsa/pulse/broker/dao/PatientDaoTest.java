@@ -256,20 +256,6 @@ public class PatientDaoTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testDeletePatient() {		
-		String streetLine1 = "1000 Hilltop Circle";
-		String city = "Baltimore";
-		String state = "MD";
-		String zip = "21227";
-		AddressDTO addrDto = new AddressDTO();
-		addrDto.setStreetLineOne(streetLine1);
-		addrDto.setCity(city);
-		addrDto.setState(state);
-		addrDto.setZipcode(zip);
-		addrDto = addrDao.create(addrDto);
-		Assert.assertNotNull(addrDto);
-		Assert.assertNotNull(addrDto.getId());
-		Assert.assertTrue(addrDto.getId().longValue() > 0);
-		long existingAddrId = addrDto.getId().longValue();
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);

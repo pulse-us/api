@@ -25,11 +25,11 @@ public class PatientOrganizationMapEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "patient_id")
+	@Column(name = "patient_record_id")
 	private Long patientId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
+	@JoinColumn(name = "patient_record_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private PatientEntity patient;
 	
 	@Column(name = "organization_id")
@@ -39,7 +39,7 @@ public class PatientOrganizationMapEntity {
 	@JoinColumn(name = "organization_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private OrganizationEntity organization;
 	
-	@Column(name = "organization_patient_id")
+	@Column(name = "organization_patient_record_id")
 	private String organizationPatientRecordId;
 	
 	@Column(name = "documents_query_status")

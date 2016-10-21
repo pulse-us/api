@@ -17,7 +17,6 @@ public class PatientDTO {
 	private LocalDate dateOfBirth;
 	private String ssn;
 	private String gender;
-	private AddressDTO address;
 	private Date lastReadDate;
 	private AlternateCareFacilityDTO acf;
 	private List<PatientOrganizationMapDTO> orgMaps;
@@ -36,7 +35,6 @@ public class PatientDTO {
 		}
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
-		this.address = new AddressDTO(entity.getAddress());
 		this.lastReadDate = entity.getLastReadDate();
 		if(entity.getAcf() != null) {
 			this.acf = new AlternateCareFacilityDTO(entity.getAcf());
@@ -113,14 +111,6 @@ public class PatientDTO {
 
 	public void setFriendlyName(String friendlyName) {
 		this.friendlyName = friendlyName;
-	}
-
-	public AddressDTO getAddress() {
-		return address;
-	}
-
-	public void setAddress(AddressDTO address) {
-		this.address = address;
 	}
 	
 }
