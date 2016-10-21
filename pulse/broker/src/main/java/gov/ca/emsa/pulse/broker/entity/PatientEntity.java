@@ -1,10 +1,11 @@
 package gov.ca.emsa.pulse.broker.entity;
 
+import gov.ca.emsa.pulse.common.domain.Address;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,11 +29,11 @@ public class PatientEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="given_name")
-	private String givenName;
+	@Column(name = "full_name")
+	private String fullName;
 	
-	@Column(name = "family_name")
-	private String familyName;
+	@Column(name = "friendly_name")
+	private String friendlyName;
 	
 	@Column(name = "dob")
 	private java.sql.Date dateOfBirth;
@@ -43,13 +44,10 @@ public class PatientEntity {
 	@Column(name = "gender")
 	private String gender;
 	
-	@Column(name = "phone_number")
-	private String phoneNumber;
-	
 	@Column(name = "address_id")
 	private Long addressId;
 	
-	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@Fetch(FetchMode.JOIN)
 	@JoinColumn(name = "address_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private AddressEntity address;
@@ -108,14 +106,6 @@ public class PatientEntity {
 		this.gender = gender;
 	}
 
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -130,22 +120,6 @@ public class PatientEntity {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
-	}
-
-	public Long getAddressId() {
-		return addressId;
-	}
-
-	public void setAddressId(Long addressId) {
-		this.addressId = addressId;
-	}
-
-	public AddressEntity getAddress() {
-		return address;
-	}
-
-	public void setAddress(AddressEntity address) {
-		this.address = address;
 	}
 
 	public Long getAcfId() {
@@ -180,19 +154,36 @@ public class PatientEntity {
 		this.orgMaps = orgMaps;
 	}
 
-	public String getGivenName() {
-		return givenName;
+	public String getFullName() {
+		return fullName;
 	}
 
-	public void setGivenName(String givenName) {
-		this.givenName = givenName;
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 
-	public String getFamilyName() {
-		return familyName;
+	public String getFriendlyName() {
+		return friendlyName;
 	}
 
-	public void setFamilyName(String familyName) {
-		this.familyName = familyName;
+	public void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
 	}
+
+	public AddressEntity getAddress() {
+		return address;
+	}
+
+	public void setAddress(AddressEntity address) {
+		this.address = address;
+	}
+
+	public Long getAddressId() {
+		return addressId;
+	}
+
+	public void setAddressId(Long long1) {
+		this.addressId = long1;
+	}
+	
 }

@@ -6,7 +6,6 @@ import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.DocumentRequest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.HttpEntity;

@@ -1,10 +1,10 @@
 package gov.ca.emsa.pulse.broker.dao;
 
-import java.util.Date;
-import java.util.List;
-
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+
+import java.util.Date;
+import java.util.List;
 
 public interface PatientDAO {
 	public PatientDTO create(PatientDTO dto);

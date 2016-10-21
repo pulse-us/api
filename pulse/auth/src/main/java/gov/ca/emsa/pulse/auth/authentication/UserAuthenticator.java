@@ -1,25 +1,17 @@
 package gov.ca.emsa.pulse.auth.authentication;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import gov.ca.emsa.pulse.auth.jwt.JWTAuthor;
+import gov.ca.emsa.pulse.auth.jwt.JWTConsumer;
+import gov.ca.emsa.pulse.auth.jwt.JWTCreationException;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import gov.ca.emsa.pulse.auth.jwt.JWTAuthor;
-import gov.ca.emsa.pulse.auth.jwt.JWTConsumer;
-import gov.ca.emsa.pulse.auth.jwt.JWTCreationException;
 
 @Service
 public class UserAuthenticator implements Authenticator {

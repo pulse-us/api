@@ -40,7 +40,7 @@ public class PatientOrganizationMapEntity {
 	private OrganizationEntity organization;
 	
 	@Column(name = "organization_patient_id")
-	private String organizationPatientId;
+	private String organizationPatientRecordId;
 	
 	@Column(name = "documents_query_status")
 	private String documentsQueryStatus;
@@ -72,22 +72,6 @@ public class PatientOrganizationMapEntity {
 		this.id = id;
 	}
 
-	public Long getPatientId() {
-		return patientId;
-	}
-
-	public void setPatientId(Long patientId) {
-		this.patientId = patientId;
-	}
-
-	public PatientEntity getPatient() {
-		return patient;
-	}
-
-	public void setPatient(PatientEntity patient) {
-		this.patient = patient;
-	}
-
 	public Long getOrganizationId() {
 		return organizationId;
 	}
@@ -104,12 +88,12 @@ public class PatientOrganizationMapEntity {
 		this.organization = organization;
 	}
 
-	public String getOrganizationPatientId() {
-		return organizationPatientId;
+	public String getOrganizationPatientRecordId() {
+		return organizationPatientRecordId;
 	}
 
-	public void setOrganizationPatientId(String organizationPatientId) {
-		this.organizationPatientId = organizationPatientId;
+	public void setOrganizationPatientRecordId(String organizationPatientRecordId) {
+		this.organizationPatientRecordId = organizationPatientRecordId;
 	}
 
 	public String getDocumentsQueryStatus() {
@@ -167,4 +151,21 @@ public class PatientOrganizationMapEntity {
 	public void setDocuments(Set<DocumentEntity> documents) {
 		this.documents = documents;
 	}
+
+	public Long getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(Long patientId) {
+		this.patientId = patientId;
+	}
+
+	public PatientEntity getPatient() {
+		return patient;
+	}
+
+	public void setPatient(PatientEntity patient) {
+		this.patient = patient;
+	}
+	
 }

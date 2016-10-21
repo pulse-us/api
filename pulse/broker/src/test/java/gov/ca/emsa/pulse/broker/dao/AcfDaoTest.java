@@ -2,6 +2,8 @@ package gov.ca.emsa.pulse.broker.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,9 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.AddressLineDTO;
-import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})

@@ -1,11 +1,11 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 
 public class PatientOrganizationMapDTO {
 	private Long id;
@@ -31,7 +31,7 @@ public class PatientOrganizationMapDTO {
 		if(entity.getOrganization() != null) {
 			this.org = new OrganizationDTO(entity.getOrganization());
 		}
-		this.orgPatientId = entity.getOrganizationPatientId();
+		this.orgPatientId = entity.getOrganizationPatientRecordId();
 		this.documentsQueryStatus = entity.getDocumentsQueryStatus();
 		this.documentsQuerySuccess = entity.getDocumentsQuerySuccess();
 		this.documentsQueryStart = entity.getDocumentsQueryStart();
@@ -53,8 +53,8 @@ public class PatientOrganizationMapDTO {
 	public Long getPatientId() {
 		return patientId;
 	}
-	public void setPatientId(Long patientId) {
-		this.patientId = patientId;
+	public void setPatientId(Long patientRecordId) {
+		this.patientId = patientRecordId;
 	}
 	public Long getOrganizationId() {
 		return organizationId;
@@ -62,11 +62,11 @@ public class PatientOrganizationMapDTO {
 	public void setOrganizationId(Long organizationId) {
 		this.organizationId = organizationId;
 	}
-	public String getOrgPatientId() {
+	public String getOrgPatientRecordId() {
 		return orgPatientId;
 	}
-	public void setOrgPatientId(String orgPatientId) {
-		this.orgPatientId = orgPatientId;
+	public void setOrgPatientRecordId(String orgPatientRecordId) {
+		this.orgPatientId = orgPatientRecordId;
 	}
 	public String getDocumentsQueryStatus() {
 		return documentsQueryStatus;
@@ -108,4 +108,13 @@ public class PatientOrganizationMapDTO {
 	public void setDocuments(List<DocumentDTO> documents) {
 		this.documents = documents;
 	}
+
+	public String getOrgPatientId() {
+		return orgPatientId;
+	}
+
+	public void setOrgPatientId(String orgPatientId) {
+		this.orgPatientId = orgPatientId;
+	}
+	
 }

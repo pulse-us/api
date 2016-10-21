@@ -1,9 +1,9 @@
 package gov.ca.emsa.pulse.broker.dao;
 
+import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+
 import java.util.Date;
 import java.util.List;
-
-import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 
 public interface AlternateCareFacilityDAO {
 	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO dto);

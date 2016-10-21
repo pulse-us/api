@@ -1,11 +1,14 @@
 package gov.ca.emsa.pulse.broker.auth;
 
+import gov.ca.emsa.pulse.auth.user.CommonUser;
+import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
+import gov.ca.emsa.pulse.service.UserUtil;
+
 import java.io.IOException;
 import java.util.Date;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -13,14 +16,7 @@ import javax.servlet.ServletResponse;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
-
-import gov.ca.emsa.pulse.auth.user.CommonUser;
-import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
-import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
-import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
-import gov.ca.emsa.pulse.service.UserUtil;
 
 public class AcfLastAccessFilter extends GenericFilterBean {
 	private static final Logger logger = LogManager.getLogger(AcfLastAccessFilter.class);
