@@ -58,6 +58,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
+		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
 		if(dto.getAddress() != null) {
 			patient.setStreetLineOne(dto.getAddress().getStreetLineOne());
 			patient.setStreetLineTwo(dto.getAddress().getStreetLineTwo());
@@ -128,6 +129,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		patient.setPhoneNumber(dto.getPhoneNumber());
+		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
 		if(dto.getAddress() != null) {
 			patient.setStreetLineOne(dto.getAddress().getStreetLineOne());
 			patient.setStreetLineTwo(dto.getAddress().getStreetLineTwo());

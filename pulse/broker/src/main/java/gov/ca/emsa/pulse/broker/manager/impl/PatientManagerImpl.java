@@ -100,7 +100,7 @@ public class PatientManagerImpl implements PatientManager {
 		if(patientRecord != null) {
 			PatientOrganizationMapDTO orgMapToCreate = new PatientOrganizationMapDTO();
 			orgMapToCreate.setPatientId(patient.getId());
-			orgMapToCreate.setOrgPatientRecordId(patientRecord.getOrgPatientRecordId());
+			orgMapToCreate.setOrgPatientRecordId(patientRecord.getOrganizationPatientRecordId());
 			QueryOrganizationDTO queryOrgDto = queryDao.getQueryOrganizationById(patientRecord.getQueryOrganizationId());
 			if(queryOrgDto != null) {
 				orgMapToCreate.setOrganizationId(queryOrgDto.getOrgId());	
