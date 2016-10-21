@@ -1,5 +1,14 @@
 package gov.ca.emsa.pulse.service.controller;
 
+import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
+import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
+import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
+import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import gov.ca.emsa.pulse.service.DocumentRetrieveService;
+import gov.ca.emsa.pulse.service.EHealthQueryConsumerService;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -15,15 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
-import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
-import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
-import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
-import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
-import gov.ca.emsa.pulse.service.DocumentRetrieveService;
-import gov.ca.emsa.pulse.service.EHealthQueryConsumerService;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 
 @RestController
 public class DocumentSetRetrieveController {

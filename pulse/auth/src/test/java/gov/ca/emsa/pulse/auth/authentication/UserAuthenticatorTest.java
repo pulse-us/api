@@ -1,25 +1,20 @@
 package gov.ca.emsa.pulse.auth.authentication;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import gov.ca.emsa.pulse.auth.jwt.JWTAuthorRsaJoseJImpl;
 import gov.ca.emsa.pulse.auth.jwt.JWTCreationException;
 import gov.ca.emsa.pulse.auth.jwt.JWTValidationException;
-import gov.ca.emsa.pulse.auth.jwt.JWTAuthorRsaJoseJImpl;
-import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
-import gov.ca.emsa.pulse.auth.user.User;
-import gov.ca.emsa.pulse.auth.user.UserRetrievalException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

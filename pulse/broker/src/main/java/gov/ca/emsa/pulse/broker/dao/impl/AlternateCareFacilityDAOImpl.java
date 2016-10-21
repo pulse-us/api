@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityAddressLineDAO;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
-import gov.ca.emsa.pulse.broker.dto.AddressLineDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityAddressLineEntity;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;

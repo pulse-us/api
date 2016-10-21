@@ -1,7 +1,12 @@
 package gov.ca.emsa.pulse.broker.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,8 +14,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.FetchMode;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.mapping.Collection;
 
 @Entity
 @Table(name="patient_record")
@@ -21,15 +32,6 @@ public class PatientRecordEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "organization_patient_id")
-	private String orgPatientId;
-	
-	@Column(name="given_name")
-	private String givenName;
-	
-	@Column(name = "family_name")
-	private String familyName;
-	
 	@Column(name = "dob")
 	private java.sql.Date dateOfBirth;
 	
@@ -38,6 +40,9 @@ public class PatientRecordEntity {
 	
 	@Column(name = "gender")
 	private String gender;
+	
+	@Column(name = "organization_patient_record_id")
+	private String organizationPatientRecordId;
 	
 	@Column(name = "phone_number")
 	private String phoneNumber;
@@ -66,6 +71,10 @@ public class PatientRecordEntity {
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "query_organization_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private QueryOrganizationEntity queryOrganization;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId")
+	@Column( name = "patient_record_id", nullable = false  )
+	private Set<PatientRecordNameEntity> patientRecordName = new HashSet<PatientRecordNameEntity>();
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -127,14 +136,6 @@ public class PatientRecordEntity {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
-	}
-
-	public String getOrgPatientId() {
-		return orgPatientId;
-	}
-
-	public void setOrgPatientId(String orgPatientId) {
-		this.orgPatientId = orgPatientId;
 	}
 
 	public String getStreetLineOne() {
@@ -200,20 +201,21 @@ public class PatientRecordEntity {
 	public void setQueryOrganization(QueryOrganizationEntity queryOrganization) {
 		this.queryOrganization = queryOrganization;
 	}
-
-	public String getGivenName() {
-		return givenName;
+	
+	public Set<PatientRecordNameEntity> getPatientRecordName() {
+		return patientRecordName;
 	}
 
-	public void setGivenName(String givenName) {
-		this.givenName = givenName;
+	public void setPatientRecordName(Set<PatientRecordNameEntity> patientRecordName) {
+		this.patientRecordName = patientRecordName;
 	}
 
-	public String getFamilyName() {
-		return familyName;
+	public String getOrganizationPatientRecordId() {
+		return organizationPatientRecordId;
 	}
 
-	public void setFamilyName(String familyName) {
-		this.familyName = familyName;
+	public void setOrganizationPatientRecordId(String organizationPatientId) {
+		this.organizationPatientRecordId = organizationPatientId;
 	}
+	
 }
