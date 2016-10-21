@@ -26,8 +26,6 @@ public class QueryOrganizationStatusEntity {
 	
 	@Column(name="status")
 	@Enumerated(EnumType.STRING)
-	//@Type(type = "gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus", 
-	//	parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.ca.emsa.pulse.broker.entity.PostgresEnumType")} )
 	private QueryOrganizationStatus status;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
