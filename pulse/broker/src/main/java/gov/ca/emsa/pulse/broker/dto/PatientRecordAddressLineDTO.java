@@ -1,19 +1,19 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import gov.ca.emsa.pulse.broker.entity.PatientAddressLineEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity;
 
-public class PatientAddressLineDTO {
+public class PatientRecordAddressLineDTO {
 	
 	private Long id;
-	private Long patientAddressId;
+	private Long patientRecordAddressId;
 	private String line;
 	private int lineOrder;
 	
-	public PatientAddressLineDTO(){}
+	public PatientRecordAddressLineDTO(){}
 	
-	public PatientAddressLineDTO(PatientAddressLineEntity entity){
+	public PatientRecordAddressLineDTO(PatientRecordAddressLineEntity entity){
 		this.id = entity.getId();
-		this.patientAddressId = entity.getPatientAddressId();
+		this.patientRecordAddressId = entity.getPatientRecordAddressId();
 		this.line = entity.getLine();
 		this.lineOrder = entity.getLineOrder();
 	}
@@ -24,11 +24,11 @@ public class PatientAddressLineDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Long getPatientAddressId() {
-		return patientAddressId;
+	public Long getPatientRecordAddressId() {
+		return patientRecordAddressId;
 	}
-	public void setPatientAddressId(Long patientAddressId) {
-		this.patientAddressId = patientAddressId;
+	public void setPatientRecordAddressId(Long patientRecordAddressId) {
+		this.patientRecordAddressId = patientRecordAddressId;
 	}
 	public String getLine() {
 		return line;

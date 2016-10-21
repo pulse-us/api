@@ -7,19 +7,21 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="patient_address_line")
-public class PatientAddressLineEntity {
+@Table(name="patient_record_address_line")
+public class PatientRecordAddressLineEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "patient_address_id")
-	private Long patientAddressId;
+	@Column(name = "patient_record_address_id")
+	private Long patientRecordAddressId;
 	
 	@Column(name = "line")
 	private String line;
@@ -57,12 +59,12 @@ public class PatientAddressLineEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public Long getPatientAddressId() {
-		return patientAddressId;
+	public Long getPatientRecordAddressId() {
+		return patientRecordAddressId;
 	}
 
-	public void setPatientAddressId(Long patientAddressId) {
-		this.patientAddressId = patientAddressId;
+	public void setPatientRecordAddressId(Long patientRecordAddressId) {
+		this.patientRecordAddressId = patientRecordAddressId;
 	}
 
 	public String getLine() {

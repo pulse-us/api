@@ -1,32 +1,32 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import gov.ca.emsa.pulse.broker.entity.PatientAddressEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientAddressLineEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity;
 
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
-public class PatientAddressDTO {
+public class PatientRecordAddressDTO {
 	private Long id;
-	private LinkedList<PatientAddressLineDTO> patientAddressLines;
+	private List<PatientRecordAddressLineDTO> patientRecordAddressLines;
 	private String city;
 	private String state;
 	private String zipcode;
 	private Date creationDate;
 	private Date lastModifiedDate;
 	
-	public PatientAddressDTO(){
-		this.patientAddressLines = new LinkedList<PatientAddressLineDTO>();
+	public PatientRecordAddressDTO(){
+		this.patientRecordAddressLines = new LinkedList<PatientRecordAddressLineDTO>();
 	}
 	
-	public PatientAddressDTO(PatientAddressEntity entity)
-	{
+	public PatientRecordAddressDTO(PatientRecordAddressEntity entity){
 		if(entity != null) {
 			this.id = entity.getId();
-			if(!entity.getPatientAddressLines().isEmpty()){
-				for(PatientAddressLineEntity patientAddressLineEntity : entity.getPatientAddressLines()){
-					PatientAddressLineDTO patientAddressLineDto = new PatientAddressLineDTO(patientAddressLineEntity);
-					this.patientAddressLines.add(patientAddressLineDto);
+			if(entity.getPatientRecordAddressLines() != null){
+				for(PatientRecordAddressLineEntity patientAddressLineEntity : entity.getPatientRecordAddressLines()){
+					PatientRecordAddressLineDTO patientAddressLineDto = new PatientRecordAddressLineDTO(patientAddressLineEntity);
+					this.patientRecordAddressLines.add(patientAddressLineDto);
 				}
 			}
 			if(entity.getCity() != null)
@@ -47,13 +47,12 @@ public class PatientAddressDTO {
 		this.id = id;
 	}
 
-	public LinkedList<PatientAddressLineDTO> getPatientAddressLines() {
-		return patientAddressLines;
+	public List<PatientRecordAddressLineDTO> getPatientRecordAddressLines() {
+		return patientRecordAddressLines;
 	}
 
-	public void setPatientAddressLines(
-			LinkedList<PatientAddressLineDTO> patientAddressLines) {
-		this.patientAddressLines = patientAddressLines;
+	public void setPatientAddressLines(List<PatientRecordAddressLineDTO> patientRecordAddressLines) {
+		this.patientRecordAddressLines = patientRecordAddressLines;
 	}
 
 	public String getCity() {

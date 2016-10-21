@@ -1,33 +1,37 @@
 package gov.ca.emsa.pulse.broker.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.IndexColumn;
 
 @Entity
-@Table(name="patient_address")
-public class PatientAddressEntity {
+@Table(name="patient_record_address")
+public class PatientRecordAddressEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientAddressId"  )
-	@Fetch(FetchMode.JOIN)
-	@Column( name = "patient_address_id", nullable = false  )
-	private LinkedList<PatientAddressLineEntity> patientAddressLines = new LinkedList<PatientAddressLineEntity>();
+	@OneToMany(fetch = FetchType.LAZY,cascade={CascadeType.ALL})
+	@JoinColumn(name = "patient_record_address_id")
+	private List<PatientRecordAddressLineEntity> patientRecordAddressLines = new ArrayList<PatientRecordAddressLineEntity>();
 	
 	@Column(name = "city")
 	private String city;
@@ -92,13 +96,12 @@ public class PatientAddressEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public LinkedList<PatientAddressLineEntity> getPatientAddressLines() {
-		return patientAddressLines;
+	public List<PatientRecordAddressLineEntity> getPatientRecordAddressLines() {
+		return patientRecordAddressLines;
 	}
 
-	public void setPatientAddressLines(
-			LinkedList<PatientAddressLineEntity> patientAddressLines) {
-		this.patientAddressLines = patientAddressLines;
+	public void setPatientAddressLines(List<PatientRecordAddressLineEntity> patientRecordAddressLines) {
+		this.patientRecordAddressLines = patientRecordAddressLines;
 	}
-	
+
 }
