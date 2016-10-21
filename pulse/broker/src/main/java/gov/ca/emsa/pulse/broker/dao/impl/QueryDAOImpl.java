@@ -45,6 +45,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 				orgMap.setStartDate(new Date());
 				QueryOrganizationStatusEntity status = statusDao.getStatusByName(QueryOrganizationStatus.Active.name());
 				orgMap.setStatusId(status == null ? null : status.getId());
+				orgMap.setStatus(status);
 				entityManager.persist(orgMap);
 				query.getOrgStatuses().add(orgMap);
 			}
@@ -58,6 +59,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryOrganizationEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
+				+ "JOIN FETCH q.status "
 				+ "where q.id = :entityid) ", 
 				QueryOrganizationEntity.class );
 		
@@ -73,8 +75,9 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryOrganizationEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
-				+ "where q.queryId = :queryId " +
-				"AND q.organizationId = :orgId", 
+				+ "JOIN FETCH q.status "
+				+ "where q.queryId = :queryId " 
+				+ "AND q.organizationId = :orgId", 
 				QueryOrganizationEntity.class );
 		
 		query.setParameter("queryId", queryId);
@@ -198,10 +201,14 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	private QueryEntity getEntityById(Long id) {
-		QueryEntity entity = null;
+		//the status entity was being cached and calling clear here
+		//forces it to refresh based on the query we run
+		entityManager.clear();
 		
+		QueryEntity entity = null;
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
-				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
+				+ "LEFT OUTER JOIN FETCH q.orgStatuses orgs "
+				+ "LEFT OUTER JOIN FETCH orgs.status status "
 				+ "where q.id = :entityid) ", 
 				QueryEntity.class );
 		

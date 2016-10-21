@@ -43,6 +43,7 @@ public class PatientRecordManagerTest extends TestCase {
 	@Autowired PatientRecordDAO prDao;
 	private AlternateCareFacilityDTO acf;
 	private OrganizationDTO org1, org2;
+	private QueryDTO query;
 	private QueryOrganizationDTO orgQuery1, orgQuery2;
 	
 	@Before
@@ -89,18 +90,18 @@ public class PatientRecordManagerTest extends TestCase {
 		orgQuery2.setStatus(QueryOrganizationStatus.Active);
 		toInsert.getOrgStatuses().add(orgQuery2);
 		
-		QueryDTO inserted = queryDao.create(toInsert);
-		assertNotNull(inserted);
-		assertNotNull(inserted.getId());
-		assertTrue(inserted.getId().longValue() > 0);
-		assertNotNull(inserted.getOrgStatuses());
-		assertEquals(2, inserted.getOrgStatuses().size());
-		orgQuery1 = inserted.getOrgStatuses().get(0);
-		assertNotNull(inserted.getOrgStatuses().get(0).getId());
-		assertTrue(inserted.getOrgStatuses().get(0).getId().longValue() > 0);
-		orgQuery2 = inserted.getOrgStatuses().get(1);
-		assertNotNull(inserted.getOrgStatuses().get(1).getId());
-		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
+		query = queryManager.createQuery(toInsert);
+		assertNotNull(query);
+		assertNotNull(query.getId());
+		assertTrue(query.getId().longValue() > 0);
+		assertNotNull(query.getOrgStatuses());
+		assertEquals(2, query.getOrgStatuses().size());
+		orgQuery1 = query.getOrgStatuses().get(0);
+		assertNotNull(query.getOrgStatuses().get(0).getId());
+		assertTrue(query.getOrgStatuses().get(0).getId().longValue() > 0);
+		orgQuery2 = query.getOrgStatuses().get(1);
+		assertNotNull(query.getOrgStatuses().get(1).getId());
+		assertTrue(query.getOrgStatuses().get(1).getId().longValue() > 0);
 
 	}
 	
@@ -127,5 +128,28 @@ public class PatientRecordManagerTest extends TestCase {
 		assertNotNull(added);
 		assertEquals(added.getId(), selected.getId());
 		assertTrue(selected.getDateOfBirth().isEqual(date));
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testCancelPatientDiscoveryQueryToOrganization() {	
+		System.out.println("query id " + query.getId());
+		queryManager.cancelQueryToOrganization(query.getId(), org1.getId());
+		QueryDTO updatedQuery = queryManager.getById(query.getId());
+		
+		assertNotNull(updatedQuery);
+		assertEquals(query.getId(), updatedQuery.getId());
+		assertEquals(2, updatedQuery.getOrgStatuses().size());
+		boolean queryHadOrg = false;
+		for(QueryOrganizationDTO orgStatus : updatedQuery.getOrgStatuses()) {
+			assertNotNull(orgStatus.getOrgId());
+			if(orgStatus.getOrgId().longValue() == org1.getId().longValue()) {
+				queryHadOrg = true;
+				
+				assertEquals(QueryOrganizationStatus.Cancelled, orgStatus.getStatus());
+			}
+		}
+		assertTrue(queryHadOrg);
 	}
 }

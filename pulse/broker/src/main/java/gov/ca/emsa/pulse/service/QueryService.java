@@ -66,7 +66,8 @@ public class QueryService {
 	@RequestMapping(value = "/{queryId}/{organizationId}/cancel", method = RequestMethod.POST)
 	public Query cancelOrganizationQuery(@PathVariable(value="queryId") Long queryId,
 			@PathVariable(value="organizationId") Long orgId) {
-		QueryDTO queryWithCancelledOrg = queryManager.cancelQueryToOrganization(queryId, orgId);
+		queryManager.cancelQueryToOrganization(queryId, orgId);
+		QueryDTO queryWithCancelledOrg = queryManager.getById(queryId);
 		return DtoToDomainConverter.convert(queryWithCancelledOrg);
 	}
 	
