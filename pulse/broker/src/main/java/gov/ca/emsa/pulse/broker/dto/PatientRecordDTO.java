@@ -12,7 +12,7 @@ import java.util.List;
 
 public class PatientRecordDTO {
 	private Long id;
-	private String orgPatientRecordId;
+	private String organizationPatientRecordId;
 	private List<PatientRecordNameDTO> patientRecordName;
 	private LocalDate dateOfBirth;
 	private String ssn;
@@ -64,6 +64,7 @@ public class PatientRecordDTO {
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
 		this.phoneNumber = entity.getPhoneNumber();
+		this.organizationPatientRecordId = entity.getOrganizationPatientRecordId();
 		
 		this.address = new AddressDTO();
 		this.address.setStreetLineOne(entity.getStreetLineOne());
@@ -114,12 +115,12 @@ public class PatientRecordDTO {
 		this.address = address;
 	}
 
-	public String getOrgPatientRecordId() {
-		return orgPatientRecordId;
+	public String getOrganizationPatientRecordId() {
+		return organizationPatientRecordId;
 	}
 
 	public void setOrgPatientRecordId(String orgPatientRecordId) {
-		this.orgPatientRecordId = orgPatientRecordId;
+		this.organizationPatientRecordId = organizationPatientRecordId;
 	}
 
 	public Long getQueryOrganizationId() {

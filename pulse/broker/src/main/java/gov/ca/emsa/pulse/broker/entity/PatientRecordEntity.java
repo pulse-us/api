@@ -41,6 +41,9 @@ public class PatientRecordEntity {
 	@Column(name = "gender")
 	private String gender;
 	
+	@Column(name = "organization_patient_record_id")
+	private String organizationPatientRecordId;
+	
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
@@ -205,6 +208,14 @@ public class PatientRecordEntity {
 
 	public void setPatientRecordName(Set<PatientRecordNameEntity> patientRecordName) {
 		this.patientRecordName = patientRecordName;
+	}
+
+	public String getOrganizationPatientRecordId() {
+		return organizationPatientRecordId;
+	}
+
+	public void setOrganizationPatientRecordId(String organizationPatientId) {
+		this.organizationPatientRecordId = organizationPatientId;
 	}
 	
 }
