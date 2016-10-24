@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.common.soap;
 
-import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
@@ -134,17 +134,17 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				//but eventually we should accommodate multiple addresses
 				List<ADExplicit> addressList = patientPerson.getValue().getAddr();
 				if(addressList.size() >= 1) {
-					Address address = new Address();
+					PatientRecordAddress address = new PatientRecordAddress();
 					ADExplicit addr = addressList.get(0);
 					List<Serializable> addressContent = addr.getContent();
 					for(Serializable line : addressContent) {
 						if(line instanceof JAXBElement<?>) {
 							if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("streetAddressLine")) {
-								if(StringUtils.isEmpty(address.getStreet1())) {
-									address.setStreet1(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
-								} else if(StringUtils.isEmpty(address.getStreet2())) {
-									address.setStreet2(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
-								}
+								//if(StringUtils.isEmpty(address.getStreet1())) {
+									//address.setStreet1(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
+								//} else if(StringUtils.isEmpty(address.getStreet2())) {
+									//address.setStreet2(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
+								//}
 							} else if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("city")) {
 								address.setCity(((JAXBElement<AdxpExplicitCity>)line).getValue().getContent());
 							} else if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("state")) {
@@ -215,17 +215,17 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				//but eventually we should accommodate multiple addresses
 				List<ADExplicit> addressList = patientPerson.getValue().getAddr();
 				if(addressList.size() >= 1) {
-					Address address = new Address();
+					PatientRecordAddress address = new PatientRecordAddress();
 					ADExplicit addr = addressList.get(0);
 					List<Serializable> addressContent = addr.getContent();
 					for(Serializable line : addressContent) {
 						if(line instanceof JAXBElement<?>) {
 							if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("streetAddressLine")) {
-								if(StringUtils.isEmpty(address.getStreet1())) {
-									address.setStreet1(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
-								} else if(StringUtils.isEmpty(address.getStreet2())) {
-									address.setStreet2(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
-								}
+								//if(StringUtils.isEmpty(address.getStreet1())) {
+									//address.setStreet1(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
+								//} else if(StringUtils.isEmpty(address.getStreet2())) {
+									//address.setStreet2(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
+								//}
 							} else if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("city")) {
 								address.setCity(((JAXBElement<AdxpExplicitCity>)line).getValue().getContent());
 							} else if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("state")) {

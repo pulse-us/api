@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
@@ -213,13 +214,10 @@ public class DtoToDomainConverter {
 			pr.setDateOfBirth(outFormatter.format(prDto.getDateOfBirth()));
 		}		
 		if(prDto.getAddress() != null) {
-			Address address = new Address();
-			address.setStreet1(prDto.getAddress().getStreetLineOne());
-			address.setStreet2(prDto.getAddress().getStreetLineTwo());
+			PatientRecordAddress address = new PatientRecordAddress();
 			address.setCity(prDto.getAddress().getCity());
 			address.setState(prDto.getAddress().getState());
 			address.setZipcode(prDto.getAddress().getZipcode());
-			address.setCountry(prDto.getAddress().getCountry());
 			pr.setAddress(address);
 		}
 		return pr;

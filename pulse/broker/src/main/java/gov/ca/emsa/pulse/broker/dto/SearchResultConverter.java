@@ -39,12 +39,10 @@ public class SearchResultConverter {
 		}
 		result.setPhoneNumber(domainObj.getPhoneNumber());
 		result.setSsn(domainObj.getSsn());
-		result.setOrgPatientRecordId(domainObj.getOrgPatientId());
+		result.setOrganizationPatientRecordId(domainObj.getOrgPatientId());
 
 		if(domainObj.getAddress() != null) {
-			AddressDTO address = new AddressDTO();
-			address.setStreetLineOne(domainObj.getAddress().getStreet1());
-			address.setStreetLineTwo(domainObj.getAddress().getStreet2());
+			PatientRecordAddressDTO address = new PatientRecordAddressDTO();
 			address.setCity(domainObj.getAddress().getCity());
 			address.setState(domainObj.getAddress().getState());
 			address.setZipcode(domainObj.getAddress().getZipcode());

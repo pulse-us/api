@@ -10,6 +10,7 @@ import java.util.List;
 public class PatientRecordAddressDTO {
 	private Long id;
 	private List<PatientRecordAddressLineDTO> patientRecordAddressLines;
+	private Long patientRecordId;
 	private String city;
 	private String state;
 	private String zipcode;
@@ -35,6 +36,8 @@ public class PatientRecordAddressDTO {
 				this.state = entity.getState();
 			if(entity.getZipcode() != null)
 				this.zipcode = entity.getZipcode();
+			if(entity.getPatientRecordId() != null)
+				this.patientRecordId = entity.getPatientRecordId();
 			this.creationDate = entity.getCreationDate();
 			this.lastModifiedDate = entity.getLastModifiedDate();
 		}
@@ -51,7 +54,7 @@ public class PatientRecordAddressDTO {
 		return patientRecordAddressLines;
 	}
 
-	public void setPatientAddressLines(List<PatientRecordAddressLineDTO> patientRecordAddressLines) {
+	public void setPatientRecordAddressLines(List<PatientRecordAddressLineDTO> patientRecordAddressLines) {
 		this.patientRecordAddressLines = patientRecordAddressLines;
 	}
 
@@ -91,5 +94,13 @@ public class PatientRecordAddressDTO {
 
 	public void setZipcode(String zipcode) {
 		this.zipcode = zipcode;
+	}
+
+	public Long getPatientRecordId() {
+		return patientRecordId;
+	}
+
+	public void setPatientRecordId(Long patientRecordId) {
+		this.patientRecordId = patientRecordId;
 	}
 }

@@ -18,7 +18,7 @@ public class PatientRecordDTO {
 	private String ssn;
 	private String gender;
 	private String phoneNumber;
-	private AddressDTO address;
+	private PatientRecordAddressDTO address;
 	private Long queryOrganizationId;
 	private Date lastModifiedDate;
 	
@@ -66,13 +66,10 @@ public class PatientRecordDTO {
 		this.phoneNumber = entity.getPhoneNumber();
 		this.organizationPatientRecordId = entity.getOrganizationPatientRecordId();
 		
-		this.address = new AddressDTO();
-		this.address.setStreetLineOne(entity.getStreetLineOne());
-		this.address.setStreetLineTwo(entity.getStreetLineTwo());
+		this.address = new PatientRecordAddressDTO();
 		this.address.setCity(entity.getCity());
 		this.address.setState(entity.getState());
 		this.address.setZipcode(entity.getZipcode());
-		this.address.setCountry(entity.getCountry());
 		
 		this.queryOrganizationId = entity.getQueryOrganizationId();
 		this.lastModifiedDate = entity.getLastModifiedDate();
@@ -108,10 +105,10 @@ public class PatientRecordDTO {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	public AddressDTO getAddress() {
+	public PatientRecordAddressDTO getAddress() {
 		return address;
 	}
-	public void setAddress(AddressDTO address) {
+	public void setAddress(PatientRecordAddressDTO address) {
 		this.address = address;
 	}
 
@@ -119,7 +116,7 @@ public class PatientRecordDTO {
 		return organizationPatientRecordId;
 	}
 
-	public void setOrgPatientRecordId(String orgPatientRecordId) {
+	public void setOrganizationPatientRecordId(String organizationPatientRecordId) {
 		this.organizationPatientRecordId = organizationPatientRecordId;
 	}
 

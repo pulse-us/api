@@ -1,12 +1,9 @@
 package gov.ca.emsa.pulse.broker.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,14 +11,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import org.hibernate.FetchMode;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.mapping.Collection;
 
 @Entity
 @Table(name="patient_record")
@@ -47,12 +39,6 @@ public class PatientRecordEntity {
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
-	@Column(name="street_line_1")
-	private String streetLineOne;
-	
-	@Column(name="street_line_2")
-	private String streetLineTwo;
-	
 	@Column(name = "city")
 	private String city;
 	
@@ -75,6 +61,10 @@ public class PatientRecordEntity {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId")
 	@Column( name = "patient_record_id", nullable = false  )
 	private Set<PatientRecordNameEntity> patientRecordName = new HashSet<PatientRecordNameEntity>();
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId")
+	@Column( name = "patient_record_id", nullable = false  )
+	private Set<PatientRecordAddressEntity> patientRecordAddress = new HashSet<PatientRecordAddressEntity>();
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -138,22 +128,6 @@ public class PatientRecordEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public String getStreetLineOne() {
-		return streetLineOne;
-	}
-
-	public void setStreetLineOne(String streetLineOne) {
-		this.streetLineOne = streetLineOne;
-	}
-
-	public String getStreetLineTwo() {
-		return streetLineTwo;
-	}
-
-	public void setStreetLineTwo(String streetLineTwo) {
-		this.streetLineTwo = streetLineTwo;
-	}
-
 	public String getCity() {
 		return city;
 	}
@@ -214,8 +188,17 @@ public class PatientRecordEntity {
 		return organizationPatientRecordId;
 	}
 
-	public void setOrganizationPatientRecordId(String organizationPatientId) {
-		this.organizationPatientRecordId = organizationPatientId;
+	public void setOrganizationPatientRecordId(String organizationPatientRecordId) {
+		this.organizationPatientRecordId = organizationPatientRecordId;
+	}
+
+	public Set<PatientRecordAddressEntity> getPatientRecordAddress() {
+		return patientRecordAddress;
+	}
+
+	public void setPatientRecordAddress(
+			Set<PatientRecordAddressEntity> patientRecordAddress) {
+		this.patientRecordAddress = patientRecordAddress;
 	}
 	
 }

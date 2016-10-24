@@ -3,7 +3,7 @@ package gov.ca.emsa.pulse.broker.dto;
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
-import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

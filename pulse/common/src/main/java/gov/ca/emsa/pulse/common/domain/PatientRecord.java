@@ -6,10 +6,11 @@ import java.util.ArrayList;
 public class PatientRecord {
 	private Long id;
 	private ArrayList<PatientRecordName> patientRecordName;
+	private String organizationPatientRecordId;
 	private String dateOfBirth;
 	private String gender;
 	private String phoneNumber;
-	private Address address;
+	private PatientRecordAddress address;
 	private String ssn;
 	
 	public PatientRecord() {
@@ -41,10 +42,10 @@ public class PatientRecord {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	public Address getAddress() {
+	public PatientRecordAddress getAddress() {
 		return address;
 	}
-	public void setAddress(Address address) {
+	public void setAddress(PatientRecordAddress address) {
 		this.address = address;
 	}
 	public String getSsn() {
@@ -61,7 +62,13 @@ public class PatientRecord {
 	public void setPatientRecordName(ArrayList<PatientRecordName> patientRecordName) {
 		this.patientRecordName = patientRecordName;
 	}
-	
-	
+
+	public String getOrganizationPatientRecordId() {
+		return organizationPatientRecordId;
+	}
+
+	public void setOrganizationPatientRecordId(String organizationPatientRecordId) {
+		this.organizationPatientRecordId = organizationPatientRecordId;
+	}
 	
 }

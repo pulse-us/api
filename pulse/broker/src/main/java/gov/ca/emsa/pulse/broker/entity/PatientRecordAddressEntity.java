@@ -2,8 +2,10 @@ package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -29,8 +31,11 @@ public class PatientRecordAddressEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@OneToMany(fetch = FetchType.LAZY,cascade={CascadeType.ALL})
-	@JoinColumn(name = "patient_record_address_id")
+	@Column(name = "patient_record_id")
+	private Long patientRecordId;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordAddressId")
+	@Column(name = "patient_record_address_id", nullable = false)
 	private List<PatientRecordAddressLineEntity> patientRecordAddressLines = new ArrayList<PatientRecordAddressLineEntity>();
 	
 	@Column(name = "city")
@@ -100,8 +105,17 @@ public class PatientRecordAddressEntity {
 		return patientRecordAddressLines;
 	}
 
-	public void setPatientAddressLines(List<PatientRecordAddressLineEntity> patientRecordAddressLines) {
+	public void setPatientRecordAddressLines(
+			List<PatientRecordAddressLineEntity> patientRecordAddressLines) {
 		this.patientRecordAddressLines = patientRecordAddressLines;
+	}
+
+	public Long getPatientRecordId() {
+		return patientRecordId;
+	}
+
+	public void setPatientRecordId(Long patientRecordId) {
+		this.patientRecordId = patientRecordId;
 	}
 
 }

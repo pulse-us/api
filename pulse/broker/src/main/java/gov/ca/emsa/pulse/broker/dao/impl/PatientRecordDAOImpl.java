@@ -60,12 +60,9 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setPhoneNumber(dto.getPhoneNumber());
 		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
 		if(dto.getAddress() != null) {
-			patient.setStreetLineOne(dto.getAddress().getStreetLineOne());
-			patient.setStreetLineTwo(dto.getAddress().getStreetLineTwo());
 			patient.setCity(dto.getAddress().getCity());
 			patient.setState(dto.getAddress().getState());
 			patient.setZipcode(dto.getAddress().getZipcode());
-			patient.setCountry(dto.getAddress().getCountry());
 		}
 		patient.setQueryOrganizationId(dto.getQueryOrganizationId());
 
@@ -131,12 +128,9 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setPhoneNumber(dto.getPhoneNumber());
 		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
 		if(dto.getAddress() != null) {
-			patient.setStreetLineOne(dto.getAddress().getStreetLineOne());
-			patient.setStreetLineTwo(dto.getAddress().getStreetLineTwo());
 			patient.setCity(dto.getAddress().getCity());
 			patient.setState(dto.getAddress().getState());
 			patient.setZipcode(dto.getAddress().getZipcode());
-			patient.setCountry(dto.getAddress().getCountry());
 		}
 		patient.setQueryOrganizationId(dto.getQueryOrganizationId());
 
@@ -172,6 +166,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 				+ "FROM PatientRecordEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.queryOrganization "
 				+ "LEFT OUTER JOIN FETCH pat.patientRecordName "
+				+ "LEFT OUTER JOIN FETCH pat.patientRecordAddress "
 				+ "where pat.id = :entityid ", 
 				PatientRecordEntity.class );
 

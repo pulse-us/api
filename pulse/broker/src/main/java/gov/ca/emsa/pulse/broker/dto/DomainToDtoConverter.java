@@ -3,7 +3,7 @@ package gov.ca.emsa.pulse.broker.dto;
 import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
 import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
 import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
-import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.NameAssembly;
@@ -117,13 +117,10 @@ public class DomainToDtoConverter {
 		result.setSsn(domainObj.getSsn());
 
 		if(domainObj.getAddress() != null) {
-			AddressDTO address = new AddressDTO();
-			address.setStreetLineOne(domainObj.getAddress().getStreet1());
-			address.setStreetLineTwo(domainObj.getAddress().getStreet2());
+			PatientRecordAddressDTO address = new PatientRecordAddressDTO();
 			address.setCity(domainObj.getAddress().getCity());
 			address.setState(domainObj.getAddress().getState());
 			address.setZipcode(domainObj.getAddress().getZipcode());
-			address.setCountry(domainObj.getAddress().getCountry());
 			result.setAddress(address);
 		}
 

@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.broker.entity;
 
-import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 
 import java.util.Date;
 import java.util.HashSet;

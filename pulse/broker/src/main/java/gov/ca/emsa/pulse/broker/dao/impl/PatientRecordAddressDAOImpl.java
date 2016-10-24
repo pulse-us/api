@@ -31,6 +31,7 @@ public class PatientRecordAddressDAOImpl extends BaseDAOImpl implements PatientR
 		toInsert.setCity(dto.getCity());
 		toInsert.setState(dto.getState());
 		toInsert.setZipcode(dto.getZipcode());
+		toInsert.setPatientRecordId(dto.getPatientRecordId());
 		
 		entityManager.persist(toInsert);
 		entityManager.flush();
@@ -47,6 +48,7 @@ public class PatientRecordAddressDAOImpl extends BaseDAOImpl implements PatientR
 		address.setCity(addressDto.getCity());
 		address.setState(addressDto.getState());
 		address.setZipcode(addressDto.getZipcode());
+		address.setPatientRecordId(addressDto.getPatientRecordId());
 		
 		address = entityManager.merge(address);
 		return new PatientRecordAddressDTO(address);
@@ -98,7 +100,7 @@ public class PatientRecordAddressDAOImpl extends BaseDAOImpl implements PatientR
 	private PatientRecordAddressEntity getEntityById(Long id) {
 		PatientRecordAddressEntity entity = null;
 		
-		Query query = entityManager.createQuery(  "SELECT distinct a "
+		Query query = entityManager.createQuery(  "SELECT DISTINCT a "
 												+ "from PatientRecordAddressEntity a "
 												+ "LEFT OUTER JOIN FETCH a.patientRecordAddressLines "
 												+ "where a.id = :entityid ", PatientRecordAddressEntity.class );
