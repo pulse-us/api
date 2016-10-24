@@ -70,7 +70,7 @@ public class PatientQueryService implements Runnable {
 		}
 		
 		synchronized(queryOrg.getQueryId()) {
-			queryOrg.setStatus(queryError ? QueryOrganizationStatus.Failed : QueryOrganizationStatus.Success);
+			queryOrg.setStatus(queryError ? QueryOrganizationStatus.Failed : QueryOrganizationStatus.Successful);
 			queryOrg.setEndDate(new Date());
 			queryManager.createOrUpdateQueryOrganization(queryOrg);
 			queryManager.updateQueryStatusFromOrganizations(queryOrg.getQueryId());

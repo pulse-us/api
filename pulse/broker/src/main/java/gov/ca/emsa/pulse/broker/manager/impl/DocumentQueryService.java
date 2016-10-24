@@ -61,7 +61,7 @@ public class DocumentQueryService implements Runnable {
 		
 		patientOrgMap.setDocumentsQueryEnd(new Date());
 		if(querySuccess) {
-			patientOrgMap.setDocumentsQueryStatus(QueryOrganizationStatus.Success);
+			patientOrgMap.setDocumentsQueryStatus(QueryOrganizationStatus.Successful);
 		} else {
 			patientOrgMap.setDocumentsQueryStatus(QueryOrganizationStatus.Failed);
 		}

@@ -11,8 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Type;
-
 import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
 
 @Entity
