@@ -1,24 +1,5 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
-import gov.ca.emsa.pulse.broker.dao.AddressDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
-import gov.ca.emsa.pulse.broker.dto.AddressDTO;
-import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
-import gov.ca.emsa.pulse.broker.entity.AddressEntity;
-import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
-import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
-import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
-import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
-import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
-import gov.ca.emsa.pulse.common.domain.QueryStatus;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,10 +11,24 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.ca.emsa.pulse.broker.dao.AddressDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
+import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
+import gov.ca.emsa.pulse.broker.dto.AddressDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.entity.AddressEntity;
+import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+
 @Repository
 public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	private static final Logger logger = LogManager.getLogger(PatientDAOImpl.class);
 	@Autowired AddressDAO addrDao;
+	@Autowired QueryStatusDAO statusDao;
 	@Autowired PatientRecordNameDAO nameDao;
 
 	@Override
@@ -70,8 +65,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	@Override
 	public PatientOrganizationMapDTO createOrgMap(PatientOrganizationMapDTO toCreate) {
 		PatientOrganizationMapEntity orgMap = new PatientOrganizationMapEntity();
-		orgMap.setDocumentsQueryStatus(QueryStatus.ACTIVE.name());
-		orgMap.setDocumentsQuerySuccess(null);
+		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(QueryOrganizationStatus.Active.name()).getId());
 		orgMap.setDocumentsQueryStart(new Date());
 		orgMap.setDocumentsQueryEnd(null);
 		orgMap.setOrganizationId(toCreate.getOrganizationId());
@@ -117,10 +111,8 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		PatientOrganizationMapEntity orgMap = getOrgMapById(toUpdate.getId());
 		if(orgMap == null) {
 			logger.error("Could not find patient org map with id " + toUpdate.getId());
-		}
-
-		orgMap.setDocumentsQueryStatus(toUpdate.getDocumentsQueryStatus());
-		orgMap.setDocumentsQuerySuccess(toUpdate.getDocumentsQuerySuccess());
+		}		
+		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(toUpdate.getDocumentsQueryStatus().name()).getId());
 		orgMap.setDocumentsQueryStart(toUpdate.getDocumentsQueryStart());
 		orgMap.setDocumentsQueryEnd(toUpdate.getDocumentsQueryEnd());
 		orgMap.setOrganizationId(toUpdate.getOrganizationId());
@@ -164,6 +156,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
 				+ "LEFT OUTER JOIN FETCH pat.organization "
+				+ "LEFT OUTER JOIN FETCH pat.status "
 				+ "where pat.id = :entityid) ", 
 				PatientOrganizationMapEntity.class );
 
@@ -225,7 +218,8 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientOrganizationMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.organization "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
-				+ "LEFT OUTER JOIN FETCH pat.documents "
+				+ "LEFT OUTER JOIN FETCH pat.documents " 
+				+ "LEFT OUTER JOIN FETCH pat.status "
 				+ "where pat.id = :entityid) ", 
 				PatientOrganizationMapEntity.class );
 

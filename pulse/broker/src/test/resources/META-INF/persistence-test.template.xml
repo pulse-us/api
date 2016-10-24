@@ -19,6 +19,7 @@
     <class>gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.QueryOrganizationEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.QueryOrganizationStatusEntity</class>    
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
       <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
