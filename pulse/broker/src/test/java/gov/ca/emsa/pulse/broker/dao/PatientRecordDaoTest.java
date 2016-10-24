@@ -80,24 +80,16 @@ public class PatientRecordDaoTest extends TestCase {
 		org2 = orgDao.create(org2);
 		
 		nameTypeCodeLegal = new NameTypeDTO();
-		nameTypeCodeLegal.setCode("L");
-		nameTypeCodeLegal.setDescription("Legal Name.");
-		nameTypeCodeLegal = nameTypeDao.create(nameTypeCodeLegal);
+		nameTypeCodeLegal = nameTypeDao.getById(6L);
 		
 		patientGenderMale = new PatientGenderDTO();
-		patientGenderMale.setCode("M");
-		patientGenderMale.setDescription("Male");
-		patientGenderMale = patientGenderDao.create(patientGenderMale);
+		patientGenderMale = patientGenderDao.getById(2L);
 		
 		patientGenderFemale = new PatientGenderDTO();
-		patientGenderFemale.setCode("F");
-		patientGenderFemale.setDescription("Female");
-		patientGenderFemale = patientGenderDao.create(patientGenderFemale);
+		patientGenderFemale = patientGenderDao.getById(1L);
 		
 		patientGenderUn = new PatientGenderDTO();
-		patientGenderUn.setCode("UN");
-		patientGenderUn.setDescription("Undifferentiated");
-		patientGenderUn = patientGenderDao.create(patientGenderUn);
+		patientGenderUn = patientGenderDao.getById(3L);
 	}
 	
 	@Test
