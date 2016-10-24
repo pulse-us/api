@@ -7,6 +7,7 @@ import gov.ca.emsa.pulse.common.domain.DocumentQuery;
 import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
 import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientGender;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -53,6 +54,7 @@ import org.hl7.v3.PRPAMT201310UV02OtherIDs;
 import org.hl7.v3.PRPAMT201310UV02Patient;
 import org.hl7.v3.PRPAMT201310UV02Person;
 import org.hl7.v3.TELExplicit;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -119,8 +121,9 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 						}
 					}
 				}
-				
-				patientRecord.setGender(patientPerson.getValue().getAdministrativeGenderCode().getCode());
+				PatientGender pg = new PatientGender();
+				pg.setCode(patientPerson.getValue().getAdministrativeGenderCode().getCode());
+				patientRecord.setGender(pg);
 				patientRecord.setDateOfBirth(patientPerson.getValue().getBirthTime().getValue());
 				
 				//TODO: just taking the first listed phone number for now
