@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #Custom project ignores
 *.properties
 
@@ -271,4 +270,3 @@ gradle-app.setting
 application-test.properties
 persistence-test.xml
 /pulse/service/src/main/resources/application.properties
->>>>>>> kekey1/development
