@@ -55,7 +55,39 @@ public class PatientGenderDAOImpl extends BaseDAOImpl implements PatientGenderDA
 			}
 		}
 	}
+	
+	@Override
+	public PatientGenderDTO getByCode(String code) {
+		PatientGenderDTO dto = null;
+		PatientGenderEntity pe = this.getEntityByCode(code);
 
+		if (pe != null){
+			dto = new PatientGenderDTO(pe); 
+		}
+		return dto;
+	}
+	
+	public PatientGenderEntity getPubEntityByCode(String code){
+		PatientGenderEntity ge = this.getEntityByCode(code);
+		if(ge != null)
+			return ge;
+		return null;
+	}
+
+	private PatientGenderEntity getEntityByCode(String code) {
+		PatientGenderEntity entity = null;
+
+		Query query = entityManager.createQuery( "SELECT distinct nameType from PatientGenderEntity nameType "
+				+ "where nameType.code = :entityid) ", 
+				PatientGenderEntity.class );
+
+		query.setParameter("entityid", code);
+		List<PatientGenderEntity> patients = query.getResultList();
+		if(patients.size() != 0) {
+			entity = patients.get(0);
+		}
+		return entity;
+	}
 
 	@Override
 	public PatientGenderDTO getById(Long id) {

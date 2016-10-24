@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientGenderDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
@@ -38,6 +39,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 	private static final Logger logger = LogManager.getLogger(PatientRecordDAOImpl.class);
 	@Autowired OrganizationDAO orgDao;
 	@Autowired PatientRecordNameDAO nameDao;
+	@Autowired PatientGenderDAO patientGenderDao;
 
 	@Override
 	public PatientRecordDTO create(PatientRecordDTO dto) {
@@ -57,12 +59,9 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
 		}
 		patient.setSsn(dto.getSsn());
-		PatientGenderEntity patientGenderEntity = new PatientGenderEntity();
-		patientGenderEntity.setCode(dto.getPatientGender().getCode());
-		patientGenderEntity.setDescription(dto.getPatientGender().getDescription());
-		patientGenderEntity.setId(dto.getPatientGender().getId());
+		PatientGenderEntity patientGenderEntity = patientGenderDao.getPubEntityByCode(dto.getPatientGender().getCode());
 		patient.setPatientGender(patientGenderEntity);
-		patient.setPatientGenderId(dto.getPatientGender().getId());
+		patient.setPatientGenderId(patientGenderEntity.getId());
 		patient.setPhoneNumber(dto.getPhoneNumber());
 		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
 		if(dto.getAddress() != null) {
@@ -133,12 +132,9 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 			patient.setDateOfBirth(null);
 		}
 		patient.setSsn(dto.getSsn());
-		PatientGenderEntity patientGenderEntity = new PatientGenderEntity();
-		patientGenderEntity.setCode(dto.getPatientGender().getCode());
-		patientGenderEntity.setDescription(dto.getPatientGender().getDescription());
-		patientGenderEntity.setId(dto.getPatientGender().getId());
+		PatientGenderEntity patientGenderEntity = patientGenderDao.getPubEntityByCode(dto.getPatientGender().getCode());
 		patient.setPatientGender(patientGenderEntity);
-		patient.setPatientGenderId(dto.getPatientGender().getId());
+		patient.setPatientGenderId(patientGenderEntity.getId());
 		patient.setPhoneNumber(dto.getPhoneNumber());
 		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
 		if(dto.getAddress() != null) {

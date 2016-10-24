@@ -54,6 +54,7 @@ import org.hl7.v3.PRPAMT201310UV02OtherIDs;
 import org.hl7.v3.PRPAMT201310UV02Patient;
 import org.hl7.v3.PRPAMT201310UV02Person;
 import org.hl7.v3.TELExplicit;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 

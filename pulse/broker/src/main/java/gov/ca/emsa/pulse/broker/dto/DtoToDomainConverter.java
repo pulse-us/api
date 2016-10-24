@@ -208,7 +208,7 @@ public class DtoToDomainConverter {
 		}
 		PatientGender pg = new PatientGender();
 		pg.setCode(prDto.getPatientGender().getCode());
-		pg.setCode(prDto.getPatientGender().getDescription());
+		pg.setDescription(prDto.getPatientGender().getDescription());
 		pr.setGender(pg);
 		pr.setPhoneNumber(prDto.getPhoneNumber());
 		if(prDto.getDateOfBirth() != null) {

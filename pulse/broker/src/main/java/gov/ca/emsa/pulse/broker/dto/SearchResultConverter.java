@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import gov.ca.emsa.pulse.broker.dao.PatientGenderDAO;
 import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.NameAssembly;
 import gov.ca.emsa.pulse.common.domain.NameRepresentation;
@@ -15,11 +16,12 @@ import java.util.ArrayList;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 public class SearchResultConverter {
 	private static final Logger logger = LogManager.getLogger(SearchResultConverter.class);
-
+	@Autowired static PatientGenderDAO patientGenderDao;
 	public static PatientRecordDTO convertToPatientRecord(Patient domainObj) {
 		PatientRecordDTO result = new PatientRecordDTO();
 		GivenNameDTO givenNameDTO = new GivenNameDTO();
@@ -28,8 +30,7 @@ public class SearchResultConverter {
 		String familyName = givenAndFamily[1];
 		result.getPatientRecordName().get(0).getGivenName().add(givenNameDTO);
 		result.getPatientRecordName().get(0).setFamilyName(familyName);
-		PatientGenderDTO pg = new PatientGenderDTO();
-		pg.setCode(domainObj.getGender());
+		PatientGenderDTO pg = patientGenderDao.getByCode(domainObj.getGender());
 		result.setPatientGender(pg);
 		if(!StringUtils.isEmpty(domainObj.getDateOfBirth())) {
 			LocalDate patientDob = null;

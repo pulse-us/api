@@ -101,9 +101,7 @@ public class PatientRecordManagerTest extends TestCase {
 		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
 		
 		patientGenderMale = new PatientGenderDTO();
-		patientGenderMale.setCode("M");
-		patientGenderMale.setDescription("Male");
-		patientGenderMale = patientGenderDao.create(patientGenderMale);
+		patientGenderMale = patientGenderDao.getById(2L);
 
 		query = queryManager.createQuery(toInsert);
 		assertNotNull(query);

@@ -42,7 +42,7 @@ public class PatientRecordEntity {
 	private Long patientGenderId;
 	
 	@OneToOne
-	@JoinColumn(name="id")
+	@JoinColumn(name="patient_gender_id", insertable= false, updatable = false)
 	private PatientGenderEntity patientGender;
 	
 	@Column(name = "organization_patient_record_id")
