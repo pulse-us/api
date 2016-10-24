@@ -53,7 +53,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 			}
 		}
 		if(dto.getDateOfBirth() != null) {
-			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
+			patient.setDateOfBirth(dto.getDateOfBirth());
 		}
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
@@ -122,7 +122,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 			}
 		}
 		if(dto.getDateOfBirth() != null) {
-			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
+			patient.setDateOfBirth(dto.getDateOfBirth());
 		} else {
 			patient.setDateOfBirth(null);
 		}

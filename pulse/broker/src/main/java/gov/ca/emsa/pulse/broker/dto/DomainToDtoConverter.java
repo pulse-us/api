@@ -35,15 +35,7 @@ public class DomainToDtoConverter {
 		result.setFriendlyName(domainObj.getFriendlyName());
 		result.setFullName(domainObj.getFullName());
 		result.setGender(domainObj.getGender());
-		if(!StringUtils.isEmpty(domainObj.getDateOfBirth())) {
-			LocalDate patientDob = null;
-			try {
-				patientDob = LocalDate.parse(domainObj.getDateOfBirth(), DateTimeFormatter.ISO_DATE);
-			} catch(DateTimeParseException pex) {
-				logger.error("Could not parse " + domainObj.getDateOfBirth() + " as a date in the format " + DateTimeFormatter.ISO_DATE);
-			} 
-			result.setDateOfBirth(patientDob);
-		}
+		result.setDateOfBirth(domainObj.getDateOfBirth());
 		result.setSsn(domainObj.getSsn());
 
 		if(domainObj.getAcf() != null) {
@@ -104,15 +96,7 @@ public class DomainToDtoConverter {
 			}
 		}
 		result.setGender(domainObj.getGender());
-		if(!StringUtils.isEmpty(domainObj.getDateOfBirth())) {
-			LocalDate patientDob = null;
-			try {
-				patientDob = LocalDate.parse(domainObj.getDateOfBirth(), DateTimeFormatter.ISO_DATE);
-			} catch(DateTimeParseException pex) {
-				logger.error("Could not parse " + domainObj.getDateOfBirth() + " as a date in the format " + DateTimeFormatter.ISO_DATE);
-			} 
-			result.setDateOfBirth(patientDob);
-		}
+		result.setDateOfBirth(domainObj.getDateOfBirth());
 		result.setPhoneNumber(domainObj.getPhoneNumber());
 		result.setSsn(domainObj.getSsn());
 
