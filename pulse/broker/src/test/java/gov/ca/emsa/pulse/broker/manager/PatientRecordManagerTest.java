@@ -3,12 +3,14 @@ package gov.ca.emsa.pulse.broker.manager;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientGenderDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
@@ -39,9 +41,11 @@ public class PatientRecordManagerTest extends TestCase {
 	@Autowired OrganizationDAO orgDao;
 	@Autowired AlternateCareFacilityDAO acfDao;
 	@Autowired PatientRecordDAO prDao;
+	@Autowired PatientGenderDAO patientGenderDao;
 	private AlternateCareFacilityDTO acf;
 	private OrganizationDTO org1, org2;
 	private QueryOrganizationDTO orgQuery1, orgQuery2;
+	private PatientGenderDTO patientGenderMale;
 	
 	@Before
 	public void setup() {
@@ -100,7 +104,10 @@ public class PatientRecordManagerTest extends TestCase {
 		assertNotNull(inserted.getOrgStatuses().get(1).getId());
 		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
 		
-		
+		patientGenderMale = new PatientGenderDTO();
+		patientGenderMale.setCode("M");
+		patientGenderMale.setDescription("Male");
+		patientGenderMale = patientGenderDao.create(patientGenderMale);
 
 	}
 	
@@ -115,6 +122,7 @@ public class PatientRecordManagerTest extends TestCase {
 		dto.setPhoneNumber("443-745-0888");
 		dto.setQueryOrganizationId(orgQuery1.getId());
 		dto.setSsn("555-55-5555");
+		dto.setPatientGender(patientGenderMale);		
 		PatientRecordDTO added = queryManager.addPatientRecord(dto);
 		
 		assertNotNull(added);

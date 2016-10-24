@@ -103,7 +103,10 @@ public class DomainToDtoConverter {
 					PatientRecordNameDTO.setExpirationDate(PatientRecordName.getExpirationDate());
 			}
 		}
-		result.setGender(domainObj.getGender());
+		PatientGenderDTO pgDto = new PatientGenderDTO();
+		pgDto.setCode(domainObj.getGender().getCode());
+		pgDto.setDescription(domainObj.getGender().getDescription());
+		result.setPatientGender(pgDto);
 		if(!StringUtils.isEmpty(domainObj.getDateOfBirth())) {
 			LocalDate patientDob = null;
 			try {

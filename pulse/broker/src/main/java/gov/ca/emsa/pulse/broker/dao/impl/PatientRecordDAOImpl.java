@@ -14,6 +14,7 @@ import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
 import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
 import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientGenderEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
@@ -56,7 +57,12 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
 		}
 		patient.setSsn(dto.getSsn());
-		patient.setGender(dto.getGender());
+		PatientGenderEntity patientGenderEntity = new PatientGenderEntity();
+		patientGenderEntity.setCode(dto.getPatientGender().getCode());
+		patientGenderEntity.setDescription(dto.getPatientGender().getDescription());
+		patientGenderEntity.setId(dto.getPatientGender().getId());
+		patient.setPatientGender(patientGenderEntity);
+		patient.setPatientGenderId(dto.getPatientGender().getId());
 		patient.setPhoneNumber(dto.getPhoneNumber());
 		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
 		if(dto.getAddress() != null) {
@@ -127,7 +133,12 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 			patient.setDateOfBirth(null);
 		}
 		patient.setSsn(dto.getSsn());
-		patient.setGender(dto.getGender());
+		PatientGenderEntity patientGenderEntity = new PatientGenderEntity();
+		patientGenderEntity.setCode(dto.getPatientGender().getCode());
+		patientGenderEntity.setDescription(dto.getPatientGender().getDescription());
+		patientGenderEntity.setId(dto.getPatientGender().getId());
+		patient.setPatientGender(patientGenderEntity);
+		patient.setPatientGenderId(dto.getPatientGender().getId());
 		patient.setPhoneNumber(dto.getPhoneNumber());
 		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
 		if(dto.getAddress() != null) {
