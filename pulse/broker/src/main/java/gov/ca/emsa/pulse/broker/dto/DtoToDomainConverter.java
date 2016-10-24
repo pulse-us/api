@@ -67,7 +67,6 @@ public class DtoToDomainConverter {
 			org.setId(dto.getOrganizationId());
 			result.setOrganization(org);
 		}
-		result.setDocumentsQuerySuccess(dto.getDocumentsQuerySuccess());
 		result.setDocumentsQueryStatus(dto.getDocumentsQueryStatus());
 		result.setDocumentsQueryStart(dto.getDocumentsQueryStart());
 		result.setDocumentsQueryEnd(dto.getDocumentsQueryEnd());
@@ -155,7 +154,6 @@ public class DtoToDomainConverter {
 		qOrg.setStartDate(qOrgDto.getStartDate());
 		qOrg.setEndDate(qOrgDto.getEndDate());
 		qOrg.setStatus(qOrgDto.getStatus());
-		qOrg.setSuccess(qOrgDto.getSuccess());
 		return qOrg;
 	}
 

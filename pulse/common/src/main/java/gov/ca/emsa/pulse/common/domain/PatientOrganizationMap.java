@@ -8,8 +8,7 @@ public class PatientOrganizationMap {
 	private Long id;
 	private Long patientId;
 	private Organization organization;
-	private String documentsQueryStatus;
-	private Boolean documentsQuerySuccess;
+	private QueryOrganizationStatus documentsQueryStatus;
 	private Date documentsQueryStart;
 	private Date documentsQueryEnd;
 	private List<Document> documents;
@@ -41,20 +40,12 @@ public class PatientOrganizationMap {
 		this.organization = organization;
 	}
 
-	public String getDocumentsQueryStatus() {
+	public QueryOrganizationStatus getDocumentsQueryStatus() {
 		return documentsQueryStatus;
 	}
 
-	public void setDocumentsQueryStatus(String documentsQueryStatus) {
+	public void setDocumentsQueryStatus(QueryOrganizationStatus documentsQueryStatus) {
 		this.documentsQueryStatus = documentsQueryStatus;
-	}
-
-	public Boolean getDocumentsQuerySuccess() {
-		return documentsQuerySuccess;
-	}
-
-	public void setDocumentsQuerySuccess(Boolean documentsQuerySuccess) {
-		this.documentsQuerySuccess = documentsQuerySuccess;
 	}
 
 	public Date getDocumentsQueryStart() {

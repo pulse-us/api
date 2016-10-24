@@ -7,14 +7,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+
 public class PatientOrganizationMapDTO {
 	private Long id;
 	private Long patientId;
 	private Long organizationId;
 	private OrganizationDTO org;
-	private String orgPatientId;
-	private String documentsQueryStatus;
-	private Boolean documentsQuerySuccess;
+	private String orgPatientRecordId;
+	private QueryOrganizationStatus documentsQueryStatus;
 	private Date documentsQueryStart;
 	private Date documentsQueryEnd;
 	private List<DocumentDTO> documents;
@@ -31,9 +32,10 @@ public class PatientOrganizationMapDTO {
 		if(entity.getOrganization() != null) {
 			this.org = new OrganizationDTO(entity.getOrganization());
 		}
-		this.orgPatientId = entity.getOrganizationPatientRecordId();
-		this.documentsQueryStatus = entity.getDocumentsQueryStatus();
-		this.documentsQuerySuccess = entity.getDocumentsQuerySuccess();
+		this.orgPatientRecordId = entity.getOrganizationPatientRecordId();
+		if(entity.getStatus() != null) {
+			this.documentsQueryStatus = entity.getStatus().getStatus();
+		}
 		this.documentsQueryStart = entity.getDocumentsQueryStart();
 		this.documentsQueryEnd = entity.getDocumentsQueryEnd();
 		if(entity.getDocuments() != null && entity.getDocuments().size() > 0) {
@@ -63,22 +65,10 @@ public class PatientOrganizationMapDTO {
 		this.organizationId = organizationId;
 	}
 	public String getOrgPatientRecordId() {
-		return orgPatientId;
+		return orgPatientRecordId;
 	}
 	public void setOrgPatientRecordId(String orgPatientRecordId) {
-		this.orgPatientId = orgPatientRecordId;
-	}
-	public String getDocumentsQueryStatus() {
-		return documentsQueryStatus;
-	}
-	public void setDocumentsQueryStatus(String documentsQueryStatus) {
-		this.documentsQueryStatus = documentsQueryStatus;
-	}
-	public Boolean getDocumentsQuerySuccess() {
-		return documentsQuerySuccess;
-	}
-	public void setDocumentsQuerySuccess(Boolean documentsQuerySuccess) {
-		this.documentsQuerySuccess = documentsQuerySuccess;
+		this.orgPatientRecordId = orgPatientRecordId;
 	}
 	public Date getDocumentsQueryStart() {
 		return documentsQueryStart;
@@ -109,12 +99,11 @@ public class PatientOrganizationMapDTO {
 		this.documents = documents;
 	}
 
-	public String getOrgPatientId() {
-		return orgPatientId;
+	public QueryOrganizationStatus getDocumentsQueryStatus() {
+		return documentsQueryStatus;
 	}
 
-	public void setOrgPatientId(String orgPatientId) {
-		this.orgPatientId = orgPatientId;
+	public void setDocumentsQueryStatus(QueryOrganizationStatus status) {
+		this.documentsQueryStatus = status;
 	}
-	
 }
