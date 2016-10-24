@@ -1,7 +1,5 @@
 package gov.ca.emsa.pulse.service;
 
-<<<<<<< HEAD
-=======
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Patient;
@@ -9,7 +7,6 @@ import gov.ca.emsa.pulse.common.domain.Query;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
->>>>>>> upstream/development
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,13 +27,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
-import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.Query;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 
 @Api(value="Queries")
 @RequestMapping(value="/queries")
