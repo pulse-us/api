@@ -1,8 +1,5 @@
 package gov.ca.emsa.pulse.service;
 
-import java.util.List;
-import java.util.Map;
-
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;

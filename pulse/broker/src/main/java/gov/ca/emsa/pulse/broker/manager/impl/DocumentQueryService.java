@@ -19,6 +19,7 @@ import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 @Component
 public class DocumentQueryService implements Runnable {
@@ -60,9 +61,9 @@ public class DocumentQueryService implements Runnable {
 		
 		patientOrgMap.setDocumentsQueryEnd(new Date());
 		if(querySuccess) {
-			patientOrgMap.setStatus(QueryOrganizationStatus.Success);
+			patientOrgMap.setDocumentsQueryStatus(QueryOrganizationStatus.Success);
 		} else {
-			patientOrgMap.setStatus(QueryOrganizationStatus.Failed);
+			patientOrgMap.setDocumentsQueryStatus(QueryOrganizationStatus.Failed);
 		}
 		//update patient org map
 		patientManager.updateOrganizationMap(patientOrgMap);

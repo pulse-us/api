@@ -1,11 +1,12 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
+import gov.ca.emsa.pulse.broker.entity.QueryOrganizationEntity;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
-import gov.ca.emsa.pulse.broker.entity.QueryOrganizationEntity;
 import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
 
 public class QueryOrganizationDTO {

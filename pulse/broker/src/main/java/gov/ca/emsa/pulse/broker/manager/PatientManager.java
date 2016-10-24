@@ -1,9 +1,9 @@
 package gov.ca.emsa.pulse.broker.manager;
 
-import java.util.List;
-
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+
+import java.util.List;
 
 public interface PatientManager extends CachedDataManager {
 	public PatientDTO getPatientById(Long patientId);

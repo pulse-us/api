@@ -1,6 +1,28 @@
 package gov.ca.emsa.pulse.broker.manager;
 
+import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
+import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
+import gov.ca.emsa.pulse.broker.dao.QueryDAO;
+import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
+import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,23 +32,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
-import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
-import gov.ca.emsa.pulse.broker.dao.QueryDAO;
-import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
-import gov.ca.emsa.pulse.common.domain.QueryStatus;
-import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
@@ -97,50 +102,43 @@ public class PatientManagerTest extends TestCase {
 		assertNotNull(inserted.getOrgStatuses().get(1).getId());
 		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
 		
-		queryResult1 = new PatientRecordDTO();
-		queryResult1.setGivenName("John");
-		queryResult1.setFamilyName("Smith");
-		queryResult1.setGender("Male");
-		queryResult1.setOrgPatientId("JS1");
-		queryResult1.setQueryOrganizationId(orgQuery1.getId());
-		queryResult1.setSsn("111223333");
-		queryResult1.setPhoneNumber("5555555555");
-		queryResult1 = prDao.create(queryResult1);
-		assertNotNull(queryResult1);
-		assertNotNull(queryResult1.getId());
-		assertTrue(queryResult1.getId().longValue() > 0);
-		
-		queryResult2 = new PatientRecordDTO();
-		queryResult2.setGivenName("John");
-		queryResult2.setFamilyName("Smith");
-		queryResult2.setGender("Male");
-		queryResult2.setOrgPatientId("JSMITH15");
-		queryResult2.setQueryOrganizationId(orgQuery2.getId());
-		queryResult2.setSsn("111223344");
-		queryResult2.setPhoneNumber("5555555555");
-		queryResult2 = prDao.create(queryResult1);
-		assertNotNull(queryResult2);
-		assertNotNull(queryResult2.getId());
-		assertTrue(queryResult2.getId().longValue() > 0);
+//		queryResult1 = new PatientRecordDTO();
+//		queryResult1.setGivenName("John");
+//		queryResult1.setFamilyName("Smith");
+//		queryResult1.setGender("Male");
+//		queryResult1.setOrgPatientId("JS1");
+//		queryResult1.setQueryOrganizationId(orgQuery1.getId());
+//		queryResult1.setSsn("111223333");
+//		queryResult1.setPhoneNumber("5555555555");
+//		queryResult1 = prDao.create(queryResult1);
+//		assertNotNull(queryResult1);
+//		assertNotNull(queryResult1.getId());
+//		assertTrue(queryResult1.getId().longValue() > 0);
+//		
+//		queryResult2 = new PatientRecordDTO();
+//		queryResult2.setGivenName("John");
+//		queryResult2.setFamilyName("Smith");
+//		queryResult2.setGender("Male");
+//		queryResult2.setOrgPatientId("JSMITH15");
+//		queryResult2.setQueryOrganizationId(orgQuery2.getId());
+//		queryResult2.setSsn("111223344");
+//		queryResult2.setPhoneNumber("5555555555");
+//		queryResult2 = prDao.create(queryResult1);
+//		assertNotNull(queryResult2);
+//		assertNotNull(queryResult2.getId());
+//		assertTrue(queryResult2.getId().longValue() > 0);
 	}
 	
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testCreatePatientWithOrg() {		
+	public void testCreatePatient() {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
-		toCreate.setGivenName("Jonathan");
-		toCreate.setFamilyName("Smith");
-		toCreate.setPhoneNumber("4105554444");
+		toCreate.setFullName("Jon Snow");
+		toCreate.setFriendlyName("Bri");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
-		
-		PatientOrganizationMapDTO orgMap = new PatientOrganizationMapDTO();
-		orgMap.setOrg(org1);
-		orgMap.setOrganizationId(org1.getId());
-		orgMap.setOrgPatientId(queryResult1.getOrgPatientId());
-		toCreate.getOrgMaps().add(orgMap);
 		
 		PatientDTO created = patientManager.create(toCreate);
 		assertNotNull(created);
@@ -150,15 +148,6 @@ public class PatientManagerTest extends TestCase {
 		assertNotNull(created.getAcf().getId());
 		assertEquals(created.getAcf().getId().longValue(), acf.getId().longValue());
 
-		patientManager.createOrganizationMapFromPatientRecord(created, queryResult1.getId());
-		
-		PatientDTO selected = patientManager.getPatientById(created.getId());
-		assertNotNull(selected);
-		assertNotNull(selected.getId());
-		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getAcf());
-		assertNotNull(selected.getAcf().getId());
-		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
 		//TODO: why is this coming back empty?? It works when the service is called
 		//assertEquals(1, selected.getOrgMaps().size());
 	}
@@ -168,18 +157,9 @@ public class PatientManagerTest extends TestCase {
 	@Rollback(true)
 	public void testGetPatientsAtAcf() {		
 		PatientDTO toCreate = new PatientDTO();
+		toCreate.setFriendlyName("Bri");
 		toCreate.setAcf(acf);
-		toCreate.setGivenName("Jonathan");
-		toCreate.setFamilyName("Smith");
-		toCreate.setPhoneNumber("4105554444");
-		toCreate.setSsn("111223344");
-		toCreate.setGender("Male");
-		
-		PatientOrganizationMapDTO orgMap = new PatientOrganizationMapDTO();
-		orgMap.setOrg(org1);
-		orgMap.setOrganizationId(org1.getId());
-		orgMap.setOrgPatientId(queryResult1.getOrgPatientId());
-		toCreate.getOrgMaps().add(orgMap);
+		toCreate.setFullName("Brian Lindsey");
 		
 		patientManager.create(toCreate);
 		

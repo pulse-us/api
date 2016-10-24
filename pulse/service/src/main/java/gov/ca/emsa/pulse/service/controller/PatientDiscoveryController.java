@@ -1,5 +1,13 @@
 package gov.ca.emsa.pulse.service.controller;
 
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.QueryOrganization;
+import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
+import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import gov.ca.emsa.pulse.service.EHealthQueryConsumerService;
+import gov.ca.emsa.pulse.service.PatientSearchService;
+
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -22,14 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
-import gov.ca.emsa.pulse.common.domain.PatientRecord;
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import gov.ca.emsa.pulse.common.domain.QueryOrganization;
-import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
-import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
-import gov.ca.emsa.pulse.service.EHealthQueryConsumerService;
-import gov.ca.emsa.pulse.service.PatientSearchService;
 
 @RestController
 public class PatientDiscoveryController {

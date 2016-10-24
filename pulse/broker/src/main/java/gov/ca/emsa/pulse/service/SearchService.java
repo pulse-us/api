@@ -1,7 +1,5 @@
 package gov.ca.emsa.pulse.service;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,7 +25,6 @@ import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
-import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
@@ -41,15 +38,12 @@ import io.swagger.annotations.ApiOperation;
 public class SearchService {
 
 	private static final Logger logger = LogManager.getLogger(SearchService.class);
-	@Autowired private SamlGenerator samlGenerator;
 	@Autowired private QueryManager searchManager;
 	@Autowired private OrganizationManager orgManager;
 	public static String dobFormat = "yyyy-MM-dd";
-	private DateFormat formatter;
 	@Autowired private AuditManager auditManager;
 
 	public SearchService() {
-		formatter = new SimpleDateFormat(dobFormat);
 	}
 
 	@ApiOperation(value="Query all organizations for patients. This runs asynchronously and returns a query object"
@@ -70,8 +64,7 @@ public class SearchService {
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
 		customAttributes.put("RequesterFirstName", user.getFirstName());
 		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientGivenName", toSearch.getGivenName());
-		customAttributes.put("PatientFamilyName", toSearch.getFamilyName());
+		customAttributes.put("PatientGivenName", toSearch.getPatientNames().get(0).getGivenName().get(0));
 		customAttributes.put("PatientDOB", toSearch.getDob());
 		customAttributes.put("PatientGender", toSearch.getGender());
 		customAttributes.put("PatientHomeZip", toSearch.getZip());

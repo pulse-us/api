@@ -1,11 +1,11 @@
 package gov.ca.emsa.pulse.common.domain;
 
-import java.util.Date;
+import java.util.ArrayList;
+
 
 public class PatientRecord {
 	private Long id;
-	private String givenName;
-	private String familyName;
+	private ArrayList<PatientRecordName> patientRecordName;
 	private String dateOfBirth;
 	private String gender;
 	private String phoneNumber;
@@ -13,7 +13,7 @@ public class PatientRecord {
 	private String ssn;
 	
 	public PatientRecord() {
-		
+		patientRecordName = new ArrayList<PatientRecordName>();
 	}
 	
 	public Long getId() {
@@ -54,20 +54,14 @@ public class PatientRecord {
 		this.ssn = ssn;
 	}
 
-	public String getGivenName() {
-		return givenName;
+	public ArrayList<PatientRecordName> getPatientRecordName() {
+		return patientRecordName;
 	}
 
-	public void setGivenName(String givenName) {
-		this.givenName = givenName;
+	public void setPatientRecordName(ArrayList<PatientRecordName> patientRecordName) {
+		this.patientRecordName = patientRecordName;
 	}
-
-	public String getFamilyName() {
-		return familyName;
-	}
-
-	public void setFamilyName(String familyName) {
-		this.familyName = familyName;
-	}
+	
+	
 	
 }

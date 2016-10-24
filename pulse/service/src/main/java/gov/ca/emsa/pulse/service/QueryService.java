@@ -1,5 +1,15 @@
 package gov.ca.emsa.pulse.service;
 
+<<<<<<< HEAD
+=======
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.Query;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+>>>>>>> upstream/development
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

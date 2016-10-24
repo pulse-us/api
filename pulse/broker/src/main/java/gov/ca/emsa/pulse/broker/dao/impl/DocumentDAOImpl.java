@@ -1,5 +1,9 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
+import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
+import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,10 +14,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
-import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
-import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
 
 @Repository
 public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {

@@ -1,10 +1,10 @@
 package gov.ca.emsa.pulse.broker.dao;
 
-import java.util.Date;
-import java.util.List;
-
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+
+import java.util.Date;
+import java.util.List;
 
 public interface QueryDAO {
 	public QueryDTO create(QueryDTO dto);
