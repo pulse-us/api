@@ -98,8 +98,6 @@ public class PatientRecordDaoTest extends TestCase {
 	public void testCreatePatientRecord() {		
 		PatientRecordDTO toCreate = new PatientRecordDTO();
 		
-		assertNotNull(patientGenderMale.getId() > 0);
-		
 		toCreate.setSsn("111223344");
 		toCreate.setPatientGender(patientGenderMale);
 		
