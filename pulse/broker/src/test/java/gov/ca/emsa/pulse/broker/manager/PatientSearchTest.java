@@ -78,7 +78,7 @@ public class PatientSearchTest {
 		 			    "\"orgPatientId\": \"PERS.EH.01\"," +
 		 			    "\"givenName\": \"John\"," +
 		 			    "\"familyName\": \"Doe\"," +
-		 			    "\"dateOfBirth\": 2016-01-10,"+
+		 			    "\"dateOfBirth\": 20160110,"+
 		 			    "\"gender\": \"M\"," +
 		 			    "\"phoneNumber\": \"3517869574\"," +
 		 			    "\"ssn\": \"451674563\"" +
@@ -102,7 +102,7 @@ public class PatientSearchTest {
 		 			    "\"orgPatientId\": \"PERS.IHE.03\","+
 		 			    "\"givenName\": \"John\","+
 		 			    "\"familyName\": \"Snow\","+
-		 			    "\"dateOfBirth\": 1983-02-05,"+
+		 			    "\"dateOfBirth\": 19830205,"+
 		 			    "\"gender\": \"M\","+
 		 			    "\"phoneNumber\": \"9004783666\","+
 		 			    "\"ssn\": \"451663333\""+
@@ -131,6 +131,7 @@ public class PatientSearchTest {
 		 try {
 			 query = createQuery(user);
 		 } catch(Exception ex) {
+			 ex.printStackTrace();
 			 Assert.fail(ex.getMessage());
 		 }
 
@@ -141,7 +142,7 @@ public class PatientSearchTest {
 		 }
 
 		 //TODO: this is so close - but doesn't work because the calls are asynch.
-		// mockServer.verify();
+		 // mockServer.verify();
 
 		 Assert.assertNotNull(query);
 		 Assert.assertNotNull(query.getId());
