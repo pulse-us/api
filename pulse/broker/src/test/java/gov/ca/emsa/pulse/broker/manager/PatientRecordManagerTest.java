@@ -15,10 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientGenderDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
@@ -34,10 +36,12 @@ public class PatientRecordManagerTest extends TestCase {
 	@Autowired OrganizationDAO orgDao;
 	@Autowired AlternateCareFacilityDAO acfDao;
 	@Autowired PatientRecordDAO prDao;
+	@Autowired PatientGenderDAO patientGenderDao;
 	private AlternateCareFacilityDTO acf;
 	private OrganizationDTO org1, org2;
 	private QueryDTO query;
 	private QueryOrganizationDTO orgQuery1, orgQuery2;
+	private PatientGenderDTO patientGenderMale;
 	
 	@Before
 	public void setup() {
@@ -83,6 +87,22 @@ public class PatientRecordManagerTest extends TestCase {
 		orgQuery2.setStatus(QueryOrganizationStatus.Active);
 		toInsert.getOrgStatuses().add(orgQuery2);
 		
+		QueryDTO inserted = queryDao.create(toInsert);
+		assertNotNull(inserted);
+		assertNotNull(inserted.getId());
+		assertTrue(inserted.getId().longValue() > 0);
+		assertNotNull(inserted.getOrgStatuses());
+		assertEquals(2, inserted.getOrgStatuses().size());
+		orgQuery1 = inserted.getOrgStatuses().get(0);
+		assertNotNull(inserted.getOrgStatuses().get(0).getId());
+		assertTrue(inserted.getOrgStatuses().get(0).getId().longValue() > 0);
+		orgQuery2 = inserted.getOrgStatuses().get(1);
+		assertNotNull(inserted.getOrgStatuses().get(1).getId());
+		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
+		
+		patientGenderMale = new PatientGenderDTO();
+		patientGenderMale = patientGenderDao.getById(2L);
+
 		query = queryManager.createQuery(toInsert);
 		assertNotNull(query);
 		assertNotNull(query.getId());
@@ -108,6 +128,7 @@ public class PatientRecordManagerTest extends TestCase {
 		dto.setPhoneNumber("443-745-0888");
 		dto.setQueryOrganizationId(orgQuery1.getId());
 		dto.setSsn("555-55-5555");
+		dto.setPatientGender(patientGenderMale);		
 		PatientRecordDTO added = queryManager.addPatientRecord(dto);
 		
 		assertNotNull(added);
