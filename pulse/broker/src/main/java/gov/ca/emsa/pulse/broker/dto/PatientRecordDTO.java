@@ -1,8 +1,6 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientGenderEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
 
@@ -117,8 +115,8 @@ public class PatientRecordDTO {
 		return organizationPatientRecordId;
 	}
 
-	public void setOrgPatientRecordId(String orgPatientRecordId) {
-		this.organizationPatientRecordId = organizationPatientRecordId;
+	public void setOrganizationPatientRecordId(String orgPatientRecordId) {
+		this.organizationPatientRecordId = orgPatientRecordId;
 	}
 
 	public Long getQueryOrganizationId() {
