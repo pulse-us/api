@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class PatientRecord {
 	private Long id;
 	private ArrayList<PatientRecordName> patientRecordName;
+	private String orgPatientRecordId;
 	private String dateOfBirth;
 	private PatientGender gender;
 	private String phoneNumber;
@@ -63,6 +64,14 @@ public class PatientRecord {
 
 	public void setPatientRecordName(ArrayList<PatientRecordName> patientRecordName) {
 		this.patientRecordName = patientRecordName;
+	}
+
+	public String getOrgPatientRecordId() {
+		return orgPatientRecordId;
+	}
+
+	public void setOrgPatientRecordId(String orgPatientRecordId) {
+		this.orgPatientRecordId = orgPatientRecordId;
 	}
 	
 	

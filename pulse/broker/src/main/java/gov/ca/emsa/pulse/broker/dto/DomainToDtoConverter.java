@@ -59,6 +59,8 @@ public class DomainToDtoConverter {
 		if(domainObj.getId() != null) {
 			result.setId(new Long(domainObj.getId()));
 		}
+		result.setOrganizationPatientRecordId(domainObj.getOrgPatientRecordId());
+		
 		if(domainObj.getPatientRecordName() != null){
 			for(PatientRecordName PatientRecordName : domainObj.getPatientRecordName()){
 				PatientRecordNameDTO PatientRecordNameDTO = new PatientRecordNameDTO();

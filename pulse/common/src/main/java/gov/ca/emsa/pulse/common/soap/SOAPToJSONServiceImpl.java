@@ -6,7 +6,6 @@ import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
 import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
 import gov.ca.emsa.pulse.common.domain.GivenName;
-import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientGender;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
@@ -54,7 +53,6 @@ import org.hl7.v3.PRPAMT201310UV02OtherIDs;
 import org.hl7.v3.PRPAMT201310UV02Patient;
 import org.hl7.v3.PRPAMT201310UV02Person;
 import org.hl7.v3.TELExplicit;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -102,6 +100,19 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				
 				PRPAIN201306UV02MFMIMT700711UV01Subject2 currSubject = subject.getRegistrationEvent().getSubject1();
 				PRPAMT201310UV02Patient patient = currSubject.getPatient();
+				
+				//set org patient id; just take the first one now and throw an exception 
+				//if there aren't any because we won't be able to do anything else with this
+				//patient without an id
+				//building this from section 1.13.1 on http://sequoiaproject.org/wp-content/uploads/2014/11/nhin-query-for-documents-production-specification-v3.0.pdf
+				List<II> ids = patient.getId();
+				if(ids != null && ids.size() > 0) {
+					//TODO: prob want to store the extension and root separately
+					patientRecord.setOrgPatientRecordId(ids.get(0).getExtension() + "^^^&amp;" + ids.get(0).getRoot() + "&amp;ISO");
+				} else {
+					patientRecord.setOrgPatientRecordId("COULD NOT PARSE OR WAS EMPTY");
+				}
+				
 				//set given and family name
 				JAXBElement<PRPAMT201310UV02Person> patientPerson = patient.getPatientPerson();
 				List<PNExplicit> names = patientPerson.getValue().getName();
@@ -157,87 +168,6 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					}
 					patientRecord.setAddress(address);
 				}
-				result.add(patientRecord);
-			}
-		}
-		
-		return result;
-	}
-	
-	public List<Patient> convertToPatients(PRPAIN201306UV02 request){
-		List<Patient> result = new ArrayList<Patient>();
-		
-		List<PRPAIN201306UV02MFMIMT700711UV01Subject1> subjects = request.getControlActProcess().getSubject();
-		if(subjects != null && subjects.size() > 0) {
-			for(PRPAIN201306UV02MFMIMT700711UV01Subject1 subject : subjects) {
-				Patient patient = new Patient();				
-				
-				PRPAIN201306UV02MFMIMT700711UV01Subject2 currSubject = subject.getRegistrationEvent().getSubject1();
-				PRPAMT201310UV02Patient subjPatient = currSubject.getPatient();
-				//set org patient id; just take the first one now and throw an exception 
-				//if there aren't any because we won't be able to do anything else with this
-				//patient without an id
-				//building this from section 1.13.1 on http://sequoiaproject.org/wp-content/uploads/2014/11/nhin-query-for-documents-production-specification-v3.0.pdf
-				List<II> ids = subjPatient.getId();
-				if(ids != null && ids.size() > 0) {
-					//TODO: prob want to store the extension and root separately
-					patient.setOrgPatientId(ids.get(0).getExtension() + "^^^&amp;" + ids.get(0).getRoot() + "&amp;ISO");
-				} else {
-					patient.setOrgPatientId("COULD NOT PARSE OR WAS EMPTY");
-				}
-				
-				//set given and family name
-				JAXBElement<PRPAMT201310UV02Person> patientPerson = subjPatient.getPatientPerson();
-				List<PNExplicit> names = patientPerson.getValue().getName();
-				for(PNExplicit name : names) {
-					List<Serializable> nameParts = name.getContent();
-					for(Serializable namePart : nameParts) {
-						if(namePart instanceof JAXBElement<?>) {
-							if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("given")) {
-								ArrayList<GivenName> givens = new ArrayList<GivenName>();
-								GivenName given = new GivenName();
-								given.setGivenName(((JAXBElement<EnExplicitGiven>) namePart).getValue().getContent());
-							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
-								patient.setFullName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
-							}
-						}
-					}
-				}
-				
-				patient.setGender(patientPerson.getValue().getAdministrativeGenderCode().getCode());
-				patient.setDateOfBirth(patientPerson.getValue().getBirthTime().getValue());
-				
-				//TODO: just taking the first listed phone number for now
-				//but eventually we should accommodate multiple phone numbers
-				List<TELExplicit> tels = patientPerson.getValue().getTelecom();
-				if(tels.size() >= 1) {
-					patient.setPhoneNumber(tels.get(0).getValue());
-				} 
-				
-				//TODO: just taking the first listed address for now
-				//but eventually we should accommodate multiple addresses
-				List<ADExplicit> addressList = patientPerson.getValue().getAddr();
-				if(addressList.size() >= 1) {
-					Address address = new Address();
-					ADExplicit addr = addressList.get(0);
-					List<Serializable> addressContent = addr.getContent();
-					for(Serializable line : addressContent) {
-						if(line instanceof JAXBElement<?>) {
-							if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("streetAddressLine")) {
-								if(StringUtils.isEmpty(address.getStreet1())) {
-									address.setStreet1(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
-								} else if(StringUtils.isEmpty(address.getStreet2())) {
-									address.setStreet2(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
-								}
-							} else if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("city")) {
-								address.setCity(((JAXBElement<AdxpExplicitCity>)line).getValue().getContent());
-							} else if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("state")) {
-								address.setState(((JAXBElement<AdxpExplicitState>)line).getValue().getContent());
-							}
-						}
-					}
-					patient.setAddress(address);
-				}
 				
 				//look for the SSN
 				List<PRPAMT201310UV02OtherIDs> otherIds = patientPerson.getValue().getAsOtherIDs();
@@ -248,14 +178,13 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 							List<II> citIds = otherId.getId();
 							for(II citId : citIds) {
 								if(citId.getRoot().equals("2.16.840.1.113883.4.1")) {
-									patient.setSsn(citId.getExtension());
+									patientRecord.setSsn(citId.getExtension());
 								}
 							}
 						}
 					}
 				}
-				
-				result.add(patient);
+				result.add(patientRecord);
 			}
 		}
 		
