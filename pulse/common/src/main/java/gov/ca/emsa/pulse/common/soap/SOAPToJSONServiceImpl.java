@@ -106,20 +106,20 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				JAXBElement<PRPAMT201310UV02Person> patientPerson = patient.getPatientPerson();
 				List<PNExplicit> names = patientPerson.getValue().getName();
 				for(PNExplicit name : names) {
+					PatientRecordName prn = new PatientRecordName();
 					List<Serializable> nameParts = name.getContent();
 					for(Serializable namePart : nameParts) {
 						if(namePart instanceof JAXBElement<?>) {
 							if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("given")) {
 								GivenName given = new GivenName();
 								given.setGivenName(((JAXBElement<EnExplicitGiven>) namePart).getValue().getContent());
-								PatientRecordName prn = new PatientRecordName();
 								prn.getGivenName().add(given);
-								patientRecord.getPatientRecordName().add(prn);
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
-								patientRecord.getPatientRecordName().get(0).setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+								prn.setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
 							}
 						}
 					}
+					patientRecord.getPatientRecordName().add(prn);
 				}
 				PatientGender pg = new PatientGender();
 				pg.setCode(patientPerson.getValue().getAdministrativeGenderCode().getCode());
