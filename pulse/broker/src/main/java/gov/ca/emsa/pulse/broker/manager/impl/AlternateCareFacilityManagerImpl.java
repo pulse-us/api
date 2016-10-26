@@ -8,6 +8,8 @@ import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityExistsException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +27,15 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 	@Override
 	@Transactional
 	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO toCreate) {
-		return acfDao.create(toCreate);
+		AlternateCareFacilityDTO result = null;
+		
+		try {
+			result = acfDao.create(toCreate);
+		} catch(EntityExistsException ex) {
+			result = getByName(toCreate.getName());
+		}
+		
+		return result;
 	}
 
 	@Override
