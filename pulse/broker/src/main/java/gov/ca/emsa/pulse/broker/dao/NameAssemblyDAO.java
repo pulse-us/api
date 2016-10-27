@@ -8,4 +8,5 @@ public interface NameAssemblyDAO {
 	
 	public void delete(Long id);
 	public NameAssemblyDTO getById(Long id);
+	public NameAssemblyDTO getByCode(String code);
 }

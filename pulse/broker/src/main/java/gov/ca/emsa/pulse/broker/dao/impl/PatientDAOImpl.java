@@ -29,7 +29,6 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	private static final Logger logger = LogManager.getLogger(PatientDAOImpl.class);
 	@Autowired AddressDAO addrDao;
 	@Autowired QueryStatusDAO statusDao;
-	@Autowired PatientRecordNameDAO nameDao;
 
 	@Override
 	public PatientDTO create(PatientDTO dto) {

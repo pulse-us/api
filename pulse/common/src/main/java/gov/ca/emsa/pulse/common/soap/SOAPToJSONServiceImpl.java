@@ -6,6 +6,7 @@ import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
 import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
 import gov.ca.emsa.pulse.common.domain.GivenName;
+import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.PatientGender;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
@@ -127,6 +128,10 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 								prn.getGivenName().add(given);
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
 								prn.setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("use")){
+								NameType nt = new NameType();
+								nt.setCode(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+								prn.setNameType(nt);
 							}
 						}
 					}
