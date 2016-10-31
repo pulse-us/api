@@ -5,8 +5,10 @@ import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityExistsException;
+
 public interface AlternateCareFacilityDAO {
-	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO dto);
+	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO dto) throws EntityExistsException;
 	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO dto);
 	public void delete(Long id);
 	public List<AlternateCareFacilityDTO> findAll();	
