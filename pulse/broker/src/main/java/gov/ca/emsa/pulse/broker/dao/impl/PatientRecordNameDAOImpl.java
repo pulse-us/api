@@ -42,30 +42,17 @@ public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientReco
 		PatientRecordNameEntity patient = new PatientRecordNameEntity();
 		patient.setFamilyName(dto.getFamilyName());
 		patient.setPatientRecordId(dto.getPatientRecordId());
-		ArrayList<GivenNameDTO> givensDTO = new ArrayList<GivenNameDTO>();
-		if(dto.getGivenName() != null){
-			for(GivenNameDTO givenDto : dto.getGivenName()){
-				if(givenDto.getId() == null){
-					GivenNameDTO givenName = givenDAO.create(givenDto);
-					givensDTO.add(givenName);
-				}
-			}
-			dto.setGivenName(givensDTO);
-			//given name entities should exist now
-			Set<GivenNameEntity> givensEntity = new HashSet<GivenNameEntity>();
-			for(GivenNameDTO given: dto.getGivenName()){
-				GivenNameEntity name = entityManager.find(GivenNameEntity.class, given.getId());
-				givensEntity.add(name);
-			}
-			patient.setGivenNames(givensEntity);
-		}
 		patient.setSuffix(dto.getSuffix());
 		patient.setPrefix(dto.getPrefix());
 		patient.setProfSuffix(dto.getProfSuffix());
 		if(dto.getNameType() != null){
-			NameTypeEntity nameType = entityManager.find(NameTypeEntity.class, dto.getNameType().getId());
-			patient.setNameType(nameType);
-			patient.setNameTypeId(nameType.getId());
+			NameTypeDTO nameTypeDto = nameTypeDAO.getByCode(dto.getNameType().getCode());
+			NameTypeEntity nameTypeEntity = new NameTypeEntity();
+			nameTypeEntity.setId(nameTypeDto.getId());
+			nameTypeEntity.setCode(nameTypeDto.getCode());
+			nameTypeEntity.setDescription(nameTypeDto.getDescription());
+			patient.setNameType(nameTypeEntity);
+			patient.setNameTypeId(nameTypeEntity.getId());
 		}
 		if(dto.getNameRepresentation() != null){
 			NameRepresentationEntity nameRep = entityManager.find(NameRepresentationEntity.class, dto.getNameRepresentation().getId());
@@ -82,7 +69,18 @@ public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientReco
 
 		entityManager.persist(patient);
 		entityManager.flush();
-		return new PatientRecordNameDTO(patient);
+		PatientRecordNameDTO created = new PatientRecordNameDTO(patient);
+		
+		if(dto.getGivenName() != null){
+			for(GivenNameDTO givenDto : dto.getGivenName()){
+				if(givenDto.getId() == null){
+					givenDto.setPatientRecordNameId(created.getId());
+					GivenNameDTO givenName = givenDAO.create(givenDto);
+				}
+			}
+		}
+		
+		return created;
 	}
 
 	@Override

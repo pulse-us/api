@@ -30,8 +30,12 @@ public class PatientRecordEntity {
 	@Column(name = "ssn")
 	private String ssn;
 	
-	@Column(name = "gender")
-	private String gender;
+	@Column(name = "patient_gender_id")
+	private Long patientGenderId;
+	
+	@OneToOne
+	@JoinColumn(name="patient_gender_id", insertable= false, updatable = false)
+	private PatientGenderEntity patientGender;
 	
 	@Column(name = "organization_patient_record_id")
 	private String organizationPatientRecordId;
@@ -96,12 +100,20 @@ public class PatientRecordEntity {
 		this.ssn = ssn;
 	}
 
-	public String getGender() {
-		return gender;
+	public Long getPatientGenderId() {
+		return patientGenderId;
 	}
 
-	public void setGender(String gender) {
-		this.gender = gender;
+	public void setPatientGenderId(Long patientGenderId) {
+		this.patientGenderId = patientGenderId;
+	}
+
+	public PatientGenderEntity getPatientGender() {
+		return patientGender;
+	}
+
+	public void setPatientGender(PatientGenderEntity patientGender) {
+		this.patientGender = patientGender;
 	}
 
 	public String getPhoneNumber() {

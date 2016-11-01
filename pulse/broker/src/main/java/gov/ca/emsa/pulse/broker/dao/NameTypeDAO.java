@@ -8,4 +8,5 @@ public interface NameTypeDAO {
 	
 	public void delete(Long id);
 	public NameTypeDTO getById(Long id);
+	public NameTypeDTO getByCode(String code);
 }

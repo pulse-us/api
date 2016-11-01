@@ -6,7 +6,11 @@ import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+<<<<<<< HEAD
 import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressDTO;
+=======
+import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
+>>>>>>> development
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
@@ -43,10 +47,12 @@ public class PatientRecordDaoTest extends TestCase {
 	@Autowired PatientRecordNameDAO prNameDao;
 	@Autowired GivenNameDAO givenNameDao;
 	@Autowired NameTypeDAO nameTypeDao;
+	@Autowired PatientGenderDAO patientGenderDao;
 	private AlternateCareFacilityDTO acf;
 	private OrganizationDTO org1, org2;
 	private PatientRecordDTO queryResult1, queryResult2;
 	private NameTypeDTO nameTypeCodeLegal;
+	private PatientGenderDTO patientGenderMale, patientGenderFemale, patientGenderUn;
 	
 	@Before
 	public void setup() {
@@ -77,10 +83,15 @@ public class PatientRecordDaoTest extends TestCase {
 		org2.setActive(true);
 		org2 = orgDao.create(org2);
 		
+		
+		patientGenderFemale = new PatientGenderDTO();
+		patientGenderFemale = patientGenderDao.getByCode("F");
+		patientGenderMale = new PatientGenderDTO();
+		patientGenderMale = patientGenderDao.getByCode("M");
+		patientGenderUn = new PatientGenderDTO();
+		patientGenderUn = patientGenderDao.getById(3L);
 		nameTypeCodeLegal = new NameTypeDTO();
-		nameTypeCodeLegal.setCode("L");
-		nameTypeCodeLegal.setDescription("Legal Name.");
-		nameTypeCodeLegal = nameTypeDao.create(nameTypeCodeLegal);
+		nameTypeCodeLegal = nameTypeDao.getByCode("L");
 	}
 	
 	@Test
@@ -90,8 +101,8 @@ public class PatientRecordDaoTest extends TestCase {
 		PatientRecordDTO toCreate = new PatientRecordDTO();
 		
 		toCreate.setSsn("111223344");
-		toCreate.setGender("M");
-		toCreate.setOrganizationPatientRecordId("123-456-78");
+		toCreate.setPatientGender(patientGenderMale);
+		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
 		assertNotNull(created);
 		assertNotNull(created.getId());
@@ -144,8 +155,8 @@ public class PatientRecordDaoTest extends TestCase {
 		PatientRecordDTO toCreate = new PatientRecordDTO();
 		
 		toCreate.setSsn("111223344");
-		toCreate.setGender("M");
-		toCreate.setOrganizationPatientRecordId("123-456-789");
+		toCreate.setPatientGender(patientGenderFemale);
+		//toCreate.setAddress(addrDto);
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
 		assertNotNull(created);
@@ -189,8 +200,7 @@ public class PatientRecordDaoTest extends TestCase {
 		PatientRecordDTO toCreate = new PatientRecordDTO();
 		
 		toCreate.setSsn("111223344");
-		toCreate.setGender("M");
-		toCreate.setOrganizationPatientRecordId("123-1345-678");
+		toCreate.setPatientGender(patientGenderUn);
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
 		assertNotNull(created);
@@ -219,8 +229,8 @@ public class PatientRecordDaoTest extends TestCase {
 	public void testDeletePatientRecord() {
 		PatientRecordDTO toCreate = new PatientRecordDTO();
 		toCreate.setSsn("111223344");
-		toCreate.setGender("Male");
-		toCreate.setOrganizationPatientRecordId("123-456-789");
+
+		toCreate.setPatientGender(patientGenderMale);
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
 		patientRecordDao.delete(created.getId());

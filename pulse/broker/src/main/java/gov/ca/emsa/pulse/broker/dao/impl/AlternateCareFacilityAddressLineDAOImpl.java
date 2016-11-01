@@ -31,7 +31,7 @@ public class AlternateCareFacilityAddressLineDAOImpl extends BaseDAOImpl impleme
 		AlternateCareFacilityAddressLineEntity toUpdate = this.queryEntityById(dto.getId());
 		toUpdate.setLine(dto.getLine());
 		AlternateCareFacilityAddressLineEntity updated = entityManager.merge(toUpdate);
-
+		entityManager.flush();
 		return new AddressLineDTO(updated);
 	}
 

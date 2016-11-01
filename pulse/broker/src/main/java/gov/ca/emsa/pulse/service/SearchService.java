@@ -1,25 +1,5 @@
 package gov.ca.emsa.pulse.service;
 
-import gov.ca.emsa.pulse.auth.user.CommonUser;
-import gov.ca.emsa.pulse.broker.domain.QueryType;
-import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
-import gov.ca.emsa.pulse.broker.manager.AuditManager;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
-import gov.ca.emsa.pulse.broker.manager.QueryManager;
-import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
-import gov.ca.emsa.pulse.broker.saml.SAMLInput;
-import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import gov.ca.emsa.pulse.common.domain.Query;
-import gov.ca.emsa.pulse.common.domain.QueryStatus;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,21 +14,36 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.ca.emsa.pulse.auth.user.CommonUser;
+import gov.ca.emsa.pulse.broker.domain.QueryType;
+import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.manager.AuditManager;
+import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.Query;
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @Api(value = "search")
 @RestController
 @RequestMapping("/search")
 public class SearchService {
 
 	private static final Logger logger = LogManager.getLogger(SearchService.class);
-	@Autowired private SamlGenerator samlGenerator;
 	@Autowired private QueryManager searchManager;
 	@Autowired private OrganizationManager orgManager;
 	public static String dobFormat = "yyyy-MM-dd";
-	private DateFormat formatter;
 	@Autowired private AuditManager auditManager;
 
 	public SearchService() {
-		formatter = new SimpleDateFormat(dobFormat);
 	}
 
 	@ApiOperation(value="Query all organizations for patients. This runs asynchronously and returns a query object"
@@ -92,7 +87,7 @@ public class SearchService {
 				QueryOrganizationDTO queryOrg = new QueryOrganizationDTO();
 				queryOrg.setOrgId(org.getId());
 				queryOrg.setQueryId(query.getId());
-				queryOrg.setStatus(QueryStatus.ACTIVE.name());
+				queryOrg.setStatus(QueryOrganizationStatus.Active);
 				queryOrg = searchManager.createOrUpdateQueryOrganization(queryOrg);
 				query.getOrgStatuses().add(queryOrg);
 			}

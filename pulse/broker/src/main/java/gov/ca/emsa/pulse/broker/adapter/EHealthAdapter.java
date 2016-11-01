@@ -1,15 +1,18 @@
 package gov.ca.emsa.pulse.broker.adapter;
 
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
+import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
+import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.SearchResultConverter;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -55,6 +58,7 @@ public class EHealthAdapter implements Adapter {
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
 	@Autowired EHealthQueryProducerService queryProducer;
+	@Autowired NameTypeDAO nameTypeDao;
 	
 	@Override
 	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, PatientSearch toSearch, SAMLInput samlInput) {
@@ -88,6 +92,10 @@ public class EHealthAdapter implements Adapter {
 				List<PatientRecord> patientResults = soapConverterService.convertToPatientRecords(resultObj);
 				for(int i = 0; i < patientResults.size(); i++) {
 					PatientRecordDTO record = DomainToDtoConverter.convertToPatientRecord(patientResults.get(i));
+					for(int j = 0; j < record.getPatientRecordName().size(); j++){
+						NameTypeDTO nameType = nameTypeDao.getByCode("L");
+						record.getPatientRecordName().get(j).setNameType(nameType);
+					}
 					records.add(record);
 				}
 			} catch(SAMLException | SOAPException ex) {

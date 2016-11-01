@@ -189,6 +189,7 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 	public void deleteOrganization(OrganizationEntity org){
 		entityManager.remove(org);
+		entityManager.flush();
 	}
 
 }

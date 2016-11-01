@@ -8,7 +8,7 @@ public class PatientRecord {
 	private ArrayList<PatientRecordName> patientRecordName;
 	private String organizationPatientRecordId;
 	private String dateOfBirth;
-	private String gender;
+	private PatientGender gender;
 	private String phoneNumber;
 	private PatientRecordAddress address;
 	private String ssn;
@@ -30,12 +30,15 @@ public class PatientRecord {
 	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
-	public String getGender() {
+	
+	public PatientGender getGender() {
 		return gender;
 	}
-	public void setGender(String gender) {
+
+	public void setGender(PatientGender gender) {
 		this.gender = gender;
 	}
+
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -70,5 +73,6 @@ public class PatientRecord {
 	public void setOrganizationPatientRecordId(String organizationPatientRecordId) {
 		this.organizationPatientRecordId = organizationPatientRecordId;
 	}
+
 	
 }

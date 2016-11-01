@@ -1,26 +1,7 @@
 package gov.ca.emsa.pulse.broker.manager;
 
-import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
-import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
-import gov.ca.emsa.pulse.broker.dao.QueryDAO;
-import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
-import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
-import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
-import gov.ca.emsa.pulse.common.domain.PatientRecordName;
-import gov.ca.emsa.pulse.common.domain.QueryStatus;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-
-import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +12,22 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
+import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientGenderDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
+import gov.ca.emsa.pulse.broker.dao.QueryDAO;
+import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
+import junit.framework.TestCase;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
 public class PatientRecordManagerTest extends TestCase {
@@ -39,9 +36,12 @@ public class PatientRecordManagerTest extends TestCase {
 	@Autowired OrganizationDAO orgDao;
 	@Autowired AlternateCareFacilityDAO acfDao;
 	@Autowired PatientRecordDAO prDao;
+	@Autowired PatientGenderDAO patientGenderDao;
 	private AlternateCareFacilityDTO acf;
 	private OrganizationDTO org1, org2;
+	private QueryDTO query;
 	private QueryOrganizationDTO orgQuery1, orgQuery2;
+	private PatientGenderDTO patientGenderMale;
 	
 	@Before
 	public void setup() {
@@ -79,12 +79,12 @@ public class PatientRecordManagerTest extends TestCase {
 		
 		orgQuery1 = new QueryOrganizationDTO();
 		orgQuery1.setOrgId(org1.getId());
-		orgQuery1.setStatus(QueryStatus.ACTIVE.name());
+		orgQuery1.setStatus(QueryOrganizationStatus.Active);
 		toInsert.getOrgStatuses().add(orgQuery1);
 		
 		orgQuery2 = new QueryOrganizationDTO();
 		orgQuery2.setOrgId(org2.getId());
-		orgQuery2.setStatus(QueryStatus.ACTIVE.name());
+		orgQuery2.setStatus(QueryOrganizationStatus.Active);
 		toInsert.getOrgStatuses().add(orgQuery2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
@@ -100,8 +100,21 @@ public class PatientRecordManagerTest extends TestCase {
 		assertNotNull(inserted.getOrgStatuses().get(1).getId());
 		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
 		
-		
+		patientGenderMale = new PatientGenderDTO();
+		patientGenderMale = patientGenderDao.getById(2L);
 
+		query = queryManager.createQuery(toInsert);
+		assertNotNull(query);
+		assertNotNull(query.getId());
+		assertTrue(query.getId().longValue() > 0);
+		assertNotNull(query.getOrgStatuses());
+		assertEquals(2, query.getOrgStatuses().size());
+		orgQuery1 = query.getOrgStatuses().get(0);
+		assertNotNull(query.getOrgStatuses().get(0).getId());
+		assertTrue(query.getOrgStatuses().get(0).getId().longValue() > 0);
+		orgQuery2 = query.getOrgStatuses().get(1);
+		assertNotNull(query.getOrgStatuses().get(1).getId());
+		assertTrue(query.getOrgStatuses().get(1).getId().longValue() > 0);
 	}
 	
 	@Test
@@ -115,7 +128,8 @@ public class PatientRecordManagerTest extends TestCase {
 		dto.setPhoneNumber("443-745-0888");
 		dto.setQueryOrganizationId(orgQuery1.getId());
 		dto.setSsn("555-55-5555");
-		dto.setOrganizationPatientRecordId("123-3456-87");
+
+		dto.setPatientGender(patientGenderMale);
 		PatientRecordDTO added = queryManager.addPatientRecord(dto);
 		
 		assertNotNull(added);
@@ -126,5 +140,28 @@ public class PatientRecordManagerTest extends TestCase {
 		assertNotNull(added);
 		assertEquals(added.getId(), selected.getId());
 		assertTrue(selected.getDateOfBirth().isEqual(date));
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testCancelPatientDiscoveryQueryToOrganization() {	
+		System.out.println("query id " + query.getId());
+		queryManager.cancelQueryToOrganization(query.getId(), org1.getId());
+		QueryDTO updatedQuery = queryManager.getById(query.getId());
+		
+		assertNotNull(updatedQuery);
+		assertEquals(query.getId(), updatedQuery.getId());
+		assertEquals(2, updatedQuery.getOrgStatuses().size());
+		boolean queryHadOrg = false;
+		for(QueryOrganizationDTO orgStatus : updatedQuery.getOrgStatuses()) {
+			assertNotNull(orgStatus.getOrgId());
+			if(orgStatus.getOrgId().longValue() == org1.getId().longValue()) {
+				queryHadOrg = true;
+				
+				assertEquals(QueryOrganizationStatus.Cancelled, orgStatus.getStatus());
+			}
+		}
+		assertTrue(queryHadOrg);
 	}
 }

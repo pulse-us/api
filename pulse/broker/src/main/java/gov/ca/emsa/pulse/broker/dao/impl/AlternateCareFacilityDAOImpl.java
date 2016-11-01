@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.Query;
 
 import org.apache.log4j.LogManager;
@@ -26,7 +27,15 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	@Autowired AlternateCareFacilityAddressLineDAO addressLineDao;
 	
 	@Override
-	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO dto) {
+	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO dto) throws EntityExistsException {
+		List<AlternateCareFacilityEntity> duplicates = getEntityByName(dto.getName()); 
+		//we restrict ACFs to have unique names, so first check
+		//to see if there is already one with this name. if so throw an exception
+		if(duplicates != null && duplicates.size() > 0) {
+			logger.info("Attempt to create a duplicate ACF named " + dto.getName());
+			throw new EntityExistsException("An ACF named " + dto.getName() + " already exists.");
+		}
+		
 		AlternateCareFacilityEntity toInsert = new AlternateCareFacilityEntity();
 		toInsert.setName(dto.getName());
 		toInsert.setPhoneNumber(dto.getPhoneNumber());
@@ -36,7 +45,8 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		toInsert.setZipcode(dto.getZipcode());
 		toInsert.setCountry(dto.getCountry());
 		entityManager.persist(toInsert);
-
+		entityManager.flush();
+		
 		if(dto.getLines() != null && dto.getLines().size() > 0) {
 			for(int i = 0; i < dto.getLines().size(); i++) {
 				AlternateCareFacilityAddressLineEntity addrLine = new AlternateCareFacilityAddressLineEntity();
@@ -44,10 +54,10 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 				addrLine.setOrder(i);
 				addrLine.setLine(dto.getLines().get(i).getLine());	
 				entityManager.persist(addrLine);
+				entityManager.flush();
 				toInsert.getLines().add(addrLine);
 			}
 		}
-		entityManager.flush();
 		return new AlternateCareFacilityDTO(toInsert);
 	}
 
@@ -62,6 +72,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		toUpdate.setZipcode(dto.getZipcode());
 		toUpdate.setCountry(dto.getCountry());
 		toUpdate = entityManager.merge(toUpdate);
+		entityManager.flush();
 		
 		//delete all address lines and re-add them
 		addressLineDao.deleteAllForAcf(dto.getId());
@@ -73,6 +84,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 				addrLine.setOrder(i);
 				addrLine.setLine(dto.getLines().get(i).getLine());	
 				entityManager.persist(addrLine);
+				entityManager.flush();
 				toUpdate.getLines().add(addrLine);
 			}
 		}
@@ -84,6 +96,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	public void delete(Long id) {
 		AlternateCareFacilityEntity toDelete = getEntityById(id);
 		entityManager.remove(toDelete);
+		entityManager.flush();
 	}
 
 	@Override
