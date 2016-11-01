@@ -19,6 +19,7 @@ import gov.ca.emsa.pulse.broker.entity.PatientGenderEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.util.ArrayList;
@@ -69,15 +70,18 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		PatientRecordDTO created = new PatientRecordDTO(patient);
 		
 		if(dto.getPatientRecordName() != null){
-			for(PatientRecordNameDTO patientRecordNameDTO : dto.getPatientRecordName()){
+			ArrayList<PatientRecordNameDTO> iterate = new ArrayList<PatientRecordNameDTO>(dto.getPatientRecordName());
+			for(PatientRecordNameDTO patientRecordNameDTO : iterate){
+				PatientRecordNameDTO nameDto = null;
 				if(patientRecordNameDTO.getId() == null){
 					patientRecordNameDTO.setPatientRecordId(created.getId());
-					PatientRecordNameDTO nameDto = nameDao.create(patientRecordNameDTO);
+					nameDto = nameDao.create(patientRecordNameDTO);
 					dto.getPatientRecordName().add(nameDto);
 				}
 				//patient name entity should exist now
-				PatientRecordNameEntity name = entityManager.find(PatientRecordNameEntity.class, patientRecordNameDTO.getId());
-				patient.getPatientRecordName().add(name);
+				//PatientRecordNameEntity name = entityManager.find(PatientRecordNameEntity.class, nameDto.getId());
+				//PatientRecordNameDTO patientRecordDto = new PatientRecordNameDTO(name);
+				//created.getPatientRecordName().add(patientRecordDto);
 			}
 		}
 		

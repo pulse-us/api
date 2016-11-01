@@ -77,7 +77,7 @@ public class PatientRecordEntity {
 	private QueryOrganizationEntity queryOrganization;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId")
-	@Column( name = "patient_record_id", nullable = false  )
+	@Column( name = "patient_record_id", nullable = false, insertable=false, updatable= false, unique=true )
 	private Set<PatientRecordNameEntity> patientRecordName = new HashSet<PatientRecordNameEntity>();
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)

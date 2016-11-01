@@ -38,6 +38,7 @@ import org.hl7.v3.ADExplicit;
 import org.hl7.v3.AdxpExplicitCity;
 import org.hl7.v3.AdxpExplicitState;
 import org.hl7.v3.AdxpExplicitStreetAddressLine;
+import org.hl7.v3.ENExplicit;
 import org.hl7.v3.EnExplicitFamily;
 import org.hl7.v3.EnExplicitGiven;
 import org.hl7.v3.II;
@@ -71,22 +72,24 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		if((gender != null && !gender.isEmpty()) && (dob != null && !dob.isEmpty()) && (name != null  && !name.isEmpty())){
 			ps.setGender(gender.get(0).getValue().get(0).getCode());
 			ps.setDob(dob.get(0).getValue().get(0).getValue());
-			List<Serializable> names = name.get(0).getValue().get(0).getContent();
-			for(Serializable nameInList: names){
-				if(nameInList instanceof JAXBElement<?>){
-					if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("given")){
-						ArrayList<String> givens = new ArrayList<String>();
-						givens.add(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
-						PatientSearchName psn = new PatientSearchName();
-						psn.setGivenName(givens);
-						ArrayList<PatientSearchName> arr = new ArrayList<PatientSearchName>();
-						arr.add(psn);
-						ps.setPatientNames(arr);
-					}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("family")){
-						ps.getPatientNames().get(0).setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
+			ArrayList<PatientSearchName> arr = new ArrayList<PatientSearchName>();
+			for(PRPAMT201306UV02LivingSubjectName livingSubject : name){
+				List<Serializable> names = livingSubject.getValue().get(0).getContent();
+				ArrayList<String> givens = new ArrayList<String>();
+				PatientSearchName psn = new PatientSearchName();
+				for(Serializable nameInList: names){
+					if(nameInList instanceof JAXBElement<?>){
+						if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("given")){
+							givens.add(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
+						}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("family")){
+							psn.setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
+						}
 					}
 				}
+				psn.setGivenName(givens);
+				arr.add(psn);
 			}
+			ps.setPatientNames(arr);
 		}
 		return ps;
 	}
@@ -128,10 +131,10 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 								prn.getGivenName().add(given);
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
 								prn.setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
-							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("use")){
-								NameType nt = new NameType();
-								nt.setCode(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
-								prn.setNameType(nt);
+							}else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("nameType")) {
+								NameType nameType = new NameType();
+								nameType.setCode(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+								prn.setNameType(nameType);
 							}
 						}
 					}
