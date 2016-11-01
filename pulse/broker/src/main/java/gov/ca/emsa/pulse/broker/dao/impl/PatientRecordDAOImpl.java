@@ -78,10 +78,6 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 					nameDto = nameDao.create(patientRecordNameDTO);
 					dto.getPatientRecordName().add(nameDto);
 				}
-				//patient name entity should exist now
-				//PatientRecordNameEntity name = entityManager.find(PatientRecordNameEntity.class, nameDto.getId());
-				//PatientRecordNameDTO patientRecordDto = new PatientRecordNameDTO(name);
-				//created.getPatientRecordName().add(patientRecordDto);
 			}
 		}
 		

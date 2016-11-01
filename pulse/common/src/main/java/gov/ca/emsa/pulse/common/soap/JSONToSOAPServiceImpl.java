@@ -5,6 +5,7 @@ import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.PatientSearchName;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.DocumentRequest;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
@@ -87,15 +88,23 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		PRPAMT201306UV02QueryByParameter queryByParameter1 = new PRPAMT201306UV02QueryByParameter();
 		PRPAMT201306UV02ParameterList parameterList = new PRPAMT201306UV02ParameterList();
 		
-		if(!search.getPatientNames().get(0).getGivenName().isEmpty() || !StringUtils.isEmpty(search.getPatientNames().get(0).getFamilyName())) {
-			PRPAMT201306UV02LivingSubjectName name = new PRPAMT201306UV02LivingSubjectName();
-			ENExplicit nameValue = new ENExplicit();
-			nameValue.getContent().add(new JAXBElement<String>(new QName("family"), String.class, search.getPatientNames().get(0).getFamilyName()));
-			for(String given : search.getPatientNames().get(0).getGivenName()){
-				nameValue.getContent().add(new JAXBElement<String>(new QName("given"), String.class, given));
+		for(PatientSearchName patientName : search.getPatientNames()){
+			if(!patientName.getGivenName().isEmpty() || !StringUtils.isEmpty(patientName.getFamilyName())) {
+				PRPAMT201306UV02LivingSubjectName name = new PRPAMT201306UV02LivingSubjectName();
+				ENExplicit nameValue = new ENExplicit();
+				nameValue.getContent().add(new JAXBElement<String>(new QName("family"), String.class, patientName.getFamilyName()));
+				for(String given : patientName.getGivenName()){
+					nameValue.getContent().add(new JAXBElement<String>(new QName("given"), String.class, given));
+				}
+				if(!patientName.getPrefix().isEmpty()){
+					nameValue.getContent().add(new JAXBElement<String>(new QName("prefix"), String.class, patientName.getPrefix()));
+				}
+				if(!patientName.getSuffix().isEmpty()){
+					nameValue.getContent().add(new JAXBElement<String>(new QName("suffix"), String.class, patientName.getSuffix()));
+				}
+				name.getValue().add(nameValue);
+				parameterList.getLivingSubjectName().add(name);
 			}
-			name.getValue().add(nameValue);
-			parameterList.getLivingSubjectName().add(name);
 		}
 		
 		if(!StringUtils.isEmpty(search.getGender())) {

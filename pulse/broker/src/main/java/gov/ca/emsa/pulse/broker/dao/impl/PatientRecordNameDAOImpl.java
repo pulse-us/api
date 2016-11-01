@@ -71,23 +71,13 @@ public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientReco
 		entityManager.flush();
 		PatientRecordNameDTO created = new PatientRecordNameDTO(patient);
 		
-		ArrayList<GivenNameDTO> givensDTO = new ArrayList<GivenNameDTO>();
 		if(dto.getGivenName() != null){
 			for(GivenNameDTO givenDto : dto.getGivenName()){
 				if(givenDto.getId() == null){
 					givenDto.setPatientRecordNameId(created.getId());
 					GivenNameDTO givenName = givenDAO.create(givenDto);
-					givensDTO.add(givenName);
 				}
 			}
-			dto.setGivenName(givensDTO);
-			//given name entities should exist now
-			Set<GivenNameEntity> givensEntity = new HashSet<GivenNameEntity>();
-			for(GivenNameDTO given: dto.getGivenName()){
-				GivenNameEntity name = entityManager.find(GivenNameEntity.class, given.getId());
-				givensEntity.add(name);
-			}
-			patient.setGivenNames(givensEntity);
 		}
 		
 		return created;

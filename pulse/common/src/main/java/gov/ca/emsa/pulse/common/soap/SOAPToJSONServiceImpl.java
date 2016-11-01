@@ -41,6 +41,8 @@ import org.hl7.v3.AdxpExplicitStreetAddressLine;
 import org.hl7.v3.ENExplicit;
 import org.hl7.v3.EnExplicitFamily;
 import org.hl7.v3.EnExplicitGiven;
+import org.hl7.v3.EnExplicitPrefix;
+import org.hl7.v3.EnExplicitSuffix;
 import org.hl7.v3.II;
 import org.hl7.v3.PNExplicit;
 import org.hl7.v3.PRPAIN201305UV02;
@@ -83,6 +85,10 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 							givens.add(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
 						}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("family")){
 							psn.setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
+						}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("prefix")){
+							psn.setPrefix(((JAXBElement<EnExplicitPrefix>) nameInList).getValue().getContent());
+						}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("suffix")){
+							psn.setSuffix(((JAXBElement<EnExplicitSuffix>) nameInList).getValue().getContent());
 						}
 					}
 				}
@@ -131,10 +137,10 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 								prn.getGivenName().add(given);
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
 								prn.setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
-							}else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("nameType")) {
-								NameType nameType = new NameType();
-								nameType.setCode(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
-								prn.setNameType(nameType);
+							}else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("prefix")) {
+								prn.setPrefix(((JAXBElement<EnExplicitPrefix>)namePart).getValue().getContent());
+							}else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("suffix")) {
+								prn.setSuffix(((JAXBElement<EnExplicitSuffix>)namePart).getValue().getContent());
 							}
 						}
 					}
