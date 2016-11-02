@@ -7,8 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressLineDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,16 +27,26 @@ public class PatientRecordAddressDaoTest {
 	
 	@Autowired PatientRecordAddressDAO patientAddressDao;
 	@Autowired PatientRecordAddressLineDAO patientAddressLineDao;
+	@Autowired PatientGenderDAO patientGenderDao;
+	@Autowired PatientRecordDAO patientRecordDao;
 	
 	@Test
 	@Transactional
 	@Rollback(true)
 	public void createPatientAddressTest(){
+		
+		PatientGenderDTO patientGenderMale =  patientGenderDao.getByCode("M");
+		
+		PatientRecordDTO patientRecord = new PatientRecordDTO();
+		patientRecord.setPatientGender(patientGenderMale);
+		PatientRecordDTO patientRecordCreated = patientRecordDao.create(patientRecord);
+		
 		PatientRecordAddressDTO patientAddressDto = new PatientRecordAddressDTO();
 		patientAddressDto.setCity("Bel Air");
 		patientAddressDto.setCreationDate(new Date());
 		patientAddressDto.setState("MD");
 		patientAddressDto.setZipcode("21015");
+		patientAddressDto.setPatientRecordId(patientRecordCreated.getId());
 		PatientRecordAddressDTO patientAddressCreated = patientAddressDao.create(patientAddressDto);
 		
 		assertNotNull(patientAddressCreated);

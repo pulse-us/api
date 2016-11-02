@@ -6,11 +6,8 @@ import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-<<<<<<< HEAD
 import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressDTO;
-=======
 import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
->>>>>>> development
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
