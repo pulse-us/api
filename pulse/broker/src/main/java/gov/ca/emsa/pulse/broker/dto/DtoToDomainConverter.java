@@ -204,6 +204,7 @@ public class DtoToDomainConverter {
 					patient.setEffectiveDate(PatientRecordNameDTO.getEffectiveDate());
 				if(PatientRecordNameDTO.getExpirationDate() != null)
 					patient.setExpirationDate(PatientRecordNameDTO.getExpirationDate());
+				pr.getPatientRecordName().add(patient);
 			}
 		}
 		PatientGender pg = new PatientGender();

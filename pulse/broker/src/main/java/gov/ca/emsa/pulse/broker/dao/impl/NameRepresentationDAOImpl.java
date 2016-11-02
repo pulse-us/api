@@ -56,7 +56,32 @@ public class NameRepresentationDAOImpl extends BaseDAOImpl implements NameRepres
 			}
 		}
 	}
+	
+	@Override
+	public NameRepresentationDTO getByCode(String code) {
+		NameRepresentationDTO dto = null;
+		NameRepresentationEntity pe = this.getEntityByCode(code);
 
+		if (pe != null){
+			dto = new NameRepresentationDTO(pe); 
+		}
+		return dto;
+	}
+
+	private NameRepresentationEntity getEntityByCode(String code) {
+		NameRepresentationEntity entity = null;
+
+		Query query = entityManager.createQuery( "SELECT distinct nameRep from NameRepresentationEntity nameRep "
+				+ "where nameRep.code = :entityid) ", 
+				NameRepresentationEntity.class );
+
+		query.setParameter("entityid", code);
+		List<NameRepresentationEntity> patients = query.getResultList();
+		if(patients.size() != 0) {
+			entity = patients.get(0);
+		}
+		return entity;
+	}
 
 	@Override
 	public NameRepresentationDTO getById(Long id) {

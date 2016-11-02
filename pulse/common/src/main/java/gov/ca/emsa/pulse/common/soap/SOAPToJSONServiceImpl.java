@@ -6,6 +6,7 @@ import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
 import gov.ca.emsa.pulse.common.domain.DocumentRetrieve;
 import gov.ca.emsa.pulse.common.domain.GivenName;
+import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.PatientGender;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
@@ -37,8 +38,11 @@ import org.hl7.v3.ADExplicit;
 import org.hl7.v3.AdxpExplicitCity;
 import org.hl7.v3.AdxpExplicitState;
 import org.hl7.v3.AdxpExplicitStreetAddressLine;
+import org.hl7.v3.ENExplicit;
 import org.hl7.v3.EnExplicitFamily;
 import org.hl7.v3.EnExplicitGiven;
+import org.hl7.v3.EnExplicitPrefix;
+import org.hl7.v3.EnExplicitSuffix;
 import org.hl7.v3.II;
 import org.hl7.v3.PNExplicit;
 import org.hl7.v3.PRPAIN201305UV02;
@@ -70,22 +74,28 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		if((gender != null && !gender.isEmpty()) && (dob != null && !dob.isEmpty()) && (name != null  && !name.isEmpty())){
 			ps.setGender(gender.get(0).getValue().get(0).getCode());
 			ps.setDob(dob.get(0).getValue().get(0).getValue());
-			List<Serializable> names = name.get(0).getValue().get(0).getContent();
-			for(Serializable nameInList: names){
-				if(nameInList instanceof JAXBElement<?>){
-					if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("given")){
-						ArrayList<String> givens = new ArrayList<String>();
-						givens.add(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
-						PatientSearchName psn = new PatientSearchName();
-						psn.setGivenName(givens);
-						ArrayList<PatientSearchName> arr = new ArrayList<PatientSearchName>();
-						arr.add(psn);
-						ps.setPatientNames(arr);
-					}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("family")){
-						ps.getPatientNames().get(0).setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
+			ArrayList<PatientSearchName> arr = new ArrayList<PatientSearchName>();
+			for(PRPAMT201306UV02LivingSubjectName livingSubject : name){
+				List<Serializable> names = livingSubject.getValue().get(0).getContent();
+				ArrayList<String> givens = new ArrayList<String>();
+				PatientSearchName psn = new PatientSearchName();
+				for(Serializable nameInList: names){
+					if(nameInList instanceof JAXBElement<?>){
+						if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("given")){
+							givens.add(((JAXBElement<EnExplicitGiven>) nameInList).getValue().getContent());
+						}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("family")){
+							psn.setFamilyName(((JAXBElement<EnExplicitFamily>) nameInList).getValue().getContent());
+						}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("prefix")){
+							psn.setPrefix(((JAXBElement<EnExplicitPrefix>) nameInList).getValue().getContent());
+						}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("suffix")){
+							psn.setSuffix(((JAXBElement<EnExplicitSuffix>) nameInList).getValue().getContent());
+						}
 					}
 				}
+				psn.setGivenName(givens);
+				arr.add(psn);
 			}
+			ps.setPatientNames(arr);
 		}
 		return ps;
 	}
@@ -117,20 +127,24 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				JAXBElement<PRPAMT201310UV02Person> patientPerson = patient.getPatientPerson();
 				List<PNExplicit> names = patientPerson.getValue().getName();
 				for(PNExplicit name : names) {
+					PatientRecordName prn = new PatientRecordName();
 					List<Serializable> nameParts = name.getContent();
 					for(Serializable namePart : nameParts) {
 						if(namePart instanceof JAXBElement<?>) {
 							if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("given")) {
 								GivenName given = new GivenName();
 								given.setGivenName(((JAXBElement<EnExplicitGiven>) namePart).getValue().getContent());
-								PatientRecordName prn = new PatientRecordName();
 								prn.getGivenName().add(given);
-								patientRecord.getPatientRecordName().add(prn);
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
-								patientRecord.getPatientRecordName().get(0).setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+								prn.setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
+							}else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("prefix")) {
+								prn.setPrefix(((JAXBElement<EnExplicitPrefix>)namePart).getValue().getContent());
+							}else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("suffix")) {
+								prn.setSuffix(((JAXBElement<EnExplicitSuffix>)namePart).getValue().getContent());
 							}
 						}
 					}
+					patientRecord.getPatientRecordName().add(prn);
 				}
 				PatientGender pg = new PatientGender();
 				pg.setCode(patientPerson.getValue().getAdministrativeGenderCode().getCode());

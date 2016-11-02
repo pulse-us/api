@@ -19,6 +19,7 @@ import gov.ca.emsa.pulse.broker.entity.PatientGenderEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.util.ArrayList;
@@ -44,17 +45,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 	@Override
 	public PatientRecordDTO create(PatientRecordDTO dto) {
 		PatientRecordEntity patient = new PatientRecordEntity();
-		if(dto.getPatientRecordName() != null){
-			for(PatientRecordNameDTO PatientRecordNameDTO : dto.getPatientRecordName()){
-				if(PatientRecordNameDTO.getId() == null){
-					PatientRecordNameDTO nameDto = nameDao.create(PatientRecordNameDTO);
-					dto.getPatientRecordName().add(nameDto);
-				}
-				//patient name entity should exist now
-				PatientRecordNameEntity name = entityManager.find(PatientRecordNameEntity.class, PatientRecordNameDTO.getId());
-				patient.getPatientRecordName().add(name);
-			}
-		}
+		
 		if(dto.getDateOfBirth() != null) {
 			patient.setDateOfBirth(java.sql.Date.valueOf(dto.getDateOfBirth()));
 		}
@@ -76,7 +67,21 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 
 		entityManager.persist(patient);
 		entityManager.flush();
-		return new PatientRecordDTO(patient);
+		PatientRecordDTO created = new PatientRecordDTO(patient);
+		
+		if(dto.getPatientRecordName() != null){
+			ArrayList<PatientRecordNameDTO> iterate = new ArrayList<PatientRecordNameDTO>(dto.getPatientRecordName());
+			for(PatientRecordNameDTO patientRecordNameDTO : iterate){
+				PatientRecordNameDTO nameDto = null;
+				if(patientRecordNameDTO.getId() == null){
+					patientRecordNameDTO.setPatientRecordId(created.getId());
+					nameDto = nameDao.create(patientRecordNameDTO);
+					dto.getPatientRecordName().add(nameDto);
+				}
+			}
+		}
+		
+		return created;
 	}
 
 	@Override

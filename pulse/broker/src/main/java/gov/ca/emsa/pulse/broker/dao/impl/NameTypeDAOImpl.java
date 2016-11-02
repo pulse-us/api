@@ -67,6 +67,32 @@ public class NameTypeDAOImpl extends BaseDAOImpl implements NameTypeDAO {
 		}
 		return dto;
 	}
+	
+	@Override
+	public NameTypeDTO getByCode(String code) {
+		NameTypeDTO dto = null;
+		NameTypeEntity pe = this.getEntityByCode(code);
+
+		if (pe != null){
+			dto = new NameTypeDTO(pe); 
+		}
+		return dto;
+	}
+	
+	private NameTypeEntity getEntityByCode(String code) {
+		NameTypeEntity entity = null;
+
+		Query query = entityManager.createQuery( "SELECT distinct nameType from NameTypeEntity nameType "
+				+ "where nameType.code = :entityid) ", 
+				NameTypeEntity.class );
+
+		query.setParameter("entityid", code);
+		List<NameTypeEntity> patients = query.getResultList();
+		if(patients.size() != 0) {
+			entity = patients.get(0);
+		}
+		return entity;
+	}
 
 	private NameTypeEntity getEntityById(Long id) {
 		NameTypeEntity entity = null;
