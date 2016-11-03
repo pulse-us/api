@@ -51,8 +51,10 @@ import org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01Subject1;
 import org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01Subject2;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectAdministrativeGender;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectBirthTime;
+import org.hl7.v3.PRPAMT201306UV02LivingSubjectId;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectName;
 import org.hl7.v3.PRPAMT201306UV02ParameterList;
+import org.hl7.v3.PRPAMT201306UV02PatientTelecom;
 import org.hl7.v3.PRPAMT201310UV02OtherIDs;
 import org.hl7.v3.PRPAMT201310UV02Patient;
 import org.hl7.v3.PRPAMT201310UV02Person;
@@ -70,10 +72,14 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		PatientSearch ps = new PatientSearch();
 		List<PRPAMT201306UV02LivingSubjectAdministrativeGender> gender = requestParameterList.getLivingSubjectAdministrativeGender();
 		List<PRPAMT201306UV02LivingSubjectBirthTime> dob = requestParameterList.getLivingSubjectBirthTime();
+		List<PRPAMT201306UV02LivingSubjectId> ssn = requestParameterList.getLivingSubjectId();
 		List<PRPAMT201306UV02LivingSubjectName> name = requestParameterList.getLivingSubjectName();
+		List<PRPAMT201306UV02PatientTelecom> telecom = requestParameterList.getPatientTelecom();
 		if((gender != null && !gender.isEmpty()) && (dob != null && !dob.isEmpty()) && (name != null  && !name.isEmpty())){
 			ps.setGender(gender.get(0).getValue().get(0).getCode());
 			ps.setDob(dob.get(0).getValue().get(0).getValue());
+			ps.setSsn(ssn.get(0).getValue().get(0).getExtension());
+			ps.setTelephone(telecom.get(0).getValue().get(0).getValue());
 			ArrayList<PatientSearchName> arr = new ArrayList<PatientSearchName>();
 			for(PRPAMT201306UV02LivingSubjectName livingSubject : name){
 				List<Serializable> names = livingSubject.getValue().get(0).getContent();

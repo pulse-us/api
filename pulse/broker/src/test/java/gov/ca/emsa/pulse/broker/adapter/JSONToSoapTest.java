@@ -89,6 +89,7 @@ public class JSONToSoapTest {
 		toCreate1.setGivenName(givens);
 		ps.setDob("19830205");
 		ps.setGender("F");
+		ps.setSsn("123456789");
 		ArrayList<PatientSearchName> names = new ArrayList<PatientSearchName>();
 		names.add(toCreate1);
 		ps.setPatientNames(names);
