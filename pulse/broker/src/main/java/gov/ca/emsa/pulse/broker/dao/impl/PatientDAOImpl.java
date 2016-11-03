@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.ca.emsa.pulse.broker.cache.CacheCleanupException;
 import gov.ca.emsa.pulse.broker.dao.AddressDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
@@ -31,7 +33,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	@Autowired QueryStatusDAO statusDao;
 
 	@Override
-	public PatientDTO create(PatientDTO dto) {
+	public PatientDTO create(PatientDTO dto) throws SQLException {
 		PatientEntity patient = new PatientEntity();
 		patient.setFullName(dto.getFullName());
 		patient.setFriendlyName(dto.getFriendlyName());
@@ -62,7 +64,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public PatientOrganizationMapDTO createOrgMap(PatientOrganizationMapDTO toCreate) {
+	public PatientOrganizationMapDTO createOrgMap(PatientOrganizationMapDTO toCreate) throws SQLException {
 		PatientOrganizationMapEntity orgMap = new PatientOrganizationMapEntity();
 		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(QueryOrganizationStatus.Active.name()).getId());
 		orgMap.setDocumentsQueryStart(new Date());
@@ -77,7 +79,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public PatientDTO update(PatientDTO dto) {
+	public PatientDTO update(PatientDTO dto) throws SQLException {
 		PatientEntity patient = this.getEntityById(dto.getId());
 		patient.setFriendlyName(dto.getFriendlyName());
 		patient.setFullName(dto.getFullName());
@@ -105,7 +107,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public PatientOrganizationMapDTO updateOrgMap(PatientOrganizationMapDTO toUpdate) {
+	public PatientOrganizationMapDTO updateOrgMap(PatientOrganizationMapDTO toUpdate) throws SQLException {
 		logger.debug("Looking up patient org map with id " + toUpdate.getId());
 		PatientOrganizationMapEntity orgMap = getOrgMapById(toUpdate.getId());
 		if(orgMap == null) {
@@ -124,7 +126,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void delete(Long id) throws SQLException {
 		PatientEntity toDelete = getEntityById(id);
 		if(toDelete != null) {
 			try {
@@ -187,7 +189,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public void deleteItemsOlderThan(Date oldestDate) {			
+	public void deleteItemsOlderThan(Date oldestDate) throws SQLException {			
 		Query query = entityManager.createQuery( "DELETE from PatientEntity pat "
 				+ " WHERE pat.lastReadDate <= :cacheDate");
 

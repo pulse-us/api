@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,6 +10,7 @@ import javax.persistence.Query;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -27,7 +29,8 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	@Autowired AlternateCareFacilityAddressLineDAO addressLineDao;
 	
 	@Override
-	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO dto) throws EntityExistsException {
+	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO dto) 
+			throws SQLException, EntityExistsException {
 		List<AlternateCareFacilityEntity> duplicates = getEntityByName(dto.getName()); 
 		//we restrict ACFs to have unique names, so first check
 		//to see if there is already one with this name. if so throw an exception
@@ -62,7 +65,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	}
 
 	@Override
-	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO dto) {
+	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO dto) throws SQLException {
 		AlternateCareFacilityEntity toUpdate = this.getEntityById(dto.getId());
 		toUpdate.setName(dto.getName());
 		toUpdate.setPhoneNumber(dto.getPhoneNumber());
@@ -93,7 +96,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void delete(Long id) throws SQLException {
 		AlternateCareFacilityEntity toDelete = getEntityById(id);
 		entityManager.remove(toDelete);
 		entityManager.flush();
@@ -134,7 +137,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	}
 	
 	@Override
-	public void deleteItemsOlderThan(Date oldestItem) {
+	public void deleteItemsOlderThan(Date oldestItem) throws SQLException {
 		Query query = entityManager.createQuery( "SELECT acf "
 				+ "FROM AlternateCareFacilityEntity acf "
 				+ " WHERE acf.lastReadDate <= :cacheDate");

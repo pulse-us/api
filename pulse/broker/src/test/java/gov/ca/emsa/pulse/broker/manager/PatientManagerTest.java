@@ -19,6 +19,7 @@ import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class PatientManagerTest extends TestCase {
 	private PatientRecordDTO queryResult1, queryResult2;
 	
 	@Before
-	public void setup() {
+	public void setup() throws SQLException  {
 		acf = new AlternateCareFacilityDTO();
 		acf.setName("ACF1");
 		acf = acfDao.create(acf);
@@ -132,7 +133,7 @@ public class PatientManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testCreatePatient() {		
+	public void testCreatePatient() throws SQLException  {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
 		toCreate.setFullName("Jon Snow");
@@ -155,7 +156,7 @@ public class PatientManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testGetPatientsAtAcf() {		
+	public void testGetPatientsAtAcf() throws SQLException  {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setFriendlyName("Bri");
 		toCreate.setAcf(acf);

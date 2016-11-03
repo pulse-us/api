@@ -96,10 +96,10 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 				for(String given : patientName.getGivenName()){
 					nameValue.getContent().add(new JAXBElement<String>(new QName("given"), String.class, given));
 				}
-				if(!patientName.getPrefix().isEmpty()){
+				if(!StringUtils.isEmpty(patientName.getPrefix())){
 					nameValue.getContent().add(new JAXBElement<String>(new QName("prefix"), String.class, patientName.getPrefix()));
 				}
-				if(!patientName.getSuffix().isEmpty()){
+				if(!StringUtils.isEmpty(patientName.getSuffix())){
 					nameValue.getContent().add(new JAXBElement<String>(new QName("suffix"), String.class, patientName.getSuffix()));
 				}
 				name.getValue().add(nameValue);

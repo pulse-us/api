@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.service;
 
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.auth.user.UserRetrievalException;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,7 +42,8 @@ public class AlternateCareFacilityService {
 	// POST - create an alternate care facility
 	@ApiOperation(value = "Create a new ACF")
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public AlternateCareFacility createACF(@RequestBody AlternateCareFacility acf) throws JsonProcessingException {
+	public AlternateCareFacility createACF(@RequestBody AlternateCareFacility acf) 
+			throws UserRetrievalException, JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
@@ -51,7 +54,8 @@ public class AlternateCareFacilityService {
 		AlternateCareFacility returnAcf = null;
 		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
-		}else{
+			throw new UserRetrievalException("Could not find a logged in user. ");
+		} else {
 			headers.add("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<AlternateCareFacility> request = new HttpEntity<AlternateCareFacility>(acf, headers);
 			returnAcf = query.postForObject(brokerUrl + "/acfs/create", request, AlternateCareFacility.class);
@@ -63,7 +67,7 @@ public class AlternateCareFacilityService {
 	// GET all acfs
 	@ApiOperation(value="Get the list of all alternate care facilities (ACFs)")
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	public ArrayList<AlternateCareFacility> getACFs() throws JsonProcessingException {
+	public ArrayList<AlternateCareFacility> getACFs() throws UserRetrievalException, JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
@@ -73,7 +77,8 @@ public class AlternateCareFacilityService {
 		ArrayList<AlternateCareFacility> acfList = null;
 		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
-		}else{
+			throw new UserRetrievalException("Could not find a logged in user. ");
+		} else {
 			headers.set("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<AlternateCareFacility[]> entity = new HttpEntity<AlternateCareFacility[]>(headers);
 			HttpEntity<AlternateCareFacility[]> response = query.exchange(brokerUrl + "/acfs", HttpMethod.GET, entity, AlternateCareFacility[].class);
@@ -87,7 +92,8 @@ public class AlternateCareFacilityService {
 	// get acf by its id
 	@ApiOperation(value="Get information about a specific ACF")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public AlternateCareFacility getACFById(@PathVariable Long id) throws JsonProcessingException {
+	public AlternateCareFacility getACFById(@PathVariable Long id) 
+			throws UserRetrievalException, JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
@@ -97,7 +103,8 @@ public class AlternateCareFacilityService {
 		HttpEntity<AlternateCareFacility> response = null;
 		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
-		}else{
+			throw new UserRetrievalException("Could not find a logged in user. ");
+		} else {
 			headers.set("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<AlternateCareFacility> entity = new HttpEntity<AlternateCareFacility>(headers);
 			response = query.exchange(brokerUrl + "/acfs" + id, HttpMethod.GET, entity, AlternateCareFacility.class);
@@ -110,7 +117,7 @@ public class AlternateCareFacilityService {
 	@ApiOperation(value = "Edit an existing ACF")
 	@RequestMapping(value = "/{acfId}/edit", method = RequestMethod.POST)
 	public AlternateCareFacility editACFById(@PathVariable Long acfId, 
-			@RequestBody AlternateCareFacility acf) throws JsonProcessingException {
+			@RequestBody AlternateCareFacility acf) throws UserRetrievalException, JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
@@ -120,7 +127,8 @@ public class AlternateCareFacilityService {
 		AlternateCareFacility returnAcf = null;
 		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
-		}else{
+			throw new UserRetrievalException("Could not find a logged in user. ");
+		} else {
 			headers.add("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<AlternateCareFacility> request = new HttpEntity<AlternateCareFacility>(acf, headers);
 			returnAcf = query.postForObject(brokerUrl + "/acfs/" + acfId + "/edit", request, AlternateCareFacility.class);
