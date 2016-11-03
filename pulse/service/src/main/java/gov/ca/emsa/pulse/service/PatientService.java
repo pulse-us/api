@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -45,10 +47,14 @@ public class PatientService {
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
 	public @ResponseBody Query searchPatients(@RequestBody PatientSearch patientSearchTerms) throws JsonProcessingException {
 		Query returnQuery;
+		Pattern p = Pattern.compile("\\d{4}([01]\\d([0-3]\\d([0-2]\\d([0-5]\\d([0-5]\\d)?)?)?)?)?([+-]\\d{4})?$");
+		Matcher m = p.matcher(patientSearchTerms.getDob());
+		boolean matched = m.matches();
 		if(!patientSearchTerms.getPatientNames().isEmpty() && patientSearchTerms.getDob() != null &&
 				patientSearchTerms.getPatientNames().get(0).getFamilyName() != null
 				&& patientSearchTerms.getPatientNames().get(0).getGivenName() != null
-				&& patientSearchTerms.getGender() != null){
+				&& patientSearchTerms.getGender() != null && matched){
+			
 			
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 			ObjectMapper mapper = new ObjectMapper();
