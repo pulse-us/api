@@ -54,7 +54,32 @@ public class NameAssemblyDAOImpl extends BaseDAOImpl implements NameAssemblyDAO 
 			}
 		}
 	}
+	
+	@Override
+	public NameAssemblyDTO getByCode(String code) {
+		NameAssemblyDTO dto = null;
+		NameAssemblyEntity pe = this.getEntityByCode(code);
 
+		if (pe != null){
+			dto = new NameAssemblyDTO(pe); 
+		}
+		return dto;
+	}
+
+	private NameAssemblyEntity getEntityByCode(String code) {
+		NameAssemblyEntity entity = null;
+
+		Query query = entityManager.createQuery( "SELECT distinct nameAssembly from NameAssemblyEntity nameAssembly "
+				+ "where nameAssembly.code = :entityid) ", 
+				NameAssemblyEntity.class );
+
+		query.setParameter("entityid", code);
+		List<NameAssemblyEntity> patients = query.getResultList();
+		if(patients.size() != 0) {
+			entity = patients.get(0);
+		}
+		return entity;
+	}
 
 	@Override
 	public NameAssemblyDTO getById(Long id) {

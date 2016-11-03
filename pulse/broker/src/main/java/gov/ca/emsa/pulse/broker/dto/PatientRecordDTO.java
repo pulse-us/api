@@ -1,7 +1,6 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
 
@@ -14,13 +13,14 @@ public class PatientRecordDTO {
 	private Long id;
 	private String organizationPatientRecordId;
 	private List<PatientRecordNameDTO> patientRecordName;
+	private PatientGenderDTO patientGender;
 	private String dateOfBirth;
 	private String ssn;
-	private String gender;
 	private String phoneNumber;
 	private AddressDTO address;
 	private Long queryOrganizationId;
 	private Date lastModifiedDate;
+	private Long patientGenderId;
 	
 	public PatientRecordDTO() {
 		patientRecordName = new ArrayList<PatientRecordNameDTO>();
@@ -62,7 +62,9 @@ public class PatientRecordDTO {
 			this.dateOfBirth = entity.getDateOfBirth();
 		}
 		this.ssn = entity.getSsn();
-		this.gender = entity.getGender();
+		PatientGenderDTO patientGenderDTO = new PatientGenderDTO(entity.getPatientGender());
+		this.patientGender = patientGenderDTO;
+		this.patientGenderId = entity.getPatientGenderId();
 		this.phoneNumber = entity.getPhoneNumber();
 		this.organizationPatientRecordId = entity.getOrganizationPatientRecordId();
 		
@@ -96,12 +98,6 @@ public class PatientRecordDTO {
 	public void setSsn(String ssn) {
 		this.ssn = ssn;
 	}
-	public String getGender() {
-		return gender;
-	}
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -119,8 +115,8 @@ public class PatientRecordDTO {
 		return organizationPatientRecordId;
 	}
 
-	public void setOrgPatientRecordId(String orgPatientRecordId) {
-		this.organizationPatientRecordId = organizationPatientRecordId;
+	public void setOrganizationPatientRecordId(String orgPatientRecordId) {
+		this.organizationPatientRecordId = orgPatientRecordId;
 	}
 
 	public Long getQueryOrganizationId() {
@@ -145,6 +141,22 @@ public class PatientRecordDTO {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public PatientGenderDTO getPatientGender() {
+		return patientGender;
+	}
+
+	public void setPatientGender(PatientGenderDTO patientGender) {
+		this.patientGender = patientGender;
+	}
+
+	public Long getPatientGenderId() {
+		return patientGenderId;
+	}
+
+	public void setPatientGenderId(Long patientGenderId) {
+		this.patientGenderId = patientGenderId;
 	}
 	
 }

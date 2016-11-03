@@ -1,5 +1,8 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import gov.ca.emsa.pulse.broker.dao.NameAssemblyDAO;
+import gov.ca.emsa.pulse.broker.dao.NameRepresentationDAO;
+import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
 import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
 import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
 import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
@@ -20,13 +23,17 @@ import java.util.ArrayList;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 
 public class DomainToDtoConverter {
 	private static final Logger logger = LogManager.getLogger(DomainToDtoConverter.class);
-
+	@Autowired static NameTypeDAO nameTypeDao;
+	@Autowired static NameRepresentationDAO nameRepDao;
+	@Autowired static NameAssemblyDAO nameAssemblyDao;
+	
 	public static PatientDTO convertToPatient(Patient domainObj) {
 		PatientDTO result = new PatientDTO();
 		if(domainObj.getId() != null) {
@@ -51,52 +58,52 @@ public class DomainToDtoConverter {
 		if(domainObj.getId() != null) {
 			result.setId(new Long(domainObj.getId()));
 		}
+		result.setOrganizationPatientRecordId(domainObj.getOrgPatientRecordId());
 		if(domainObj.getPatientRecordName() != null){
-			for(PatientRecordName PatientRecordName : domainObj.getPatientRecordName()){
-				PatientRecordNameDTO PatientRecordNameDTO = new PatientRecordNameDTO();
-				PatientRecordNameDTO.setFamilyName(PatientRecordName.getFamilyName());
+			for(PatientRecordName patientRecordName : domainObj.getPatientRecordName()){
+				PatientRecordNameDTO patientRecordNameDTO = new PatientRecordNameDTO();
+				patientRecordNameDTO.setFamilyName(patientRecordName.getFamilyName());
 				ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-				for(GivenName givenDto : PatientRecordName.getGivenName()){
+				for(GivenName givenDto : patientRecordName.getGivenName()){
 					GivenNameDTO givenName = new GivenNameDTO();
 					givenName.setGivenName(givenDto.getGivenName());
 					givenName.setId(givenDto.getId());
 					givenName.setPatientRecordNameId(givenDto.getPatientRecordNameId());
 					givens.add(givenName);
 				}
-				PatientRecordNameDTO.setGivenName(givens);
-				if(PatientRecordName.getSuffix() != null)
-					PatientRecordNameDTO.setSuffix(PatientRecordName.getSuffix());
-				if(PatientRecordName.getPrefix() != null)
-					PatientRecordNameDTO.setPrefix(PatientRecordName.getPrefix());
-				if(PatientRecordName.getNameType() != null){
-					NameTypeDTO nameType = new NameTypeDTO();
-					nameType.setCode(PatientRecordName.getNameType().getCode());
-					nameType.setDescription(PatientRecordName.getNameType().getDescription());
-					nameType.setId(PatientRecordName.getNameType().getId());
-					PatientRecordNameDTO.setNameType(nameType);
+				patientRecordNameDTO.setGivenName(givens);
+				if(patientRecordName.getSuffix() != null)
+					patientRecordNameDTO.setSuffix(patientRecordName.getSuffix());
+				if(patientRecordName.getPrefix() != null)
+					patientRecordNameDTO.setPrefix(patientRecordName.getPrefix());
+				if(patientRecordName.getNameType() != null){
+					NameTypeDTO nameType = nameTypeDao.getByCode(patientRecordName.getNameType().getCode());
+					patientRecordNameDTO.setNameType(nameType);
+					patientRecordNameDTO.setNameTypeId(nameType.getId());
 				}
-				if(PatientRecordName.getNameRepresentation() != null){
-					NameRepresentationDTO nameRep = new NameRepresentationDTO();
-					nameRep.setCode(PatientRecordName.getNameType().getCode());
-					nameRep.setDescription(PatientRecordName.getNameType().getDescription());
-					nameRep.setId(PatientRecordName.getNameType().getId());
-					PatientRecordNameDTO.setNameRepresentation(nameRep);
+				if(patientRecordName.getNameRepresentation() != null){
+					NameRepresentationDTO nameRep = nameRepDao.getByCode(patientRecordName.getNameRepresentation().getCode());
+					patientRecordNameDTO.setNameRepresentation(nameRep);
+					patientRecordNameDTO.setNameTypeId(nameRep.getId());
 				}
-				if(PatientRecordName.getNameAssembly() != null){
-					NameAssemblyDTO nameAssembly = new NameAssemblyDTO();
-					nameAssembly.setCode(PatientRecordName.getNameType().getCode());
-					nameAssembly.setDescription(PatientRecordName.getNameType().getDescription());
-					nameAssembly.setId(PatientRecordName.getNameType().getId());
-					PatientRecordNameDTO.setNameAssembly(nameAssembly);
+				if(patientRecordName.getNameAssembly() != null){
+					NameAssemblyDTO nameAssembly = nameAssemblyDao.getByCode(patientRecordName.getNameAssembly().getCode());
+					patientRecordNameDTO.setNameAssembly(nameAssembly);
+					patientRecordNameDTO.setNameTypeId(nameAssembly.getId());
 				}
-				if(PatientRecordName.getEffectiveDate() != null)
-					PatientRecordNameDTO.setEffectiveDate(PatientRecordName.getEffectiveDate());
-				if(PatientRecordName.getExpirationDate() != null)
-					PatientRecordNameDTO.setExpirationDate(PatientRecordName.getExpirationDate());
+				if(patientRecordName.getEffectiveDate() != null)
+					patientRecordNameDTO.setEffectiveDate(patientRecordName.getEffectiveDate());
+				if(patientRecordName.getExpirationDate() != null)
+					patientRecordNameDTO.setExpirationDate(patientRecordName.getExpirationDate());
+				result.getPatientRecordName().add(patientRecordNameDTO);
 			}
 		}
-		result.setGender(domainObj.getGender());
+		PatientGenderDTO pgDto = new PatientGenderDTO();
+		pgDto.setCode(domainObj.getGender().getCode());
+		pgDto.setDescription(domainObj.getGender().getDescription());
+		result.setPatientGender(pgDto);
 		result.setDateOfBirth(domainObj.getDateOfBirth());
+
 		result.setPhoneNumber(domainObj.getPhoneNumber());
 		result.setSsn(domainObj.getSsn());
 

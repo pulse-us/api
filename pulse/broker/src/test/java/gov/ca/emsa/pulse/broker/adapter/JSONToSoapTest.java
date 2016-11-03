@@ -77,12 +77,20 @@ public class JSONToSoapTest {
 	public void testCreatePatientDiscoveryRequest() throws JAXBException, 
 		SAMLException, SOAPException, JWTValidationException {
 		PatientSearch ps = new PatientSearch();
-		PatientSearchName toCreate = new PatientSearchName();
-		toCreate.setFamilyName("Lindsey");
+		PatientSearchName toCreate1 = new PatientSearchName();
+		toCreate1.setFamilyName("Lindsey");
+		toCreate1.setPrefix("Mr.");
+		toCreate1.setSuffix("MDS");
+		
+		ArrayList<String> givens = new ArrayList<String>();
+		givens.add("Brian");
+		givens.add("Bryan");
+		givens.add("Briaann");
+		toCreate1.setGivenName(givens);
 		ps.setDob("19830205");
 		ps.setGender("F");
 		ArrayList<PatientSearchName> names = new ArrayList<PatientSearchName>();
-		names.add(toCreate);
+		names.add(toCreate1);
 		ps.setPatientNames(names);
 		ps.getPatientNames().get(0).getGivenName().add("Brian");
 		
@@ -112,6 +120,82 @@ public class JSONToSoapTest {
 		assertEquals(ps.getPatientNames().get(0).getFamilyName(), unmarshalledSearch.getPatientNames().get(0).getFamilyName());
 		assertEquals(ps.getDob(), unmarshalledSearch.getDob());
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
+		assertEquals(ps.getPatientNames().get(0).getPrefix(), unmarshalledSearch.getPatientNames().get(0).getPrefix());
+		assertEquals(ps.getPatientNames().get(0).getSuffix(), unmarshalledSearch.getPatientNames().get(0).getSuffix());
+		assertEquals(ps.getPatientNames().get(0).getGivenName(), unmarshalledSearch.getPatientNames().get(0).getGivenName());
+		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
+	}
+	
+	@Test
+	public void testCreatePatientDiscoveryRequestMultipleNames() throws JAXBException, 
+		SAMLException, SOAPException, JWTValidationException {
+		PatientSearch ps = new PatientSearch();
+		PatientSearchName toCreate1 = new PatientSearchName();
+		toCreate1.setFamilyName("Lindsey");
+		toCreate1.setPrefix("Mr.");
+		toCreate1.setSuffix("MDS");
+		PatientSearchName toCreate2 = new PatientSearchName();
+		toCreate2.setFamilyName("Doe");
+		toCreate2.setPrefix("Sgt.");
+		toCreate2.setSuffix("MD");
+		
+		ArrayList<String> givens = new ArrayList<String>();
+		givens.add("Brian");
+		givens.add("Bryan");
+		givens.add("Briaann");
+		toCreate1.setGivenName(givens);
+		
+		ArrayList<String> givens2 = new ArrayList<String>();
+		givens2.add("Jon");
+		givens2.add("John");
+		givens2.add("Jahn");
+		toCreate1.setGivenName(givens2);
+		
+		ps.setDob("19830205");
+		ps.setGender("F");
+		ArrayList<PatientSearchName> names = new ArrayList<PatientSearchName>();
+		names.add(toCreate1);
+		names.add(toCreate2);
+		ps.setPatientNames(names);
+		
+		SAMLInput input = new SAMLInput();
+		input.setStrIssuer("https://idp.dhv.gov");
+		input.setStrNameID("UserBrianLindsey");
+		input.setStrNameQualifier("My Website");
+		input.setSessionId("abcdedf1234567");
+		HashMap<String, String> customAttributes = new HashMap<String,String>();
+		customAttributes.put("RequesterFirstName", "Katy");
+		customAttributes.put("RequestReason", "Patient is bleeding.");
+		customAttributes.put("PatientFamilyName", ps.getPatientNames().get(0).getFamilyName());
+		customAttributes.put("PatientDOB", ps.getDob());
+		customAttributes.put("PatientGender", ps.getGender());
+		customAttributes.put("PatientHomeZip", ps.getZip());
+		customAttributes.put("PatientSSN", ps.getSsn());
+		input.setAttributes(customAttributes);
+
+		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
+		String requestXml = ehealthService.marshallPatientDiscoveryRequest(input, request);
+		Assert.notNull(requestXml);
+		System.out.println(requestXml);
+		PRPAIN201305UV02 unmarshalledRequest = ehealthService.unMarshallPatientDiscoveryRequestObject(requestXml);
+		assertNotNull(unmarshalledRequest);
+		PatientSearch unmarshalledSearch = reverseService.convertToPatientSearch(unmarshalledRequest);
+		assertNotNull(unmarshalledSearch);
+		assertEquals(ps.getPatientNames().get(0).getFamilyName(), unmarshalledSearch.getPatientNames().get(0).getFamilyName());
+		assertEquals(ps.getDob(), unmarshalledSearch.getDob());
+		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
+		assertEquals(ps.getPatientNames().get(0).getPrefix(), unmarshalledSearch.getPatientNames().get(0).getPrefix());
+		assertEquals(ps.getPatientNames().get(0).getSuffix(), unmarshalledSearch.getPatientNames().get(0).getSuffix());
+		assertEquals(ps.getPatientNames().get(0).getGivenName(), unmarshalledSearch.getPatientNames().get(0).getGivenName());
+		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
+		
+		assertEquals(ps.getPatientNames().get(1).getFamilyName(), unmarshalledSearch.getPatientNames().get(1).getFamilyName());
+		assertEquals(ps.getDob(), unmarshalledSearch.getDob());
+		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
+		assertEquals(ps.getPatientNames().get(1).getPrefix(), unmarshalledSearch.getPatientNames().get(1).getPrefix());
+		assertEquals(ps.getPatientNames().get(1).getSuffix(), unmarshalledSearch.getPatientNames().get(1).getSuffix());
+		assertEquals(ps.getPatientNames().get(1).getGivenName(), unmarshalledSearch.getPatientNames().get(1).getGivenName());
+		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
 	}
 	
 	@Test
@@ -129,7 +213,7 @@ public class JSONToSoapTest {
 		assertEquals("Jones", firstPatient.getPatientRecordName().get(0).getFamilyName());
 		assertEquals("tel:+1-481-555-7684;ext=2342", firstPatient.getPhoneNumber());
 		assertEquals("19630804", firstPatient.getDateOfBirth());
-		assertEquals("M", firstPatient.getGender());
+		assertEquals("M", firstPatient.getGender().getCode());
 		Address firstPatientAddress = firstPatient.getAddress();
 		assertNotNull(firstPatientAddress);
 		assertEquals("3443 North Arctic Avenue", firstPatientAddress.getStreet1());

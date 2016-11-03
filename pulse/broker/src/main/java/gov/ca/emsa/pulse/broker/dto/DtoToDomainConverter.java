@@ -10,6 +10,7 @@ import gov.ca.emsa.pulse.common.domain.NameRepresentation;
 import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.Organization;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientGender;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientOrganizationMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
@@ -65,7 +66,6 @@ public class DtoToDomainConverter {
 			org.setId(dto.getOrganizationId());
 			result.setOrganization(org);
 		}
-		result.setDocumentsQuerySuccess(dto.getDocumentsQuerySuccess());
 		result.setDocumentsQueryStatus(dto.getDocumentsQueryStatus());
 		result.setDocumentsQueryStart(dto.getDocumentsQueryStart());
 		result.setDocumentsQueryEnd(dto.getDocumentsQueryEnd());
@@ -153,7 +153,6 @@ public class DtoToDomainConverter {
 		qOrg.setStartDate(qOrgDto.getStartDate());
 		qOrg.setEndDate(qOrgDto.getEndDate());
 		qOrg.setStatus(qOrgDto.getStatus());
-		qOrg.setSuccess(qOrgDto.getSuccess());
 		return qOrg;
 	}
 
@@ -203,9 +202,13 @@ public class DtoToDomainConverter {
 					patient.setEffectiveDate(PatientRecordNameDTO.getEffectiveDate());
 				if(PatientRecordNameDTO.getExpirationDate() != null)
 					patient.setExpirationDate(PatientRecordNameDTO.getExpirationDate());
+				pr.getPatientRecordName().add(patient);
 			}
 		}
-		pr.setGender(prDto.getGender());
+		PatientGender pg = new PatientGender();
+		pg.setCode(prDto.getPatientGender().getCode());
+		pg.setDescription(prDto.getPatientGender().getDescription());
+		pr.setGender(pg);
 		pr.setPhoneNumber(prDto.getPhoneNumber());
 		pr.setDateOfBirth(prDto.getDateOfBirth());		
 		if(prDto.getAddress() != null) {

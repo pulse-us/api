@@ -61,6 +61,25 @@ public class AcfManagerTest {
 	@Test
 	@Transactional
 	@Rollback(true)
+	public void createDuplicateAcf() {
+		String name = "ACF 1";
+		String phoneNumber = "4105551000";
+		
+		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
+		dto.setName(name);
+		dto.setPhoneNumber(phoneNumber);
+		dto = acfManager.create(dto);
+		
+		AlternateCareFacilityDTO dup = new AlternateCareFacilityDTO();
+		dup.setName(name);
+		dup = acfManager.create(dup);
+		
+		Assert.assertEquals(dto.getId(), dup.getId());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void createAcfWithAddress() {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";

@@ -12,7 +12,6 @@ import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
-import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.Query;
@@ -38,7 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/queries")
 public class QueryService {
 	private static final Logger logger = LogManager.getLogger(QueryService.class);
-	@Autowired private SamlGenerator samlGenerator;
 	@Autowired QueryManager queryManager;
 	@Autowired PatientManager patientManager;
 	@Autowired DocumentManager docManager;
@@ -64,6 +62,15 @@ public class QueryService {
        return DtoToDomainConverter.convert(initiatedQuery);
     }
 
+	@ApiOperation(value = "Cancel part of a query that's going to a specific organization")
+	@RequestMapping(value = "/{queryId}/{organizationId}/cancel", method = RequestMethod.POST)
+	public Query cancelOrganizationQuery(@PathVariable(value="queryId") Long queryId,
+			@PathVariable(value="organizationId") Long orgId) {
+		queryManager.cancelQueryToOrganization(queryId, orgId);
+		QueryDTO queryWithCancelledOrg = queryManager.getById(queryId);
+		return DtoToDomainConverter.convert(queryWithCancelledOrg);
+	}
+	
 	@ApiOperation(value = "Delete a query")
 	@RequestMapping(value="/{queryId}/delete", method = RequestMethod.POST)
 	public void deleteQuery(@PathVariable(value="queryId") Long queryId) {

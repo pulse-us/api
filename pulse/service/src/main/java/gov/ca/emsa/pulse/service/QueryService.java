@@ -106,6 +106,28 @@ public class QueryService {
 		return response.getBody();
 	}
 	
+	@ApiOperation(value = "Cancel part of a patient discovery query that's going to a specific organization")
+	@RequestMapping(value = "/{queryId}/{organizationId}/cancel", method = RequestMethod.POST)
+	public Query cancelPatientDiscoveryRequestToOrganization(@PathVariable(value="queryId") Long queryId,
+			@PathVariable(value="organizationId") Long orgId) throws JsonProcessingException {
+		RestTemplate query = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
+
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		HttpEntity<Query> response = null;
+		if(jwtUser == null){
+			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.add("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Query> entity = new HttpEntity<Query>(headers);
+			response = query.exchange(brokerUrl + "/queries/" + queryId + "/" + orgId + "/cancel", HttpMethod.POST, entity, Query.class);
+			logger.info("Request sent to broker from services REST.");
+		}
+		
+		return response.getBody();
+	}
+	
 	// stages a patient in the database from a query id
 	@ApiOperation(value="Stages a patient in the database from a query id.")
 	@RequestMapping(value = "/{queryId}/stage", method = RequestMethod.POST)

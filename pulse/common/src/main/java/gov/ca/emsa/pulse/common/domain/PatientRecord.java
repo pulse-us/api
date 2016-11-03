@@ -6,8 +6,9 @@ import java.util.ArrayList;
 public class PatientRecord {
 	private Long id;
 	private ArrayList<PatientRecordName> patientRecordName;
+	private String orgPatientRecordId;
 	private String dateOfBirth;
-	private String gender;
+	private PatientGender gender;
 	private String phoneNumber;
 	private Address address;
 	private String ssn;
@@ -29,12 +30,15 @@ public class PatientRecord {
 	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
-	public String getGender() {
+	
+	public PatientGender getGender() {
 		return gender;
 	}
-	public void setGender(String gender) {
+
+	public void setGender(PatientGender gender) {
 		this.gender = gender;
 	}
+
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -60,6 +64,14 @@ public class PatientRecord {
 
 	public void setPatientRecordName(ArrayList<PatientRecordName> patientRecordName) {
 		this.patientRecordName = patientRecordName;
+	}
+
+	public String getOrgPatientRecordId() {
+		return orgPatientRecordId;
+	}
+
+	public void setOrgPatientRecordId(String orgPatientRecordId) {
+		this.orgPatientRecordId = orgPatientRecordId;
 	}
 	
 	
