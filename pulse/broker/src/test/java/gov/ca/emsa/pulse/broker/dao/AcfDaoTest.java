@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.dao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
@@ -25,7 +26,7 @@ public class AcfDaoTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void createAcfWithoutAddress() {
+	public void createAcfWithoutAddress() throws SQLException {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		
@@ -48,7 +49,7 @@ public class AcfDaoTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void createAcfWithAddressLines() {
+	public void createAcfWithAddressLines() throws SQLException {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
@@ -102,7 +103,7 @@ public class AcfDaoTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateAcfAddStreetLineToAddress() {
+	public void updateAcfAddStreetLineToAddress() throws SQLException {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
@@ -150,7 +151,7 @@ public class AcfDaoTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateAcfRemoveStreetLineFromAddress() {
+	public void updateAcfRemoveStreetLineFromAddress() throws SQLException {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
@@ -201,7 +202,7 @@ public class AcfDaoTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateAcfChangeStreetLineInAddress() {
+	public void updateAcfChangeStreetLineInAddress() throws SQLException  {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
@@ -253,7 +254,7 @@ public class AcfDaoTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateAcfName() {
+	public void updateAcfName() throws SQLException  {
 		String name = "ACF 1";
 		String updatedName = "ACF 1.1";
 		String phoneNumber = "4105551000";
@@ -280,7 +281,7 @@ public class AcfDaoTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateAcfUpdateAddressValues() {
+	public void updateAcfUpdateAddressValues() throws SQLException  {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		String city = "Baltimore";
@@ -324,7 +325,7 @@ public class AcfDaoTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void deleteAcfNoAddress() {
+	public void deleteAcfNoAddress()throws SQLException  {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		
@@ -347,7 +348,7 @@ public class AcfDaoTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void deleteAcfWithAddress() {
+	public void deleteAcfWithAddress() throws SQLException {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";

@@ -13,6 +13,7 @@ import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -93,7 +94,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	}
 	
 	@Override
-	public String getDocumentById(SAMLInput samlInput, Long documentId) {
+	public String getDocumentById(SAMLInput samlInput, Long documentId) throws SQLException {
 		String docContents = "";		
 		
 		DocumentDTO cachedDoc = docDao.getById(documentId);

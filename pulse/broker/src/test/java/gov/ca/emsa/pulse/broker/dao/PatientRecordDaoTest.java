@@ -14,6 +14,7 @@ import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
 import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -51,7 +52,7 @@ public class PatientRecordDaoTest extends TestCase {
 	private PatientGenderDTO patientGenderMale, patientGenderFemale, patientGenderUn;
 	
 	@Before
-	public void setup() {
+	public void setup() throws SQLException  {
 		acf = new AlternateCareFacilityDTO();
 		acf.setName("ACF1");
 		acf = acfDao.create(acf);

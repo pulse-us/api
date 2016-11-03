@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.manager;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -44,7 +45,7 @@ public class PatientRecordManagerTest extends TestCase {
 	private PatientGenderDTO patientGenderMale;
 	
 	@Before
-	public void setup() {
+	public void setup() throws SQLException  {
 		acf = new AlternateCareFacilityDTO();
 		acf.setName("ACF1");
 		acf = acfDao.create(acf);

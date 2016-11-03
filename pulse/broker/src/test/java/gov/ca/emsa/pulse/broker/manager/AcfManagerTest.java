@@ -1,7 +1,9 @@
 package gov.ca.emsa.pulse.broker.manager;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.cache.CacheCleanupException;
 import gov.ca.emsa.pulse.broker.dao.AddressDAO;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
@@ -28,7 +30,7 @@ public class AcfManagerTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void createAcfNoAddress() {
+	public void createAcfNoAddress() throws SQLException  {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		
@@ -61,7 +63,7 @@ public class AcfManagerTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void createDuplicateAcf() {
+	public void createDuplicateAcf() throws SQLException  {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		
@@ -80,7 +82,7 @@ public class AcfManagerTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void createAcfWithAddress() {
+	public void createAcfWithAddress() throws SQLException  {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
@@ -134,7 +136,7 @@ public class AcfManagerTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateAcfPhoneNumber() {
+	public void updateAcfPhoneNumber() throws SQLException  {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		String updatedPhoneNumber = "3015551000";
@@ -161,7 +163,7 @@ public class AcfManagerTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateAcfAddStreetLineToAddress() {
+	public void updateAcfAddStreetLineToAddress() throws SQLException  {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
@@ -209,7 +211,7 @@ public class AcfManagerTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateAcfRemoveStreetLineFromAddress() {
+	public void updateAcfRemoveStreetLineFromAddress() throws SQLException  {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
@@ -260,7 +262,7 @@ public class AcfManagerTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateAcfChangeStreetLineInAddress() {
+	public void updateAcfChangeStreetLineInAddress() throws SQLException  {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
@@ -312,7 +314,7 @@ public class AcfManagerTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testCleanupOldAcfs() {
+	public void testCleanupOldAcfs() throws CacheCleanupException, SQLException  {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";
 		

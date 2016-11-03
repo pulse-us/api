@@ -6,6 +6,7 @@ import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.service.UserUtil;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Date;
 
 import javax.servlet.FilterChain;
@@ -35,7 +36,11 @@ public class AcfLastAccessFilter extends GenericFilterBean {
 					//the ACF could have been deleted between the last time a request
 					//was made using it and this request... so have to check for null
 					acf.setLastReadDate(new Date());
-					acfManager.update(acf);
+					try {
+						acfManager.update(acf);
+					} catch(SQLException ex) {
+						throw new ServletException(ex.getMessage());
+					}
 				} else {
 					logger.error("ACF with ID " + user.getAcf().getId() + " and name " + user.getAcf().getName() + " does not exist!");
 					throw new ServletException("ACF " + user.getAcf().getName() + " does not exist!");

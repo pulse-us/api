@@ -17,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.security.InvalidParameterException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,8 +82,9 @@ public class PatientService {
 	@RequestMapping(value = "/{patientId}/documents/{documentId}")
 	public @ResponseBody String getDocumentContents(@PathVariable("patientId") Long patientId,
 			@PathVariable("documentId") Long documentId,
-			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) {
-
+			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) 
+		throws SQLException {
+		
 		CommonUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getSubjectName());
 		SAMLInput input = new SAMLInput();
@@ -110,7 +112,8 @@ public class PatientService {
 	
 	@ApiOperation(value = "Delete a patient")
 	@RequestMapping(value="/{patientId}/delete", method = RequestMethod.POST)
-	public void deletePatient(@PathVariable(value="patientId") Long patientId) {
+	public void deletePatient(@PathVariable(value="patientId") Long patientId) 
+	 throws SQLException {
 		patientManager.delete(patientId);
 	}
 }

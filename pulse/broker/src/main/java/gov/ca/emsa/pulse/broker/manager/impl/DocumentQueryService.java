@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -66,7 +67,15 @@ public class DocumentQueryService implements Runnable {
 			patientOrgMap.setDocumentsQueryStatus(QueryOrganizationStatus.Failed);
 		}
 		//update patient org map
-		patientManager.updateOrganizationMap(patientOrgMap);
+		try {
+			patientManager.updateOrganizationMap(patientOrgMap);
+		} catch(SQLException ex) {
+			logger.error("Could not update organization map with "
+					+ "[id: " + patientOrgMap.getId() + ", "
+					+ "orgPatientRecordId: " + patientOrgMap.getOrgPatientRecordId() + ", " 
+					+ "orgId: " + patientOrgMap.getOrganizationId() + ", " 
+					+ "patientId: " + patientOrgMap.getPatientId() + "]");
+		}
 		
 		logger.info("Completed query to " + org.getAdapter() + " for documents for patient " + patientOrgMap.getPatientId());
 	}
