@@ -90,6 +90,7 @@ public class JSONToSoapTest {
 		ps.setDob("19830205");
 		ps.setGender("F");
 		ps.setSsn("123456789");
+		ps.setTelephone("4439871013");
 		ArrayList<PatientSearchName> names = new ArrayList<PatientSearchName>();
 		names.add(toCreate1);
 		ps.setPatientNames(names);
@@ -153,6 +154,8 @@ public class JSONToSoapTest {
 		toCreate1.setGivenName(givens2);
 		
 		ps.setDob("19830205");
+		ps.setSsn("123456789");
+		ps.setTelephone("4439871013");
 		ps.setGender("F");
 		ArrayList<PatientSearchName> names = new ArrayList<PatientSearchName>();
 		names.add(toCreate1);

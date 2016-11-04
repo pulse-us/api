@@ -78,8 +78,13 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		if((gender != null && !gender.isEmpty()) && (dob != null && !dob.isEmpty()) && (name != null  && !name.isEmpty())){
 			ps.setGender(gender.get(0).getValue().get(0).getCode());
 			ps.setDob(dob.get(0).getValue().get(0).getValue());
-			ps.setSsn(ssn.get(0).getValue().get(0).getExtension());
-			ps.setTelephone(telecom.get(0).getValue().get(0).getValue());
+			// TODO ssn and telecom can be empty so null checks needed
+			if(!ssn.get(0).getValue().isEmpty()){
+				ps.setSsn(ssn.get(0).getValue().get(0).getExtension());
+			}
+			if(!telecom.get(0).getValue().isEmpty()){
+				ps.setTelephone(telecom.get(0).getValue().get(0).getValue());
+			}
 			ArrayList<PatientSearchName> arr = new ArrayList<PatientSearchName>();
 			for(PRPAMT201306UV02LivingSubjectName livingSubject : name){
 				List<Serializable> names = livingSubject.getValue().get(0).getContent();
@@ -160,9 +165,11 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				//TODO: just taking the first listed phone number for now
 				//but eventually we should accommodate multiple phone numbers
 				List<TELExplicit> tels = patientPerson.getValue().getTelecom();
-				if(tels.size() >= 1) {
-					patientRecord.setPhoneNumber(tels.get(0).getValue());
-				} 
+				if(tels.get(0) != null){
+					if(tels.size() >= 1) {
+						patientRecord.setPhoneNumber(tels.get(0).getValue());
+					}
+				}
 				
 				//TODO: just taking the first listed address for now
 				//but eventually we should accommodate multiple addresses
@@ -189,16 +196,18 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					patientRecord.setAddress(address);
 				}
 				
-				//look for the SSN
+				
 				List<PRPAMT201310UV02OtherIDs> otherIds = patientPerson.getValue().getAsOtherIDs();
-				for(PRPAMT201310UV02OtherIDs otherId : otherIds) {
-					List<String> classCodes = otherId.getClassCode();
-					for(String classCode : classCodes) {
-						if(classCode.equalsIgnoreCase("CIT")) {
-							List<II> citIds = otherId.getId();
-							for(II citId : citIds) {
-								if(citId.getRoot().equals("2.16.840.1.113883.4.1")) {
-									patientRecord.setSsn(citId.getExtension());
+				if(!otherIds.isEmpty()){
+					for(PRPAMT201310UV02OtherIDs otherId : otherIds) {
+						List<String> classCodes = otherId.getClassCode();
+						for(String classCode : classCodes) {
+							if(classCode.equalsIgnoreCase("CIT")) {
+								List<II> citIds = otherId.getId();
+								for(II citId : citIds) {
+									if(citId.getRoot().equals("2.16.840.1.113883.4.1")) {
+										patientRecord.setSsn(citId.getExtension());
+									}
 								}
 							}
 						}
