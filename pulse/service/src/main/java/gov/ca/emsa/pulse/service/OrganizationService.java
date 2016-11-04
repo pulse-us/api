@@ -2,11 +2,13 @@ package gov.ca.emsa.pulse.service;
 
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.common.domain.Organization;
+import gov.ca.emsa.pulse.common.domain.stats.OrganizationStatistics;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -54,5 +57,40 @@ public class OrganizationService {
 			orgList = new ArrayList<Organization>(Arrays.asList(response.getBody()));
 		}
 		return orgList;
+	}
+	
+	// get all organizations
+	@ApiOperation(value="Get all organizations.")
+	@RequestMapping(value = "/organizations/statistics", method = RequestMethod.GET)
+	public ArrayList<OrganizationStatistics> getOrganizationRequestStatistics(
+			@RequestParam(name="start", required=false) Long startMillis, 
+			@RequestParam(name="end", required=false) Long endMillis) throws JsonProcessingException {
+
+		RestTemplate query = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
+
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		ArrayList<OrganizationStatistics> statList = null;
+		if(jwtUser == null){
+			logger.error("Could not find a logged in user. ");
+		}else{
+			headers.set("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<OrganizationStatistics[]> entity = new HttpEntity<OrganizationStatistics[]>(headers);
+			String url = brokerUrl + "/organizations/statistics";
+			if(startMillis != null) {
+				url += "?start=" + startMillis;
+				if(endMillis != null) {
+				 url += "&end=" + endMillis;	
+				}
+			} else if(endMillis != null) {
+				url += "?end=" + endMillis;
+			}
+			
+			HttpEntity<OrganizationStatistics[]> response = query.exchange(url, HttpMethod.GET, entity, OrganizationStatistics[].class);
+			logger.info("Request sent to broker from services REST.");
+			statList = new ArrayList<OrganizationStatistics>(Arrays.asList(response.getBody()));
+		}
+		return statList;
 	}
 }

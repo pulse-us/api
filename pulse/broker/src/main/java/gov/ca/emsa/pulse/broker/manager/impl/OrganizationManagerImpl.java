@@ -1,9 +1,14 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientDiscoveryQueryStatisticsDAO;
+import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.entity.PatientDiscoveryRequestStatisticsEntity;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.common.domain.Organization;
+import gov.ca.emsa.pulse.common.domain.stats.OrganizationStatistics;
+import gov.ca.emsa.pulse.common.domain.stats.RequestStatistics;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,8 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class OrganizationManagerImpl implements OrganizationManager {
 	
-	@Autowired
-	private OrganizationDAO organizationDAO;
+	@Autowired private OrganizationDAO organizationDAO;
+	@Autowired private PatientDiscoveryQueryStatisticsDAO statsDao;
 	
 	public OrganizationDTO getById(Long id) {
 		return organizationDAO.findById(id);
@@ -134,4 +139,34 @@ public class OrganizationManagerImpl implements OrganizationManager {
 		return allOrganizations;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<OrganizationStatistics> getPatientDiscoveryRequestStatistics(Date startDate, Date endDate) {
+		List<PatientDiscoveryRequestStatisticsEntity> stats = statsDao.getStatistics(startDate, endDate);
+		List<OrganizationStatistics> results = new ArrayList<OrganizationStatistics>();
+		if(stats != null) {
+			for(PatientDiscoveryRequestStatisticsEntity stat : stats) {
+				OrganizationStatistics result = new OrganizationStatistics();
+				result.setCalculationStart(startDate);
+				result.setCalculationEnd(endDate);
+				//don't have a filter param for calculating based on the last N events yet
+				Organization org = new Organization();
+				org.setId(stat.getOrganizationId());
+				org.setName(stat.getOrganizationName());
+				result.setOrg(org);
+				RequestStatistics orgStat = new RequestStatistics();
+				orgStat.setRequestCount(stat.getTotalRequestCount());
+				orgStat.setRequestAvgCompletionSeconds(stat.getTotalRequestAverageSeconds() != null ? stat.getTotalRequestAverageSeconds().longValue() : null);
+				orgStat.setRequestSuccessCount(stat.getSuccessfulRequestCount());
+				orgStat.setRequestSuccessAvgCompletionSeconds(stat.getSuccessfulRequestAverageSeconds() != null ? stat.getSuccessfulRequestAverageSeconds().longValue() : null);
+				orgStat.setRequestFailureCount(stat.getFailedRequestCount());
+				orgStat.setRequestFailureAvgCompletionSeconds(stat.getFailedRequestAverageSeconds() != null ? stat.getFailedRequestAverageSeconds().longValue() : null);
+				orgStat.setRequestCancelledCount(stat.getCancelledRequestCount());
+				orgStat.setRequestCancelledAvgCompletionSeconds(stat.getCancelledRequestAverageSeconds() != null ? stat.getCancelledRequestAverageSeconds().longValue() : null);
+				result.setPatientDiscoveryStats(orgStat);
+				results.add(result);
+			}
+		}
+		return results;
+	}
 }
