@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -106,14 +107,16 @@ public class DomainToDtoConverter {
 
 		result.setPhoneNumber(domainObj.getPhoneNumber());
 		result.setSsn(domainObj.getSsn());
-
-		if(domainObj.getAddress() != null) {
+		
+		List<PatientRecordAddressDTO> praDto = new ArrayList<PatientRecordAddressDTO>();
+		for(PatientRecordAddress pra : domainObj.getAddress()){
 			PatientRecordAddressDTO address = new PatientRecordAddressDTO();
-			address.setCity(domainObj.getAddress().getCity());
-			address.setState(domainObj.getAddress().getState());
-			address.setZipcode(domainObj.getAddress().getZipcode());
-			result.setAddress(address);
+			address.setCity(pra.getCity());
+			address.setState(pra.getState());
+			address.setZipcode(pra.getZipcode());
+			praDto.add(address);
 		}
+		result.setAddress(praDto);
 
 		return result;
 	}

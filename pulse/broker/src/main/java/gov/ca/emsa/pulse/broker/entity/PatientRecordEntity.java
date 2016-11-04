@@ -43,18 +43,6 @@ public class PatientRecordEntity {
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
-	@Column(name = "city")
-	private String city;
-	
-	@Column(name = "state")
-	private String state;
-	
-	@Column(name = "zipcode")
-	private String zipcode;
-	
-	@Column(name = "country")
-	private String country;
-	
 	@Column(name = "query_organization_id")
 	private Long queryOrganizationId;
 	
@@ -138,38 +126,6 @@ public class PatientRecordEntity {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public String getZipcode() {
-		return zipcode;
-	}
-
-	public void setZipcode(String zipcode) {
-		this.zipcode = zipcode;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
 	}
 
 	public Long getQueryOrganizationId() {

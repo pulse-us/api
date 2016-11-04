@@ -22,6 +22,7 @@ import gov.ca.emsa.pulse.common.domain.QueryOrganization;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -211,14 +212,16 @@ public class DtoToDomainConverter {
 		pg.setDescription(prDto.getPatientGender().getDescription());
 		pr.setGender(pg);
 		pr.setPhoneNumber(prDto.getPhoneNumber());
-		pr.setDateOfBirth(prDto.getDateOfBirth());		
-		if(prDto.getAddress() != null) {
-			PatientRecordAddress address = new PatientRecordAddress();
-			address.setCity(prDto.getAddress().getCity());
-			address.setState(prDto.getAddress().getState());
-			address.setZipcode(prDto.getAddress().getZipcode());
-			pr.setAddress(address);
+		pr.setDateOfBirth(prDto.getDateOfBirth());
+		List<PatientRecordAddress> praDomains = new ArrayList<PatientRecordAddress>();
+		for(PatientRecordAddressDTO praDto : prDto.getAddress()){
+			PatientRecordAddress pra = new PatientRecordAddress();
+			pra.setCity(praDto.getCity());
+			pra.setState(praDto.getState());
+			pra.setZipcode(praDto.getZipcode());
+			praDomains.add(pra);
 		}
+		pr.setAddress(praDomains);
 		return pr;
 	}
 

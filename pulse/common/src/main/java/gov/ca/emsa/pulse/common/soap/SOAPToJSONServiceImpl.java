@@ -192,7 +192,7 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 							}
 						}
 					}
-					patientRecord.setAddress(address);
+					//patientRecord.setAddress(address);
 				}
 				
 				

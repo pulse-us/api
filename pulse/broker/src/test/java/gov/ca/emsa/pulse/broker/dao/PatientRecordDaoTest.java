@@ -176,9 +176,9 @@ public class PatientRecordDaoTest extends TestCase {
 		
 		assertNotNull(patientRecordCreated);
 		assertNotNull(patientRecordCreated.getAddress());
-		assertEquals("21227", patientRecordCreated.getAddress().getZipcode());
-		assertEquals("Baltimore", patientRecordCreated.getAddress().getCity());
-		assertEquals("MD", patientRecordCreated.getAddress().getState());
+		assertEquals("21227", patientRecordCreated.getAddress().get(0).getZipcode());
+		assertEquals("Baltimore", patientRecordCreated.getAddress().get(0).getCity());
+		assertEquals("MD", patientRecordCreated.getAddress().get(0).getState());
 	}
 	
 	@Test

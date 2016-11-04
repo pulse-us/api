@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.dao.impl;
 
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientGenderDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientRecordAddressDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
@@ -9,6 +10,7 @@ import gov.ca.emsa.pulse.broker.dto.NameAssemblyDTO;
 import gov.ca.emsa.pulse.broker.dto.NameRepresentationDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
@@ -17,6 +19,7 @@ import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
 import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientGenderEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
@@ -41,6 +44,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 	@Autowired OrganizationDAO orgDao;
 	@Autowired PatientRecordNameDAO nameDao;
 	@Autowired PatientGenderDAO patientGenderDao;
+	@Autowired PatientRecordAddressDAO patientRecordAddressDao;
 
 	@Override
 	public PatientRecordDTO create(PatientRecordDTO dto) {
@@ -53,30 +57,30 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setPatientGenderId(patientGenderEntity.getId());
 		patient.setPhoneNumber(dto.getPhoneNumber());
 		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
-		if(dto.getAddress() != null) {
-			patient.setCity(dto.getAddress().getCity());
-			patient.setState(dto.getAddress().getState());
-			patient.setZipcode(dto.getAddress().getZipcode());
-		}
 		patient.setQueryOrganizationId(dto.getQueryOrganizationId());
+		
 
 		entityManager.persist(patient);
 		entityManager.flush();
-		PatientRecordDTO created = new PatientRecordDTO(patient);
+		PatientRecordDTO patientRecordCreated = new PatientRecordDTO(patient);
 		
+		for(PatientRecordAddressDTO praDto : dto.getAddress()){
+			praDto.setPatientRecordId(patientRecordCreated.getId());
+			PatientRecordAddressDTO created = patientRecordAddressDao.create(praDto);
+		}
 		if(dto.getPatientRecordName() != null){
 			ArrayList<PatientRecordNameDTO> iterate = new ArrayList<PatientRecordNameDTO>(dto.getPatientRecordName());
 			for(PatientRecordNameDTO patientRecordNameDTO : iterate){
 				PatientRecordNameDTO nameDto = null;
 				if(patientRecordNameDTO.getId() == null){
-					patientRecordNameDTO.setPatientRecordId(created.getId());
+					patientRecordNameDTO.setPatientRecordId(patientRecordCreated.getId());
 					nameDto = nameDao.create(patientRecordNameDTO);
 					dto.getPatientRecordName().add(nameDto);
 				}
 			}
 		}
 		
-		return created;
+		return patientRecordCreated;
 	}
 
 	@Override
@@ -133,11 +137,6 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setPatientGenderId(patientGenderEntity.getId());
 		patient.setPhoneNumber(dto.getPhoneNumber());
 		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
-		if(dto.getAddress() != null) {
-			patient.setCity(dto.getAddress().getCity());
-			patient.setState(dto.getAddress().getState());
-			patient.setZipcode(dto.getAddress().getZipcode());
-		}
 		patient.setQueryOrganizationId(dto.getQueryOrganizationId());
 
 		patient = entityManager.merge(patient);

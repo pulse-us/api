@@ -1,8 +1,10 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ public class PatientRecordDTO {
 	private String dateOfBirth;
 	private String ssn;
 	private String phoneNumber;
-	private PatientRecordAddressDTO address;
+	private List<PatientRecordAddressDTO> address;
 	private Long queryOrganizationId;
 	private Date lastModifiedDate;
 	private Long patientGenderId;
@@ -67,10 +69,15 @@ public class PatientRecordDTO {
 		this.phoneNumber = entity.getPhoneNumber();
 		this.organizationPatientRecordId = entity.getOrganizationPatientRecordId();
 		
-		this.address = new PatientRecordAddressDTO();
-		this.address.setCity(entity.getCity());
-		this.address.setState(entity.getState());
-		this.address.setZipcode(entity.getZipcode());
+		List<PatientRecordAddressDTO> praArr = new ArrayList<PatientRecordAddressDTO>();
+		for(PatientRecordAddressEntity pra : entity.getPatientRecordAddress()){
+			PatientRecordAddressDTO praDto = new PatientRecordAddressDTO();
+			praDto.setCity(pra.getCity());
+			praDto.setState(pra.getState());
+			praDto.setZipcode(pra.getZipcode());
+			praArr.add(praDto);
+		}
+		this.address = praArr;
 		
 		this.queryOrganizationId = entity.getQueryOrganizationId();
 		this.lastModifiedDate = entity.getLastModifiedDate();
@@ -100,10 +107,10 @@ public class PatientRecordDTO {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	public PatientRecordAddressDTO getAddress() {
+	public List<PatientRecordAddressDTO> getAddress() {
 		return address;
 	}
-	public void setAddress(PatientRecordAddressDTO address) {
+	public void setAddress(List<PatientRecordAddressDTO> address) {
 		this.address = address;
 	}
 
