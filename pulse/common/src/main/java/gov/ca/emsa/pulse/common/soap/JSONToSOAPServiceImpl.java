@@ -31,6 +31,7 @@ import org.hl7.v3.CE;
 import org.hl7.v3.ENExplicit;
 import org.hl7.v3.EnExplicitFamily;
 import org.hl7.v3.EnExplicitGiven;
+import org.hl7.v3.II;
 import org.hl7.v3.IVLTSExplicit;
 import org.hl7.v3.PNExplicit;
 import org.hl7.v3.PRPAIN201305UV02;
@@ -44,9 +45,13 @@ import org.hl7.v3.PRPAMT201304UV02Patient;
 import org.hl7.v3.PRPAMT201304UV02Person;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectAdministrativeGender;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectBirthTime;
+import org.hl7.v3.PRPAMT201306UV02LivingSubjectId;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectName;
 import org.hl7.v3.PRPAMT201306UV02ParameterList;
+import org.hl7.v3.PRPAMT201306UV02PatientTelecom;
 import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
+import org.hl7.v3.PRPAMT201310UV02OtherIDs;
+import org.hl7.v3.TELExplicit;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -96,10 +101,10 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 				for(String given : patientName.getGivenName()){
 					nameValue.getContent().add(new JAXBElement<String>(new QName("given"), String.class, given));
 				}
-				if(!patientName.getPrefix().isEmpty()){
+				if(!StringUtils.isEmpty(patientName.getPrefix())){
 					nameValue.getContent().add(new JAXBElement<String>(new QName("prefix"), String.class, patientName.getPrefix()));
 				}
-				if(!patientName.getSuffix().isEmpty()){
+				if(!StringUtils.isEmpty(patientName.getSuffix())){
 					nameValue.getContent().add(new JAXBElement<String>(new QName("suffix"), String.class, patientName.getSuffix()));
 				}
 				name.getValue().add(nameValue);
@@ -121,6 +126,23 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 			birthTimeValue.setValue(search.getDob());
 			birthTime.getValue().add(birthTimeValue);
 			parameterList.getLivingSubjectBirthTime().add(birthTime);
+		}
+		
+		if(!StringUtils.isEmpty(search.getTelephone())) {
+			PRPAMT201306UV02PatientTelecom telecom = new PRPAMT201306UV02PatientTelecom();
+			TELExplicit telecomEx = new TELExplicit();
+			telecomEx.setValue(search.getTelephone());
+			telecom.getValue().add(telecomEx);
+			parameterList.getPatientTelecom().add(telecom);
+		}
+		
+		if(!StringUtils.isEmpty(search.getSsn())) {
+			PRPAMT201306UV02LivingSubjectId ssn = new PRPAMT201306UV02LivingSubjectId();
+			II ssnEx = new II();
+			ssnEx.setRoot("2.16.840.1.113883.4.1");
+			ssnEx.setExtension(search.getSsn());
+			ssn.getValue().add(ssnEx);
+			parameterList.getLivingSubjectId().add(ssn);
 		}
 		
 		queryByParameter1.setParameterList(parameterList);

@@ -14,7 +14,7 @@ public class PatientRecordDTO {
 	private String organizationPatientRecordId;
 	private List<PatientRecordNameDTO> patientRecordName;
 	private PatientGenderDTO patientGender;
-	private LocalDate dateOfBirth;
+	private String dateOfBirth;
 	private String ssn;
 	private String phoneNumber;
 	private PatientRecordAddressDTO address;
@@ -58,9 +58,8 @@ public class PatientRecordDTO {
 				this.patientRecordName.add(patientRecordNameDTO);
 			}
 		}
-		if(entity.getDateOfBirth() != null) {
-			this.dateOfBirth = entity.getDateOfBirth().toLocalDate();
-		}
+		
+		this.dateOfBirth = entity.getDateOfBirth();
 		this.ssn = entity.getSsn();
 		PatientGenderDTO patientGenderDTO = new PatientGenderDTO(entity.getPatientGender());
 		this.patientGender = patientGenderDTO;
@@ -83,10 +82,10 @@ public class PatientRecordDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public LocalDate getDateOfBirth() {
+	public String getDateOfBirth() {
 		return dateOfBirth;
 	}
-	public void setDateOfBirth(LocalDate dateOfBirth) {
+	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 	public String getSsn() {

@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.service;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import gov.ca.emsa.pulse.Utils;
 import gov.ca.emsa.pulse.ServiceApplicationTestConfig;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
@@ -88,6 +88,25 @@ public class ServiceApplicationTests {
 	public void setUp() {
 		mockRestTemplate = new RestTemplate();
 		mockServer = MockRestServiceServer.createServer(mockRestTemplate);
+	}
+	
+	@Test
+	public void testDobFormatChecker(){
+		String correctDobFormat1 = "19930502071022+1000";
+		assertTrue(Utils.checkDobFormat(correctDobFormat1));
+		String correctDobFormat2 = "199305020710+1000";
+		assertTrue(Utils.checkDobFormat(correctDobFormat2));
+		String correctDobFormat3 = "19930502";
+		assertTrue(Utils.checkDobFormat(correctDobFormat3));
+		String incorrectDobFormat1 = "1993502";
+		assertFalse(Utils.checkDobFormat(incorrectDobFormat1));
+		String incorrectDobFormat2 = "199352";
+		assertFalse(Utils.checkDobFormat(incorrectDobFormat2));
+		String incorrectDobFormat3 = "93502";
+		assertFalse(Utils.checkDobFormat(incorrectDobFormat3));
+		String incorrectDobFormat4 = "19935271022+1000";
+		assertFalse(Utils.checkDobFormat(incorrectDobFormat4));
+		
 	}
 
 	@Test

@@ -123,7 +123,7 @@ public class PatientRecordManagerTest extends TestCase {
 	public void testCreatePatientRecord() {
 		
 		PatientRecordDTO dto = new PatientRecordDTO();
-		LocalDate date = LocalDate.parse("2016-01-10", DateTimeFormatter.ISO_DATE);
+		String date = "20160110";
 		dto.setDateOfBirth(date);
 		dto.setPhoneNumber("443-745-0888");
 		dto.setQueryOrganizationId(orgQuery1.getId());
@@ -134,12 +134,12 @@ public class PatientRecordManagerTest extends TestCase {
 		
 		assertNotNull(added);
 		assertNotNull(added.getId());
-		assertTrue(added.getDateOfBirth().isEqual(date));
+		assertTrue(added.getDateOfBirth().equals(date));
 		
 		PatientRecordDTO selected = queryManager.getPatientRecordById(added.getId());
 		assertNotNull(added);
 		assertEquals(added.getId(), selected.getId());
-		assertTrue(selected.getDateOfBirth().isEqual(date));
+		assertTrue(selected.getDateOfBirth().equals(date));
 	}
 	
 	@Test

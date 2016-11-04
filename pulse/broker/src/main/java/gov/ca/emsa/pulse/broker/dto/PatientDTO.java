@@ -14,7 +14,7 @@ public class PatientDTO {
 	private Long id;
 	private String fullName;
 	private String friendlyName;
-	private LocalDate dateOfBirth;
+	private String dateOfBirth;
 	private String ssn;
 	private String gender;
 	private Date lastReadDate;
@@ -30,9 +30,7 @@ public class PatientDTO {
 		this.id = entity.getId();
 		this.fullName = entity.getFullName();
 		this.friendlyName = entity.getFriendlyName();
-		if(entity.getDateOfBirth() != null) {
-			this.dateOfBirth = entity.getDateOfBirth().toLocalDate();
-		}
+		this.dateOfBirth = entity.getDateOfBirth();
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
 		this.lastReadDate = entity.getLastReadDate();
@@ -54,10 +52,10 @@ public class PatientDTO {
 		this.id = id;
 	}
 
-	public LocalDate getDateOfBirth() {
+	public String getDateOfBirth() {
 		return dateOfBirth;
 	}
-	public void setDateOfBirth(LocalDate dateOfBirth) {
+	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 	public String getSsn() {
