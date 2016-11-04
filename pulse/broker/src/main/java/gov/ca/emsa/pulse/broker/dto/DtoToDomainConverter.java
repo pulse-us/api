@@ -37,9 +37,7 @@ public class DtoToDomainConverter {
 		result.setFullName(dtoObj.getFullName());
 		result.setFriendlyName(dtoObj.getFriendlyName());
 		result.setGender(dtoObj.getGender());
-		if(dtoObj.getDateOfBirth() != null) {
-			result.setDateOfBirth(outFormatter.format(dtoObj.getDateOfBirth()));
-		}
+		result.setDateOfBirth(dtoObj.getDateOfBirth());
 		result.setSsn(dtoObj.getSsn());
 		result.setLastRead(dtoObj.getLastReadDate());
 		if(dtoObj.getAcf() != null) {
@@ -212,9 +210,7 @@ public class DtoToDomainConverter {
 		pg.setDescription(prDto.getPatientGender().getDescription());
 		pr.setGender(pg);
 		pr.setPhoneNumber(prDto.getPhoneNumber());
-		if(prDto.getDateOfBirth() != null) {
-			pr.setDateOfBirth(outFormatter.format(prDto.getDateOfBirth()));
-		}		
+		pr.setDateOfBirth(prDto.getDateOfBirth());		
 		if(prDto.getAddress() != null) {
 			Address address = new Address();
 			address.setStreet1(prDto.getAddress().getStreetLineOne());

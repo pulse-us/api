@@ -8,6 +8,7 @@ public class PatientSearch {
 	private String ssn;
 	private String gender;
 	private String zip;
+	private String telephone;
 	
 	public PatientSearch(){
 		names = new ArrayList<PatientSearchName>();
@@ -44,6 +45,14 @@ public class PatientSearch {
 
 	public void setPatientNames(ArrayList<PatientSearchName> names) {
 		this.names = names;
+	}
+
+	public String getTelephone() {
+		return telephone;
+	}
+
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
 	}
 	
 }
