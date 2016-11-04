@@ -78,11 +78,10 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		if((gender != null && !gender.isEmpty()) && (dob != null && !dob.isEmpty()) && (name != null  && !name.isEmpty())){
 			ps.setGender(gender.get(0).getValue().get(0).getCode());
 			ps.setDob(dob.get(0).getValue().get(0).getValue());
-			// TODO ssn and telecom can be empty so null checks needed
-			if(!ssn.get(0).getValue().isEmpty()){
+			if(!ssn.isEmpty()){
 				ps.setSsn(ssn.get(0).getValue().get(0).getExtension());
 			}
-			if(!telecom.get(0).getValue().isEmpty()){
+			if(!telecom.isEmpty()){
 				ps.setTelephone(telecom.get(0).getValue().get(0).getValue());
 			}
 			ArrayList<PatientSearchName> arr = new ArrayList<PatientSearchName>();

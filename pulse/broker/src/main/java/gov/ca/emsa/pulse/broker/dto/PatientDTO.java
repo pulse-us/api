@@ -31,9 +31,7 @@ public class PatientDTO {
 		this.id = entity.getId();
 		this.fullName = entity.getFullName();
 		this.friendlyName = entity.getFriendlyName();
-		if(entity.getDateOfBirth() != null) {
-			this.dateOfBirth = entity.getDateOfBirth();
-		}
+		this.dateOfBirth = entity.getDateOfBirth();
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
 		this.address = new AddressDTO(entity.getAddress());

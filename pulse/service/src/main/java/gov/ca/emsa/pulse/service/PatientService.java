@@ -3,6 +3,7 @@ import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
+import gov.ca.emsa.pulse.Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -47,13 +48,11 @@ public class PatientService {
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
 	public @ResponseBody Query searchPatients(@RequestBody PatientSearch patientSearchTerms) throws JsonProcessingException {
 		Query returnQuery;
-		Pattern p = Pattern.compile("\\d{4}([01]\\d([0-3]\\d([0-2]\\d([0-5]\\d([0-5]\\d)?)?)?)?)?([+-]\\d{4})?$");
-		Matcher m = p.matcher(patientSearchTerms.getDob());
-		boolean matched = m.matches();
+		
 		if(!patientSearchTerms.getPatientNames().isEmpty() && patientSearchTerms.getDob() != null &&
 				patientSearchTerms.getPatientNames().get(0).getFamilyName() != null
 				&& patientSearchTerms.getPatientNames().get(0).getGivenName() != null
-				&& patientSearchTerms.getGender() != null && matched){
+				&& patientSearchTerms.getGender() != null && Utils.checkDobFormat(patientSearchTerms.getDob())){
 			
 			
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();

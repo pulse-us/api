@@ -58,9 +58,8 @@ public class PatientRecordDTO {
 				this.patientRecordName.add(patientRecordNameDTO);
 			}
 		}
-		if(entity.getDateOfBirth() != null) {
-			this.dateOfBirth = entity.getDateOfBirth();
-		}
+		
+		this.dateOfBirth = entity.getDateOfBirth();
 		this.ssn = entity.getSsn();
 		PatientGenderDTO patientGenderDTO = new PatientGenderDTO(entity.getPatientGender());
 		this.patientGender = patientGenderDTO;

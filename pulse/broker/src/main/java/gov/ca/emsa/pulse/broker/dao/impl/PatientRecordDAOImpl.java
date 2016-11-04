@@ -46,9 +46,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 	public PatientRecordDTO create(PatientRecordDTO dto) {
 		PatientRecordEntity patient = new PatientRecordEntity();
 		
-		if(dto.getDateOfBirth() != null) {
-			patient.setDateOfBirth(dto.getDateOfBirth());
-		}
+		patient.setDateOfBirth(dto.getDateOfBirth());
 		patient.setSsn(dto.getSsn());
 		PatientGenderEntity patientGenderEntity = patientGenderDao.getPubEntityByCode(dto.getPatientGender().getCode());
 		patient.setPatientGender(patientGenderEntity);
@@ -131,11 +129,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 				patient.getPatientRecordName().add(PatientRecordNameEntity);
 			}
 		}
-		if(dto.getDateOfBirth() != null) {
-			patient.setDateOfBirth(dto.getDateOfBirth());
-		} else {
-			patient.setDateOfBirth(null);
-		}
+		patient.setDateOfBirth(dto.getDateOfBirth());
 		patient.setSsn(dto.getSsn());
 		PatientGenderEntity patientGenderEntity = patientGenderDao.getPubEntityByCode(dto.getPatientGender().getCode());
 		patient.setPatientGender(patientGenderEntity);
