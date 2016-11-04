@@ -32,15 +32,7 @@ public class SearchResultConverter {
 		result.getPatientRecordName().get(0).setFamilyName(familyName);
 		PatientGenderDTO pg = patientGenderDao.getByCode(domainObj.getGender());
 		result.setPatientGender(pg);
-		if(!StringUtils.isEmpty(domainObj.getDateOfBirth())) {
-			LocalDate patientDob = null;
-			try {
-				patientDob = LocalDate.parse(domainObj.getDateOfBirth(), DateTimeFormatter.BASIC_ISO_DATE);
-			} catch(DateTimeParseException pex) {
-				logger.error("Could not parse " + domainObj.getDateOfBirth() + " as a date in the format " + DateTimeFormatter.BASIC_ISO_DATE);
-			}
-			result.setDateOfBirth(patientDob);
-		}
+		result.setDateOfBirth(domainObj.getDateOfBirth());
 		result.setPhoneNumber(domainObj.getPhoneNumber());
 		result.setSsn(domainObj.getSsn());
 		result.setOrganizationPatientRecordId(domainObj.getOrgPatientId());

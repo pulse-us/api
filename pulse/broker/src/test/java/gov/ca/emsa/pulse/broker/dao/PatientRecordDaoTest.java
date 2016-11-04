@@ -98,6 +98,8 @@ public class PatientRecordDaoTest extends TestCase {
 		PatientRecordDTO toCreate = new PatientRecordDTO();
 		
 		toCreate.setSsn("111223344");
+		toCreate.setDateOfBirth("19930502");
+		toCreate.setPhoneNumber("4430001111");
 		toCreate.setPatientGender(patientGenderMale);
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
@@ -158,6 +160,8 @@ public class PatientRecordDaoTest extends TestCase {
 		
 		toCreate.setSsn("111223344");
 		toCreate.setPatientGender(patientGenderFemale);
+		toCreate.setDateOfBirth("19930502");
+		toCreate.setPhoneNumber("4430001111");
 		toCreate.setAddress(addrDto);
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
@@ -204,6 +208,8 @@ public class PatientRecordDaoTest extends TestCase {
 		
 		toCreate.setSsn("111223344");
 		toCreate.setPatientGender(patientGenderUn);
+		toCreate.setDateOfBirth("19930502");
+		toCreate.setPhoneNumber("4430001111");
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
 		assertNotNull(created);
@@ -232,6 +238,8 @@ public class PatientRecordDaoTest extends TestCase {
 	public void testDeletePatientRecord() {
 		PatientRecordDTO toCreate = new PatientRecordDTO();
 		toCreate.setSsn("111223344");
+		toCreate.setDateOfBirth("19930502");
+		toCreate.setPhoneNumber("4430001111");
 		toCreate.setPatientGender(patientGenderMale);
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
