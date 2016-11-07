@@ -153,6 +153,8 @@ public class OrganizationManagerImpl implements OrganizationManager {
 				Organization org = new Organization();
 				org.setId(stat.getOrganizationId());
 				org.setName(stat.getOrganizationName());
+				org.setActive(stat.getOrgIsActive());
+				org.setAdapter(stat.getOrgAdapter());
 				result.setOrg(org);
 				RequestStatistics orgStat = new RequestStatistics();
 				orgStat.setRequestCount(stat.getTotalRequestCount());

@@ -15,6 +15,12 @@ public class PatientDiscoveryRequestStatisticsEntity {
 	@Column(name = "organization_name", insertable = false, updatable = false)
 	private String organizationName;
 	
+	@Column(name = "organization_adapter", insertable = false, updatable = false)
+	private String orgAdapter;
+	
+	@Column(name = "organization_is_active", insertable = false, updatable = false)
+	private Boolean orgIsActive;
+	
 	@Column(name = "total_request_count", insertable = false, updatable = false)
 	private Long totalRequestCount;
 	
@@ -117,5 +123,21 @@ public class PatientDiscoveryRequestStatisticsEntity {
 
 	public void setCancelledRequestAverageSeconds(Double cancelledRequestAverageSeconds) {
 		this.cancelledRequestAverageSeconds = cancelledRequestAverageSeconds;
+	}
+
+	public String getOrgAdapter() {
+		return orgAdapter;
+	}
+
+	public void setOrgAdapter(String orgAdapter) {
+		this.orgAdapter = orgAdapter;
+	}
+
+	public Boolean getOrgIsActive() {
+		return orgIsActive;
+	}
+
+	public void setOrgIsActive(Boolean orgIsActive) {
+		this.orgIsActive = orgIsActive;
 	}
 }
