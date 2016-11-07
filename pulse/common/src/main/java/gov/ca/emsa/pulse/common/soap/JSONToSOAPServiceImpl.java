@@ -5,6 +5,7 @@ import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.PatientSearchAddress;
 import gov.ca.emsa.pulse.common.domain.PatientSearchName;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.DocumentRequest;
@@ -27,6 +28,8 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
+import org.hl7.v3.ADExplicit;
+import org.hl7.v3.AdxpExplicitState;
 import org.hl7.v3.CE;
 import org.hl7.v3.ENExplicit;
 import org.hl7.v3.EnExplicitFamily;
@@ -48,6 +51,7 @@ import org.hl7.v3.PRPAMT201306UV02LivingSubjectBirthTime;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectId;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectName;
 import org.hl7.v3.PRPAMT201306UV02ParameterList;
+import org.hl7.v3.PRPAMT201306UV02PatientAddress;
 import org.hl7.v3.PRPAMT201306UV02PatientTelecom;
 import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
 import org.hl7.v3.PRPAMT201310UV02OtherIDs;
@@ -111,7 +115,20 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 				parameterList.getLivingSubjectName().add(name);
 			}
 		}
-		
+		PRPAMT201306UV02PatientAddress patientAddress = new PRPAMT201306UV02PatientAddress();
+		for(PatientSearchAddress patientSearchAddress : search.getAddresses()){
+			ADExplicit addr = new ADExplicit();
+			addr.getContent().add(new JAXBElement<String>(new QName("state"), String.class, patientSearchAddress.getState()));
+			addr.getContent().add(new JAXBElement<String>(new QName("city"), String.class, patientSearchAddress.getCity()));
+			addr.getContent().add(new JAXBElement<String>(new QName("postalCode"), String.class, patientSearchAddress.getZipcode()));
+			
+			for(String line : patientSearchAddress.getLines()){
+				addr.getContent().add(new JAXBElement<String>(new QName("streetAddressLine"), String.class, line));
+			}
+			patientAddress.getValue().add(addr);
+			parameterList.getPatientAddress().add(patientAddress);
+		}
+
 		if(!StringUtils.isEmpty(search.getGender())) {
 			PRPAMT201306UV02LivingSubjectAdministrativeGender gender = new PRPAMT201306UV02LivingSubjectAdministrativeGender();
 			CE genderValue = new CE();

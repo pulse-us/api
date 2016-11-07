@@ -9,8 +9,10 @@ import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.PatientGender;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddressLine;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.PatientSearchAddress;
 import gov.ca.emsa.pulse.common.domain.PatientSearchName;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
@@ -36,6 +38,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 
 import org.hl7.v3.ADExplicit;
 import org.hl7.v3.AdxpExplicitCity;
+import org.hl7.v3.AdxpExplicitPostalCode;
 import org.hl7.v3.AdxpExplicitState;
 import org.hl7.v3.AdxpExplicitStreetAddressLine;
 import org.hl7.v3.ENExplicit;
@@ -54,6 +57,7 @@ import org.hl7.v3.PRPAMT201306UV02LivingSubjectBirthTime;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectId;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectName;
 import org.hl7.v3.PRPAMT201306UV02ParameterList;
+import org.hl7.v3.PRPAMT201306UV02PatientAddress;
 import org.hl7.v3.PRPAMT201306UV02PatientTelecom;
 import org.hl7.v3.PRPAMT201310UV02OtherIDs;
 import org.hl7.v3.PRPAMT201310UV02Patient;
@@ -75,6 +79,7 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		List<PRPAMT201306UV02LivingSubjectId> ssn = requestParameterList.getLivingSubjectId();
 		List<PRPAMT201306UV02LivingSubjectName> name = requestParameterList.getLivingSubjectName();
 		List<PRPAMT201306UV02PatientTelecom> telecom = requestParameterList.getPatientTelecom();
+		List<PRPAMT201306UV02PatientAddress> address = requestParameterList.getPatientAddress();
 		if((gender != null && !gender.isEmpty()) && (dob != null && !dob.isEmpty()) && (name != null  && !name.isEmpty())){
 			ps.setGender(gender.get(0).getValue().get(0).getCode());
 			ps.setDob(dob.get(0).getValue().get(0).getValue());
@@ -84,6 +89,33 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 			if(!telecom.isEmpty()){
 				ps.setTelephone(telecom.get(0).getValue().get(0).getValue());
 			}
+			if(!address.isEmpty()){
+				ArrayList<PatientSearchAddress> psas = new ArrayList<PatientSearchAddress>();
+				for(PRPAMT201306UV02PatientAddress patientAddress : address){
+					PatientSearchAddress psa = new PatientSearchAddress();
+					List<ADExplicit> addresses = patientAddress.getValue();
+					for(ADExplicit addr : addresses){
+						ArrayList<String> lines = new ArrayList<String>();
+						for(Serializable nameInList: addr.getContent()){
+							if(nameInList instanceof JAXBElement<?>){
+								if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("city")){
+									psa.setCity(((JAXBElement<AdxpExplicitCity>) nameInList).getValue().getContent());
+								}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("state")){
+									psa.setState(((JAXBElement<AdxpExplicitState>) nameInList).getValue().getContent());
+								}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("postalCode")){
+									psa.setZipcode(((JAXBElement<AdxpExplicitPostalCode>) nameInList).getValue().getContent());
+								}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("streetAddressLine")){
+									lines.add(((JAXBElement<AdxpExplicitStreetAddressLine>) nameInList).getValue().getContent());
+								}
+							}
+						}
+						psa.setLines(lines);
+						psas.add(psa);
+					}
+					ps.setAddresses(psas);
+				}
+			}
+			
 			ArrayList<PatientSearchName> arr = new ArrayList<PatientSearchName>();
 			for(PRPAMT201306UV02LivingSubjectName livingSubject : name){
 				List<Serializable> names = livingSubject.getValue().get(0).getContent();
@@ -170,31 +202,33 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					}
 				}
 				
-				//TODO: just taking the first listed address for now
-				//but eventually we should accommodate multiple addresses
 				List<ADExplicit> addressList = patientPerson.getValue().getAddr();
 				if(addressList.size() >= 1) {
-					PatientRecordAddress address = new PatientRecordAddress();
-					ADExplicit addr = addressList.get(0);
-					List<Serializable> addressContent = addr.getContent();
-					for(Serializable line : addressContent) {
-						if(line instanceof JAXBElement<?>) {
-							if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("streetAddressLine")) {
-								//if(StringUtils.isEmpty(address.getStreet1())) {
-									//address.setStreet1(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
-								//} else if(StringUtils.isEmpty(address.getStreet2())) {
-									//address.setStreet2(((JAXBElement<AdxpExplicitStreetAddressLine>)line).getValue().getContent());
-								//}
-							} else if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("city")) {
-								address.setCity(((JAXBElement<AdxpExplicitCity>)line).getValue().getContent());
-							} else if(((JAXBElement<?>) line).getName().getLocalPart().equalsIgnoreCase("state")) {
-								address.setState(((JAXBElement<AdxpExplicitState>)line).getValue().getContent());
+					ArrayList<PatientRecordAddress> addresses = new ArrayList<PatientRecordAddress>();
+					ArrayList<PatientRecordAddressLine> addressLines = new ArrayList<PatientRecordAddressLine>();
+					for(ADExplicit adex : addressList) {
+						PatientRecordAddress address = new PatientRecordAddress();
+						List<Serializable> addressContent = adex.getContent();
+						for(Serializable namePart : addressContent){
+							if(namePart instanceof JAXBElement<?>) {
+								if(((JAXBElement<?>) namePart).getName().getLocalPart().equals("city")){
+									address.setCity(((JAXBElement<AdxpExplicitCity>) namePart).getValue().getContent());
+								}else if(((JAXBElement<?>) namePart).getName().getLocalPart().equals("state")){
+									address.setState(((JAXBElement<AdxpExplicitState>) namePart).getValue().getContent());
+								}else if(((JAXBElement<?>) namePart).getName().getLocalPart().equals("postalCode")){
+									address.setZipcode(((JAXBElement<AdxpExplicitPostalCode>) namePart).getValue().getContent());
+								}else if(((JAXBElement<?>) namePart).getName().getLocalPart().equals("streetAddressLine")){
+									PatientRecordAddressLine addressLine = new PatientRecordAddressLine();
+									addressLine.setLine(((JAXBElement<AdxpExplicitStreetAddressLine>) namePart).getValue().getContent());
+									addressLines.add(addressLine);
+								}
 							}
 						}
+						address.setLines(addressLines);
+						addresses.add(address);
 					}
-					//patientRecord.setAddress(address);
+					patientRecord.setAddress(addresses);
 				}
-				
 				
 				List<PRPAMT201310UV02OtherIDs> otherIds = patientPerson.getValue().getAsOtherIDs();
 				if(!otherIds.isEmpty()){

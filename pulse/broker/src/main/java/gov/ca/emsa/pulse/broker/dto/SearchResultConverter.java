@@ -42,7 +42,7 @@ public class SearchResultConverter {
 			address.setCity(domainObj.getAddress().getCity());
 			address.setState(domainObj.getAddress().getState());
 			address.setZipcode(domainObj.getAddress().getZipcode());
-			result.setAddress(address);
+			//result.setAddress(address);
 		}
 
 		return result;
