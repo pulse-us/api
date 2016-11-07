@@ -164,16 +164,14 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				//TODO: just taking the first listed phone number for now
 				//but eventually we should accommodate multiple phone numbers
 				List<TELExplicit> tels = patientPerson.getValue().getTelecom();
-				if(tels.get(0) != null){
-					if(tels.size() >= 1) {
-						patientRecord.setPhoneNumber(tels.get(0).getValue());
-					}
+				if(!tels.isEmpty()){
+					patientRecord.setPhoneNumber(tels.get(0).getValue());
 				}
 				
 				//TODO: just taking the first listed address for now
 				//but eventually we should accommodate multiple addresses
 				List<ADExplicit> addressList = patientPerson.getValue().getAddr();
-				if(addressList.size() >= 1) {
+				if(!addressList.isEmpty()) {
 					Address address = new Address();
 					ADExplicit addr = addressList.get(0);
 					List<Serializable> addressContent = addr.getContent();
