@@ -2,20 +2,20 @@ package gov.ca.emsa.pulse.common.domain.stats;
 
 import java.util.Date;
 
-import gov.ca.emsa.pulse.common.domain.Organization;
+import gov.ca.emsa.pulse.common.domain.OrganizationBase;
 
 public class OrganizationStatistics {
-	private Organization org;
+	private OrganizationBase org;
 	private Date calculationStart;
 	private Date calculationEnd;
 	private Long calculationNumRequests;
 	
 	private RequestStatistics patientDiscoveryStats;
 	
-	public Organization getOrg() {
+	public OrganizationBase getOrg() {
 		return org;
 	}
-	public void setOrg(Organization org) {
+	public void setOrg(OrganizationBase org) {
 		this.org = org;
 	}
 	public Date getCalculationStart() {

@@ -23,6 +23,8 @@ public class PatientDiscoveryQueryStatisticsDAOImpl extends BaseDAOImpl
 		"SELECT " +
 			"organization.id as organization_id, " +
 			"organization.name as organization_name, " +
+			"organization.is_active as organization_is_active, " +
+			"organization.adapter as organization_adapter, " +
 			"COALESCE(allRequests.totalCount, 0) as total_request_count, " + 
 			"EXTRACT(EPOCH from allRequests.averageTime) as total_request_average_seconds, " +
 			"COALESCE(successfulRequests.totalCount, 0) as successful_request_count, " +
