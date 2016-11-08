@@ -125,7 +125,6 @@ public class PatientRecordDaoTest extends TestCase {
 		
 		assertNotNull(givenCreated);
 		assertEquals("Brian", givenCreated.getGivenName());
-		//assertEquals("Brian", prnCreated.getGivenName().get(0).getGivenName());
 		
 		PatientRecordDTO selectedPatientRecord = patientRecordDao.getById(created.getId());
 		PatientRecordNameDTO selectedPatientRecordName = prNameDao.getById(prnCreated.getId());
@@ -156,10 +155,8 @@ public class PatientRecordDaoTest extends TestCase {
 		
 		toCreate.setSsn("111223344");
 		toCreate.setPatientGender(patientGenderFemale);
-
 		toCreate.setDateOfBirth("19930502");
 		toCreate.setPhoneNumber("4430001111");
-		//toCreate.setAddress(addrDto);
 		
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
 		assertNotNull(created);
@@ -185,20 +182,7 @@ public class PatientRecordDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testUpdatePatientRecordFirstName() {		
-		String streetLine1 = "1000 Hilltop Circle";
-		String city = "Baltimore";
-		String state = "MD";
-		String zip = "21227";
-		PatientRecordAddressDTO addrDto = new PatientRecordAddressDTO();
-		addrDto.setCity(city);
-		addrDto.setState(state);
-		addrDto.setZipcode(zip);
-		addrDto = addrDao.create(addrDto);
-		Assert.assertNotNull(addrDto);
-		Assert.assertNotNull(addrDto.getId());
-		Assert.assertTrue(addrDto.getId().longValue() > 0);
-		long existingAddrId = addrDto.getId().longValue();
+	public void testUpdatePatientRecordFirstName() {	
 		
 		PatientRecordDTO toCreate = new PatientRecordDTO();
 		
@@ -210,7 +194,22 @@ public class PatientRecordDaoTest extends TestCase {
 		PatientRecordDTO created = patientRecordDao.create(toCreate);
 		assertNotNull(created);
 		assertNotNull(created.getId());
-		assertTrue(created.getId().longValue() > 0);
+		assertTrue(created.getId().longValue() > 0);	
+		String streetLine1 = "1000 Hilltop Circle";
+		String city = "Baltimore";
+		String state = "MD";
+		String zip = "21227";
+		
+		PatientRecordAddressDTO addrDto = new PatientRecordAddressDTO();
+		addrDto.setCity(city);
+		addrDto.setState(state);
+		addrDto.setZipcode(zip);
+		addrDto.setPatientRecordId(created.getId());
+		addrDto = addrDao.create(addrDto);
+		Assert.assertNotNull(addrDto);
+		Assert.assertNotNull(addrDto.getId());
+		Assert.assertTrue(addrDto.getId().longValue() > 0);
+		long existingAddrId = addrDto.getId().longValue();
 		
 		PatientRecordNameDTO prnDto = new PatientRecordNameDTO();
 		prnDto.setFamilyName("Lindsey");

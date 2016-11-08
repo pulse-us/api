@@ -12,6 +12,7 @@ import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.Organization;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientGender;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddressLine;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientOrganizationMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
@@ -216,6 +217,14 @@ public class DtoToDomainConverter {
 		List<PatientRecordAddress> praDomains = new ArrayList<PatientRecordAddress>();
 		for(PatientRecordAddressDTO praDto : prDto.getAddress()){
 			PatientRecordAddress pra = new PatientRecordAddress();
+			ArrayList<PatientRecordAddressLine> pralArr = new ArrayList<PatientRecordAddressLine>();
+			for(PatientRecordAddressLineDTO pralDto : praDto.getPatientRecordAddressLines()){
+				PatientRecordAddressLine pral = new PatientRecordAddressLine();
+				pral.setLine(pralDto.getLine());
+				pral.setLineOrder(pralDto.getLineOrder());
+				pralArr.add(pral);
+			}
+			pra.setLines(pralArr);
 			pra.setCity(praDto.getCity());
 			pra.setState(praDto.getState());
 			pra.setZipcode(praDto.getZipcode());

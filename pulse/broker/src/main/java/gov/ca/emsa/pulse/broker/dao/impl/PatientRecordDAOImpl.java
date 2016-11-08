@@ -64,9 +64,11 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		entityManager.flush();
 		PatientRecordDTO patientRecordCreated = new PatientRecordDTO(patient);
 		
-		for(PatientRecordAddressDTO praDto : dto.getAddress()){
-			praDto.setPatientRecordId(patientRecordCreated.getId());
-			PatientRecordAddressDTO created = patientRecordAddressDao.create(praDto);
+		if(dto.getAddress() != null){
+			for(PatientRecordAddressDTO praDto : dto.getAddress()){
+				praDto.setPatientRecordId(patientRecordCreated.getId());
+				PatientRecordAddressDTO created = patientRecordAddressDao.create(praDto);
+			}
 		}
 		if(dto.getPatientRecordName() != null){
 			ArrayList<PatientRecordNameDTO> iterate = new ArrayList<PatientRecordNameDTO>(dto.getPatientRecordName());

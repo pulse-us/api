@@ -92,9 +92,9 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 			if(!address.isEmpty()){
 				ArrayList<PatientSearchAddress> psas = new ArrayList<PatientSearchAddress>();
 				for(PRPAMT201306UV02PatientAddress patientAddress : address){
-					PatientSearchAddress psa = new PatientSearchAddress();
 					List<ADExplicit> addresses = patientAddress.getValue();
 					for(ADExplicit addr : addresses){
+						PatientSearchAddress psa = new PatientSearchAddress();
 						ArrayList<String> lines = new ArrayList<String>();
 						for(Serializable nameInList: addr.getContent()){
 							if(nameInList instanceof JAXBElement<?>){

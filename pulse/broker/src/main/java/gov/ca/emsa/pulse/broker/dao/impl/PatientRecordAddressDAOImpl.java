@@ -25,9 +25,7 @@ public class PatientRecordAddressDAOImpl extends BaseDAOImpl implements PatientR
 	public PatientRecordAddressDTO create(PatientRecordAddressDTO dto) {
 		
 		PatientRecordAddressEntity toInsert = new PatientRecordAddressEntity();
-		for(PatientRecordAddressLineDTO patientAddressLineDto : dto.getPatientRecordAddressLines()){
-			patientAddressLineDao.create(patientAddressLineDto);
-		}
+		
 		toInsert.setCity(dto.getCity());
 		toInsert.setState(dto.getState());
 		toInsert.setZipcode(dto.getZipcode());
@@ -35,6 +33,11 @@ public class PatientRecordAddressDAOImpl extends BaseDAOImpl implements PatientR
 		
 		entityManager.persist(toInsert);
 		entityManager.flush();
+		
+		for(PatientRecordAddressLineDTO patientAddressLineDto : dto.getPatientRecordAddressLines()){
+			patientAddressLineDto.setPatientRecordAddressId(toInsert.getId());
+			patientAddressLineDao.create(patientAddressLineDto);
+		}
 		return new PatientRecordAddressDTO(toInsert);
 	}
 
