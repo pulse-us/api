@@ -196,10 +196,8 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				//TODO: just taking the first listed phone number for now
 				//but eventually we should accommodate multiple phone numbers
 				List<TELExplicit> tels = patientPerson.getValue().getTelecom();
-				if(tels.get(0) != null){
-					if(tels.size() >= 1) {
-						patientRecord.setPhoneNumber(tels.get(0).getValue());
-					}
+				if(!tels.isEmpty()){
+					patientRecord.setPhoneNumber(tels.get(0).getValue());
 				}
 				
 				List<ADExplicit> addressList = patientPerson.getValue().getAddr();

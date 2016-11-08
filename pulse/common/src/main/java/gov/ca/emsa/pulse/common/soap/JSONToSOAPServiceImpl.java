@@ -116,17 +116,19 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 			}
 		}
 		PRPAMT201306UV02PatientAddress patientAddress = new PRPAMT201306UV02PatientAddress();
-		for(PatientSearchAddress patientSearchAddress : search.getAddresses()){
-			ADExplicit addr = new ADExplicit();
-			addr.getContent().add(new JAXBElement<String>(new QName("state"), String.class, patientSearchAddress.getState()));
-			addr.getContent().add(new JAXBElement<String>(new QName("city"), String.class, patientSearchAddress.getCity()));
-			addr.getContent().add(new JAXBElement<String>(new QName("postalCode"), String.class, patientSearchAddress.getZipcode()));
-			
-			for(String line : patientSearchAddress.getLines()){
-				addr.getContent().add(new JAXBElement<String>(new QName("streetAddressLine"), String.class, line));
+		if(search.getAddresses() != null){
+			for(PatientSearchAddress patientSearchAddress : search.getAddresses()){
+				ADExplicit addr = new ADExplicit();
+				addr.getContent().add(new JAXBElement<String>(new QName("state"), String.class, patientSearchAddress.getState()));
+				addr.getContent().add(new JAXBElement<String>(new QName("city"), String.class, patientSearchAddress.getCity()));
+				addr.getContent().add(new JAXBElement<String>(new QName("postalCode"), String.class, patientSearchAddress.getZipcode()));
+
+				for(String line : patientSearchAddress.getLines()){
+					addr.getContent().add(new JAXBElement<String>(new QName("streetAddressLine"), String.class, line));
+				}
+				patientAddress.getValue().add(addr);
+				parameterList.getPatientAddress().add(patientAddress);
 			}
-			patientAddress.getValue().add(addr);
-			parameterList.getPatientAddress().add(patientAddress);
 		}
 
 		if(!StringUtils.isEmpty(search.getGender())) {

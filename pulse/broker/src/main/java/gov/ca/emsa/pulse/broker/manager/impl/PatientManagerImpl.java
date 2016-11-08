@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import gov.ca.emsa.pulse.broker.cache.CacheCleanupException;
 import gov.ca.emsa.pulse.broker.dao.AddressDAO;
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
@@ -14,6 +15,7 @@ import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -49,7 +51,7 @@ public class PatientManagerImpl implements PatientManager {
 	
 	@Override
 	@Transactional
-	public PatientDTO create(PatientDTO toCreate) {
+	public PatientDTO create(PatientDTO toCreate) throws SQLException {
 		PatientDTO result = patientDao.create(toCreate);
 		
 		if(toCreate.getAcf() != null) {
@@ -61,7 +63,7 @@ public class PatientManagerImpl implements PatientManager {
 	
 	@Override
 	@Transactional
-	public PatientDTO update(PatientDTO toUpdate) {
+	public PatientDTO update(PatientDTO toUpdate) throws SQLException {
 		
 		toUpdate.setLastReadDate(new Date());
 		return patientDao.update(toUpdate);
@@ -69,31 +71,40 @@ public class PatientManagerImpl implements PatientManager {
 	
 	@Override
 	@Transactional
-	public void delete(Long patientId) {
+	public void delete(Long patientId) throws SQLException {
 		patientDao.delete(patientId);
 	}
 	
 	@Override
 	@Transactional
-	public void cleanupCache(Date oldestAllowedPatient) {
-		patientDao.deleteItemsOlderThan(oldestAllowedPatient);
+	public void cleanupCache(Date oldestAllowedPatient) throws CacheCleanupException {
+		try {
+			patientDao.deleteItemsOlderThan(oldestAllowedPatient);
+		} catch(SQLException sql) {
+			throw new CacheCleanupException("Error cleaning up old patients in the database. Message is: " + sql.getMessage());
+		} catch(Exception ex) {
+			throw new CacheCleanupException(ex.getMessage());
+		}
 	}
 
 	@Override
 	@Transactional
-	public PatientOrganizationMapDTO updateOrganizationMap(PatientOrganizationMapDTO toUpdate) {
+	public PatientOrganizationMapDTO updateOrganizationMap(PatientOrganizationMapDTO toUpdate)
+			throws SQLException{
 		return patientDao.updateOrgMap(toUpdate);
 	}
 	
 	@Override
 	@Transactional
-	public PatientOrganizationMapDTO createOrganizationMap(PatientOrganizationMapDTO toCreate) {
+	public PatientOrganizationMapDTO createOrganizationMap(PatientOrganizationMapDTO toCreate) 
+			throws SQLException {
 		return patientDao.createOrgMap(toCreate);
 	}
 
 	@Override
 	@Transactional
-	public PatientOrganizationMapDTO createOrganizationMapFromPatientRecord(PatientDTO patient, Long patientRecordId) {
+	public PatientOrganizationMapDTO createOrganizationMapFromPatientRecord(PatientDTO patient, Long patientRecordId)
+			throws SQLException {
 		PatientOrganizationMapDTO result = null;
 		PatientRecordDTO patientRecord = queryManager.getPatientRecordById(patientRecordId);
 		

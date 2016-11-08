@@ -1,10 +1,12 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import gov.ca.emsa.pulse.broker.cache.CacheCleanupException;
 import gov.ca.emsa.pulse.broker.dao.AddressDAO;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 
 	@Override
 	@Transactional
-	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO toCreate) {
+	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO toCreate) throws SQLException {
 		AlternateCareFacilityDTO result = null;
 		
 		try {
@@ -40,7 +42,7 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 
 	@Override
 	@Transactional
-	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO toUpdate) {
+	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO toUpdate) throws SQLException {
 		toUpdate.setLastReadDate(new Date());
 		AlternateCareFacilityDTO updated = acfDao.update(toUpdate);
 		return updated;
@@ -66,7 +68,13 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 	
 	@Override
 	@Transactional
-	public void cleanupCache(Date oldestAllowed) {
-		acfDao.deleteItemsOlderThan(oldestAllowed);
+	public void cleanupCache(Date oldestAllowed) throws CacheCleanupException {
+		try {
+			acfDao.deleteItemsOlderThan(oldestAllowed);
+		} catch(SQLException sql) {
+			throw new CacheCleanupException("Error updating the database. Message is: " + sql.getMessage());
+		} catch(Exception ex) {
+			throw new CacheCleanupException(ex.getMessage());
+		}
 	}
 }

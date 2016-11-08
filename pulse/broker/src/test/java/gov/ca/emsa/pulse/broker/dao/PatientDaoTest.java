@@ -11,6 +11,7 @@ import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.common.domain.NameType;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
@@ -41,7 +42,7 @@ public class PatientDaoTest extends TestCase {
 	private PatientRecordDTO queryResult1, queryResult2;
 	
 	@Before
-	public void setup() {
+	public void setup() throws SQLException  {
 		acf = new AlternateCareFacilityDTO();
 		acf.setName("ACF1");
 		acf = acfDao.create(acf);
@@ -73,7 +74,7 @@ public class PatientDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testCreatePatientMultipleGivens() {		
+	public void testCreatePatientMultipleGivens() throws SQLException {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
 		toCreate.setFullName("Brian Lindsey");
@@ -106,7 +107,7 @@ public class PatientDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testCreatePatientNoAddress() {		
+	public void testCreatePatientNoAddress() throws SQLException {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
 		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
@@ -143,7 +144,7 @@ public class PatientDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testCreatePatientWithExistingAddress() {		
+	public void testCreatePatientWithExistingAddress() throws SQLException {		
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
@@ -177,7 +178,7 @@ public class PatientDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testCreatePatientWithNewAddress() {		
+	public void testCreatePatientWithNewAddress() throws SQLException {		
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
@@ -212,7 +213,7 @@ public class PatientDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testCreatePatientWithOrgMaps() {		
+	public void testCreatePatientWithOrgMaps() throws SQLException {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
 		toCreate.setFullName("Brian Lindsey");
@@ -240,7 +241,7 @@ public class PatientDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testUpdatePatientFirstName() {		
+	public void testUpdatePatientFirstName() throws SQLException {		
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
@@ -261,7 +262,21 @@ public class PatientDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testDeletePatient() {		
+	public void testDeletePatient() throws SQLException {		
+		String streetLine1 = "1000 Hilltop Circle";
+		String city = "Baltimore";
+		String state = "MD";
+		String zip = "21227";
+		AddressDTO addrDto = new AddressDTO();
+		addrDto.setStreetLineOne(streetLine1);
+		addrDto.setCity(city);
+		addrDto.setState(state);
+		addrDto.setZipcode(zip);
+		addrDto = addrDao.create(addrDto);
+		Assert.assertNotNull(addrDto);
+		Assert.assertNotNull(addrDto.getId());
+		Assert.assertTrue(addrDto.getId().longValue() > 0);
+		long existingAddrId = addrDto.getId().longValue();
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);

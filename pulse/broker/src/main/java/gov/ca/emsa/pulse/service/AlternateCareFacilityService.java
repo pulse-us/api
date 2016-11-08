@@ -1,9 +1,11 @@
 package gov.ca.emsa.pulse.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,10 +54,14 @@ public class AlternateCareFacilityService {
 
 	@ApiOperation(value = "Create a new ACF")
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public AlternateCareFacility create(@RequestBody(required=true) AlternateCareFacility toCreate) {
+	public AlternateCareFacility create(@RequestBody(required=true) AlternateCareFacility toCreate) 
+		throws InvalidArgumentsException, SQLException {
 		CommonUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.CREATE_ACF, "/create", user.getSubjectName());
 		AlternateCareFacilityDTO dto = DomainToDtoConverter.convert(toCreate);
+		if(StringUtils.isEmpty(dto.getName())) {
+			throw new InvalidArgumentsException("ACF name is required.");
+		}
 		AlternateCareFacilityDTO created = acfManager.create(dto);
 		return DtoToDomainConverter.convert(created);
 
@@ -64,17 +70,21 @@ public class AlternateCareFacilityService {
 	@ApiOperation(value = "Edit an existing ACF")
 	@RequestMapping(value = "/{acfId}/edit", method = RequestMethod.POST)
 	public AlternateCareFacility update(@RequestBody(required=true) AlternateCareFacility toUpdate)
-		throws Exception {
+		throws InvalidArgumentsException, PermissionDeniedException, SQLException {
 		CommonUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.EDIT_ACF, user.getAcf() + "/edit", user.getSubjectName());
 		if(user.getAcf() == null) {
-			throw new Exception("No ACF was found in the User header.");
+			throw new InvalidArgumentsException("No ACF was found in the User header.");
 		}
 		if(!user.getAcf().getId().equals(toUpdate.getId())) {
-			throw new Exception("User " + user.getSubjectName() + " does not have permission to edit ACF " + toUpdate.getName());
+			throw new PermissionDeniedException("User " + user.getSubjectName() + " does not have permission to edit ACF " + toUpdate.getName());
 		}
 
 		AlternateCareFacilityDTO dto = DomainToDtoConverter.convert(toUpdate);
+		
+		if(dto.getId() == null) {
+			throw new InvalidArgumentsException("An ACF id is required in the body of the update request.");
+		}
 		AlternateCareFacilityDTO updated = acfManager.update(dto);
 		return DtoToDomainConverter.convert(updated);
 	}

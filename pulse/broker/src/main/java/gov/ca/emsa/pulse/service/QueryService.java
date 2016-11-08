@@ -18,7 +18,7 @@ import gov.ca.emsa.pulse.common.domain.Query;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.security.InvalidParameterException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -80,18 +81,25 @@ public class QueryService {
 	@ApiOperation(value="Create a Patient from multiple PatientRecords")
 	@RequestMapping(value="/{queryId}/stage", method = RequestMethod.POST)
     public Patient stagePatientFromResults(@PathVariable(value="queryId") Long queryId,
-    		@RequestBody CreatePatientRequest request) throws InvalidParameterException {
+    		@RequestBody CreatePatientRequest request) throws InvalidArgumentsException, SQLException {
 		CommonUser user = UserUtil.getCurrentUser();
 		if(request.getPatient() == null ||
 				request.getPatientRecordIds() == null ||
 				request.getPatientRecordIds().size() == 0) {
-			throw new InvalidParameterException("A patient object and at least one patient record id is required.");
+			throw new InvalidArgumentsException("A patient object and at least one patient record id is required.");
 		}
 
 		//create a new Patient
 		PatientDTO patientToCreate = DomainToDtoConverter.convertToPatient(request.getPatient());
+		//friendly and full name required by db
+		if(StringUtils.isEmpty(patientToCreate.getFriendlyName())) {
+			throw new InvalidArgumentsException("Patient friendly name is required.");
+		}
+		if(StringUtils.isEmpty(StringUtils.isEmpty(patientToCreate.getFullName()))) {
+			throw new InvalidArgumentsException("Patient full name is required.");
+		}
 		if(user.getAcf() == null || user.getAcf().getId() == null) {
-			throw new InvalidParameterException("There was no ACF supplied in the User header or the ACF ID was null.");
+			throw new InvalidArgumentsException("There was no ACF supplied in the User header or the ACF ID was null.");
 		}
 		AlternateCareFacilityDTO acfDto = acfManager.getById(user.getAcf().getId());
 		patientToCreate.setAcf(acfDto);
