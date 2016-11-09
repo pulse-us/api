@@ -22,6 +22,7 @@ public class PatientRecordAddressDTO {
 	}
 	
 	public PatientRecordAddressDTO(PatientRecordAddressEntity entity){
+		this();
 		if(entity != null) {
 			this.id = entity.getId();
 			if(entity.getPatientRecordAddressLines() != null){

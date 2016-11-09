@@ -105,12 +105,13 @@ public class PatientRecordAddressDAOImpl extends BaseDAOImpl implements PatientR
 		
 		Query query = entityManager.createQuery(  "SELECT DISTINCT a "
 												+ "from PatientRecordAddressEntity a "
-												+ "LEFT OUTER JOIN FETCH a.patientRecordAddressLines "
-												+ "where a.id = :entityid ", PatientRecordAddressEntity.class );
+												+ "LEFT JOIN FETCH a.patientRecordAddressLines lines "
+												+ "where a.id = :entityid "
+												+ "ORDER BY lines.lineOrder", PatientRecordAddressEntity.class );
 		query.setParameter("entityid", id);
 		List<PatientRecordAddressEntity> result = query.getResultList();
 		
-		if(result.size() == 1) {
+		if(result.size() > 0) {
 			entity = result.get(0);
 		}
 		
