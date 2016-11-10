@@ -66,7 +66,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 			PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent registrationEvent = new PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent();
 			PRPAIN201310UV02MFMIMT700711UV01Subject2 subject1 = new PRPAIN201310UV02MFMIMT700711UV01Subject2();
 			PRPAMT201304UV02Patient patient = new PRPAMT201304UV02Patient();
-			JAXBElement<EnExplicitGiven> given = new JAXBElement(new QName("given"), String.class, record.getPatientRecordName().get(0).getGivens());
+			JAXBElement<EnExplicitGiven> given = new JAXBElement(new QName("given"), String.class, record.getPatientRecordName().get(0).getGivenName());
 			JAXBElement<EnExplicitFamily> family = new JAXBElement(new QName("family"), String.class, record.getPatientRecordName().get(0).getFamilyName());
 			PNExplicit pnGiven = new PNExplicit();
 			PNExplicit pnFamily = new PNExplicit();
