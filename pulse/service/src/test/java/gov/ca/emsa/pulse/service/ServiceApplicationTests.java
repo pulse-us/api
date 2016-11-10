@@ -309,14 +309,14 @@ public class ServiceApplicationTests {
 		PatientRecordName name2 = new PatientRecordName();
 		pr1.setDateOfBirth("2016-09-19");
 		name1.setFamilyName("Lindsey");
-		name1.getGivens().add("Brian");
+		name1.getGivenName().add("Brian");
 		pr1.getPatientRecordName().add(name1);
 		PatientGender pg = new PatientGender();
 		pg.setCode("M");
 		pr1.setGender(pg);
 		pr2.setDateOfBirth("2016-09-19");
 		name2.setFamilyName("Lindsay");
-		name2.getGivens().add("John");
+		name2.getGivenName().add("John");
 		pr2.getPatientRecordName().add(name2);
 		pr2.setGender(pg);
 		records.add(pr1);

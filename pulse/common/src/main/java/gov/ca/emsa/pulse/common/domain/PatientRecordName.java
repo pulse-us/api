@@ -8,7 +8,7 @@ import java.util.List;
 public class PatientRecordName {
 	
 	private String id;
-	private List<String> givens;
+	private List<String> givenName;
 	private String family;
 	private String suffix;
 	private String prefix;
@@ -20,7 +20,7 @@ public class PatientRecordName {
 	private Date expirationDate;
 	
 	public PatientRecordName(){
-		this.givens = new ArrayList<String>();
+		this.givenName = new ArrayList<String>();
 	}
 	
 	public String getId() {
@@ -93,12 +93,12 @@ public class PatientRecordName {
 		this.profSuffix = profSuffix;
 	}
 
-	public List<String> getGivens() {
-		return givens;
+	public List<String> getGivenName() {
+		return givenName;
 	}
 
-	public void setGivens(List<String> givens) {
-		this.givens = givens;
+	public void setGivens(List<String> givenName) {
+		this.givenName = givenName;
 	}
 
 	

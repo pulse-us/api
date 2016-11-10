@@ -142,7 +142,7 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					for(Serializable namePart : nameParts) {
 						if(namePart instanceof JAXBElement<?>) {
 							if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("given")) {
-								prn.getGivens().add(((JAXBElement<EnExplicitGiven>) namePart).getValue().getContent());
+								prn.getGivenName().add(((JAXBElement<EnExplicitGiven>) namePart).getValue().getContent());
 							} else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("family")) {
 								prn.setFamilyName(((JAXBElement<EnExplicitFamily>)namePart).getValue().getContent());
 							}else if(((JAXBElement<?>) namePart).getName().getLocalPart().equalsIgnoreCase("prefix")) {
