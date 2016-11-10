@@ -1,13 +1,14 @@
 package gov.ca.emsa.pulse.common.domain;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class PatientRecordName {
 	
 	private String id;
-	private ArrayList<GivenName> givens;
-	private ArrayList<String> givenStrings;
+	private List<String> givens;
 	private String family;
 	private String suffix;
 	private String prefix;
@@ -19,7 +20,7 @@ public class PatientRecordName {
 	private Date expirationDate;
 	
 	public PatientRecordName(){
-		this.givens = new ArrayList<GivenName>();
+		this.givens = new ArrayList<String>();
 	}
 	
 	public String getId() {
@@ -27,12 +28,6 @@ public class PatientRecordName {
 	}
 	public void setId(String id) {
 		this.id = id;
-	}
-	public ArrayList<GivenName> getGivenName() {
-		return givens;
-	}
-	public void setGivenName(ArrayList<GivenName> givens) {
-		this.givens = givens;
 	}
 	public String getFamilyName() {
 		return family;
@@ -98,14 +93,13 @@ public class PatientRecordName {
 		this.profSuffix = profSuffix;
 	}
 
-	public ArrayList<String> getGivenStrings() {
-		return givenStrings;
+	public List<String> getGivens() {
+		return givens;
 	}
 
-	public void setGivenStrings(ArrayList<String> givenStrings) {
-		this.givenStrings = givenStrings;
+	public void setGivens(List<String> givens) {
+		this.givens = givens;
 	}
-	
-	
 
+	
 }
