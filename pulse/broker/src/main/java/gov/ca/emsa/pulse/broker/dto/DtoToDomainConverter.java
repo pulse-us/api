@@ -167,15 +167,11 @@ public class DtoToDomainConverter {
 			for(PatientRecordNameDTO PatientRecordNameDTO : prDto.getPatientRecordName()){
 				PatientRecordName patient = new PatientRecordName();
 				patient.setFamilyName(PatientRecordNameDTO.getFamilyName());
-				ArrayList<GivenName> givens = new ArrayList<GivenName>();
-				for(GivenNameDTO givenDto : PatientRecordNameDTO.getGivenName()){
-					GivenName givenName = new GivenName();
-					givenName.setGivenName(givenDto.getGivenName());
-					givenName.setId(givenDto.getId());
-					givenName.setPatientRecordNameId(givenDto.getPatientRecordNameId());
-					givens.add(givenName);
+				ArrayList<String> givens = new ArrayList<String>();
+				for(GivenNameDTO given : PatientRecordNameDTO.getGivenName()){
+					givens.add(given.getGivenName());
 				}
-				patient.setGivenName(givens);
+				patient.setGivens(givens);
 				if(PatientRecordNameDTO.getSuffix() != null)
 					patient.setSuffix(PatientRecordNameDTO.getSuffix());
 				if(PatientRecordNameDTO.getPrefix() != null)

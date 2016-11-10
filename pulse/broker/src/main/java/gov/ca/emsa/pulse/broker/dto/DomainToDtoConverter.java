@@ -66,11 +66,9 @@ public class DomainToDtoConverter {
 				PatientRecordNameDTO patientRecordNameDTO = new PatientRecordNameDTO();
 				patientRecordNameDTO.setFamilyName(patientRecordName.getFamilyName());
 				ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-				for(GivenName givenDto : patientRecordName.getGivenName()){
+				for(String given : patientRecordName.getGivens()){
 					GivenNameDTO givenName = new GivenNameDTO();
-					givenName.setGivenName(givenDto.getGivenName());
-					givenName.setId(givenDto.getId());
-					givenName.setPatientRecordNameId(givenDto.getPatientRecordNameId());
+					givenName.setGivenName(given);
 					givens.add(givenName);
 				}
 				patientRecordNameDTO.setGivenName(givens);

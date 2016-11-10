@@ -432,7 +432,7 @@ public class JSONToSoapTest {
 		assertEquals(2, patientRecords.size());
 		
 		PatientRecord firstPatient = patientRecords.get(0);
-		assertEquals("James", firstPatient.getPatientRecordName().get(0).getGivenName().get(0).getGivenName());
+		assertEquals("James", firstPatient.getPatientRecordName().get(0).getGivens().get(0));
 		assertEquals("Jones", firstPatient.getPatientRecordName().get(0).getFamilyName());
 		assertEquals("tel:+1-481-555-7684;ext=2342", firstPatient.getPhoneNumber());
 		assertEquals("19630804", firstPatient.getDateOfBirth());
