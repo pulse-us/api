@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.dao;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,10 +37,21 @@ public class PatientRecordAddressDaoTest {
 	public void createPatientAddressTest(){
 		
 		PatientGenderDTO patientGenderMale =  patientGenderDao.getByCode("M");
-		
 		PatientRecordDTO patientRecord = new PatientRecordDTO();
 		patientRecord.setPatientGender(patientGenderMale);
 		PatientRecordDTO patientRecordCreated = patientRecordDao.create(patientRecord);
+		
+		PatientRecordAddressLineDTO patientAddressLineDto1 = new PatientRecordAddressLineDTO();
+		patientAddressLineDto1.setLine("5523 Research Park Drive");
+		patientAddressLineDto1.setLineOrder(1);
+		
+		PatientRecordAddressLineDTO patientAddressLineDto2 = new PatientRecordAddressLineDTO();
+		patientAddressLineDto2.setLine("Suite 370");
+		patientAddressLineDto2.setLineOrder(2);
+		
+		ArrayList<PatientRecordAddressLineDTO> pralDtoArr = new ArrayList<PatientRecordAddressLineDTO>();
+		pralDtoArr.add(patientAddressLineDto1);
+		pralDtoArr.add(patientAddressLineDto2);
 		
 		PatientRecordAddressDTO patientAddressDto = new PatientRecordAddressDTO();
 		patientAddressDto.setCity("Bel Air");
@@ -47,42 +59,13 @@ public class PatientRecordAddressDaoTest {
 		patientAddressDto.setState("MD");
 		patientAddressDto.setZipcode("21015");
 		patientAddressDto.setPatientRecordId(patientRecordCreated.getId());
+		patientAddressDto.setPatientRecordAddressLines(pralDtoArr);
 		PatientRecordAddressDTO patientAddressCreated = patientAddressDao.create(patientAddressDto);
 		
 		assertNotNull(patientAddressCreated);
 		assertNotNull(patientAddressCreated.getCity());
 		assertNotNull(patientAddressCreated.getState());
 		assertNotNull(patientAddressCreated.getZipcode());
-		
-		PatientRecordAddressLineDTO patientAddressLineDto1 = new PatientRecordAddressLineDTO();
-		patientAddressLineDto1.setLine("5523 Research Park Drive");
-		patientAddressLineDto1.setLineOrder(1);
-		patientAddressLineDto1.setPatientRecordAddressId(patientAddressCreated.getId());
-		PatientRecordAddressLineDTO patientAddressLineCreated1 = patientAddressLineDao.create(patientAddressLineDto1);
-		
-		assertNotNull(patientAddressLineCreated1);
-		assertNotNull(patientAddressLineCreated1.getLine());
-		
-		PatientRecordAddressLineDTO patientAddressLineGetById1 = patientAddressLineDao.getById(patientAddressLineCreated1.getId());
-		
-		assertNotNull(patientAddressLineGetById1);
-		assertNotNull(patientAddressLineGetById1.getLine());
-		assertNotNull(patientAddressLineGetById1.getLineOrder());
-		
-		PatientRecordAddressLineDTO patientAddressLineDto2 = new PatientRecordAddressLineDTO();
-		patientAddressLineDto2.setLine("Suite 370");
-		patientAddressLineDto2.setLineOrder(2);
-		patientAddressLineDto2.setPatientRecordAddressId(patientAddressCreated.getId());
-		PatientRecordAddressLineDTO patientAddressLineCreated2 = patientAddressLineDao.create(patientAddressLineDto2);
-		
-		PatientRecordAddressLineDTO patientAddressLineGetById2 = patientAddressLineDao.getById(patientAddressLineCreated2.getId());
-		
-		assertNotNull(patientAddressLineGetById2);
-		assertNotNull(patientAddressLineGetById2.getLine());
-		assertNotNull(patientAddressLineGetById2.getLineOrder());
-		
-		assertNotNull(patientAddressLineCreated2);
-		assertNotNull(patientAddressLineCreated2.getLine());
 		
 		PatientRecordAddressDTO created = patientAddressDao.getById(patientAddressCreated.getId());
 		
@@ -91,7 +74,7 @@ public class PatientRecordAddressDaoTest {
 		assertNotNull(created.getState());
 		assertNotNull(created.getZipcode());
 		assertNotNull(created.getPatientRecordAddressLines());
-		assertNotNull(created.getPatientRecordAddressLines().size() > 0);
+		assertEquals(2, created.getPatientRecordAddressLines().size());
 		
 		List<PatientRecordAddressLineDTO> lines = created.getPatientRecordAddressLines();
 		

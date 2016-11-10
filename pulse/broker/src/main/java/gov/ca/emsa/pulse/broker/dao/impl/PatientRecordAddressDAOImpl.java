@@ -23,7 +23,6 @@ public class PatientRecordAddressDAOImpl extends BaseDAOImpl implements PatientR
 	
 	@Override
 	public PatientRecordAddressDTO create(PatientRecordAddressDTO dto) {
-		
 		PatientRecordAddressEntity toInsert = new PatientRecordAddressEntity();
 		
 		toInsert.setCity(dto.getCity());
@@ -34,10 +33,17 @@ public class PatientRecordAddressDAOImpl extends BaseDAOImpl implements PatientR
 		entityManager.persist(toInsert);
 		entityManager.flush();
 		
+		ArrayList<PatientRecordAddressLineEntity> pralArr = new ArrayList<PatientRecordAddressLineEntity>();
 		for(PatientRecordAddressLineDTO patientAddressLineDto : dto.getPatientRecordAddressLines()){
 			patientAddressLineDto.setPatientRecordAddressId(toInsert.getId());
-			patientAddressLineDao.create(patientAddressLineDto);
+			PatientRecordAddressLineDTO pral = patientAddressLineDao.create(patientAddressLineDto);
+			PatientRecordAddressLineEntity pralEntity = new PatientRecordAddressLineEntity();
+			pralEntity.setLine(pral.getLine());
+			pralEntity.setLineOrder(pral.getLineOrder());
+			pralEntity.setPatientRecordAddressId(toInsert.getId());
+			pralArr.add(pralEntity);
 		}
+		toInsert.getPatientRecordAddressLines().addAll(pralArr);
 		return new PatientRecordAddressDTO(toInsert);
 	}
 
@@ -103,6 +109,7 @@ public class PatientRecordAddressDAOImpl extends BaseDAOImpl implements PatientR
 	private PatientRecordAddressEntity getEntityById(Long id) {
 		PatientRecordAddressEntity entity = null;
 		
+		//entityManager.clear();
 		Query query = entityManager.createQuery(  "SELECT DISTINCT a "
 												+ "from PatientRecordAddressEntity a "
 												+ "LEFT JOIN FETCH a.patientRecordAddressLines lines "
