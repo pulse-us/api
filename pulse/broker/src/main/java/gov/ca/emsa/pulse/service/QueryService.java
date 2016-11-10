@@ -4,17 +4,25 @@ import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
+import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.Query;
+import gov.ca.emsa.pulse.common.domain.QueryOrganization;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -52,6 +60,19 @@ public class QueryService {
 		List<Query> results = new ArrayList<Query>();
 		for(QueryDTO query : queries) {
 			results.add(DtoToDomainConverter.convert(query));
+		}
+		for(Query qDto : results){
+			for(QueryOrganization qOrg : qDto.getOrgStatuses()){
+				for(PatientRecord pr : qOrg.getResults()){
+					for(PatientRecordName prn : pr.getPatientRecordName()){
+						ArrayList<String> givenNameArr = new ArrayList<String>();
+						for(GivenName gnDto : prn.getGivenName()){
+							givenNameArr.add(gnDto.getGivenName());
+						}
+						prn.setGivenStrings(givenNameArr);
+					}
+				}
+			}
 		}
 		return results;
 	}

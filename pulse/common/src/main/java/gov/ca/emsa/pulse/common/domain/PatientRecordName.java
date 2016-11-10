@@ -7,6 +7,7 @@ public class PatientRecordName {
 	
 	private String id;
 	private ArrayList<GivenName> givens;
+	private ArrayList<String> givenStrings;
 	private String family;
 	private String suffix;
 	private String prefix;
@@ -95,6 +96,14 @@ public class PatientRecordName {
 
 	public void setProfSuffix(String profSuffix) {
 		this.profSuffix = profSuffix;
+	}
+
+	public ArrayList<String> getGivenStrings() {
+		return givenStrings;
+	}
+
+	public void setGivenStrings(ArrayList<String> givenStrings) {
+		this.givenStrings = givenStrings;
 	}
 	
 	
