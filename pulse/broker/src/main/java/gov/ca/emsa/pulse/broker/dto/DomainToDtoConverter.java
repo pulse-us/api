@@ -6,13 +6,14 @@ import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
 import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
 import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
 import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
-import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.NameAssembly;
 import gov.ca.emsa.pulse.common.domain.NameRepresentation;
 import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddressLine;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -58,7 +60,7 @@ public class DomainToDtoConverter {
 		if(domainObj.getId() != null) {
 			result.setId(new Long(domainObj.getId()));
 		}
-		result.setOrganizationPatientRecordId(domainObj.getOrgPatientRecordId());
+		result.setOrganizationPatientRecordId(domainObj.getOrganizationPatientRecordId());
 		if(domainObj.getPatientRecordName() != null){
 			for(PatientRecordName patientRecordName : domainObj.getPatientRecordName()){
 				PatientRecordNameDTO patientRecordNameDTO = new PatientRecordNameDTO();
@@ -104,17 +106,24 @@ public class DomainToDtoConverter {
 
 		result.setPhoneNumber(domainObj.getPhoneNumber());
 		result.setSsn(domainObj.getSsn());
-
-		if(domainObj.getAddress() != null) {
-			AddressDTO address = new AddressDTO();
-			address.setStreetLineOne(domainObj.getAddress().getStreet1());
-			address.setStreetLineTwo(domainObj.getAddress().getStreet2());
-			address.setCity(domainObj.getAddress().getCity());
-			address.setState(domainObj.getAddress().getState());
-			address.setZipcode(domainObj.getAddress().getZipcode());
-			address.setCountry(domainObj.getAddress().getCountry());
-			result.setAddress(address);
+		
+		List<PatientRecordAddressDTO> praDto = new ArrayList<PatientRecordAddressDTO>();
+		for(PatientRecordAddress pra : domainObj.getAddress()){
+			PatientRecordAddressDTO address = new PatientRecordAddressDTO();
+			List<PatientRecordAddressLineDTO> lines = new ArrayList<PatientRecordAddressLineDTO>();
+			for(int i=0; i<pra.getLines().size(); i++){
+				PatientRecordAddressLineDTO pralDto = new PatientRecordAddressLineDTO();
+				pralDto.setLine(pra.getLines().get(i));
+				pralDto.setLineOrder(i);
+				lines.add(pralDto);
+			}
+			address.setPatientRecordAddressLines(lines);
+			address.setCity(pra.getCity());
+			address.setState(pra.getState());
+			address.setZipcode(pra.getZipcode());
+			praDto.add(address);
 		}
+		result.setAddress(praDto);
 
 		return result;
 	}

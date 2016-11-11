@@ -12,7 +12,6 @@ public class Patient {
 	private String dateOfBirth;
 	private String gender;
 	private String phoneNumber;
-	private Address address;
 	private String ssn;
 	private Date lastRead;
 	private AlternateCareFacility acf;
@@ -54,12 +53,6 @@ public class Patient {
 	}
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
-	}
-	public Address getAddress() {
-		return address;
-	}
-	public void setAddress(Address address) {
-		this.address = address;
 	}
 	public AlternateCareFacility getAcf() {
 		return acf;

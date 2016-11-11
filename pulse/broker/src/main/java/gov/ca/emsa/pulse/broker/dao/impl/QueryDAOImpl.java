@@ -256,7 +256,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return entity;
 	}
 	
-	private List<QueryEntity> getEntitiesByUser(String user) {		
+	private List<QueryEntity> getEntitiesByUser(String user) {
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.orgStatuses "
 				+ "where q.userId = :userId) ", 

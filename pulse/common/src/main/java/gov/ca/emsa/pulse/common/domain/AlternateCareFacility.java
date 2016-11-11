@@ -26,8 +26,8 @@ public class AlternateCareFacility {
 	public Address getAddress() {
 		return address;
 	}
-	public void setAddress(Address address) {
-		this.address = address;
+	public void setAddress(Address acfAddr) {
+		this.address = acfAddr;
 	}
 	public String getPhoneNumber() {
 		return phoneNumber;

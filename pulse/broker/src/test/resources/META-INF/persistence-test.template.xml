@@ -16,6 +16,8 @@
     <class>gov.ca.emsa.pulse.broker.entity.PatientGenderEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.PatientQueryResultEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.PatientRecordEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.QueryEntity</class>

@@ -40,15 +40,6 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		patient.setDateOfBirth(dto.getDateOfBirth());
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
-		if(dto.getAddress() != null) {
-			if(dto.getAddress().getId() == null) {
-				AddressDTO addrDto = addrDao.create(dto.getAddress());
-				dto.setAddress(addrDto);
-			} 
-			//address entity should exist now
-			AddressEntity addr = entityManager.find(AddressEntity.class, dto.getAddress().getId());
-			patient.setAddress(addr);
-		}
 		if(dto.getAcf() != null) {
 			patient.setAcfId(dto.getAcf().getId());
 			AlternateCareFacilityEntity acf = entityManager.find(AlternateCareFacilityEntity.class, dto.getAcf().getId());
@@ -84,11 +75,6 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		patient.setDateOfBirth(dto.getDateOfBirth());
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
-		if(dto.getAddress() != null) {
-			patient.setAddressId(dto.getAddress().getId());
-		} else {
-			patient.setAddressId(null);
-		}
 		if(dto.getAcf() != null) {
 			patient.setAcfId(dto.getAcf().getId());
 		} else {
@@ -168,7 +154,6 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.acf "
-				+ "LEFT OUTER JOIN FETCH pat.address "
 				+ "LEFT OUTER JOIN FETCH pat.orgMaps "
 				+ "where pat.acfId = :acfId) ", 
 				PatientEntity.class );
@@ -197,7 +182,6 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.acf "
-				+ "LEFT OUTER JOIN FETCH pat.address "
 				+ "where pat.id = :entityid) ", 
 				PatientEntity.class );
 

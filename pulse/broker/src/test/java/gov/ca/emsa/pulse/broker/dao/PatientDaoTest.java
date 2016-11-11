@@ -272,11 +272,11 @@ public class PatientDaoTest extends TestCase {
 		addrDto.setCity(city);
 		addrDto.setState(state);
 		addrDto.setZipcode(zip);
-		addrDto = addrDao.create(addrDto);
-		Assert.assertNotNull(addrDto);
-		Assert.assertNotNull(addrDto.getId());
-		Assert.assertTrue(addrDto.getId().longValue() > 0);
-		long existingAddrId = addrDto.getId().longValue();
+		//addrDto = addrDao.create(addrDto);
+		//Assert.assertNotNull(addrDto);
+		//Assert.assertNotNull(addrDto.getId());
+		//Assert.assertTrue(addrDto.getId().longValue() > 0);
+		//long existingAddrId = addrDto.getId().longValue();
 		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);

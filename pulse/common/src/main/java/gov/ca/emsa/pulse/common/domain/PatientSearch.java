@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.common.domain;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PatientSearch {
 	private ArrayList<PatientSearchName> names;
@@ -9,6 +10,7 @@ public class PatientSearch {
 	private String gender;
 	private String zip;
 	private String telephone;
+	private List<PatientSearchAddress> addresses;
 	
 	public PatientSearch(){
 		names = new ArrayList<PatientSearchName>();
@@ -53,6 +55,14 @@ public class PatientSearch {
 
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
+	}
+
+	public List<PatientSearchAddress> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<PatientSearchAddress> addresses) {
+		this.addresses = addresses;
 	}
 	
 }

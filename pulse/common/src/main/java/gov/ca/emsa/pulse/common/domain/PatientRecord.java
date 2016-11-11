@@ -1,16 +1,17 @@
 package gov.ca.emsa.pulse.common.domain;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class PatientRecord {
 	private Long id;
 	private ArrayList<PatientRecordName> patientRecordName;
-	private String orgPatientRecordId;
+	private String organizationPatientRecordId;
 	private String dateOfBirth;
 	private PatientGender gender;
 	private String phoneNumber;
-	private Address address;
+	private List<PatientRecordAddress> address;
 	private String ssn;
 	
 	public PatientRecord() {
@@ -45,10 +46,10 @@ public class PatientRecord {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	public Address getAddress() {
+	public List<PatientRecordAddress> getAddress() {
 		return address;
 	}
-	public void setAddress(Address address) {
+	public void setAddress(List<PatientRecordAddress> address) {
 		this.address = address;
 	}
 	public String getSsn() {
@@ -66,14 +67,13 @@ public class PatientRecord {
 		this.patientRecordName = patientRecordName;
 	}
 
-	public String getOrgPatientRecordId() {
-		return orgPatientRecordId;
+	public String getOrganizationPatientRecordId() {
+		return organizationPatientRecordId;
 	}
 
-	public void setOrgPatientRecordId(String orgPatientRecordId) {
-		this.orgPatientRecordId = orgPatientRecordId;
+	public void setOrganizationPatientRecordId(String organizationPatientRecordId) {
+		this.organizationPatientRecordId = organizationPatientRecordId;
 	}
-	
-	
+
 	
 }
