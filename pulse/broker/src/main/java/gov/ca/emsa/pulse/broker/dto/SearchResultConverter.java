@@ -37,14 +37,6 @@ public class SearchResultConverter {
 		result.setSsn(domainObj.getSsn());
 		result.setOrganizationPatientRecordId(domainObj.getOrgPatientId());
 
-		if(domainObj.getAddress() != null) {
-			PatientRecordAddressDTO address = new PatientRecordAddressDTO();
-			address.setCity(domainObj.getAddress().getCity());
-			address.setState(domainObj.getAddress().getState());
-			address.setZipcode(domainObj.getAddress().getZipcode());
-			//result.setAddress(address);
-		}
-
 		return result;
 	}
 }
