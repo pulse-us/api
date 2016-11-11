@@ -27,6 +27,7 @@ public class PatientRecordDTO {
 	
 	public PatientRecordDTO() {
 		patientRecordName = new ArrayList<PatientRecordNameDTO>();
+		address = new ArrayList<PatientRecordAddressDTO>();
 	}
 	
 	public PatientRecordDTO(PatientRecordEntity entity) {

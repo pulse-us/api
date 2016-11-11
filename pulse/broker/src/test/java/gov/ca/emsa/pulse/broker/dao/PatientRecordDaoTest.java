@@ -153,6 +153,15 @@ public class PatientRecordDaoTest extends TestCase {
 		
 		PatientRecordDTO toCreate = new PatientRecordDTO();
 		
+		PatientRecordAddressDTO addrDto = new PatientRecordAddressDTO();
+		addrDto.setCity(city);
+		addrDto.setState(state);
+		addrDto.setZipcode(zip);
+		ArrayList<PatientRecordAddressDTO> addresses = new ArrayList<PatientRecordAddressDTO>();
+		addresses.add(addrDto);
+		
+		toCreate.getAddress().addAll(addresses);
+		
 		toCreate.setSsn("111223344");
 		toCreate.setPatientGender(patientGenderFemale);
 		toCreate.setDateOfBirth("19930502");
@@ -162,13 +171,6 @@ public class PatientRecordDaoTest extends TestCase {
 		assertNotNull(created);
 		assertNotNull(created.getId());
 		assertTrue(created.getId().longValue() > 0);
-		
-		PatientRecordAddressDTO addrDto = new PatientRecordAddressDTO();
-		addrDto.setCity(city);
-		addrDto.setState(state);
-		addrDto.setZipcode(zip);
-		addrDto.setPatientRecordId(created.getId());
-		PatientRecordAddressDTO addrCreated = addrDao.create(addrDto);
 		
 		PatientRecordDTO patientRecordCreated = patientRecordDao.getById(created.getId());
 		

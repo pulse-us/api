@@ -59,7 +59,6 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
 		patient.setQueryOrganizationId(dto.getQueryOrganizationId());
 		
-
 		entityManager.persist(patient);
 		entityManager.flush();
 		PatientRecordDTO patientRecordCreated = new PatientRecordDTO(patient);
@@ -68,6 +67,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 			for(PatientRecordAddressDTO praDto : dto.getAddress()){
 				praDto.setPatientRecordId(patientRecordCreated.getId());
 				PatientRecordAddressDTO created = patientRecordAddressDao.create(praDto);
+				patientRecordCreated.getAddress().add(created);
 			}
 		}
 		if(dto.getPatientRecordName() != null){
@@ -168,6 +168,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 
 	private PatientRecordEntity getEntityById(Long id) {
 		PatientRecordEntity entity = null;
+		entityManager.clear();
 		Query query = entityManager.createQuery( "SELECT DISTINCT pat "
 				+ "FROM PatientRecordEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.queryOrganization "
