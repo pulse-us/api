@@ -3,6 +3,7 @@ package gov.ca.emsa.pulse.broker.dto;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +19,7 @@ public class PatientRecordAddressDTO {
 	private Date lastModifiedDate;
 	
 	public PatientRecordAddressDTO(){
-		this.patientRecordAddressLines = new LinkedList<PatientRecordAddressLineDTO>();
+		this.patientRecordAddressLines = new ArrayList<PatientRecordAddressLineDTO>();
 	}
 	
 	public PatientRecordAddressDTO(PatientRecordAddressEntity entity){

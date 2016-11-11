@@ -99,13 +99,17 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 						for(Serializable nameInList: addr.getContent()){
 							if(nameInList instanceof JAXBElement<?>){
 								if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("city")){
-									psa.setCity(((JAXBElement<AdxpExplicitCity>) nameInList).getValue().getContent());
+									if(((JAXBElement<AdxpExplicitCity>) nameInList).getValue() != null)
+										psa.setCity(((JAXBElement<AdxpExplicitCity>) nameInList).getValue().getContent());
 								}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("state")){
-									psa.setState(((JAXBElement<AdxpExplicitState>) nameInList).getValue().getContent());
+									if(((JAXBElement<AdxpExplicitState>) nameInList).getValue() != null)
+										psa.setState(((JAXBElement<AdxpExplicitState>) nameInList).getValue().getContent());
 								}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("postalCode")){
-									psa.setZipcode(((JAXBElement<AdxpExplicitPostalCode>) nameInList).getValue().getContent());
+									if(((JAXBElement<AdxpExplicitPostalCode>) nameInList).getValue() != null)
+										psa.setZipcode(((JAXBElement<AdxpExplicitPostalCode>) nameInList).getValue().getContent());
 								}else if(((JAXBElement<?>) nameInList).getName().getLocalPart().equals("streetAddressLine")){
-									lines.add(((JAXBElement<AdxpExplicitStreetAddressLine>) nameInList).getValue().getContent());
+									if(((JAXBElement<AdxpExplicitStreetAddressLine>) nameInList).getValue() != null)
+										lines.add(((JAXBElement<AdxpExplicitStreetAddressLine>) nameInList).getValue().getContent());
 								}
 							}
 						}
@@ -201,7 +205,7 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				List<ADExplicit> addressList = patientPerson.getValue().getAddr();
 				if(addressList.size() >= 1) {
 					ArrayList<PatientRecordAddress> addresses = new ArrayList<PatientRecordAddress>();
-					ArrayList<PatientRecordAddressLine> addressLines = new ArrayList<PatientRecordAddressLine>();
+					ArrayList<String> addressLines = new ArrayList<String>();
 					for(ADExplicit adex : addressList) {
 						PatientRecordAddress address = new PatientRecordAddress();
 						List<Serializable> addressContent = adex.getContent();
@@ -214,9 +218,7 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 								}else if(((JAXBElement<?>) namePart).getName().getLocalPart().equals("postalCode")){
 									address.setZipcode(((JAXBElement<AdxpExplicitPostalCode>) namePart).getValue().getContent());
 								}else if(((JAXBElement<?>) namePart).getName().getLocalPart().equals("streetAddressLine")){
-									PatientRecordAddressLine addressLine = new PatientRecordAddressLine();
-									addressLine.setLine(((JAXBElement<AdxpExplicitStreetAddressLine>) namePart).getValue().getContent());
-									addressLines.add(addressLine);
+									addressLines.add(((JAXBElement<AdxpExplicitStreetAddressLine>) namePart).getValue().getContent());
 								}
 							}
 						}

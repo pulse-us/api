@@ -111,12 +111,10 @@ public class DomainToDtoConverter {
 		for(PatientRecordAddress pra : domainObj.getAddress()){
 			PatientRecordAddressDTO address = new PatientRecordAddressDTO();
 			List<PatientRecordAddressLineDTO> lines = new ArrayList<PatientRecordAddressLineDTO>();
-			for(PatientRecordAddressLine pralDomain : pra.getLines()){
+			for(int i=0; i<pra.getLines().size(); i++){
 				PatientRecordAddressLineDTO pralDto = new PatientRecordAddressLineDTO();
-				pralDto.setId(pralDomain.getId());
-				pralDto.setLine(pralDomain.getLine());
-				pralDto.setLineOrder(pralDomain.getLineOrder());
-				pralDto.setPatientRecordAddressId(pralDomain.getPatientRecordAddressId());
+				pralDto.setLine(pra.getLines().get(i));
+				pralDto.setLineOrder(i);
 				lines.add(pralDto);
 			}
 			address.setPatientRecordAddressLines(lines);

@@ -101,15 +101,17 @@ public class PatientRecordAddressDAOImpl extends BaseDAOImpl implements PatientR
 	}
 	
 	private List<PatientRecordAddressEntity> findAllEntities() {
-		Query query = entityManager.createQuery(  "SELECT a from PatientRecordAddressEntity"
-												+ "LEFT OUTER JOIN FETCH a.patientRecordAddressLines ", PatientRecordAddressEntity.class );
+		entityManager.clear();
+		Query query = entityManager.createQuery(  "SELECT a from PatientRecordAddressEntity a "
+												+ "LEFT JOIN FETCH a.patientRecordAddressLines lines "
+												+ "ORDER BY lines.lineOrder", PatientRecordAddressEntity.class );
 		return query.getResultList();
 	}
 	
 	private PatientRecordAddressEntity getEntityById(Long id) {
 		PatientRecordAddressEntity entity = null;
 		
-		//entityManager.clear();
+		entityManager.clear();
 		Query query = entityManager.createQuery(  "SELECT DISTINCT a "
 												+ "from PatientRecordAddressEntity a "
 												+ "LEFT JOIN FETCH a.patientRecordAddressLines lines "

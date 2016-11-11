@@ -5,13 +5,13 @@ import java.util.List;
 
 public class PatientRecordAddress {
 	private Long id;
-	private List<PatientRecordAddressLine> lines;
+	private List<String> lines;
 	private String city;
 	private String state;
 	private String zipcode;
 	
 	public PatientRecordAddress(){
-		this.lines = new ArrayList<PatientRecordAddressLine>();
+		this.lines = new ArrayList<String>();
 	}
 	
 	public Long getId() {
@@ -40,11 +40,11 @@ public class PatientRecordAddress {
 		this.city = city;
 	}
 
-	public List<PatientRecordAddressLine> getLines() {
-		return lines;
+	public void setLines(List<String> lines) {
+		this.lines = lines;
 	}
 
-	public void setLines(List<PatientRecordAddressLine> lines) {
-		this.lines = lines;
+	public List<String> getLines() {
+		return lines;
 	}
 }

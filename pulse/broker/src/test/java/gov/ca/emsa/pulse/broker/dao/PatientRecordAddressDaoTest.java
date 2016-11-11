@@ -84,5 +84,62 @@ public class PatientRecordAddressDaoTest {
 		assertEquals(2, lines.get(1).getLineOrder());
 		
 	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void createPatientAddressFindAllTest(){
+		
+		PatientGenderDTO patientGenderMale =  patientGenderDao.getByCode("M");
+		PatientRecordDTO patientRecord = new PatientRecordDTO();
+		patientRecord.setPatientGender(patientGenderMale);
+		PatientRecordDTO patientRecordCreated = patientRecordDao.create(patientRecord);
+		
+		PatientRecordAddressLineDTO patientAddressLineDto1 = new PatientRecordAddressLineDTO();
+		patientAddressLineDto1.setLine("5523 Research Park Drive");
+		patientAddressLineDto1.setLineOrder(1);
+		
+		PatientRecordAddressLineDTO patientAddressLineDto2 = new PatientRecordAddressLineDTO();
+		patientAddressLineDto2.setLine("Suite 370");
+		patientAddressLineDto2.setLineOrder(2);
+		
+		ArrayList<PatientRecordAddressLineDTO> pralDtoArr = new ArrayList<PatientRecordAddressLineDTO>();
+		pralDtoArr.add(patientAddressLineDto1);
+		pralDtoArr.add(patientAddressLineDto2);
+		
+		PatientRecordAddressDTO patientAddressDto = new PatientRecordAddressDTO();
+		patientAddressDto.setCity("Bel Air");
+		patientAddressDto.setCreationDate(new Date());
+		patientAddressDto.setState("MD");
+		patientAddressDto.setZipcode("21015");
+		patientAddressDto.setPatientRecordId(patientRecordCreated.getId());
+		patientAddressDto.setPatientRecordAddressLines(pralDtoArr);
+		PatientRecordAddressDTO patientAddressCreated = patientAddressDao.create(patientAddressDto);
+		
+		assertNotNull(patientAddressCreated);
+		assertNotNull(patientAddressCreated.getCity());
+		assertNotNull(patientAddressCreated.getState());
+		assertNotNull(patientAddressCreated.getZipcode());
+		
+		PatientRecordAddressDTO created = patientAddressDao.getById(patientAddressCreated.getId());
+		
+		List<PatientRecordAddressDTO> pras = patientAddressDao.findAll();
+		for(PatientRecordAddressDTO pra : pras){
+			assertNotNull(pra);
+			assertNotNull(pra.getCity());
+			assertNotNull(pra.getState());
+			assertNotNull(pra.getZipcode());
+			assertNotNull(pra.getPatientRecordAddressLines());
+			assertEquals(2, pra.getPatientRecordAddressLines().size());
+
+			List<PatientRecordAddressLineDTO> lines = pra.getPatientRecordAddressLines();
+
+			assertEquals("5523 Research Park Drive", lines.get(0).getLine());
+			assertEquals(1, lines.get(0).getLineOrder());
+			assertEquals("Suite 370", lines.get(1).getLine());
+			assertEquals(2, lines.get(1).getLineOrder());
+		}
+
+	}
 
 }

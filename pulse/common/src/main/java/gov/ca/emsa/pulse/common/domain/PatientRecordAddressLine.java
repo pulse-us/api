@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.common.domain;
 
-public class PatientRecordAddressLine {
+public class PatientRecordAddressLine implements Comparable<PatientRecordAddressLine>{
 	
 	private Long id;
 	private Long patientRecordAddressId;
@@ -29,6 +29,16 @@ public class PatientRecordAddressLine {
 	}
 	public void setLineOrder(int lineOrder) {
 		this.lineOrder = lineOrder;
+	}
+	
+	public int compareTo(PatientRecordAddressLine o) {
+		if(this.lineOrder == o.lineOrder){
+			return 0;
+		}else if(this.lineOrder < o.lineOrder){
+			return -1;
+		}else{
+			return 1;
+		}
 	}
 
 }

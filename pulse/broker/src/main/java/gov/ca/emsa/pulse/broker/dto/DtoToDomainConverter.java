@@ -23,6 +23,8 @@ import gov.ca.emsa.pulse.common.domain.QueryOrganization;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
@@ -213,12 +215,17 @@ public class DtoToDomainConverter {
 		List<PatientRecordAddress> praDomains = new ArrayList<PatientRecordAddress>();
 		for(PatientRecordAddressDTO praDto : prDto.getAddress()){
 			PatientRecordAddress pra = new PatientRecordAddress();
-			ArrayList<PatientRecordAddressLine> pralArr = new ArrayList<PatientRecordAddressLine>();
+			ArrayList<String> pralArr = new ArrayList<String>();
+			ArrayList<PatientRecordAddressLine> pralArrDo = new ArrayList<PatientRecordAddressLine>();
 			for(PatientRecordAddressLineDTO pralDto : praDto.getPatientRecordAddressLines()){
-				PatientRecordAddressLine pral = new PatientRecordAddressLine();
-				pral.setLine(pralDto.getLine());
-				pral.setLineOrder(pralDto.getLineOrder());
-				pralArr.add(pral);
+				PatientRecordAddressLine pralDo = new PatientRecordAddressLine();
+				pralDo.setLine(pralDto.getLine());
+				pralDo.setLineOrder(pralDto.getLineOrder());
+				pralArrDo.add(pralDo);
+			}
+			Collections.sort(pralArrDo);
+			for(int i=0; i<pralArrDo.size(); i++){
+				pralArr.add(i, pralArrDo.get(i).getLine());
 			}
 			pra.setLines(pralArr);
 			pra.setCity(praDto.getCity());

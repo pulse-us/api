@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
 import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
@@ -72,6 +73,15 @@ public class PatientRecordDTO {
 		List<PatientRecordAddressDTO> praArr = new ArrayList<PatientRecordAddressDTO>();
 		for(PatientRecordAddressEntity pra : entity.getPatientRecordAddress()){
 			PatientRecordAddressDTO praDto = new PatientRecordAddressDTO();
+			ArrayList<PatientRecordAddressLineDTO> pralArr = new ArrayList<PatientRecordAddressLineDTO>();
+			for(PatientRecordAddressLineEntity pralEntity : pra.getPatientRecordAddressLines()){
+				PatientRecordAddressLineDTO pralDto = new PatientRecordAddressLineDTO(pralEntity);
+				pralDto.setLine(pralEntity.getLine());
+				pralDto.setLineOrder(pralEntity.getLineOrder());
+				pralDto.setPatientRecordAddressId(pralEntity.getPatientRecordAddressId());
+				pralArr.add(pralDto);
+			}
+			praDto.setPatientRecordAddressLines(pralArr);
 			praDto.setCity(pra.getCity());
 			praDto.setState(pra.getState());
 			praDto.setZipcode(pra.getZipcode());
