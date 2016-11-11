@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
@@ -11,6 +12,7 @@ import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.Organization;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientGender;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddressLine;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientOrganizationMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
@@ -21,6 +23,9 @@ import gov.ca.emsa.pulse.common.domain.QueryOrganization;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -206,17 +211,29 @@ public class DtoToDomainConverter {
 		pg.setDescription(prDto.getPatientGender().getDescription());
 		pr.setGender(pg);
 		pr.setPhoneNumber(prDto.getPhoneNumber());
-		pr.setDateOfBirth(prDto.getDateOfBirth());		
-		if(prDto.getAddress() != null) {
-			Address address = new Address();
-			address.setStreet1(prDto.getAddress().getStreetLineOne());
-			address.setStreet2(prDto.getAddress().getStreetLineTwo());
-			address.setCity(prDto.getAddress().getCity());
-			address.setState(prDto.getAddress().getState());
-			address.setZipcode(prDto.getAddress().getZipcode());
-			address.setCountry(prDto.getAddress().getCountry());
-			pr.setAddress(address);
+		pr.setDateOfBirth(prDto.getDateOfBirth());
+		List<PatientRecordAddress> praDomains = new ArrayList<PatientRecordAddress>();
+		for(PatientRecordAddressDTO praDto : prDto.getAddress()){
+			PatientRecordAddress pra = new PatientRecordAddress();
+			ArrayList<String> pralArr = new ArrayList<String>();
+			ArrayList<PatientRecordAddressLine> pralArrDo = new ArrayList<PatientRecordAddressLine>();
+			for(PatientRecordAddressLineDTO pralDto : praDto.getPatientRecordAddressLines()){
+				PatientRecordAddressLine pralDo = new PatientRecordAddressLine();
+				pralDo.setLine(pralDto.getLine());
+				pralDo.setLineOrder(pralDto.getLineOrder());
+				pralArrDo.add(pralDo);
+			}
+			Collections.sort(pralArrDo);
+			for(int i=0; i<pralArrDo.size(); i++){
+				pralArr.add(i, pralArrDo.get(i).getLine());
+			}
+			pra.setLines(pralArr);
+			pra.setCity(praDto.getCity());
+			pra.setState(praDto.getState());
+			pra.setZipcode(praDto.getZipcode());
+			praDomains.add(pra);
 		}
+		pr.setAddress(praDomains);
 		return pr;
 	}
 

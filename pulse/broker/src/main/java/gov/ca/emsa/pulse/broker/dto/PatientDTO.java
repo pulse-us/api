@@ -3,7 +3,7 @@ package gov.ca.emsa.pulse.broker.dto;
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
-import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,7 +17,6 @@ public class PatientDTO {
 	private String dateOfBirth;
 	private String ssn;
 	private String gender;
-	private AddressDTO address;
 	private Date lastReadDate;
 	private AlternateCareFacilityDTO acf;
 	private List<PatientOrganizationMapDTO> orgMaps;
@@ -34,7 +33,6 @@ public class PatientDTO {
 		this.dateOfBirth = entity.getDateOfBirth();
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
-		this.address = new AddressDTO(entity.getAddress());
 		this.lastReadDate = entity.getLastReadDate();
 		if(entity.getAcf() != null) {
 			this.acf = new AlternateCareFacilityDTO(entity.getAcf());
@@ -111,14 +109,6 @@ public class PatientDTO {
 
 	public void setFriendlyName(String friendlyName) {
 		this.friendlyName = friendlyName;
-	}
-
-	public AddressDTO getAddress() {
-		return address;
-	}
-
-	public void setAddress(AddressDTO address) {
-		this.address = address;
 	}
 	
 }

@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.broker.entity;
 
-import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -43,14 +43,6 @@ public class PatientEntity {
 	
 	@Column(name = "gender")
 	private String gender;
-	
-	@Column(name = "address_id")
-	private Long addressId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@Fetch(FetchMode.JOIN)
-	@JoinColumn(name = "address_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private AddressEntity address;
 	
 	@Column(name = "alternate_care_facility_id")
 	private Long acfId;
@@ -168,22 +160,6 @@ public class PatientEntity {
 
 	public void setFriendlyName(String friendlyName) {
 		this.friendlyName = friendlyName;
-	}
-
-	public AddressEntity getAddress() {
-		return address;
-	}
-
-	public void setAddress(AddressEntity address) {
-		this.address = address;
-	}
-
-	public Long getAddressId() {
-		return addressId;
-	}
-
-	public void setAddressId(Long long1) {
-		this.addressId = long1;
 	}
 	
 }

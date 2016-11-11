@@ -129,7 +129,8 @@ public class PatientRecordManagerTest extends TestCase {
 		dto.setPhoneNumber("443-745-0888");
 		dto.setQueryOrganizationId(orgQuery1.getId());
 		dto.setSsn("555-55-5555");
-		dto.setPatientGender(patientGenderMale);		
+
+		dto.setPatientGender(patientGenderMale);
 		PatientRecordDTO added = queryManager.addPatientRecord(dto);
 		
 		assertNotNull(added);

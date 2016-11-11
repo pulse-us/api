@@ -1,8 +1,11 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
+import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,7 +20,7 @@ public class PatientRecordDTO {
 	private String dateOfBirth;
 	private String ssn;
 	private String phoneNumber;
-	private AddressDTO address;
+	private List<PatientRecordAddressDTO> address;
 	private Long queryOrganizationId;
 	private Date lastModifiedDate;
 	private Long patientGenderId;
@@ -67,13 +70,24 @@ public class PatientRecordDTO {
 		this.phoneNumber = entity.getPhoneNumber();
 		this.organizationPatientRecordId = entity.getOrganizationPatientRecordId();
 		
-		this.address = new AddressDTO();
-		this.address.setStreetLineOne(entity.getStreetLineOne());
-		this.address.setStreetLineTwo(entity.getStreetLineTwo());
-		this.address.setCity(entity.getCity());
-		this.address.setState(entity.getState());
-		this.address.setZipcode(entity.getZipcode());
-		this.address.setCountry(entity.getCountry());
+		List<PatientRecordAddressDTO> praArr = new ArrayList<PatientRecordAddressDTO>();
+		for(PatientRecordAddressEntity pra : entity.getPatientRecordAddress()){
+			PatientRecordAddressDTO praDto = new PatientRecordAddressDTO();
+			ArrayList<PatientRecordAddressLineDTO> pralArr = new ArrayList<PatientRecordAddressLineDTO>();
+			for(PatientRecordAddressLineEntity pralEntity : pra.getPatientRecordAddressLines()){
+				PatientRecordAddressLineDTO pralDto = new PatientRecordAddressLineDTO(pralEntity);
+				pralDto.setLine(pralEntity.getLine());
+				pralDto.setLineOrder(pralEntity.getLineOrder());
+				pralDto.setPatientRecordAddressId(pralEntity.getPatientRecordAddressId());
+				pralArr.add(pralDto);
+			}
+			praDto.setPatientRecordAddressLines(pralArr);
+			praDto.setCity(pra.getCity());
+			praDto.setState(pra.getState());
+			praDto.setZipcode(pra.getZipcode());
+			praArr.add(praDto);
+		}
+		this.address = praArr;
 		
 		this.queryOrganizationId = entity.getQueryOrganizationId();
 		this.lastModifiedDate = entity.getLastModifiedDate();
@@ -103,10 +117,10 @@ public class PatientRecordDTO {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	public AddressDTO getAddress() {
+	public List<PatientRecordAddressDTO> getAddress() {
 		return address;
 	}
-	public void setAddress(AddressDTO address) {
+	public void setAddress(List<PatientRecordAddressDTO> address) {
 		this.address = address;
 	}
 
@@ -114,8 +128,8 @@ public class PatientRecordDTO {
 		return organizationPatientRecordId;
 	}
 
-	public void setOrganizationPatientRecordId(String orgPatientRecordId) {
-		this.organizationPatientRecordId = orgPatientRecordId;
+	public void setOrganizationPatientRecordId(String organizationPatientRecordId) {
+		this.organizationPatientRecordId = organizationPatientRecordId;
 	}
 
 	public Long getQueryOrganizationId() {

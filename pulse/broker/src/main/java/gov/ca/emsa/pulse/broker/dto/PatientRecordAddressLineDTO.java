@@ -1,11 +1,23 @@
-package gov.ca.emsa.pulse.common.domain;
+package gov.ca.emsa.pulse.broker.dto;
 
-public class PatientRecordAddressLine implements Comparable<PatientRecordAddressLine>{
+import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity;
+
+public class PatientRecordAddressLineDTO {
 	
 	private Long id;
 	private Long patientRecordAddressId;
 	private String line;
 	private int lineOrder;
+	
+	public PatientRecordAddressLineDTO(){}
+	
+	public PatientRecordAddressLineDTO(PatientRecordAddressLineEntity entity){
+		this.id = entity.getId();
+		this.patientRecordAddressId = entity.getPatientRecordAddressId();
+		this.line = entity.getLine();
+		this.lineOrder = entity.getLineOrder();
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -30,15 +42,4 @@ public class PatientRecordAddressLine implements Comparable<PatientRecordAddress
 	public void setLineOrder(int lineOrder) {
 		this.lineOrder = lineOrder;
 	}
-	
-	public int compareTo(PatientRecordAddressLine o) {
-		if(this.lineOrder == o.lineOrder){
-			return 0;
-		}else if(this.lineOrder < o.lineOrder){
-			return -1;
-		}else{
-			return 1;
-		}
-	}
-
 }

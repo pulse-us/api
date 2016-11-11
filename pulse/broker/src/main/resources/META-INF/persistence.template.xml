@@ -20,6 +20,8 @@
     <class>gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.QueryEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.QueryOrganizationEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.QueryOrganizationStatusEntity</class>
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
