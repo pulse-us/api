@@ -26,11 +26,11 @@ public class PatientOrganizationMapEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "patient_record_id")
+	@Column(name = "patient_id")
 	private Long patientId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "patient_record_id", unique=true, nullable = true, insertable=false, updatable= false)
+	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private PatientEntity patient;
 	
 	@Column(name = "organization_id")
