@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
-import gov.ca.emsa.pulse.broker.dto.AuditDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditEventDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditManager;
 
 import java.util.List;
@@ -37,15 +37,10 @@ public class AuditDaoTest {
 	@Transactional
 	public void testInsertAudit() {
 		
-		AuditDTO inserted = auditManager.addAuditEntry(QueryType.CREATE_ACF, "/acf/create", "blindsey");
+		AuditEventDTO inserted = auditManager.addAuditEntry();
 		
 		assertNotNull(inserted);
 		
-		List<AuditDTO> auditDTO = auditManager.getAll();
-		assertEquals(1, auditDTO.size());
-		assertEquals("blindsey", auditDTO.get(0).getQuerent());
-		assertEquals("CREATE_ACF", auditDTO.get(0).getQueryType());
-		assertEquals("/acf/create", auditDTO.get(0).getQuery());
 		
 	}
 }

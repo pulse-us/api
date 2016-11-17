@@ -1,8 +1,8 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
 import gov.ca.emsa.pulse.broker.dao.AuditDAO;
-import gov.ca.emsa.pulse.broker.dto.AuditDTO;
-import gov.ca.emsa.pulse.broker.entity.AuditEntity;
+import gov.ca.emsa.pulse.broker.dto.AuditEventDTO;
+import gov.ca.emsa.pulse.broker.entity.AuditEventEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,89 +18,71 @@ public class AuditDAOImpl extends BaseDAOImpl implements AuditDAO {
 	private static final Logger logger = LogManager.getLogger(AuditDAOImpl.class);
 	
 	@Override
-	public AuditDTO create(AuditDTO dto) {
-		AuditEntity aud = new AuditEntity();
-		aud.setId(dto.getId());
-		aud.setQueryType(dto.getQueryType());
-		aud.setQuery(dto.getQuery());
-		aud.setQuerent(dto.getQuerent());
-		aud.setCreationDate(dto.getCreationDate());
-		aud.setLastModifiedDate(dto.getLastModifiedDate());
+	public AuditEventDTO createAuditEvent(AuditEventDTO dto) {
+		AuditEventEntity audit = new AuditEventEntity();
+		audit.setEventId(null);
+		audit.setEventActionCode(null);
+		audit.setEventDateTime(null);
+		audit.setEventOutcomeIndicator(null);
+		audit.setEventTypeCode(null);
+		audit.setAuditRequestSourceId(null);
+		audit.setAuditRequestDestinationId(null);
+		audit.setAuditSourceId(null);
+		audit.setAuditQueryParametersId(null);
 		
-		entityManager.persist(aud);
+		entityManager.persist(audit);
 		entityManager.flush();
-		return new AuditDTO(aud);
+		return new AuditEventDTO(audit);
 	}
-
+	
 	@Override
-	public List<AuditDTO> findAll() {
-		List<AuditEntity> result = this.findAllEntities();
-		List<AuditDTO> dtos = new ArrayList<AuditDTO>(result.size());
-		for(AuditEntity entity : result) {
-			dtos.add(new AuditDTO(entity));
+	public AuditEventDTO getAuditEventById(Long id) {
+		
+		AuditEventDTO dto = null;
+		AuditEventEntity pe = this.getAuditEventEntityById(id);
+		
+		if (pe != null){
+			dto = new AuditEventDTO(pe); 
 		}
+		return dto;
+	}
+	
+	private AuditEventEntity getAuditEventEntityById(Long id) {
+		AuditEventEntity entity = null;
+		
+		Query query = entityManager.createQuery( "from AuditEventEntity aud"
+				+ "where aud.id = :entityid) ", 
+				AuditEventEntity.class );
+		
+		query.setParameter("entityid", id);
+		List<AuditEventEntity> result = query.getResultList();
+		if(result.size() == 1) {
+			entity = result.get(0);
+		}
+		
+		return entity;
+	}
+	
+	@Override
+	public List<AuditEventDTO> findAllAuditEvents() {
+		ArrayList<AuditEventDTO> dto = null;
+		
+		List<AuditEventEntity> pe = this.getAllAuditEventEntities();
+		
+		List<AuditEventDTO> dtos = new ArrayList<AuditEventDTO>();
+		for(AuditEventEntity eventEnt : pe){
+			dtos.add(new AuditEventDTO(eventEnt));
+		}
+		
 		return dtos;
 	}
 	
-	@Override
-	public AuditDTO getById(Long id) {
+	private List<AuditEventEntity> getAllAuditEventEntities() {
 		
-		AuditDTO dto = null;
-		AuditEntity pe = this.getEntityById(id);
+		Query query = entityManager.createQuery( "from AuditEventEntity", 
+				AuditEventEntity.class );
 		
-		if (pe != null){
-			dto = new AuditDTO(pe); 
-		}
-		return dto;
-	}
-	
-	@Override
-	public AuditDTO getByQuerent(String querent) {
-		
-		AuditDTO dto = null;
-		AuditEntity pe = this.getEntityByQuerent(querent);
-		
-		if (pe != null){
-			dto = new AuditDTO(pe); 
-		}
-		return dto;
-	}
-	
-	private List<AuditEntity> findAllEntities() {
-		Query query = entityManager.createQuery("from AuditEntity");
 		return query.getResultList();
-	}
-	
-	private AuditEntity getEntityById(Long id) {
-		AuditEntity entity = null;
-		
-		Query query = entityManager.createQuery( "from AuditEntity aud"
-				+ "where aud.id = :entityid) ", 
-				AuditEntity.class );
-		
-		query.setParameter("entityid", id);
-		List<AuditEntity> result = query.getResultList();
-		if(result.size() == 1) {
-			entity = result.get(0);
-		}
-		
-		return entity;
-	}
-	
-	private AuditEntity getEntityByQuerent(String querent) {
-		AuditEntity entity = null;
-		
-		Query query = entityManager.createQuery( "from AuditEntity aud"
-				+ "where aud.querent = :querent) ", 
-				AuditEntity.class );
-		
-		query.setParameter("querent", querent);
-		List<AuditEntity> result = query.getResultList();
-		if(result.size() == 1) {
-			entity = result.get(0);
-		}
-		
-		return entity;
 	}
 	
 }

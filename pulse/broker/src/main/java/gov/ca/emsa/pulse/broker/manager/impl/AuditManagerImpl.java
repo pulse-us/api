@@ -1,8 +1,9 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import gov.ca.emsa.pulse.broker.audit.AuditEvent;
 import gov.ca.emsa.pulse.broker.dao.AuditDAO;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
-import gov.ca.emsa.pulse.broker.dto.AuditDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditEventDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditManager;
 
 import java.util.List;
@@ -19,19 +20,25 @@ public class AuditManagerImpl implements AuditManager{
 	
 	@Override
 	@Transactional
-	public AuditDTO addAuditEntry(QueryType queryType, String query, String querent){
-		AuditDTO audit = new AuditDTO();
-		audit.setQueryType(queryType.toString());
-		audit.setQuery(query);
-		audit.setQuerent(querent);
-		AuditDTO aud = auditDao.create(audit);
+	public AuditEventDTO addAuditEntry(AuditEvent ae){
+		AuditEventDTO audit = new AuditEventDTO();
+		audit.setEventId(ae.getEventId());
+		audit.setEventActionCode(ae.getEventActionCode());
+		audit.setEventDateTime(ae.getEventDateTime());
+		audit.setEventOutcomeIndicator(ae.getEventOutcomeIndicator());
+		audit.setEventTypeCode(ae.getEventTypeCode());
+		audit.setAuditRequestSourceId(ae.getAuditSourceId());
+		audit.setAuditRequestDestinationId(ae.getAuditRequestDestinationId());
+		audit.setAuditSourceId(ae.getAuditSourceId());
+		audit.setAuditQueryParametersId(ae.getAuditQueryParametersId());
+		AuditEventDTO aud = auditDao.createAuditEvent(audit);
 		return aud;
 	}
 	
 	@Override
 	@Transactional
-	public List<AuditDTO> getAll(){
-		List<AuditDTO> audits = auditDao.findAll();
+	public List<AuditEventDTO> findAllAuditEvents(){
+		List<AuditEventDTO> audits = auditDao.findAllAuditEvents();
 		return audits;
 	}
 
