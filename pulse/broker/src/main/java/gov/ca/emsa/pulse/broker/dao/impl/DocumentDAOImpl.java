@@ -34,7 +34,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		doc.setSize(dto.getSize());
 		doc.setContents(dto.getContents());
 		doc.setLastReadDate(new Date());
-		doc.setPatientLocationMapId(dto.getPatientOrgMapId());
+		doc.setPatientLocationMapId(dto.getPatientLocationMapId());
 		
 		entityManager.persist(doc);
 		entityManager.flush();
@@ -56,7 +56,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		doc.setSize(dto.getSize());
 		doc.setContents(dto.getContents());
 		doc.setLastReadDate(new Date());
-		doc.setPatientLocationMapId(dto.getPatientOrgMapId());
+		doc.setPatientLocationMapId(dto.getPatientLocationMapId());
 		
 		doc = entityManager.merge(doc);
 		entityManager.flush();

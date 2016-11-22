@@ -5,11 +5,11 @@ import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
 import gov.ca.emsa.pulse.common.domain.NameType;
@@ -47,7 +47,7 @@ public class PatientRecordDaoTest extends TestCase {
 	@Autowired NameTypeDAO nameTypeDao;
 	@Autowired PatientGenderDAO patientGenderDao;
 	private AlternateCareFacilityDTO acf;
-	private OrganizationDTO org1, org2;
+	private LocationDTO org1, org2;
 	private PatientRecordDTO queryResult1, queryResult2;
 	private NameTypeDTO nameTypeCodeLegal;
 	private PatientGenderDTO patientGenderMale, patientGenderFemale, patientGenderUn;
@@ -61,8 +61,8 @@ public class PatientRecordDaoTest extends TestCase {
 		assertNotNull(acf.getId());
 		assertTrue(acf.getId().longValue() > 0);
 		
-		org1 = new OrganizationDTO();
-		org1.setOrganizationId(1L);
+		org1 = new LocationDTO();
+		org1.setLocationId(1L);
 		org1.setName("IHE Org");
 		org1.setAdapter("IHE");
 		org1.setEndpointUrl("http://www.localhost.com");
@@ -71,8 +71,8 @@ public class PatientRecordDaoTest extends TestCase {
 		org1.setActive(true);
 		org1 = orgDao.create(org1);
 		
-		org2 = new OrganizationDTO();
-		org2.setOrganizationId(2L);
+		org2 = new LocationDTO();
+		org2.setLocationId(2L);
 		org2.setName("eHealth Org");
 		org2.setAdapter("eHealth");
 		org2.setEndpointUrl("http://www.localhost.com");

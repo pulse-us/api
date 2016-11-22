@@ -8,13 +8,13 @@ import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
@@ -43,7 +43,7 @@ public class PatientManagerTest extends TestCase {
 	@Autowired AlternateCareFacilityDAO acfDao;
 	@Autowired PatientRecordDAO prDao;
 	private AlternateCareFacilityDTO acf;
-	private OrganizationDTO org1, org2;
+	private LocationDTO org1, org2;
 	private PatientRecordDTO queryResult1, queryResult2;
 	
 	@Before
@@ -55,8 +55,8 @@ public class PatientManagerTest extends TestCase {
 		assertNotNull(acf.getId());
 		assertTrue(acf.getId().longValue() > 0);
 		
-		org1 = new OrganizationDTO();
-		org1.setOrganizationId(1L);
+		org1 = new LocationDTO();
+		org1.setLocationId(1L);
 		org1.setName("IHE Org");
 		org1.setAdapter("IHE");
 		org1.setEndpointUrl("http://www.localhost.com");
@@ -65,8 +65,8 @@ public class PatientManagerTest extends TestCase {
 		org1.setActive(true);
 		org1 = orgDao.create(org1);
 		
-		org2 = new OrganizationDTO();
-		org2.setOrganizationId(2L);
+		org2 = new LocationDTO();
+		org2.setLocationId(2L);
 		org2.setName("eHealth Org");
 		org2.setAdapter("eHealth");
 		org2.setEndpointUrl("http://www.localhost.com");
@@ -80,28 +80,28 @@ public class PatientManagerTest extends TestCase {
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		
-		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
-		orgQuery1.setOrgId(org1.getId());
+		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();
+		orgQuery1.setLocationId(org1.getId());
 		orgQuery1.setStatus(QueryLocationStatus.Active);
-		toInsert.getOrgStatuses().add(orgQuery1);
+		toInsert.getLocationStatuses().add(orgQuery1);
 		
-		QueryOrganizationDTO orgQuery2 = new QueryOrganizationDTO();
-		orgQuery2.setOrgId(org2.getId());
+		QueryLocationMapDTO orgQuery2 = new QueryLocationMapDTO();
+		orgQuery2.setLocationId(org2.getId());
 		orgQuery2.setStatus(QueryLocationStatus.Active);
-		toInsert.getOrgStatuses().add(orgQuery2);
+		toInsert.getLocationStatuses().add(orgQuery2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
 		assertNotNull(inserted);
 		assertNotNull(inserted.getId());
 		assertTrue(inserted.getId().longValue() > 0);
-		assertNotNull(inserted.getOrgStatuses());
-		assertEquals(2, inserted.getOrgStatuses().size());
-		orgQuery1 = inserted.getOrgStatuses().get(0);
-		assertNotNull(inserted.getOrgStatuses().get(0).getId());
-		assertTrue(inserted.getOrgStatuses().get(0).getId().longValue() > 0);
-		orgQuery2 = inserted.getOrgStatuses().get(1);
-		assertNotNull(inserted.getOrgStatuses().get(1).getId());
-		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
+		assertNotNull(inserted.getLocationStatuses());
+		assertEquals(2, inserted.getLocationStatuses().size());
+		orgQuery1 = inserted.getLocationStatuses().get(0);
+		assertNotNull(inserted.getLocationStatuses().get(0).getId());
+		assertTrue(inserted.getLocationStatuses().get(0).getId().longValue() > 0);
+		orgQuery2 = inserted.getLocationStatuses().get(1);
+		assertNotNull(inserted.getLocationStatuses().get(1).getId());
+		assertTrue(inserted.getLocationStatuses().get(1).getId().longValue() > 0);
 		
 //		queryResult1 = new PatientRecordDTO();
 //		queryResult1.setGivenName("John");
@@ -167,7 +167,7 @@ public class PatientManagerTest extends TestCase {
 		List<PatientDTO> patients = patientManager.getPatientsAtAcf(acf.getId());
 		assertNotNull(patients);
 		assertEquals(1, patients.size());
-		assertNotNull(patients.get(0).getOrgMaps());
+		assertNotNull(patients.get(0).getLocationMaps());
 		//TODO: this should work
 		//assertEquals(1, patients.get(0).getOrgMaps().size());
 	}

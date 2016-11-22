@@ -1,7 +1,7 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.entity.LocationEntity;
 
 import java.util.ArrayList;
@@ -17,14 +17,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO {
 
-	public OrganizationDTO create(OrganizationDTO dto) throws EntityExistsException{
+	public LocationDTO create(LocationDTO dto) throws EntityExistsException{
 
 		LocationEntity entity = null;
-		if(getByOrgId(dto.getOrganizationId()) != null){
+		if(getByOrgId(dto.getLocationId()) != null){
 			throw new EntityExistsException();
 		} else {
 			entity = new LocationEntity();
-			entity.setExternalId(dto.getOrganizationId());
+			entity.setExternalId(dto.getLocationId());
 			entity.setName(dto.getName());
 			entity.setActive(dto.isActive());
 			entity.setAdapter(dto.getAdapter());
@@ -48,12 +48,12 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	
 			create(entity);
 		}
-		return new OrganizationDTO(entity);
+		return new LocationDTO(entity);
 	}
 
-	public OrganizationDTO update(OrganizationDTO dto){
+	public LocationDTO update(LocationDTO dto){
 
-		LocationEntity entity =  getByOrgId(dto.getOrganizationId());
+		LocationEntity entity =  getByOrgId(dto.getLocationId());
 
 		boolean changed = false;
 
@@ -93,9 +93,9 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 		if(changed){
 			entity.setLastModifiedDate(new Date());
 			update(entity);
-			OrganizationDTO result = null;
+			LocationDTO result = null;
 			if (entity != null){
-				result = new OrganizationDTO(entity);
+				result = new LocationDTO(entity);
 			}
 
 			return result;
@@ -105,26 +105,26 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 	}
 
-	public void delete(OrganizationDTO organizationDTO) {
+	public void delete(LocationDTO organizationDTO) {
 		LocationEntity toDelete = getOrganizationById(organizationDTO.getId());
 		deleteOrganization(toDelete);
 	}
 
 	@Override
-	public List<OrganizationDTO> findAll() {
+	public List<LocationDTO> findAll() {
 
 		List<LocationEntity> entities = getAllEntities();
-		List<OrganizationDTO> dtos = new ArrayList<>();
+		List<LocationDTO> dtos = new ArrayList<>();
 
 		for (LocationEntity entity : entities) {
-			OrganizationDTO dto = new OrganizationDTO(entity);
+			LocationDTO dto = new LocationDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
 	}
 
 	@Override
-	public List<OrganizationDTO> findByName(String name) {
+	public List<LocationDTO> findByName(String name) {
 
 		Query query = entityManager.createQuery( "SELECT org from OrganizationEntity org "
 				+ "where org.name LIKE :name", 
@@ -133,21 +133,21 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 		query.setParameter("name", name);
 		List<LocationEntity> entities = query.getResultList();
 
-		List<OrganizationDTO> dtos = new ArrayList<>();
+		List<LocationDTO> dtos = new ArrayList<>();
 		for (LocationEntity entity : entities) {
-			OrganizationDTO dto = new OrganizationDTO(entity);
+			LocationDTO dto = new LocationDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
 	}
 
 	@Override
-	public OrganizationDTO findById(Long id) {
+	public LocationDTO findById(Long id) {
 		LocationEntity org = getOrganizationById(id);
 		if(org == null) {
 			return null;
 		}
-		return new OrganizationDTO(org);
+		return new LocationDTO(org);
 	}
 
 	private void create(LocationEntity entity) {

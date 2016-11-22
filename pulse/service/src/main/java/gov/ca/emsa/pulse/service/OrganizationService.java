@@ -1,8 +1,8 @@
 package gov.ca.emsa.pulse.service;
 
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
-import gov.ca.emsa.pulse.common.domain.Organization;
-import gov.ca.emsa.pulse.common.domain.stats.OrganizationStatistics;
+import gov.ca.emsa.pulse.common.domain.Location;
+import gov.ca.emsa.pulse.common.domain.stats.LocationStatistics;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -38,23 +38,23 @@ public class OrganizationService {
 	// get all organizations
 	@ApiOperation(value="Get all organizations.")
 	@RequestMapping(value = "/organizations", method = RequestMethod.GET)
-	public ArrayList<Organization> getOrganizations() throws JsonProcessingException {
+	public ArrayList<Location> getOrganizations() throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
 
 		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
-		ArrayList<Organization> orgList = null;
+		ArrayList<Location> orgList = null;
 		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
 		}else{
             //mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 			headers.set("User", mapper.writeValueAsString(jwtUser));
-			HttpEntity<Organization[]> entity = new HttpEntity<Organization[]>(headers);
-			HttpEntity<Organization[]> response = query.exchange(brokerUrl + "/organizations", HttpMethod.GET, entity, Organization[].class);
+			HttpEntity<Location[]> entity = new HttpEntity<Location[]>(headers);
+			HttpEntity<Location[]> response = query.exchange(brokerUrl + "/organizations", HttpMethod.GET, entity, Location[].class);
 			logger.info("Request sent to broker from services REST.");
-			orgList = new ArrayList<Organization>(Arrays.asList(response.getBody()));
+			orgList = new ArrayList<Location>(Arrays.asList(response.getBody()));
 		}
 		return orgList;
 	}
@@ -62,7 +62,7 @@ public class OrganizationService {
 	// get all organizations
 	@ApiOperation(value="Get all organizations.")
 	@RequestMapping(value = "/organizations/statistics", method = RequestMethod.GET)
-	public ArrayList<OrganizationStatistics> getOrganizationRequestStatistics(
+	public ArrayList<LocationStatistics> getOrganizationRequestStatistics(
 			@RequestParam(name="start", required=false) Long startMillis, 
 			@RequestParam(name="end", required=false) Long endMillis) throws JsonProcessingException {
 
@@ -71,12 +71,12 @@ public class OrganizationService {
 		ObjectMapper mapper = new ObjectMapper();
 
 		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
-		ArrayList<OrganizationStatistics> statList = null;
+		ArrayList<LocationStatistics> statList = null;
 		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
 		}else{
 			headers.set("User", mapper.writeValueAsString(jwtUser));
-			HttpEntity<OrganizationStatistics[]> entity = new HttpEntity<OrganizationStatistics[]>(headers);
+			HttpEntity<LocationStatistics[]> entity = new HttpEntity<LocationStatistics[]>(headers);
 			String url = brokerUrl + "/organizations/statistics";
 			if(startMillis != null) {
 				url += "?start=" + startMillis;
@@ -87,9 +87,9 @@ public class OrganizationService {
 				url += "?end=" + endMillis;
 			}
 			
-			HttpEntity<OrganizationStatistics[]> response = query.exchange(url, HttpMethod.GET, entity, OrganizationStatistics[].class);
+			HttpEntity<LocationStatistics[]> response = query.exchange(url, HttpMethod.GET, entity, LocationStatistics[].class);
 			logger.info("Request sent to broker from services REST.");
-			statList = new ArrayList<OrganizationStatistics>(Arrays.asList(response.getBody()));
+			statList = new ArrayList<LocationStatistics>(Arrays.asList(response.getBody()));
 		}
 		return statList;
 	}

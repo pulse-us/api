@@ -9,30 +9,30 @@ import java.util.List;
 
 import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
-public class PatientOrganizationMapDTO {
+public class PatientLocationMapDTO {
 	private Long id;
 	private Long patientId;
-	private Long organizationId;
-	private OrganizationDTO org;
-	private String orgPatientRecordId;
+	private Long locationId;
+	private LocationDTO location;
+	private String externalPatientRecordId;
 	private QueryLocationStatus documentsQueryStatus;
 	private Date documentsQueryStart;
 	private Date documentsQueryEnd;
 	private List<DocumentDTO> documents;
 	
-	public PatientOrganizationMapDTO() {
+	public PatientLocationMapDTO() {
 		documents = new ArrayList<DocumentDTO>();
 	}
 	
-	public PatientOrganizationMapDTO(PatientLocationMapEntity entity) {
+	public PatientLocationMapDTO(PatientLocationMapEntity entity) {
 		this();
 		this.id = entity.getId();
 		this.patientId = entity.getPatientId();
-		this.organizationId = entity.getLocationId();
+		this.locationId = entity.getLocationId();
 		if(entity.getLocation() != null) {
-			this.org = new OrganizationDTO(entity.getLocation());
+			this.location = new LocationDTO(entity.getLocation());
 		}
-		this.orgPatientRecordId = entity.getExternalPatientRecordId();
+		this.externalPatientRecordId = entity.getExternalPatientRecordId();
 		if(entity.getStatus() != null) {
 			this.documentsQueryStatus = entity.getStatus().getStatus();
 		}
@@ -58,17 +58,17 @@ public class PatientOrganizationMapDTO {
 	public void setPatientId(Long patientRecordId) {
 		this.patientId = patientRecordId;
 	}
-	public Long getOrganizationId() {
-		return organizationId;
+	public Long getLocationId() {
+		return locationId;
 	}
-	public void setOrganizationId(Long organizationId) {
-		this.organizationId = organizationId;
+	public void setLocationId(Long locationId) {
+		this.locationId = locationId;
 	}
-	public String getOrgPatientRecordId() {
-		return orgPatientRecordId;
+	public String getExternalPatientRecordId() {
+		return externalPatientRecordId;
 	}
-	public void setOrgPatientRecordId(String orgPatientRecordId) {
-		this.orgPatientRecordId = orgPatientRecordId;
+	public void setExternalPatientRecordId(String externalPatientRecordId) {
+		this.externalPatientRecordId = externalPatientRecordId;
 	}
 	public Date getDocumentsQueryStart() {
 		return documentsQueryStart;
@@ -83,12 +83,12 @@ public class PatientOrganizationMapDTO {
 		this.documentsQueryEnd = documentsQueryEnd;
 	}
 
-	public OrganizationDTO getOrg() {
-		return org;
+	public LocationDTO getLocation() {
+		return location;
 	}
 
-	public void setOrg(OrganizationDTO org) {
-		this.org = org;
+	public void setLocation(LocationDTO location) {
+		this.location = location;
 	}
 
 	public List<DocumentDTO> getDocuments() {

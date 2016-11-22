@@ -1,36 +1,35 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import gov.ca.emsa.pulse.common.domain.Address;
-import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
-import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
-import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
-import gov.ca.emsa.pulse.common.domain.GivenName;
-import gov.ca.emsa.pulse.common.domain.NameAssembly;
-import gov.ca.emsa.pulse.common.domain.NameRepresentation;
-import gov.ca.emsa.pulse.common.domain.NameType;
-import gov.ca.emsa.pulse.common.domain.Organization;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientGender;
-import gov.ca.emsa.pulse.common.domain.PatientRecordAddressLine;
-import gov.ca.emsa.pulse.common.domain.PatientRecordName;
-import gov.ca.emsa.pulse.common.domain.PatientOrganizationMap;
-import gov.ca.emsa.pulse.common.domain.PatientRecord;
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import gov.ca.emsa.pulse.common.domain.Query;
-import gov.ca.emsa.pulse.common.domain.QueryOrganization;
-
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.ca.emsa.pulse.common.domain.Address;
+import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
+import gov.ca.emsa.pulse.common.domain.Endpoint;
+import gov.ca.emsa.pulse.common.domain.EndpointStatus;
+import gov.ca.emsa.pulse.common.domain.EndpointType;
+import gov.ca.emsa.pulse.common.domain.Location;
+import gov.ca.emsa.pulse.common.domain.LocationStatus;
+import gov.ca.emsa.pulse.common.domain.NameAssembly;
+import gov.ca.emsa.pulse.common.domain.NameRepresentation;
+import gov.ca.emsa.pulse.common.domain.NameType;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientGender;
+import gov.ca.emsa.pulse.common.domain.PatientLocationMap;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.Query;
+import gov.ca.emsa.pulse.common.domain.QueryLocationMap;
 
 public class DtoToDomainConverter {
 	private static final Logger logger = LogManager.getLogger(DtoToDomainConverter.class);
@@ -50,26 +49,26 @@ public class DtoToDomainConverter {
 			result.setAcf(acf);
 		}
 
-		if(dtoObj.getOrgMaps() != null && dtoObj.getOrgMaps().size() > 0) {
-			for(PatientOrganizationMapDTO orgMapDto : dtoObj.getOrgMaps()) {
-				PatientOrganizationMap orgMap = DtoToDomainConverter.convert(orgMapDto);
-				result.getOrgMaps().add(orgMap);
+		if(dtoObj.getLocationMaps() != null && dtoObj.getLocationMaps().size() > 0) {
+			for(PatientLocationMapDTO orgMapDto : dtoObj.getLocationMaps()) {
+				PatientLocationMap orgMap = DtoToDomainConverter.convert(orgMapDto);
+				result.getLocationMaps().add(orgMap);
 			}
 		}
 
 		return result;
 	}
 
-	public static PatientOrganizationMap convert(PatientOrganizationMapDTO dto) {	
-		PatientOrganizationMap result = new PatientOrganizationMap();
+	public static PatientLocationMap convert(PatientLocationMapDTO dto) {	
+		PatientLocationMap result = new PatientLocationMap();
 		result.setId(dto.getId());
 		result.setPatientId(dto.getPatientId());
-		if(dto.getOrg() != null) {
-			result.setOrganization(DtoToDomainConverter.convert(dto.getOrg()));
+		if(dto.getLocation() != null) {
+			result.setLocation(DtoToDomainConverter.convert(dto.getLocation()));
 		} else {
-			Organization org = new Organization();
-			org.setId(dto.getOrganizationId());
-			result.setOrganization(org);
+			Location org = new Location();
+			org.setId(dto.getLocationId());
+			result.setLocation(org);
 		}
 		result.setDocumentsQueryStatus(dto.getDocumentsQueryStatus());
 		result.setDocumentsQueryStart(dto.getDocumentsQueryStart());
@@ -82,19 +81,6 @@ public class DtoToDomainConverter {
 			}
 		}
 		return result;
-	}
-
-	public static Address convert(AddressDTO addressDto){
-		Address address = new Address();
-		address.setId(addressDto.getId());
-		address.setCity(addressDto.getCity());
-		address.setCountry(address.getCountry());
-		address.setState(addressDto.getState());
-		address.setStreet1(addressDto.getStreetLineOne());
-		address.setStreet2(addressDto.getStreetLineTwo());
-		address.setZipcode(addressDto.getZipcode());
-		address.setCountry(addressDto.getCountry());
-		return address;
 	}
 
 	public static AlternateCareFacility convert(AlternateCareFacilityDTO acfDto){
@@ -135,19 +121,19 @@ public class DtoToDomainConverter {
 		}
 
 		query.setUserToken(queryDto.getUserId());
-		for(QueryOrganizationDTO qOrgDto : queryDto.getOrgStatuses()){
-			QueryOrganization qOrg = DtoToDomainConverter.convert(qOrgDto);
-			query.getOrgStatuses().add(qOrg);
+		for(QueryLocationMapDTO qOrgDto : queryDto.getLocationStatuses()){
+			QueryLocationMap qOrg = DtoToDomainConverter.convert(qOrgDto);
+			query.getLocationStatuses().add(qOrg);
 		}
 		return query;
 	}
 
-	public static QueryOrganization convert(QueryOrganizationDTO qOrgDto){
-		QueryOrganization qOrg = new QueryOrganization();
+	public static QueryLocationMap convert(QueryLocationMapDTO qOrgDto){
+		QueryLocationMap qOrg = new QueryLocationMap();
 		qOrg.setId(qOrgDto.getId());
 
-		if(qOrgDto.getOrg() != null) {
-			qOrg.setOrg(convert(qOrgDto.getOrg()));
+		if(qOrgDto.getLocation() != null) {
+			qOrg.setLocation(convert(qOrgDto.getLocation()));
 		}
 
 		qOrg.setQueryId(qOrgDto.getQueryId());
@@ -212,22 +198,12 @@ public class DtoToDomainConverter {
 		pr.setGender(pg);
 		pr.setPhoneNumber(prDto.getPhoneNumber());
 		pr.setDateOfBirth(prDto.getDateOfBirth());
-		List<PatientRecordAddress> praDomains = new ArrayList<PatientRecordAddress>();
+		List<Address> praDomains = new ArrayList<Address>();
 		for(PatientRecordAddressDTO praDto : prDto.getAddress()){
-			PatientRecordAddress pra = new PatientRecordAddress();
-			ArrayList<String> pralArr = new ArrayList<String>();
-			ArrayList<PatientRecordAddressLine> pralArrDo = new ArrayList<PatientRecordAddressLine>();
+			Address pra = new Address();
 			for(PatientRecordAddressLineDTO pralDto : praDto.getPatientRecordAddressLines()){
-				PatientRecordAddressLine pralDo = new PatientRecordAddressLine();
-				pralDo.setLine(pralDto.getLine());
-				pralDo.setLineOrder(pralDto.getLineOrder());
-				pralArrDo.add(pralDo);
+				pra.getLines().add(pralDto.getLine());
 			}
-			Collections.sort(pralArrDo);
-			for(int i=0; i<pralArrDo.size(); i++){
-				pralArr.add(i, pralArrDo.get(i).getLine());
-			}
-			pra.setLines(pralArr);
 			pra.setCity(praDto.getCity());
 			pra.setState(praDto.getState());
 			pra.setZipcode(praDto.getZipcode());
@@ -237,38 +213,81 @@ public class DtoToDomainConverter {
 		return pr;
 	}
 
-	public static Organization convert(OrganizationDTO orgDto){
-		Organization org = new Organization();
-		org.setId(orgDto.getId());
-		org.setName(orgDto.getName());
-		org.setAdapter(orgDto.getAdapter());
-		org.setActive(orgDto.isActive());
-		org.setOrganizationId(orgDto.getOrganizationId());
-		if(orgDto.getCertificationKey() != null){
-			org.setCertificationKey(orgDto.getCertificationKey());
+	public static Location convert(LocationDTO dto){
+		Location result = new Location();
+		result.setId(dto.getId());
+		result.setName(dto.getName());
+
+		Address addr = null;
+		if(dto.hasAddressParts()) {
+			addr = new Address();
+			for(AddressLineDTO line : dto.getLines()) {
+				addr.getLines().add(line.getLine());
+			}
+			addr.setCity(dto.getCity());
+			addr.setState(dto.getState());
+			addr.setZipcode(dto.getZipcode());
+			addr.setCountry(dto.getCountry());
 		}
-		if(orgDto.getEndpointUrl() != null){
-			org.setEndpointUrl(orgDto.getEndpointUrl());
+		result.setAddress(addr);
+		if(dto.getStatus() != null) {
+			LocationStatus status = new LocationStatus();
+			status.setId(dto.getStatus().getId());
+			status.setName(dto.getStatus().getName());
+			result.setStatus(status);
 		}
-		if(orgDto.getIpAddress() != null){
-			org.setIpAddress(orgDto.getIpAddress());
+		result.setDescription(dto.getDescription());
+		result.setExternalId(dto.getExternalId());
+		result.setParentOrgName(dto.getParentOrgName());
+		result.setType(dto.getType());
+		result.setExternalLastUpdateDate(dto.getExternalLastUpdateDate());
+		result.setLastModifiedDate(dto.getLastModifiedDate());
+		result.setCreationDate(dto.getCreationDate());
+		
+		if(dto.getEndpoints() != null) {
+			for(LocationEndpointDTO endpointDto : dto.getEndpoints()) {
+				Endpoint endpoint = convert(endpointDto);
+				result.getEndpoints().add(endpoint);
+			}
 		}
-		if(orgDto.getUsername() != null){
-			org.setUsername(orgDto.getUsername());
-		}
-		if(orgDto.getPassword() != null){
-			org.setPassword(orgDto.getPassword());
-		}
-		return org;
+		return result;
 	}
 
+	public static Endpoint convert(LocationEndpointDTO dto) {
+		Endpoint result = new Endpoint();
+		result.setId(dto.getId());
+		result.setAdapter(dto.getAdapter());
+		if(dto.getEndpointStatus() != null) {
+			EndpointStatus status = new EndpointStatus();
+			status.setId(dto.getEndpointStatus().getId());
+			status.setName(dto.getEndpointStatus().getName());
+			result.setEndpointStatus(status);
+		}
+		if(dto.getEndpointType() != null) {
+			EndpointType type = new EndpointType();
+			type.setId(dto.getEndpointType().getId());
+			type.setName(dto.getEndpointType().getName());
+			result.setEndpointType(type);
+		}
+		result.setExternalId(dto.getExternalId());
+		result.setPayloadFormat(dto.getPayloadFormat());
+		result.setPayloadType(dto.getPayloadType());
+		result.setPublicKey(dto.getPublicKey());
+		result.setUrl(dto.getUrl());
+		result.setLastModifiedDate(dto.getLastModifiedDate());
+		result.setExternalLastUpdateDate(dto.getExternalLastUpdateDate());
+		result.setCreationDate(dto.getCreationDate());
+		
+		return result;
+	}
+	
 	public static Document convert(DocumentDTO dtoObj) {
 		Document result = new Document();
 		result.setId(dtoObj.getId()+"");
 		result.setName(dtoObj.getName());
 		result.setFormat(dtoObj.getFormat());
 		result.setCached(dtoObj.getContents() != null && dtoObj.getContents().length > 0);
-		result.setOrgMapId(dtoObj.getPatientOrgMapId());
+		result.setLocationMapId(dtoObj.getPatientLocationMapId());
 
 		result.setClassName(dtoObj.getClassName());
 		result.setConfidentiality(dtoObj.getConfidentiality());

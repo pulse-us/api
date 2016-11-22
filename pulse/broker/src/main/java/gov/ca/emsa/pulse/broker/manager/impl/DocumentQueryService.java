@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
@@ -26,8 +26,8 @@ import gov.ca.emsa.pulse.common.domain.QueryStatus;
 public class DocumentQueryService implements Runnable {
 	private static final Logger logger = LogManager.getLogger(DocumentQueryService.class);
 
-	private PatientOrganizationMapDTO patientOrgMap;
-	private OrganizationDTO org;
+	private PatientLocationMapDTO patientOrgMap;
+	private LocationDTO org;
 	@Autowired private QueryManager queryManager;
 	@Autowired private PatientManager patientManager;
 	@Autowired private DocumentManager docManager;
@@ -54,7 +54,7 @@ public class DocumentQueryService implements Runnable {
 		//store the returned document info
 		if(searchResults != null && searchResults.size() > 0) {
 			for(DocumentDTO doc : searchResults) {
-				doc.setPatientOrgMapId(patientOrgMap.getId());
+				doc.setPatientLocationMapId(patientOrgMap.getId());
 				//save document
 				docManager.create(doc);
 			}
@@ -72,19 +72,19 @@ public class DocumentQueryService implements Runnable {
 		} catch(SQLException ex) {
 			logger.error("Could not update organization map with "
 					+ "[id: " + patientOrgMap.getId() + ", "
-					+ "orgPatientRecordId: " + patientOrgMap.getOrgPatientRecordId() + ", " 
-					+ "orgId: " + patientOrgMap.getOrganizationId() + ", " 
+					+ "orgPatientRecordId: " + patientOrgMap.getExternalPatientRecordId() + ", " 
+					+ "orgId: " + patientOrgMap.getLocationId() + ", " 
 					+ "patientId: " + patientOrgMap.getPatientId() + "]");
 		}
 		
 		logger.info("Completed query to " + org.getAdapter() + " for documents for patient " + patientOrgMap.getPatientId());
 	}
 
-	public OrganizationDTO getOrg() {
+	public LocationDTO getOrg() {
 		return org;
 	}
 
-	public void setOrg(OrganizationDTO org) {
+	public void setOrg(LocationDTO org) {
 		this.org = org;
 	}
 
@@ -112,11 +112,11 @@ public class DocumentQueryService implements Runnable {
 		this.adapterFactory = adapterFactory;
 	}
 
-	public PatientOrganizationMapDTO getPatientOrgMap() {
+	public PatientLocationMapDTO getPatientOrgMap() {
 		return patientOrgMap;
 	}
 
-	public void setPatientOrgMap(PatientOrganizationMapDTO patientOrgMap) {
+	public void setPatientOrgMap(PatientLocationMapDTO patientOrgMap) {
 		this.patientOrgMap = patientOrgMap;
 	}
 

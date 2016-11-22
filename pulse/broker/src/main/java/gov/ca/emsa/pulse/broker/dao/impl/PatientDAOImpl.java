@@ -19,7 +19,7 @@ import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.entity.AddressEntity;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
@@ -53,18 +53,18 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public PatientOrganizationMapDTO createOrgMap(PatientOrganizationMapDTO toCreate) throws SQLException {
+	public PatientLocationMapDTO createOrgMap(PatientLocationMapDTO toCreate) throws SQLException {
 		PatientLocationMapEntity orgMap = new PatientLocationMapEntity();
 		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(QueryLocationStatus.Active.name()).getId());
 		orgMap.setDocumentsQueryStart(new Date());
 		orgMap.setDocumentsQueryEnd(null);
-		orgMap.setLocationId(toCreate.getOrganizationId());
-		orgMap.setExternalPatientRecordId(toCreate.getOrgPatientRecordId());
+		orgMap.setLocationId(toCreate.getLocationId());
+		orgMap.setExternalPatientRecordId(toCreate.getExternalPatientRecordId());
 		orgMap.setPatientId(toCreate.getPatientId());
 
 		entityManager.persist(orgMap);
 		entityManager.flush();
-		return new PatientOrganizationMapDTO(orgMap);
+		return new PatientLocationMapDTO(orgMap);
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public PatientOrganizationMapDTO updateOrgMap(PatientOrganizationMapDTO toUpdate) throws SQLException {
+	public PatientLocationMapDTO updateOrgMap(PatientLocationMapDTO toUpdate) throws SQLException {
 		logger.debug("Looking up patient org map with id " + toUpdate.getId());
 		PatientLocationMapEntity orgMap = getOrgMapById(toUpdate.getId());
 		if(orgMap == null) {
@@ -96,13 +96,13 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(toUpdate.getDocumentsQueryStatus().name()).getId());
 		orgMap.setDocumentsQueryStart(toUpdate.getDocumentsQueryStart());
 		orgMap.setDocumentsQueryEnd(toUpdate.getDocumentsQueryEnd());
-		orgMap.setLocationId(toUpdate.getOrganizationId());
-		orgMap.setExternalPatientRecordId(toUpdate.getOrgPatientRecordId());
+		orgMap.setLocationId(toUpdate.getLocationId());
+		orgMap.setExternalPatientRecordId(toUpdate.getExternalPatientRecordId());
 		orgMap.setPatientId(toUpdate.getPatientId());
 
 		entityManager.merge(orgMap);
 		entityManager.flush();
-		return new PatientOrganizationMapDTO(orgMap);
+		return new PatientLocationMapDTO(orgMap);
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public PatientOrganizationMapDTO getPatientOrgMapById(Long id) {
+	public PatientLocationMapDTO getPatientOrgMapById(Long id) {
 		PatientLocationMapEntity entity = null;
 
 		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "
@@ -147,7 +147,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 			entity = result.get(0);
 		}
 
-		return new PatientOrganizationMapDTO(entity);
+		return new PatientLocationMapDTO(entity);
 	}
 
 	@Override

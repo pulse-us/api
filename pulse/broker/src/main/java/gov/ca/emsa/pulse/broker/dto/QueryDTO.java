@@ -14,10 +14,10 @@ public class QueryDTO {
 	private String status;
 	private String terms;
 	private Date lastReadDate;
-	private List<QueryOrganizationDTO> orgStatuses;
+	private List<QueryLocationMapDTO> locationStatuses;
 	
 	public QueryDTO(){
-		orgStatuses = new ArrayList<QueryOrganizationDTO>();
+		locationStatuses = new ArrayList<QueryLocationMapDTO>();
 	}
 	
 	public QueryDTO(QueryEntity entity)
@@ -30,10 +30,10 @@ public class QueryDTO {
 			this.terms = entity.getTerms();
 			this.lastReadDate = entity.getLastReadDate();
 			
-			if(entity.getOrgStatuses() != null && entity.getOrgStatuses().size() > 0) {
-				for(QueryLocationMapEntity orgStatus : entity.getOrgStatuses()) {
-					QueryOrganizationDTO dto = new QueryOrganizationDTO(orgStatus);
-					orgStatuses.add(dto);
+			if(entity.getLocationStatuses() != null && entity.getLocationStatuses().size() > 0) {
+				for(QueryLocationMapEntity locationStatus : entity.getLocationStatuses()) {
+					QueryLocationMapDTO dto = new QueryLocationMapDTO(locationStatus);
+					locationStatuses.add(dto);
 				}
 			}
 		}
@@ -70,12 +70,12 @@ public class QueryDTO {
 		this.terms = terms;
 	}
 
-	public List<QueryOrganizationDTO> getOrgStatuses() {
-		return orgStatuses;
+	public List<QueryLocationMapDTO> getLocationStatuses() {
+		return locationStatuses;
 	}
 
-	public void setOrgStatuses(List<QueryOrganizationDTO> orgStatuses) {
-		this.orgStatuses = orgStatuses;
+	public void setLocationStatuses(List<QueryLocationMapDTO> locationStatuses) {
+		this.locationStatuses = locationStatuses;
 	}
 
 	public Date getLastReadDate() {

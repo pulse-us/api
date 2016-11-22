@@ -3,11 +3,11 @@ package gov.ca.emsa.pulse.broker.manager.impl;
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDiscoveryQueryStatisticsDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.entity.PatientDiscoveryRequestStatisticsEntity;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
-import gov.ca.emsa.pulse.common.domain.Organization;
-import gov.ca.emsa.pulse.common.domain.stats.OrganizationStatistics;
+import gov.ca.emsa.pulse.common.domain.Location;
+import gov.ca.emsa.pulse.common.domain.stats.LocationStatistics;
 import gov.ca.emsa.pulse.common.domain.stats.RequestStatistics;
 
 import java.util.ArrayList;
@@ -30,26 +30,26 @@ public class OrganizationManagerImpl implements OrganizationManager {
 	@Autowired private OrganizationDAO organizationDAO;
 	@Autowired private PatientDiscoveryQueryStatisticsDAO statsDao;
 	
-	public OrganizationDTO getById(Long id) {
+	public LocationDTO getById(Long id) {
 		return organizationDAO.findById(id);
 	}
 	
 	@Transactional
-	public void updateOrganizations(ArrayList<Organization> orgs){
-		List<OrganizationDTO> currentOrgs = getAll();
-		HashMap<Long,OrganizationDTO> currentOrgsHash = new HashMap<Long,OrganizationDTO>();
+	public void updateOrganizations(ArrayList<Location> orgs){
+		List<LocationDTO> currentOrgs = getAll();
+		HashMap<Long,LocationDTO> currentOrgsHash = new HashMap<Long,LocationDTO>();
 		// create a hash of {Organization Id, OrganizationDTO}
-		for(OrganizationDTO currentOrg : currentOrgs){
-			currentOrgsHash.put(currentOrg.getOrganizationId(), currentOrg);
+		for(LocationDTO currentOrg : currentOrgs){
+			currentOrgsHash.put(currentOrg.getLocationId(), currentOrg);
 		}
 		List<Long> currentOrgIds = new ArrayList<Long>();
 		List<Long> updatedOrgIds = new ArrayList<Long>();
 		// get list of id's that relate to org's already in the database
-		for(OrganizationDTO orgdto : currentOrgs){
-			currentOrgIds.add(orgdto.getOrganizationId());
+		for(LocationDTO orgdto : currentOrgs){
+			currentOrgIds.add(orgdto.getLocationId());
 		}
 		// get id's of the incoming org's in the directory services
-		for(Organization org: orgs){
+		for(Location org: orgs){
 			updatedOrgIds.add(org.getOrganizationId());
 		}
 		
@@ -66,9 +66,9 @@ public class OrganizationManagerImpl implements OrganizationManager {
 					if(updatedOrgIds.get(i).equals(updatedOrgIds.get(j)) && i!=j
 							&& currentOrgsHash.get(updatedOrgIds.get(i)) != null){
 						organizationDAO.delete(currentOrgsHash.get(updatedOrgIds.get(i)));
-						Iterator<Organization> iter = orgs.iterator();
+						Iterator<Location> iter = orgs.iterator();
 						while(iter.hasNext()){
-							Organization org = iter.next();
+							Location org = iter.next();
 							if(org.getOrganizationId().equals(updatedOrgIds.get(i))){
 								iter.remove();
 							}
@@ -81,9 +81,9 @@ public class OrganizationManagerImpl implements OrganizationManager {
 						// if the duplicate isnt in the database yet just remove it from the org's to insert
 					}else if(updatedOrgIds.get(i).equals(updatedOrgIds.get(j)) && i!=j
 							&& currentOrgsHash.get(updatedOrgIds.get(i)) == null){
-						Iterator<Organization> iter = orgs.iterator();
+						Iterator<Location> iter = orgs.iterator();
 						while(iter.hasNext()){
-							Organization org = iter.next();
+							Location org = iter.next();
 							if(org.getOrganizationId().equals(updatedOrgIds.get(i))){
 								iter.remove();
 							}
@@ -103,10 +103,10 @@ public class OrganizationManagerImpl implements OrganizationManager {
 				organizationDAO.delete(currentOrgsHash.get(currentId));
 			}
 		}
-		for(Organization org: orgs){
-			OrganizationDTO orgdto = new OrganizationDTO();
+		for(Location org: orgs){
+			LocationDTO orgdto = new LocationDTO();
 			orgdto.setName(org.getName());
-			orgdto.setOrganizationId(org.getOrganizationId());
+			orgdto.setLocationId(org.getOrganizationId());
 			orgdto.setActive(org.isActive());
 			orgdto.setAdapter(org.getAdapter());
 			orgdto.setIpAddress(org.getIpAddress());
@@ -134,28 +134,28 @@ public class OrganizationManagerImpl implements OrganizationManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<OrganizationDTO> getAll() {
-		List<OrganizationDTO> allOrganizations = organizationDAO.findAll();
+	public List<LocationDTO> getAll() {
+		List<LocationDTO> allOrganizations = organizationDAO.findAll();
 		return allOrganizations;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<OrganizationStatistics> getPatientDiscoveryRequestStatistics(Date startDate, Date endDate) {
+	public List<LocationStatistics> getPatientDiscoveryRequestStatistics(Date startDate, Date endDate) {
 		List<PatientDiscoveryRequestStatisticsEntity> stats = statsDao.getStatistics(startDate, endDate);
-		List<OrganizationStatistics> results = new ArrayList<OrganizationStatistics>();
+		List<LocationStatistics> results = new ArrayList<LocationStatistics>();
 		if(stats != null) {
 			for(PatientDiscoveryRequestStatisticsEntity stat : stats) {
-				OrganizationStatistics result = new OrganizationStatistics();
+				LocationStatistics result = new LocationStatistics();
 				result.setCalculationStart(startDate);
 				result.setCalculationEnd(endDate);
 				//don't have a filter param for calculating based on the last N events yet
-				Organization org = new Organization();
+				Location org = new Location();
 				org.setId(stat.getLocationId());
 				org.setName(stat.getLocationName());
 				org.setActive(stat.getLocationStatus());
 				org.setAdapter(stat.getLocationType());
-				result.setOrg(org);
+				result.setLocation(org);
 				RequestStatistics orgStat = new RequestStatistics();
 				orgStat.setRequestCount(stat.getTotalRequestCount());
 				orgStat.setRequestAvgCompletionSeconds(stat.getTotalRequestAverageSeconds() != null ? stat.getTotalRequestAverageSeconds().longValue() : null);

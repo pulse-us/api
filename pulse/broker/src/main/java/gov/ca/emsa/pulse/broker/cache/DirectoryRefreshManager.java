@@ -1,7 +1,7 @@
 package gov.ca.emsa.pulse.broker.cache;
 
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
-import gov.ca.emsa.pulse.common.domain.Organization;
+import gov.ca.emsa.pulse.common.domain.Location;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,8 +21,8 @@ public class DirectoryRefreshManager extends TimerTask {
 	public void getDirectories(){
 		System.out.println("Updating the directories...");
 		RestTemplate restTemplate = new RestTemplate();
-		Organization[] orgs = restTemplate.getForObject(directoryServicesUrl, Organization[].class);
-		ArrayList<Organization> orgList = new ArrayList<Organization>(Arrays.asList(orgs));
+		Location[] orgs = restTemplate.getForObject(directoryServicesUrl, Location[].class);
+		ArrayList<Location> orgList = new ArrayList<Location>(Arrays.asList(orgs));
 		organizationManager.updateOrganizations(orgList);
 	}
 

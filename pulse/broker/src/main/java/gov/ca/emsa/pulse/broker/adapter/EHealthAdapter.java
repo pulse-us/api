@@ -6,8 +6,8 @@ import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.SearchResultConverter;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
@@ -61,7 +61,7 @@ public class EHealthAdapter implements Adapter {
 	@Autowired NameTypeDAO nameTypeDao;
 	
 	@Override
-	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, PatientSearch toSearch, SAMLInput samlInput) {
+	public List<PatientRecordDTO> queryPatients(LocationDTO org, PatientSearch toSearch, SAMLInput samlInput) {
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch);
 		String requestBodyXml = null;
 		try {
@@ -107,9 +107,9 @@ public class EHealthAdapter implements Adapter {
 	}
 
 	@Override
-	public List<DocumentDTO> queryDocuments(OrganizationDTO org, PatientOrganizationMapDTO toSearch, SAMLInput samlInput) {
+	public List<DocumentDTO> queryDocuments(LocationDTO org, PatientLocationMapDTO toSearch, SAMLInput samlInput) {
 		Patient patientToSearch = new Patient();
-		toSearch.setOrgPatientRecordId(toSearch.getOrgPatientRecordId());
+		toSearch.setExternalPatientRecordId(toSearch.getExternalPatientRecordId());
 		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientToSearch);
 		String requestBodyXml = null;
 		try {
@@ -156,7 +156,7 @@ public class EHealthAdapter implements Adapter {
 	 * @return
 	 */
 	@Override
-	public void retrieveDocumentsContents(OrganizationDTO org, List<DocumentDTO> documents, SAMLInput samlInput) {
+	public void retrieveDocumentsContents(LocationDTO org, List<DocumentDTO> documents, SAMLInput samlInput) {
 		List<Document> docsToSearch = new ArrayList<Document>();
 		for(DocumentDTO docDto : documents) {
 			Document doc = DtoToDomainConverter.convert(docDto);

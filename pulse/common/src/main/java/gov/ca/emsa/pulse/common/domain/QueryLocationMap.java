@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class QueryOrganization {
+public class QueryLocationMap {
 	private Long id;
 	private Long queryId;
-	private Organization org;
+	private Location location;
 	private QueryLocationStatus status;
 	private Date startDate;
 	private Date endDate;
 	private List<PatientRecord> results;
 	
-	public QueryOrganization() {
+	public QueryLocationMap() {
 		results = new ArrayList<PatientRecord>();
 	}
 
@@ -65,11 +65,11 @@ public class QueryOrganization {
 		this.results = results;
 	}
 
-	public Organization getOrg() {
-		return org;
+	public Location getLocation() {
+		return location;
 	}
 
-	public void setOrg(Organization org) {
-		this.org = org;
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 }

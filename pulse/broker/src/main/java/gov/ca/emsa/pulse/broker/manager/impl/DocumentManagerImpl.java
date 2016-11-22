@@ -5,9 +5,9 @@ import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
@@ -50,11 +50,11 @@ public class DocumentManagerImpl implements DocumentManager {
 	}
 	
 	@Override
-	public void queryForDocuments(SAMLInput samlInput, PatientOrganizationMapDTO dto) {
+	public void queryForDocuments(SAMLInput samlInput, PatientLocationMapDTO dto) {
 		DocumentQueryService service = getDocumentQueryService();
 		service.setSamlInput(samlInput);
 		service.setPatientOrgMap(dto);
-		service.setOrg(dto.getOrg());
+		service.setOrg(dto.getLocation());
 		pool.execute(service);
 	}
 	
@@ -68,7 +68,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	//multiple documents from the same organization if we want to do that in the future
 	@Override
 	@Transactional
-	public void queryForDocumentContents(SAMLInput samlInput, OrganizationDTO org, List<DocumentDTO> docsFromOrg) {
+	public void queryForDocumentContents(SAMLInput samlInput, LocationDTO org, List<DocumentDTO> docsFromOrg) {
 		boolean querySuccess = true;
 		Adapter adapter = adapterFactory.getAdapter(org);
 		if(adapter != null) {
@@ -104,7 +104,7 @@ public class DocumentManagerImpl implements DocumentManager {
 		}
 		
 		//update patient last read time when document is cached or viewed
-		PatientOrganizationMapDTO patientOrgMap = patientDao.getPatientOrgMapById(cachedDoc.getPatientOrgMapId());
+		PatientLocationMapDTO patientOrgMap = patientDao.getPatientOrgMapById(cachedDoc.getPatientLocationMapId());
 		PatientDTO patient = patientDao.getById(patientOrgMap.getPatientId());
 		patient.setLastReadDate(new Date());
 		patientManager.update(patient);
@@ -119,7 +119,7 @@ public class DocumentManagerImpl implements DocumentManager {
 		} else {
 			List<DocumentDTO> docsToGet = new ArrayList<DocumentDTO>();
 			docsToGet.add(cachedDoc);
-			queryForDocumentContents(samlInput, patientOrgMap.getOrg(), docsToGet);
+			queryForDocumentContents(samlInput, patientOrgMap.getLocation(), docsToGet);
 			byte[] retrievedContents = docsToGet.get(0).getContents();
 			docContents = retrievedContents == null ? "" : new String(retrievedContents);
 		}

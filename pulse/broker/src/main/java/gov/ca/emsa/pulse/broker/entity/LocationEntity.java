@@ -30,7 +30,7 @@ public class LocationEntity {
 	
 	@Basic( optional = false )
 	@Column( name = "external_id", nullable = false )
-	private Long externalId;
+	private String externalId;
 	
 	@Column(name="location_status_id")
 	private Long locationStatusId;
@@ -59,8 +59,8 @@ public class LocationEntity {
 	@Column(name = "city")
 	private String city;
 	
-	@Column(name = "status")
-	private String status;
+	@Column(name = "state")
+	private String state;
 	
 	@Column(name = "zipcode")
 	private String zipcode;
@@ -89,11 +89,11 @@ public class LocationEntity {
 		this.id = id;
 	}
 
-	public Long getExternalId() {
+	public String getExternalId() {
 		return externalId;
 	}
 
-	public void setExternalId(Long externalId) {
+	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 	}
 
@@ -169,12 +169,12 @@ public class LocationEntity {
 		this.city = city;
 	}
 
-	public String getStatus() {
-		return status;
+	public String getState() {
+		return state;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setState(String state) {
+		this.state = state;
 	}
 
 	public String getZipcode() {

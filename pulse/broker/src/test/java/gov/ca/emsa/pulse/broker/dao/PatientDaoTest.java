@@ -5,9 +5,9 @@ import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.common.domain.NameType;
 
@@ -38,7 +38,7 @@ public class PatientDaoTest extends TestCase {
 	@Autowired PatientDAO patientDao;
 	@Autowired PatientRecordDAO prDao;
 	private AlternateCareFacilityDTO acf;
-	private OrganizationDTO org1, org2;
+	private LocationDTO org1, org2;
 	private PatientRecordDTO queryResult1, queryResult2;
 	
 	@Before
@@ -50,8 +50,8 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(acf.getId());
 		assertTrue(acf.getId().longValue() > 0);
 		
-		org1 = new OrganizationDTO();
-		org1.setOrganizationId(1L);
+		org1 = new LocationDTO();
+		org1.setLocationId(1L);
 		org1.setName("IHE Org");
 		org1.setAdapter("IHE");
 		org1.setEndpointUrl("http://www.localhost.com");
@@ -60,8 +60,8 @@ public class PatientDaoTest extends TestCase {
 		org1.setActive(true);
 		org1 = orgDao.create(org1);
 		
-		org2 = new OrganizationDTO();
-		org2.setOrganizationId(2L);
+		org2 = new LocationDTO();
+		org2.setLocationId(2L);
 		org2.setName("eHealth Org");
 		org2.setAdapter("eHealth");
 		org2.setEndpointUrl("http://www.localhost.com");
@@ -100,7 +100,7 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected.getAcf());
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
-		assertEquals(0, selected.getOrgMaps().size());
+		assertEquals(0, selected.getLocationMaps().size());
 		assertEquals(toCreate.getFullName(), selected.getFullName());
 	}
 	
@@ -137,7 +137,7 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected.getAcf());
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
-		assertEquals(0, selected.getOrgMaps().size());
+		assertEquals(0, selected.getLocationMaps().size());
 		assertEquals(toCreate.getFullName(), selected.getFullName());
 	}
 	
@@ -172,7 +172,7 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected.getAcf());
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
-		assertEquals(0, selected.getOrgMaps().size());
+		assertEquals(0, selected.getLocationMaps().size());
 	}
 	
 	@Test
@@ -205,7 +205,7 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected.getAcf());
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
-		assertEquals(0, selected.getOrgMaps().size());
+		assertEquals(0, selected.getLocationMaps().size());
 	}
 	
 	//TODO: the org maps aren't coming back from the create or select 
@@ -232,7 +232,7 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO selected = patientDao.getById(created.getId());
 		assertNotNull(selected);
-		assertNotNull(selected.getOrgMaps());
+		assertNotNull(selected.getLocationMaps());
 		//TODO: this is not working but should be
 		//assertTrue(selected.getOrgMaps().size() == 1);
 		//assertEquals(orgMap.getId().longValue(), selected.getOrgMaps().get(0).getId().longValue());

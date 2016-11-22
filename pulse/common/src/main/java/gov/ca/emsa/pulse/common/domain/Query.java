@@ -10,10 +10,10 @@ public class Query {
 	private String status;
 	private PatientSearch terms;
 	private Date lastRead;
-	private List<QueryOrganization> orgStatuses;
+	private List<QueryLocationMap> locationStatuses;
 
 	public Query() {
-		orgStatuses = new ArrayList<QueryOrganization>();
+		locationStatuses = new ArrayList<QueryLocationMap>();
 	}
 	
 	public Long getId() {
@@ -48,12 +48,12 @@ public class Query {
 		this.terms = terms;
 	}
 
-	public List<QueryOrganization> getOrgStatuses() {
-		return orgStatuses;
+	public List<QueryLocationMap> getLocationStatuses() {
+		return locationStatuses;
 	}
 
-	public void setOrgStatuses(List<QueryOrganization> orgStatuses) {
-		this.orgStatuses = orgStatuses;
+	public void setLocationStatuses(List<QueryLocationMap> locationStatuses) {
+		this.locationStatuses = locationStatuses;
 	}
 
 	public Date getLastRead() {

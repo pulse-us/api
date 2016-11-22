@@ -1,17 +1,17 @@
 package gov.ca.emsa.pulse.broker.dao;
 
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.entity.LocationEntity;
 
 import java.util.List;
 
 public interface OrganizationDAO {
 	
-	public OrganizationDTO create(OrganizationDTO org);
-	public OrganizationDTO update(OrganizationDTO org);
+	public LocationDTO create(LocationDTO org);
+	public LocationDTO update(LocationDTO org);
 	public List<LocationEntity> getAllEntities();
-	public List<OrganizationDTO> findAll();
-	public void delete(OrganizationDTO organizationDTO);
-	public OrganizationDTO findById(Long id);
-	public List<OrganizationDTO> findByName(String name);
+	public List<LocationDTO> findAll();
+	public void delete(LocationDTO organizationDTO);
+	public LocationDTO findById(Long id);
+	public List<LocationDTO> findByName(String name);
 }

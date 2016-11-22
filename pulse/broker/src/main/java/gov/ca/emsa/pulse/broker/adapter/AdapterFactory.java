@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.broker.adapter;
 
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -12,7 +12,7 @@ public class AdapterFactory {
 	private static final Logger logger = LogManager.getLogger(AdapterFactory.class);
 	@Autowired private EHealthAdapter ehealthAdapter;
 	
-	public Adapter getAdapter(OrganizationDTO org) {
+	public Adapter getAdapter(LocationDTO org) {
 		if(org.getAdapter().equalsIgnoreCase("ehealth")) {
 			return getEhealthAdapter();
 		} 

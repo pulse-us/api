@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
@@ -24,7 +24,7 @@ import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 public class PatientQueryService implements Runnable {
 	private static final Logger logger = LogManager.getLogger(PatientQueryService.class);
 
-	private QueryOrganizationDTO queryOrg;
+	private QueryLocationMapDTO queryOrg;
 	@Autowired private QueryManager queryManager;
 	@Autowired private PatientManager patientManager;
 	@Autowired private OrganizationManager orgManager;
@@ -38,9 +38,9 @@ public class PatientQueryService implements Runnable {
 		//query this organization directly for patient matches
 		List<PatientRecordDTO> searchResults = null;
 		
-		OrganizationDTO org = orgManager.getById(queryOrg.getOrgId());
+		LocationDTO org = orgManager.getById(queryOrg.getLocationId());
 		if(org == null) {
-			logger.error("Could not find org with id " + queryOrg.getOrgId());
+			logger.error("Could not find org with id " + queryOrg.getLocationId());
 			return;
 		}
 		
@@ -59,7 +59,7 @@ public class PatientQueryService implements Runnable {
 		if(searchResults != null && searchResults.size() > 0) {
 			logger.info("Found " + searchResults.size() + " results for " + org.getAdapter());
 			for(PatientRecordDTO patient : searchResults) {
-				patient.setQueryOrganizationId(queryOrg.getId());
+				patient.setQueryLocationId(queryOrg.getId());
 					
 				//save the search results
 				queryManager.addPatientRecord(patient);
@@ -78,11 +78,11 @@ public class PatientQueryService implements Runnable {
 		logger.info("Completed query to " + org.getAdapter() + " for orgStatus" + queryOrg.getId());
 	}
 
-	public QueryOrganizationDTO getQueryOrg() {
+	public QueryLocationMapDTO getQueryOrg() {
 		return queryOrg;
 	}
 
-	public void setQueryOrg(QueryOrganizationDTO queryOrg) {
+	public void setQueryOrg(QueryLocationMapDTO queryOrg) {
 		this.queryOrg = queryOrg;
 	}
 

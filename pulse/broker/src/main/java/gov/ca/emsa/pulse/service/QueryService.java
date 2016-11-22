@@ -5,7 +5,7 @@ import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
@@ -108,7 +108,7 @@ public class QueryService {
 
 		//create patient organization mappings based on the patientrecords we are using
 		for(Long patientRecordId : request.getPatientRecordIds()) {
-			PatientOrganizationMapDTO orgMapDto = patientManager.createOrganizationMapFromPatientRecord(patient, patientRecordId);
+			PatientLocationMapDTO orgMapDto = patientManager.createOrganizationMapFromPatientRecord(patient, patientRecordId);
 
 			//kick off document list retrieval service
 			SAMLInput input = new SAMLInput();
@@ -119,10 +119,10 @@ public class QueryService {
 			HashMap<String, String> customAttributes = new HashMap<String,String>();
 			customAttributes.put("RequesterFirstName", user.getFirstName());
 			customAttributes.put("RequestReason", "Get patient documents");
-			customAttributes.put("PatientRecordId", orgMapDto.getOrgPatientRecordId());
+			customAttributes.put("PatientRecordId", orgMapDto.getExternalPatientRecordId());
 			input.setAttributes(customAttributes);
 
-			patient.getOrgMaps().add(orgMapDto);
+			patient.getLocationMaps().add(orgMapDto);
 			docManager.queryForDocuments(input, orgMapDto);
 		}
 

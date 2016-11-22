@@ -3,7 +3,7 @@ package gov.ca.emsa.pulse.service;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
-import gov.ca.emsa.pulse.common.domain.QueryOrganization;
+import gov.ca.emsa.pulse.common.domain.QueryLocationMap;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.util.List;
@@ -38,8 +38,8 @@ public class PatientSearchService extends EHealthQueryService implements Callabl
 		this.query = queryResponse;
 	}
 	
-	public boolean areOrgsComplete(List<QueryOrganization> queryOrgs){
-		for(QueryOrganization queryOrg: queryOrgs){
+	public boolean areOrgsComplete(List<QueryLocationMap> queryOrgs){
+		for(QueryLocationMap queryOrg: queryOrgs){
 			if(queryOrg.getStatus().equals(QueryStatus.ACTIVE.name())){
 				return false;
 			}
@@ -47,7 +47,7 @@ public class PatientSearchService extends EHealthQueryService implements Callabl
 		return true;
 	}
 	
-	public List<QueryOrganization> waitForOrgs(List<QueryOrganization> queryOrgs) throws InterruptedException{
+	public List<QueryLocationMap> waitForOrgs(List<QueryLocationMap> queryOrgs) throws InterruptedException{
 		boolean waitingForOrgs = true;
 		int runs = 0;
 		while(waitingForOrgs && runs < Integer.parseInt(timeout)){
@@ -59,15 +59,15 @@ public class PatientSearchService extends EHealthQueryService implements Callabl
 				HttpEntity<Patient[]> entity = new HttpEntity<Patient[]>(this.getHeaders());
 				HttpEntity<Query> response = this.getRestTemplate().exchange("http://localhost:" + this.getPort() + "/queries/" + this.query.getId() , HttpMethod.GET, entity, Query.class);
 				logger.info("Query "  + this.query.getId() + " request sent to broker from services REST.");
-				queryOrgs = response.getBody().getOrgStatuses();
+				queryOrgs = response.getBody().getLocationStatuses();
 			}
 		}
 		return queryOrgs;
 	}
 	
 	@Override
-	public List<QueryOrganization> call() throws Exception {
-		return waitForOrgs(this.query.getOrgStatuses());
+	public List<QueryLocationMap> call() throws Exception {
+		return waitForOrgs(this.query.getLocationStatuses());
 	}
 	
 }

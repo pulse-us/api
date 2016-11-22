@@ -20,11 +20,11 @@ import gov.ca.emsa.pulse.broker.dao.PatientGenderDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import junit.framework.TestCase;
@@ -39,9 +39,9 @@ public class PatientRecordManagerTest extends TestCase {
 	@Autowired PatientRecordDAO prDao;
 	@Autowired PatientGenderDAO patientGenderDao;
 	private AlternateCareFacilityDTO acf;
-	private OrganizationDTO org1, org2;
+	private LocationDTO org1, org2;
 	private QueryDTO query;
-	private QueryOrganizationDTO orgQuery1, orgQuery2;
+	private QueryLocationMapDTO orgQuery1, orgQuery2;
 	private PatientGenderDTO patientGenderMale;
 	
 	@Before
@@ -53,8 +53,8 @@ public class PatientRecordManagerTest extends TestCase {
 		assertNotNull(acf.getId());
 		assertTrue(acf.getId().longValue() > 0);
 		
-		org1 = new OrganizationDTO();
-		org1.setOrganizationId(1L);
+		org1 = new LocationDTO();
+		org1.setLocationId(1L);
 		org1.setName("IHE Org");
 		org1.setAdapter("IHE");
 		org1.setEndpointUrl("http://www.localhost.com");
@@ -63,8 +63,8 @@ public class PatientRecordManagerTest extends TestCase {
 		org1.setActive(true);
 		org1 = orgDao.create(org1);
 		
-		org2 = new OrganizationDTO();
-		org2.setOrganizationId(2L);
+		org2 = new LocationDTO();
+		org2.setLocationId(2L);
 		org2.setName("eHealth Org");
 		org2.setAdapter("eHealth");
 		org2.setEndpointUrl("http://www.localhost.com");
@@ -78,28 +78,28 @@ public class PatientRecordManagerTest extends TestCase {
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		
-		orgQuery1 = new QueryOrganizationDTO();
-		orgQuery1.setOrgId(org1.getId());
+		orgQuery1 = new QueryLocationMapDTO();
+		orgQuery1.setLocationId(org1.getId());
 		orgQuery1.setStatus(QueryLocationStatus.Active);
-		toInsert.getOrgStatuses().add(orgQuery1);
+		toInsert.getLocationStatuses().add(orgQuery1);
 		
-		orgQuery2 = new QueryOrganizationDTO();
-		orgQuery2.setOrgId(org2.getId());
+		orgQuery2 = new QueryLocationMapDTO();
+		orgQuery2.setLocationId(org2.getId());
 		orgQuery2.setStatus(QueryLocationStatus.Active);
-		toInsert.getOrgStatuses().add(orgQuery2);
+		toInsert.getLocationStatuses().add(orgQuery2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
 		assertNotNull(inserted);
 		assertNotNull(inserted.getId());
 		assertTrue(inserted.getId().longValue() > 0);
-		assertNotNull(inserted.getOrgStatuses());
-		assertEquals(2, inserted.getOrgStatuses().size());
-		orgQuery1 = inserted.getOrgStatuses().get(0);
-		assertNotNull(inserted.getOrgStatuses().get(0).getId());
-		assertTrue(inserted.getOrgStatuses().get(0).getId().longValue() > 0);
-		orgQuery2 = inserted.getOrgStatuses().get(1);
-		assertNotNull(inserted.getOrgStatuses().get(1).getId());
-		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
+		assertNotNull(inserted.getLocationStatuses());
+		assertEquals(2, inserted.getLocationStatuses().size());
+		orgQuery1 = inserted.getLocationStatuses().get(0);
+		assertNotNull(inserted.getLocationStatuses().get(0).getId());
+		assertTrue(inserted.getLocationStatuses().get(0).getId().longValue() > 0);
+		orgQuery2 = inserted.getLocationStatuses().get(1);
+		assertNotNull(inserted.getLocationStatuses().get(1).getId());
+		assertTrue(inserted.getLocationStatuses().get(1).getId().longValue() > 0);
 		
 		patientGenderMale = new PatientGenderDTO();
 		patientGenderMale = patientGenderDao.getById(2L);
@@ -108,14 +108,14 @@ public class PatientRecordManagerTest extends TestCase {
 		assertNotNull(query);
 		assertNotNull(query.getId());
 		assertTrue(query.getId().longValue() > 0);
-		assertNotNull(query.getOrgStatuses());
-		assertEquals(2, query.getOrgStatuses().size());
-		orgQuery1 = query.getOrgStatuses().get(0);
-		assertNotNull(query.getOrgStatuses().get(0).getId());
-		assertTrue(query.getOrgStatuses().get(0).getId().longValue() > 0);
-		orgQuery2 = query.getOrgStatuses().get(1);
-		assertNotNull(query.getOrgStatuses().get(1).getId());
-		assertTrue(query.getOrgStatuses().get(1).getId().longValue() > 0);
+		assertNotNull(query.getLocationStatuses());
+		assertEquals(2, query.getLocationStatuses().size());
+		orgQuery1 = query.getLocationStatuses().get(0);
+		assertNotNull(query.getLocationStatuses().get(0).getId());
+		assertTrue(query.getLocationStatuses().get(0).getId().longValue() > 0);
+		orgQuery2 = query.getLocationStatuses().get(1);
+		assertNotNull(query.getLocationStatuses().get(1).getId());
+		assertTrue(query.getLocationStatuses().get(1).getId().longValue() > 0);
 	}
 	
 	@Test
@@ -127,7 +127,7 @@ public class PatientRecordManagerTest extends TestCase {
 		String date = "20160110";
 		dto.setDateOfBirth(date);
 		dto.setPhoneNumber("443-745-0888");
-		dto.setQueryOrganizationId(orgQuery1.getId());
+		dto.setQueryLocationId(orgQuery1.getId());
 		dto.setSsn("555-55-5555");
 
 		dto.setPatientGender(patientGenderMale);
@@ -153,11 +153,11 @@ public class PatientRecordManagerTest extends TestCase {
 		
 		assertNotNull(updatedQuery);
 		assertEquals(query.getId(), updatedQuery.getId());
-		assertEquals(2, updatedQuery.getOrgStatuses().size());
+		assertEquals(2, updatedQuery.getLocationStatuses().size());
 		boolean queryHadOrg = false;
-		for(QueryOrganizationDTO orgStatus : updatedQuery.getOrgStatuses()) {
-			assertNotNull(orgStatus.getOrgId());
-			if(orgStatus.getOrgId().longValue() == org1.getId().longValue()) {
+		for(QueryLocationMapDTO orgStatus : updatedQuery.getLocationStatuses()) {
+			assertNotNull(orgStatus.getLocationId());
+			if(orgStatus.getLocationId().longValue() == org1.getId().longValue()) {
 				queryHadOrg = true;
 				
 				assertEquals(QueryLocationStatus.Cancelled, orgStatus.getStatus());

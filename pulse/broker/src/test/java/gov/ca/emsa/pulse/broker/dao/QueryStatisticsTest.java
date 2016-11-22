@@ -1,9 +1,9 @@
 package gov.ca.emsa.pulse.broker.dao;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.broker.entity.PatientDiscoveryRequestStatisticsEntity;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
@@ -30,8 +30,8 @@ public class QueryStatisticsTest extends TestCase {
 	@Autowired QueryDAO queryDao;
 	@Autowired PatientDiscoveryQueryStatisticsDAO statDao;
 	
-	private OrganizationDTO org1;
-	private OrganizationDTO org2;
+	private LocationDTO org1;
+	private LocationDTO org2;
 	private QueryDTO query;
 	
 	@Test
@@ -46,12 +46,12 @@ public class QueryStatisticsTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getOrgStatuses());
-		assertEquals(2, selected.getOrgStatuses().size());
-		QueryOrganizationDTO orgQuery1 = selected.getOrgStatuses().get(0);
+		assertNotNull(selected.getLocationStatuses());
+		assertEquals(2, selected.getLocationStatuses().size());
+		QueryLocationMapDTO orgQuery1 = selected.getLocationStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		QueryOrganizationDTO orgQuery2 = selected.getOrgStatuses().get(1);
+		QueryLocationMapDTO orgQuery2 = selected.getLocationStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 		assertTrue(orgQuery1.getId().longValue() != orgQuery2.getId().longValue());
@@ -115,12 +115,12 @@ public class QueryStatisticsTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getOrgStatuses());
-		assertEquals(2, selected.getOrgStatuses().size());
-		QueryOrganizationDTO orgQuery1 = selected.getOrgStatuses().get(0);
+		assertNotNull(selected.getLocationStatuses());
+		assertEquals(2, selected.getLocationStatuses().size());
+		QueryLocationMapDTO orgQuery1 = selected.getLocationStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		QueryOrganizationDTO orgQuery2 = selected.getOrgStatuses().get(1);
+		QueryLocationMapDTO orgQuery2 = selected.getLocationStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 		assertTrue(orgQuery1.getId().longValue() != orgQuery2.getId().longValue());
@@ -193,12 +193,12 @@ public class QueryStatisticsTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getOrgStatuses());
-		assertEquals(2, selected.getOrgStatuses().size());
-		QueryOrganizationDTO orgQuery1 = selected.getOrgStatuses().get(0);
+		assertNotNull(selected.getLocationStatuses());
+		assertEquals(2, selected.getLocationStatuses().size());
+		QueryLocationMapDTO orgQuery1 = selected.getLocationStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		QueryOrganizationDTO orgQuery2 = selected.getOrgStatuses().get(1);
+		QueryLocationMapDTO orgQuery2 = selected.getLocationStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 		assertTrue(orgQuery1.getId().longValue() != orgQuery2.getId().longValue());
@@ -266,12 +266,12 @@ public class QueryStatisticsTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getOrgStatuses());
-		assertEquals(2, selected.getOrgStatuses().size());
-		QueryOrganizationDTO orgQuery1 = selected.getOrgStatuses().get(0);
+		assertNotNull(selected.getLocationStatuses());
+		assertEquals(2, selected.getLocationStatuses().size());
+		QueryLocationMapDTO orgQuery1 = selected.getLocationStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		QueryOrganizationDTO orgQuery2 = selected.getOrgStatuses().get(1);
+		QueryLocationMapDTO orgQuery2 = selected.getLocationStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 		assertTrue(orgQuery1.getId().longValue() != orgQuery2.getId().longValue());
@@ -339,12 +339,12 @@ public class QueryStatisticsTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getOrgStatuses());
-		assertEquals(2, selected.getOrgStatuses().size());
-		QueryOrganizationDTO orgQuery1 = selected.getOrgStatuses().get(0);
+		assertNotNull(selected.getLocationStatuses());
+		assertEquals(2, selected.getLocationStatuses().size());
+		QueryLocationMapDTO orgQuery1 = selected.getLocationStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		QueryOrganizationDTO orgQuery2 = selected.getOrgStatuses().get(1);
+		QueryLocationMapDTO orgQuery2 = selected.getLocationStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 		assertTrue(orgQuery1.getId().longValue() != orgQuery2.getId().longValue());
@@ -404,8 +404,8 @@ public class QueryStatisticsTest extends TestCase {
 	}
 	
 	private void setupQuery() {
-		org1 = new OrganizationDTO();
-		org1.setOrganizationId(1L);
+		org1 = new LocationDTO();
+		org1.setLocationId(1L);
 		org1.setName("IHE Org");
 		org1.setAdapter("IHE");
 		org1.setEndpointUrl("http://www.localhost.com");
@@ -414,8 +414,8 @@ public class QueryStatisticsTest extends TestCase {
 		org1.setActive(true);
 		org1 = orgDao.create(org1);
 		
-		org2 = new OrganizationDTO();
-		org2.setOrganizationId(2L);
+		org2 = new LocationDTO();
+		org2.setLocationId(2L);
 		org2.setName("eHealth Org");
 		org2.setAdapter("eHealth");
 		org2.setEndpointUrl("http://www.localhost.com");
@@ -428,29 +428,29 @@ public class QueryStatisticsTest extends TestCase {
 		toInsert.setStatus(QueryStatus.COMPLETE.name());
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
-		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
-		orgQuery1.setOrgId(org1.getId());
+		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();
+		orgQuery1.setLocationId(org1.getId());
 		orgQuery1.setStatus(QueryLocationStatus.Active);
 		Calendar startCal = Calendar.getInstance();
 		orgQuery1.setStartDate(startCal.getTime());
-		toInsert.getOrgStatuses().add(orgQuery1);
-		QueryOrganizationDTO orgQuery2 = new QueryOrganizationDTO();
-		orgQuery2.setOrgId(org2.getId());
+		toInsert.getLocationStatuses().add(orgQuery1);
+		QueryLocationMapDTO orgQuery2 = new QueryLocationMapDTO();
+		orgQuery2.setLocationId(org2.getId());
 		orgQuery2.setStatus(QueryLocationStatus.Active);
 		startCal = Calendar.getInstance();
 		orgQuery2.setStartDate(startCal.getTime());
-		toInsert.getOrgStatuses().add(orgQuery2);
+		toInsert.getLocationStatuses().add(orgQuery2);
 		
 		query = queryDao.create(toInsert);
 		assertNotNull(query);
 		assertNotNull(query.getId());
 		assertTrue(query.getId().longValue() > 0);
-		assertNotNull(query.getOrgStatuses());
-		assertEquals(2, query.getOrgStatuses().size());
-		orgQuery1 = query.getOrgStatuses().get(0);
+		assertNotNull(query.getLocationStatuses());
+		assertEquals(2, query.getLocationStatuses().size());
+		orgQuery1 = query.getLocationStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		orgQuery2 = query.getOrgStatuses().get(1);
+		orgQuery2 = query.getLocationStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 	}

@@ -3,12 +3,12 @@ package gov.ca.emsa.pulse.service;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditManager;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
-import gov.ca.emsa.pulse.common.domain.Organization;
+import gov.ca.emsa.pulse.common.domain.Location;
 import gov.ca.emsa.pulse.common.domain.OrganizationBase;
-import gov.ca.emsa.pulse.common.domain.stats.OrganizationStatistics;
+import gov.ca.emsa.pulse.common.domain.stats.LocationStatistics;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -34,10 +34,10 @@ public class OrganizationService {
     public List<OrganizationBase> getAll() {
 		CommonUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.GET_ALL_ORGANIZATIONS, "/organizations", user.getSubjectName());
-		List<OrganizationDTO> orgDtos = orgManager.getAll();
+		List<LocationDTO> orgDtos = orgManager.getAll();
 		List<OrganizationBase> orgs = new ArrayList<OrganizationBase>();
-		for(OrganizationDTO orgDto : orgDtos) {
-			Organization org = DtoToDomainConverter.convert(orgDto);
+		for(LocationDTO orgDto : orgDtos) {
+			Location org = DtoToDomainConverter.convert(orgDto);
 			orgs.add(org);
 		}
        return orgs;
@@ -46,7 +46,7 @@ public class OrganizationService {
 	@ApiOperation(value = "Get dynamically calculated statistics on how quickly each organization is responding to requests. "
 			+ "Either startDate, endDate, or both may be null.")
 	@RequestMapping(value="/statistics", method=RequestMethod.GET)
-	public List<OrganizationStatistics> getPatientDiscoveryRequestStatistics(
+	public List<LocationStatistics> getPatientDiscoveryRequestStatistics(
 			@RequestParam(name="start", required=false) Long startMillis, 
 			@RequestParam(name="end", required=false) Long endMillis) {
 		Date startDate = null;

@@ -2,7 +2,7 @@ package gov.ca.emsa.pulse.broker.dao.impl;
 
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.broker.entity.QueryEntity;
 import gov.ca.emsa.pulse.broker.entity.QueryLocationMapEntity;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
@@ -37,17 +37,17 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		query.setLastReadDate(new Date());
 		entityManager.persist(query);
 		
-		if(dto.getOrgStatuses() != null && dto.getOrgStatuses().size() > 0) {
-			for(QueryOrganizationDTO orgStatus : dto.getOrgStatuses()) {
+		if(dto.getLocationStatuses() != null && dto.getLocationStatuses().size() > 0) {
+			for(QueryLocationMapDTO orgStatus : dto.getLocationStatuses()) {
 				QueryLocationMapEntity orgMap = new QueryLocationMapEntity();
-				orgMap.setLocationId(orgStatus.getOrgId());
+				orgMap.setLocationId(orgStatus.getLocationId());
 				orgMap.setQueryId(query.getId());
 				orgMap.setStartDate(new Date());
 				QueryLocationStatusEntity status = statusDao.getStatusByName(QueryLocationStatus.Active.name());
 				orgMap.setStatusId(status == null ? null : status.getId());
 				orgMap.setStatus(status);
 				entityManager.persist(orgMap);
-				query.getOrgStatuses().add(orgMap);
+				query.getLocationStatuses().add(orgMap);
 			}
 		}
 		
@@ -55,7 +55,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return new QueryDTO(query);
 	}
 
-	public QueryOrganizationDTO getQueryOrganizationById(Long queryOrgId) {
+	public QueryLocationMapDTO getQueryOrganizationById(Long queryOrgId) {
 		QueryLocationMapEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
@@ -68,10 +68,10 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		if(results.size() != 0) {
 			entity = results.get(0);
 		}
-		return new QueryOrganizationDTO(entity);
+		return new QueryLocationMapDTO(entity);
 	}
 	
-	public QueryOrganizationDTO getQueryOrganizationByQueryAndOrg(Long queryId, Long orgId) {
+	public QueryLocationMapDTO getQueryOrganizationByQueryAndOrg(Long queryId, Long orgId) {
 		QueryLocationMapEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
@@ -86,22 +86,22 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		if(results.size() != 0) {
 			entity = results.get(0);
 		}
-		return new QueryOrganizationDTO(entity);
+		return new QueryLocationMapDTO(entity);
 	}
 	
-	public QueryOrganizationDTO createQueryOrganization(QueryOrganizationDTO orgStatus) {
+	public QueryLocationMapDTO createQueryOrganization(QueryLocationMapDTO orgStatus) {
 		QueryLocationMapEntity orgMap = new QueryLocationMapEntity();
-		orgMap.setLocationId(orgStatus.getOrgId());
+		orgMap.setLocationId(orgStatus.getLocationId());
 		orgMap.setQueryId(orgStatus.getQueryId());
 		orgMap.setStartDate(new Date());
 		QueryLocationStatusEntity status = statusDao.getStatusByName(QueryLocationStatus.Active.name());
 		orgMap.setStatusId(status == null ? null : status.getId());
 		entityManager.persist(orgMap);
-		return new QueryOrganizationDTO(orgMap);
+		return new QueryLocationMapDTO(orgMap);
 	}
 	
 	@Override
-	public QueryOrganizationDTO updateQueryOrganization(QueryOrganizationDTO newOrgMap) {
+	public QueryLocationMapDTO updateQueryOrganization(QueryLocationMapDTO newOrgMap) {
 		logger.info("Update query organization " + newOrgMap.getId() + " with status " + newOrgMap.getStatus());
 		QueryLocationMapEntity existingOrgMap = this.getQueryStatusById(newOrgMap.getId());
 		existingOrgMap.setEndDate(newOrgMap.getEndDate());
@@ -115,7 +115,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		existingOrgMap = entityManager.merge(existingOrgMap);
 		entityManager.flush();
 		logger.info("Updated orgStatus " + newOrgMap.getId());
-		return new QueryOrganizationDTO(existingOrgMap);
+		return new QueryLocationMapDTO(existingOrgMap);
 	}
 	
 	@Override

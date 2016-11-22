@@ -1,34 +1,21 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import gov.ca.emsa.pulse.broker.dao.NameAssemblyDAO;
-import gov.ca.emsa.pulse.broker.dao.NameRepresentationDAO;
-import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
-import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
-import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
-import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
-import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
-import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.GivenName;
-import gov.ca.emsa.pulse.common.domain.NameAssembly;
-import gov.ca.emsa.pulse.common.domain.NameRepresentation;
-import gov.ca.emsa.pulse.common.domain.NameType;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientRecordAddressLine;
-import gov.ca.emsa.pulse.common.domain.PatientRecordName;
-import gov.ca.emsa.pulse.common.domain.PatientRecord;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 
+import gov.ca.emsa.pulse.broker.dao.NameAssemblyDAO;
+import gov.ca.emsa.pulse.broker.dao.NameRepresentationDAO;
+import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
+import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 
 public class DomainToDtoConverter {
 	private static final Logger logger = LogManager.getLogger(DomainToDtoConverter.class);
@@ -60,7 +47,7 @@ public class DomainToDtoConverter {
 		if(domainObj.getId() != null) {
 			result.setId(new Long(domainObj.getId()));
 		}
-		result.setOrganizationPatientRecordId(domainObj.getOrganizationPatientRecordId());
+		result.setLocationPatientRecordId(domainObj.getLocationPatientRecordId());
 		if(domainObj.getPatientRecordName() != null){
 			for(PatientRecordName patientRecordName : domainObj.getPatientRecordName()){
 				PatientRecordNameDTO patientRecordNameDTO = new PatientRecordNameDTO();
@@ -108,7 +95,7 @@ public class DomainToDtoConverter {
 		result.setSsn(domainObj.getSsn());
 		
 		List<PatientRecordAddressDTO> praDto = new ArrayList<PatientRecordAddressDTO>();
-		for(PatientRecordAddress pra : domainObj.getAddress()){
+		for(Address pra : domainObj.getAddress()){
 			PatientRecordAddressDTO address = new PatientRecordAddressDTO();
 			List<PatientRecordAddressLineDTO> lines = new ArrayList<PatientRecordAddressLineDTO>();
 			for(int i=0; i<pra.getLines().size(); i++){
@@ -137,7 +124,7 @@ public class DomainToDtoConverter {
 		result.setCreationTime(domainObj.getCreationTime());
 		result.setDescription(domainObj.getDescription());
 		result.setSize(domainObj.getSize());
-		result.setPatientOrgMapId(domainObj.getOrgMapId());
+		result.setPatientLocationMapId(domainObj.getLocationMapId());
 
 		if(domainObj.getIdentifier() != null) {
 			result.setDocumentUniqueId(domainObj.getIdentifier().getDocumentUniqueId());

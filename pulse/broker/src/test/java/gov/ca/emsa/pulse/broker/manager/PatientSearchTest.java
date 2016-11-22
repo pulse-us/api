@@ -26,9 +26,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
@@ -56,7 +56,7 @@ public class PatientSearchTest {
         mockServer = MockRestServiceServer.createServer(mockRestTemplate);
     }
 
-	private OrganizationDTO org1, org2;
+	private LocationDTO org1, org2;
 
 	@Test
 	@Transactional
@@ -157,16 +157,16 @@ public class PatientSearchTest {
 	}
 
 	private void insertOrganizations() {
-		org1 = new OrganizationDTO();
-		org1.setOrganizationId(1L);
+		org1 = new LocationDTO();
+		org1.setLocationId(1L);
 		org1.setName("IHE Org");
 		org1.setAdapter("IHE");
 		org1.setEndpointUrl("http://localhost:8090/mock/ihe/patients");
 		org1.setActive(true);
 		org1 = orgDao.create(org1);
 
-		org2 = new OrganizationDTO();
-		org2.setOrganizationId(2L);
+		org2 = new LocationDTO();
+		org2.setLocationId(2L);
 		org2.setName("eHealth Org");
 		org2.setAdapter("eHealth");
 		org2.setEndpointUrl("http://localhost:8090/mock/ehealthexchange/patients");
@@ -229,14 +229,14 @@ public class PatientSearchTest {
 		query = queryManager.createQuery(query);
 
 		//get the list of organizations
-		List<OrganizationDTO> orgsToQuery = orgDao.findAll();
-		for(OrganizationDTO org : orgsToQuery) {
-			QueryOrganizationDTO queryOrg = new QueryOrganizationDTO();
-			queryOrg.setOrgId(org.getId());
+		List<LocationDTO> orgsToQuery = orgDao.findAll();
+		for(LocationDTO org : orgsToQuery) {
+			QueryLocationMapDTO queryOrg = new QueryLocationMapDTO();
+			queryOrg.setLocationId(org.getId());
 			queryOrg.setQueryId(query.getId());
 			queryOrg.setStatus(QueryLocationStatus.Active);
 			queryOrg = queryManager.createOrUpdateQueryOrganization(queryOrg);
-			query.getOrgStatuses().add(queryOrg);
+			query.getLocationStatuses().add(queryOrg);
 		}
 
 		return query;

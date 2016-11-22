@@ -28,7 +28,7 @@ public class LocationEndpointEntity {
 	
 	@Basic( optional = false )
 	@Column( name = "external_id", nullable = false )
-	private Long externalId;
+	private String externalId;
 	
 	@Column(name="endpoint_type_id")
 	private Long endpointTypeId;
@@ -76,11 +76,11 @@ public class LocationEndpointEntity {
 		this.id = id;
 	}
 
-	public Long getExternalId() {
+	public String getExternalId() {
 		return externalId;
 	}
 
-	public void setExternalId(Long externalId) {
+	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 	}
 

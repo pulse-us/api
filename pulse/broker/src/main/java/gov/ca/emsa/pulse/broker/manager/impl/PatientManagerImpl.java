@@ -6,11 +6,11 @@ import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
@@ -89,37 +89,37 @@ public class PatientManagerImpl implements PatientManager {
 
 	@Override
 	@Transactional
-	public PatientOrganizationMapDTO updateOrganizationMap(PatientOrganizationMapDTO toUpdate)
+	public PatientLocationMapDTO updateOrganizationMap(PatientLocationMapDTO toUpdate)
 			throws SQLException{
 		return patientDao.updateOrgMap(toUpdate);
 	}
 	
 	@Override
 	@Transactional
-	public PatientOrganizationMapDTO createOrganizationMap(PatientOrganizationMapDTO toCreate) 
+	public PatientLocationMapDTO createOrganizationMap(PatientLocationMapDTO toCreate) 
 			throws SQLException {
 		return patientDao.createOrgMap(toCreate);
 	}
 
 	@Override
 	@Transactional
-	public PatientOrganizationMapDTO createOrganizationMapFromPatientRecord(PatientDTO patient, Long patientRecordId)
+	public PatientLocationMapDTO createOrganizationMapFromPatientRecord(PatientDTO patient, Long patientRecordId)
 			throws SQLException {
-		PatientOrganizationMapDTO result = null;
+		PatientLocationMapDTO result = null;
 		PatientRecordDTO patientRecord = queryManager.getPatientRecordById(patientRecordId);
 		
 		if(patientRecord != null) {
-			PatientOrganizationMapDTO orgMapToCreate = new PatientOrganizationMapDTO();
+			PatientLocationMapDTO orgMapToCreate = new PatientLocationMapDTO();
 			orgMapToCreate.setPatientId(patient.getId());
-			orgMapToCreate.setOrgPatientRecordId(patientRecord.getOrganizationPatientRecordId());
-			QueryOrganizationDTO queryOrgDto = queryDao.getQueryOrganizationById(patientRecord.getQueryOrganizationId());
+			orgMapToCreate.setExternalPatientRecordId(patientRecord.getLocationPatientRecordId());
+			QueryLocationMapDTO queryOrgDto = queryDao.getQueryOrganizationById(patientRecord.getQueryLocationId());
 			if(queryOrgDto != null) {
-				orgMapToCreate.setOrganizationId(queryOrgDto.getOrgId());	
+				orgMapToCreate.setLocationId(queryOrgDto.getLocationId());	
 			}
 			result = patientDao.createOrgMap(orgMapToCreate);
-			if(result.getOrganizationId() != null && result.getOrg() == null) {
-				OrganizationDTO org = orgDao.findById(result.getOrganizationId());
-				result.setOrg(org);
+			if(result.getLocationId() != null && result.getLocation() == null) {
+				LocationDTO org = orgDao.findById(result.getLocationId());
+				result.setLocation(org);
 			}
 		}
 		return result;

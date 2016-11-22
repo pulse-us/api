@@ -3,10 +3,10 @@ package gov.ca.emsa.pulse.broker.manager.impl;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
@@ -97,7 +97,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Override
 	@Transactional
 	public QueryDTO cancelQueryToOrganization(Long queryId, Long orgId) {
-		QueryOrganizationDTO toUpdate = queryDao.getQueryOrganizationByQueryAndOrg(queryId, orgId);
+		QueryLocationMapDTO toUpdate = queryDao.getQueryOrganizationByQueryAndOrg(queryId, orgId);
 		if(toUpdate == null) {
 			logger.error("Could not find query organization for query ID " + queryId + " and org ID " + orgId);
 			return null;
@@ -116,8 +116,8 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public QueryOrganizationDTO createOrUpdateQueryOrganization(QueryOrganizationDTO toUpdate) {
-		QueryOrganizationDTO updated = null;
+	public QueryLocationMapDTO createOrUpdateQueryOrganization(QueryLocationMapDTO toUpdate) {
+		QueryLocationMapDTO updated = null;
 		if(toUpdate.getId() == null) {
 			updated = queryDao.createQueryOrganization(toUpdate);
 		} else {
@@ -137,9 +137,9 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 			throws JsonProcessingException {
 
 		//get the list of organizations
-		List<OrganizationDTO> orgsToQuery = orgManager.getAll();
+		List<LocationDTO> orgsToQuery = orgManager.getAll();
 		if(orgsToQuery != null && orgsToQuery.size() > 0) {
-			for(QueryOrganizationDTO queryOrg : query.getOrgStatuses()) {
+			for(QueryLocationMapDTO queryOrg : query.getLocationStatuses()) {
 				PatientQueryService service = getPatientQueryService();
 				service.setSamlInput(samlInput);
 				service.setToSearch(toSearch);

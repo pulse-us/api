@@ -9,30 +9,30 @@ import java.util.List;
 
 import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
-public class QueryOrganizationDTO {
+public class QueryLocationMapDTO {
 
 	private Long id;
 	private Long queryId;
-	private Long orgId;
-	private OrganizationDTO org;
+	private Long locationId;
+	private LocationDTO location;
 	private QueryLocationStatus status;
 	private Date startDate;
 	private Date endDate;
 	private List<PatientRecordDTO> results;
 	
-	public QueryOrganizationDTO(){
+	public QueryLocationMapDTO(){
 		results = new ArrayList<PatientRecordDTO>();
 	}
 	
-	public QueryOrganizationDTO(QueryLocationMapEntity entity)
+	public QueryLocationMapDTO(QueryLocationMapEntity entity)
 	{
 		this();
 		if(entity != null) {
 			this.id = entity.getId();
 			this.queryId = entity.getQueryId();
-			this.orgId = entity.getLocationId();
+			this.locationId = entity.getLocationId();
 			if(entity.getLocation() != null) {
-				this.org = new OrganizationDTO(entity.getLocation());
+				this.location = new LocationDTO(entity.getLocation());
 			}
 			
 			if(entity.getStatus() != null) {
@@ -65,12 +65,12 @@ public class QueryOrganizationDTO {
 		this.queryId = queryId;
 	}
 
-	public Long getOrgId() {
-		return orgId;
+	public Long getLocationId() {
+		return locationId;
 	}
 
-	public void setOrgId(Long orgId) {
-		this.orgId = orgId;
+	public void setLocationId(Long locationId) {
+		this.locationId = locationId;
 	}
 
 	public QueryLocationStatus getStatus() {
@@ -105,11 +105,11 @@ public class QueryOrganizationDTO {
 		this.results = results;
 	}
 
-	public OrganizationDTO getOrg() {
-		return org;
+	public LocationDTO getLocation() {
+		return location;
 	}
 
-	public void setOrg(OrganizationDTO org) {
-		this.org = org;
+	public void setLocation(LocationDTO location) {
+		this.location = location;
 	}
 }

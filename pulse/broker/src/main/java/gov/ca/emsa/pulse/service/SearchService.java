@@ -17,9 +17,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditManager;
 import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
@@ -74,7 +74,7 @@ public class SearchService {
 
 		String queryTermsJson = JSONUtils.toJSON(toSearch);
 
-		List<OrganizationDTO> orgsToQuery = orgManager.getAll();
+		List<LocationDTO> orgsToQuery = orgManager.getAll();
 		if(orgsToQuery != null && orgsToQuery.size() > 0) {
 			QueryDTO query = new QueryDTO();
 			query.setUserId(user.getSubjectName());
@@ -83,13 +83,13 @@ public class SearchService {
 			query = searchManager.createQuery(query);
 	
 			//get the list of organizations		
-			for(OrganizationDTO org : orgsToQuery) {
-				QueryOrganizationDTO queryOrg = new QueryOrganizationDTO();
-				queryOrg.setOrgId(org.getId());
+			for(LocationDTO org : orgsToQuery) {
+				QueryLocationMapDTO queryOrg = new QueryLocationMapDTO();
+				queryOrg.setLocationId(org.getId());
 				queryOrg.setQueryId(query.getId());
 				queryOrg.setStatus(QueryLocationStatus.Active);
 				queryOrg = searchManager.createOrUpdateQueryOrganization(queryOrg);
-				query.getOrgStatuses().add(queryOrg);
+				query.getLocationStatuses().add(queryOrg);
 			}
 	
 	        QueryDTO initiatedQuery = searchManager.queryForPatientRecords(input, toSearch, query, user);

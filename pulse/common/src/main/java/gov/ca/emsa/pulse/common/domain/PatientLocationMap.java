@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class PatientOrganizationMap {
+public class PatientLocationMap {
 	private Long id;
 	private Long patientId;
-	private Organization organization;
+	private Location location;
 	private QueryLocationStatus documentsQueryStatus;
 	private Date documentsQueryStart;
 	private Date documentsQueryEnd;
 	private List<Document> documents;
 	
-	public PatientOrganizationMap() {
+	public PatientLocationMap() {
 		this.documents = new ArrayList<Document>();
 	}
 	
@@ -32,12 +32,12 @@ public class PatientOrganizationMap {
 		this.patientId = patientId;
 	}
 
-	public Organization getOrganization() {
-		return organization;
+	public Location getLocation() {
+		return location;
 	}
 
-	public void setOrganization(Organization organization) {
-		this.organization = organization;
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 
 	public QueryLocationStatus getDocumentsQueryStatus() {

@@ -1,8 +1,8 @@
 package gov.ca.emsa.pulse.broker.manager;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.common.domain.Organization;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
+import gov.ca.emsa.pulse.common.domain.Location;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +33,8 @@ public class OrganizationManagerTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void createDirectoryCacheTest(){
-		ArrayList<Organization> orgs = new ArrayList<Organization>();
-		Organization org1 = new Organization();
+		ArrayList<Location> orgs = new ArrayList<Location>();
+		Location org1 = new Location();
 		org1.setOrganizationId((long) 1);
 		org1.setName("OrganizationOne");
 		org1.setAdapter("eHealth");
@@ -43,7 +43,7 @@ public class OrganizationManagerTest extends TestCase {
 		org1.setUsername("org1User");
 		org1.setPassword("password1");
 		orgs.add(org1);
-		Organization org2 = new Organization();
+		Location org2 = new Location();
 		org2.setOrganizationId((long) 2);
 		org2.setName("OrganizationTwo");
 		org2.setAdapter("eHealth");
@@ -51,7 +51,7 @@ public class OrganizationManagerTest extends TestCase {
 		org2.setActive(true);
 		org2.setCertificationKey("1234567");
 		orgs.add(org2);
-		Organization org3 = new Organization();
+		Location org3 = new Location();
 		org3.setOrganizationId((long) 3);
 		org3.setName("OrganizationThree");
 		org3.setAdapter("eHealth");
@@ -61,7 +61,7 @@ public class OrganizationManagerTest extends TestCase {
 		org3.setPassword("password3");
 		orgs.add(org3);
 		organizationManager.updateOrganizations(orgs);
-		List<OrganizationDTO> orgDTO = organizationManager.getAll();
+		List<LocationDTO> orgDTO = organizationManager.getAll();
 		assertEquals(3, orgDTO.size());
 	}
 	
@@ -69,8 +69,8 @@ public class OrganizationManagerTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void removeOrgDirectoryCacheTest(){
-		ArrayList<Organization> orgs = new ArrayList<Organization>();
-		Organization org1 = new Organization();
+		ArrayList<Location> orgs = new ArrayList<Location>();
+		Location org1 = new Location();
 		org1.setOrganizationId((long) 1);
 		org1.setName("OrganizationOne");
 		org1.setAdapter("eHealth");
@@ -79,7 +79,7 @@ public class OrganizationManagerTest extends TestCase {
 		org1.setUsername("org1User");
 		org1.setPassword("password1");
 		orgs.add(org1);
-		Organization org2 = new Organization();
+		Location org2 = new Location();
 		org2.setOrganizationId((long) 2);
 		org2.setName("OrganizationTwo");
 		org2.setAdapter("eHealth");
@@ -87,7 +87,7 @@ public class OrganizationManagerTest extends TestCase {
 		org2.setActive(true);
 		org2.setCertificationKey("1234567");
 		orgs.add(org2);
-		Organization org3 = new Organization();
+		Location org3 = new Location();
 		org3.setOrganizationId((long) 3);
 		org3.setName("OrganizationThree");
 		org3.setAdapter("eHealth");
@@ -97,11 +97,11 @@ public class OrganizationManagerTest extends TestCase {
 		org3.setPassword("password3");
 		orgs.add(org3);
 		organizationManager.updateOrganizations(orgs);
-		List<OrganizationDTO> orgDTO1 = organizationManager.getAll();
+		List<LocationDTO> orgDTO1 = organizationManager.getAll();
 		assertEquals(3, orgDTO1.size());
 		orgs.remove(orgs.size()-1);
 		organizationManager.updateOrganizations(orgs);
-		List<OrganizationDTO> orgDTO2 = organizationManager.getAll();
+		List<LocationDTO> orgDTO2 = organizationManager.getAll();
 		assertEquals(2, orgDTO2.size());
 	}
 	
@@ -109,8 +109,8 @@ public class OrganizationManagerTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void updateOrgDirectoryCacheTest(){
-		ArrayList<Organization> orgs = new ArrayList<Organization>();
-		Organization org1 = new Organization();
+		ArrayList<Location> orgs = new ArrayList<Location>();
+		Location org1 = new Location();
 		org1.setOrganizationId((long) 1);
 		org1.setName("OrganizationOne");
 		org1.setAdapter("eHealth");
@@ -119,7 +119,7 @@ public class OrganizationManagerTest extends TestCase {
 		org1.setUsername("org1User");
 		org1.setPassword("password1");
 		orgs.add(org1);
-		Organization org2 = new Organization();
+		Location org2 = new Location();
 		org2.setOrganizationId((long) 2);
 		org2.setName("OrganizationTwo");
 		org2.setAdapter("eHealth");
@@ -127,7 +127,7 @@ public class OrganizationManagerTest extends TestCase {
 		org2.setActive(true);
 		org2.setCertificationKey("1234567");
 		orgs.add(org2);
-		Organization org3 = new Organization();
+		Location org3 = new Location();
 		org3.setOrganizationId((long) 3);
 		org3.setName("OrganizationThree");
 		org3.setAdapter("eHealth");
@@ -137,12 +137,12 @@ public class OrganizationManagerTest extends TestCase {
 		org3.setPassword("password3");
 		orgs.add(org3);
 		organizationManager.updateOrganizations(orgs);
-		List<OrganizationDTO> orgDTO1 = organizationManager.getAll();
+		List<LocationDTO> orgDTO1 = organizationManager.getAll();
 		assertEquals(3, orgDTO1.size());
 		orgs.get(0).setName("OrganizationOneUpdated");
 		organizationManager.updateOrganizations(orgs);
-		List<OrganizationDTO> orgDTO2 = organizationManager.getAll();
-		for(OrganizationDTO orgdto: orgDTO2){
+		List<LocationDTO> orgDTO2 = organizationManager.getAll();
+		for(LocationDTO orgdto: orgDTO2){
 			if(orgdto.getId() == 1){
 				assertEquals("OrganizationOneUpdated", orgdto.getName());
 			}
