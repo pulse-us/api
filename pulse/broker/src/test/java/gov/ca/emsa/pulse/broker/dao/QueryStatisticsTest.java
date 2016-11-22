@@ -26,7 +26,7 @@ import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
 public class QueryStatisticsTest extends TestCase {
 
-	@Autowired OrganizationDAO orgDao;
+	@Autowired LocationDAO orgDao;
 	@Autowired QueryDAO queryDao;
 	@Autowired PatientDiscoveryQueryStatisticsDAO statDao;
 	

@@ -25,7 +25,7 @@ import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 public class QueryDaoTest extends TestCase {
 
 	@Autowired QueryDAO queryDao;
-	@Autowired OrganizationDAO orgDao;
+	@Autowired LocationDAO orgDao;
 	private LocationDTO org1;
 	private LocationDTO org2;
 	

@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientGenderDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordAddressDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
@@ -41,7 +41,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDAO {
 	private static final Logger logger = LogManager.getLogger(PatientRecordDAOImpl.class);
-	@Autowired OrganizationDAO orgDao;
+	@Autowired LocationDAO orgDao;
 	@Autowired PatientRecordNameDAO nameDao;
 	@Autowired PatientGenderDAO patientGenderDao;
 	@Autowired PatientRecordAddressDAO patientRecordAddressDao;

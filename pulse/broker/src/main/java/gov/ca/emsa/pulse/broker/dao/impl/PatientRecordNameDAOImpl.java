@@ -1,23 +1,5 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
-import gov.ca.emsa.pulse.broker.dao.GivenNameDAO;
-import gov.ca.emsa.pulse.broker.dao.NameAssemblyDAO;
-import gov.ca.emsa.pulse.broker.dao.NameRepresentationDAO;
-import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
-import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
-import gov.ca.emsa.pulse.broker.dto.NameAssemblyDTO;
-import gov.ca.emsa.pulse.broker.dto.NameRepresentationDTO;
-import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
-import gov.ca.emsa.pulse.broker.entity.AddressEntity;
-import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
-import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
-import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
-import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
-
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +10,20 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import gov.ca.emsa.pulse.broker.dao.GivenNameDAO;
+import gov.ca.emsa.pulse.broker.dao.NameAssemblyDAO;
+import gov.ca.emsa.pulse.broker.dao.NameRepresentationDAO;
+import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
+import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
+import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
+import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
+import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
+import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 
 @Repository
 public class PatientRecordNameDAOImpl extends BaseDAOImpl implements PatientRecordNameDAO {

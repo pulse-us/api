@@ -2,7 +2,7 @@ package gov.ca.emsa.pulse.broker.manager;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
@@ -39,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PatientManagerTest extends TestCase {
 	@Autowired PatientManager patientManager;
 	@Autowired QueryDAO queryDao;
-	@Autowired OrganizationDAO orgDao;
+	@Autowired LocationDAO orgDao;
 	@Autowired AlternateCareFacilityDAO acfDao;
 	@Autowired PatientRecordDAO prDao;
 	private AlternateCareFacilityDTO acf;

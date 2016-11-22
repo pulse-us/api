@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDiscoveryQueryStatisticsDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class OrganizationManagerImpl implements OrganizationManager {
 	
-	@Autowired private OrganizationDAO organizationDAO;
+	@Autowired private LocationDAO organizationDAO;
 	@Autowired private PatientDiscoveryQueryStatisticsDAO statsDao;
 	
 	public LocationDTO getById(Long id) {

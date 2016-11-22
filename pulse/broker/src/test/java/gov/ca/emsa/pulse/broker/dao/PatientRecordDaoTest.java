@@ -38,7 +38,7 @@ public class PatientRecordDaoTest extends TestCase {
 
 	@Autowired QueryDAO queryDao;
 	@Autowired PatientRecordAddressDAO addrDao;
-	@Autowired OrganizationDAO orgDao;
+	@Autowired LocationDAO orgDao;
 	@Autowired AlternateCareFacilityDAO acfDao;
 	@Autowired PatientRecordDAO patientRecordDao;
 	@Autowired PatientDAO patientDao;

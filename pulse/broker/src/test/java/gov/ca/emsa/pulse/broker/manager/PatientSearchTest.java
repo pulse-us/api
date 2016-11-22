@@ -25,7 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
@@ -44,7 +44,7 @@ import gov.ca.emsa.pulse.common.domain.QueryStatus;
 public class PatientSearchTest {
 	@Autowired private SamlGenerator samlGenerator;
 	@Autowired QueryManager queryManager;
-	@Autowired OrganizationDAO orgDao;
+	@Autowired LocationDAO orgDao;
 
 	ResponseEntity<Patient> mockResponseEntity;
     MockRestServiceServer mockServer;

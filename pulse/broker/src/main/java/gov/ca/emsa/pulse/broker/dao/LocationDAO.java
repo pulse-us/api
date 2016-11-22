@@ -5,7 +5,7 @@ import gov.ca.emsa.pulse.broker.entity.LocationEntity;
 
 import java.util.List;
 
-public interface OrganizationDAO {
+public interface LocationDAO {
 	
 	public LocationDTO create(LocationDTO org);
 	public LocationDTO update(LocationDTO org);

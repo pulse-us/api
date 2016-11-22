@@ -2,7 +2,7 @@ package gov.ca.emsa.pulse.broker.manager.impl;
 
 import gov.ca.emsa.pulse.broker.cache.CacheCleanupException;
 import gov.ca.emsa.pulse.broker.dao.AddressDAO;
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AddressDTO;
@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PatientManagerImpl implements PatientManager {
 	@Autowired private PatientDAO patientDao;
-	@Autowired private OrganizationDAO orgDao;
+	@Autowired private LocationDAO orgDao;
 	@Autowired private AddressDAO addressDao;
 	@Autowired private QueryManager queryManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
