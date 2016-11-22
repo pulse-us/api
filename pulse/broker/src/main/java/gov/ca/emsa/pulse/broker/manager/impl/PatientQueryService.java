@@ -18,7 +18,7 @@ import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
 @Component
 public class PatientQueryService implements Runnable {
@@ -70,7 +70,7 @@ public class PatientQueryService implements Runnable {
 		}
 		
 		synchronized(queryOrg.getQueryId()) {
-			queryOrg.setStatus(queryError ? QueryOrganizationStatus.Failed : QueryOrganizationStatus.Successful);
+			queryOrg.setStatus(queryError ? QueryLocationStatus.Failed : QueryLocationStatus.Successful);
 			queryOrg.setEndDate(new Date());
 			queryManager.createOrUpdateQueryOrganization(queryOrg);
 			queryManager.updateQueryStatusFromOrganizations(queryOrg.getQueryId());

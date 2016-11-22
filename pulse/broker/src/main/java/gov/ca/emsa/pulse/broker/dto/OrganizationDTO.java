@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import gov.ca.emsa.pulse.broker.entity.OrganizationEntity;
+import gov.ca.emsa.pulse.broker.entity.LocationEntity;
 
 import java.util.Date;
 
@@ -21,9 +21,9 @@ public class OrganizationDTO {
 	
 	public OrganizationDTO(){}
 	
-	public OrganizationDTO(OrganizationEntity org){
+	public OrganizationDTO(LocationEntity org){
 		this.id = org.getId();
-		this.organizationId = org.getOrganizationId();
+		this.organizationId = org.getExternalId();
 		this.name = org.getName();
 		this.isActive = org.isActive();
 		this.adapter = org.getAdapter();

@@ -1,13 +1,13 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
-import gov.ca.emsa.pulse.broker.entity.QueryOrganizationEntity;
+import gov.ca.emsa.pulse.broker.entity.QueryLocationMapEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
 public class QueryOrganizationDTO {
 
@@ -15,7 +15,7 @@ public class QueryOrganizationDTO {
 	private Long queryId;
 	private Long orgId;
 	private OrganizationDTO org;
-	private QueryOrganizationStatus status;
+	private QueryLocationStatus status;
 	private Date startDate;
 	private Date endDate;
 	private List<PatientRecordDTO> results;
@@ -24,15 +24,15 @@ public class QueryOrganizationDTO {
 		results = new ArrayList<PatientRecordDTO>();
 	}
 	
-	public QueryOrganizationDTO(QueryOrganizationEntity entity)
+	public QueryOrganizationDTO(QueryLocationMapEntity entity)
 	{
 		this();
 		if(entity != null) {
 			this.id = entity.getId();
 			this.queryId = entity.getQueryId();
-			this.orgId = entity.getOrganizationId();
-			if(entity.getOrg() != null) {
-				this.org = new OrganizationDTO(entity.getOrg());
+			this.orgId = entity.getLocationId();
+			if(entity.getLocation() != null) {
+				this.org = new OrganizationDTO(entity.getLocation());
 			}
 			
 			if(entity.getStatus() != null) {
@@ -73,11 +73,11 @@ public class QueryOrganizationDTO {
 		this.orgId = orgId;
 	}
 
-	public QueryOrganizationStatus getStatus() {
+	public QueryLocationStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryOrganizationStatus status) {
+	public void setStatus(QueryLocationStatus status) {
 		this.status = status;
 	}
 

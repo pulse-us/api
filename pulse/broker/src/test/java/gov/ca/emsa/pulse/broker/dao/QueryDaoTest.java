@@ -18,7 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
@@ -57,7 +57,7 @@ public class QueryDaoTest extends TestCase {
 		
 		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
 		orgQuery1.setOrgId(org1.getId());
-		orgQuery1.setStatus(QueryOrganizationStatus.Active);
+		orgQuery1.setStatus(QueryLocationStatus.Active);
 		toInsert.getOrgStatuses().add(orgQuery1);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
@@ -93,11 +93,11 @@ public class QueryDaoTest extends TestCase {
 		toInsert.setUserId("kekey");
 		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
 		orgQuery1.setOrgId(org1.getId());
-		orgQuery1.setStatus(QueryOrganizationStatus.Active);
+		orgQuery1.setStatus(QueryLocationStatus.Active);
 		toInsert.getOrgStatuses().add(orgQuery1);
 		QueryOrganizationDTO orgQuery2 = new QueryOrganizationDTO();
 		orgQuery2.setOrgId(org2.getId());
-		orgQuery2.setStatus(QueryOrganizationStatus.Active);
+		orgQuery2.setStatus(QueryLocationStatus.Active);
 		toInsert.getOrgStatuses().add(orgQuery2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
@@ -139,11 +139,11 @@ public class QueryDaoTest extends TestCase {
 		toInsert.setUserId("kekey");
 		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
 		orgQuery1.setOrgId(org1.getId());
-		orgQuery1.setStatus(QueryOrganizationStatus.Active);
+		orgQuery1.setStatus(QueryLocationStatus.Active);
 		toInsert.getOrgStatuses().add(orgQuery1);
 		QueryOrganizationDTO orgQuery2 = new QueryOrganizationDTO();
 		orgQuery2.setOrgId(org2.getId());
-		orgQuery2.setStatus(QueryOrganizationStatus.Active);
+		orgQuery2.setStatus(QueryLocationStatus.Active);
 		toInsert.getOrgStatuses().add(orgQuery2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);

@@ -69,7 +69,7 @@ public class PatientRecordDTO {
 		this.patientGender = patientGenderDTO;
 		this.patientGenderId = entity.getPatientGenderId();
 		this.phoneNumber = entity.getPhoneNumber();
-		this.organizationPatientRecordId = entity.getOrganizationPatientRecordId();
+		this.organizationPatientRecordId = entity.getLocationPatientRecordId();
 		
 		List<PatientRecordAddressDTO> praArr = new ArrayList<PatientRecordAddressDTO>();
 		for(PatientRecordAddressEntity pra : entity.getPatientRecordAddress()){
@@ -90,7 +90,7 @@ public class PatientRecordDTO {
 		}
 		this.address = praArr;
 		
-		this.queryOrganizationId = entity.getQueryOrganizationId();
+		this.queryOrganizationId = entity.getQueryLocationId();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 	}
 	

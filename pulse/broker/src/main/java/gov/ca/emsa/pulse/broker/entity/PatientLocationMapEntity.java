@@ -18,8 +18,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="patient_organization_map")
-public class PatientOrganizationMapEntity {
+@Table(name="patient_location_map")
+public class PatientLocationMapEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,15 +33,15 @@ public class PatientOrganizationMapEntity {
 	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private PatientEntity patient;
 	
-	@Column(name = "organization_id")
-	private Long organizationId;
+	@Column(name = "location_id")
+	private Long locationId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "organization_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private OrganizationEntity organization;
+	@JoinColumn(name = "location_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private LocationEntity location;
 	
-	@Column(name = "organization_patient_record_id")
-	private String organizationPatientRecordId;
+	@Column(name = "location_patient_record_id")
+	private String externalPatientRecordId;
 
 	@Column(name = "documents_query_status_id")
 	private Long documentsQueryStatusId;
@@ -49,7 +49,7 @@ public class PatientOrganizationMapEntity {
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "documents_query_status_id", unique=true, nullable = false, insertable=false, updatable= false)
-	private QueryOrganizationStatusEntity status;
+	private QueryLocationStatusEntity status;
 	
 	@Column(name = "documents_query_start")
 	private Date documentsQueryStart;
@@ -63,8 +63,8 @@ public class PatientOrganizationMapEntity {
 	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientOrgMapId"  )
-	@Column( name = "patient_organization_map_id", nullable = false  )
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientLocationMapId"  )
+	@Column( name = "patient_location_map_id", nullable = false  )
 	private Set<DocumentEntity> documents = new HashSet<DocumentEntity>();
 	
 	public Long getId() {
@@ -75,28 +75,28 @@ public class PatientOrganizationMapEntity {
 		this.id = id;
 	}
 
-	public Long getOrganizationId() {
-		return organizationId;
+	public Long getLocationId() {
+		return locationId;
 	}
 
-	public void setOrganizationId(Long organizationId) {
-		this.organizationId = organizationId;
+	public void setLocationId(Long locationId) {
+		this.locationId = locationId;
 	}
 
-	public OrganizationEntity getOrganization() {
-		return organization;
+	public LocationEntity getLocation() {
+		return location;
 	}
 
-	public void setOrganization(OrganizationEntity organization) {
-		this.organization = organization;
+	public void setLocation(LocationEntity location) {
+		this.location = location;
 	}
 
-	public String getOrganizationPatientRecordId() {
-		return organizationPatientRecordId;
+	public String getExternalPatientRecordId() {
+		return externalPatientRecordId;
 	}
 
-	public void setOrganizationPatientRecordId(String organizationPatientRecordId) {
-		this.organizationPatientRecordId = organizationPatientRecordId;
+	public void setExternalPatientRecordId(String externalPatientRecordId) {
+		this.externalPatientRecordId = externalPatientRecordId;
 	}
 
 	public Date getDocumentsQueryStart() {
@@ -147,11 +147,11 @@ public class PatientOrganizationMapEntity {
 		this.documentsQueryStatusId = documentsQueryStatusId;
 	}
 
-	public QueryOrganizationStatusEntity getStatus() {
+	public QueryLocationStatusEntity getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryOrganizationStatusEntity status) {
+	public void setStatus(QueryLocationStatusEntity status) {
 		this.status = status;
 	}
 	public Long getPatientId() {

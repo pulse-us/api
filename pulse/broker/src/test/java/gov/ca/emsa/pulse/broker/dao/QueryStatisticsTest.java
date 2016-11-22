@@ -20,7 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
@@ -60,14 +60,14 @@ public class QueryStatisticsTest extends TestCase {
 		endCal.setTime(orgQuery1.getStartDate());
 		endCal.add(Calendar.HOUR, 1);
 		orgQuery1.setEndDate(endCal.getTime());
-		orgQuery1.setStatus(QueryOrganizationStatus.Successful);
+		orgQuery1.setStatus(QueryLocationStatus.Successful);
 		queryDao.updateQueryOrganization(orgQuery1);
 				
 		endCal = Calendar.getInstance();
 		endCal.setTime(orgQuery2.getStartDate());
 		endCal.add(Calendar.HOUR, 2);
 		orgQuery2.setEndDate(endCal.getTime());
-		orgQuery2.setStatus(QueryOrganizationStatus.Successful);
+		orgQuery2.setStatus(QueryLocationStatus.Successful);
 		queryDao.updateQueryOrganization(orgQuery2);
 				
 		//get the stats		
@@ -77,9 +77,9 @@ public class QueryStatisticsTest extends TestCase {
 		boolean foundOrg1 = false;
 		boolean foundOrg2 = false;
 		for(PatientDiscoveryRequestStatisticsEntity result : results) {
-			if(result.getOrganizationName().equals(org1.getName())) {
+			if(result.getLocationName().equals(org1.getName())) {
 				foundOrg1 = true;
-			} else if(result.getOrganizationName().equals(org2.getName())) {
+			} else if(result.getLocationName().equals(org2.getName())) {
 				foundOrg2 = true;
 			}
 		}
@@ -129,14 +129,14 @@ public class QueryStatisticsTest extends TestCase {
 		endCal.setTime(orgQuery1.getStartDate());
 		endCal.add(Calendar.HOUR, 1);
 		orgQuery1.setEndDate(endCal.getTime());
-		orgQuery1.setStatus(QueryOrganizationStatus.Successful);
+		orgQuery1.setStatus(QueryLocationStatus.Successful);
 		queryDao.updateQueryOrganization(orgQuery1);
 				
 		endCal = Calendar.getInstance();
 		endCal.setTime(orgQuery2.getStartDate());
 		endCal.add(Calendar.HOUR, 2);
 		orgQuery2.setEndDate(endCal.getTime());
-		orgQuery2.setStatus(QueryOrganizationStatus.Successful);
+		orgQuery2.setStatus(QueryLocationStatus.Successful);
 		queryDao.updateQueryOrganization(orgQuery2);
 				
 		//get the stats	
@@ -155,9 +155,9 @@ public class QueryStatisticsTest extends TestCase {
 		boolean foundOrg1 = false;
 		boolean foundOrg2 = false;
 		for(PatientDiscoveryRequestStatisticsEntity result : results) {
-			if(result.getOrganizationName().equals(org1.getName())) {
+			if(result.getLocationName().equals(org1.getName())) {
 				foundOrg1 = true;
-			} else if(result.getOrganizationName().equals(org2.getName())) {
+			} else if(result.getLocationName().equals(org2.getName())) {
 				foundOrg2 = true;
 			}
 		}
@@ -207,14 +207,14 @@ public class QueryStatisticsTest extends TestCase {
 		endCal.setTime(orgQuery1.getStartDate());
 		endCal.add(Calendar.HOUR, 1);
 		orgQuery1.setEndDate(endCal.getTime());
-		orgQuery1.setStatus(QueryOrganizationStatus.Successful);
+		orgQuery1.setStatus(QueryLocationStatus.Successful);
 		queryDao.updateQueryOrganization(orgQuery1);
 				
 		endCal = Calendar.getInstance();
 		endCal.setTime(orgQuery2.getStartDate());
 		endCal.add(Calendar.HOUR, 2);
 		orgQuery2.setEndDate(endCal.getTime());
-		orgQuery2.setStatus(QueryOrganizationStatus.Successful);
+		orgQuery2.setStatus(QueryLocationStatus.Successful);
 		queryDao.updateQueryOrganization(orgQuery2);
 				
 		//get the stats	
@@ -230,9 +230,9 @@ public class QueryStatisticsTest extends TestCase {
 		boolean foundOrg1 = false;
 		boolean foundOrg2 = false;
 		for(PatientDiscoveryRequestStatisticsEntity result : results) {
-			if(result.getOrganizationName().equals(org1.getName())) {
+			if(result.getLocationName().equals(org1.getName())) {
 				foundOrg1 = true;
-			} else if(result.getOrganizationName().equals(org2.getName())) {
+			} else if(result.getLocationName().equals(org2.getName())) {
 				foundOrg2 = true;
 			}
 		}
@@ -280,14 +280,14 @@ public class QueryStatisticsTest extends TestCase {
 		endCal.setTime(orgQuery1.getStartDate());
 		endCal.add(Calendar.HOUR, 1);
 		orgQuery1.setEndDate(endCal.getTime());
-		orgQuery1.setStatus(QueryOrganizationStatus.Successful);
+		orgQuery1.setStatus(QueryLocationStatus.Successful);
 		queryDao.updateQueryOrganization(orgQuery1);
 				
 		endCal = Calendar.getInstance();
 		endCal.setTime(orgQuery2.getStartDate());
 		endCal.add(Calendar.HOUR, 2);
 		orgQuery2.setEndDate(endCal.getTime());
-		orgQuery2.setStatus(QueryOrganizationStatus.Successful);
+		orgQuery2.setStatus(QueryLocationStatus.Successful);
 		queryDao.updateQueryOrganization(orgQuery2);
 				
 		//get the stats	
@@ -303,9 +303,9 @@ public class QueryStatisticsTest extends TestCase {
 		boolean foundOrg1 = false;
 		boolean foundOrg2 = false;
 		for(PatientDiscoveryRequestStatisticsEntity result : results) {
-			if(result.getOrganizationName().equals(org1.getName())) {
+			if(result.getLocationName().equals(org1.getName())) {
 				foundOrg1 = true;
-			} else if(result.getOrganizationName().equals(org2.getName())) {
+			} else if(result.getLocationName().equals(org2.getName())) {
 				foundOrg2 = true;
 			}
 		}
@@ -353,14 +353,14 @@ public class QueryStatisticsTest extends TestCase {
 		endCal.setTime(orgQuery1.getStartDate());
 		endCal.add(Calendar.HOUR, 1);
 		orgQuery1.setEndDate(endCal.getTime());
-		orgQuery1.setStatus(QueryOrganizationStatus.Successful);
+		orgQuery1.setStatus(QueryLocationStatus.Successful);
 		queryDao.updateQueryOrganization(orgQuery1);
 				
 		endCal = Calendar.getInstance();
 		endCal.setTime(orgQuery2.getStartDate());
 		endCal.add(Calendar.HOUR, 2);
 		orgQuery2.setEndDate(endCal.getTime());
-		orgQuery2.setStatus(QueryOrganizationStatus.Successful);
+		orgQuery2.setStatus(QueryLocationStatus.Successful);
 		queryDao.updateQueryOrganization(orgQuery2);
 				
 		//get the stats	
@@ -379,9 +379,9 @@ public class QueryStatisticsTest extends TestCase {
 		boolean foundOrg1 = false;
 		boolean foundOrg2 = false;
 		for(PatientDiscoveryRequestStatisticsEntity result : results) {
-			if(result.getOrganizationName().equals(org1.getName())) {
+			if(result.getLocationName().equals(org1.getName())) {
 				foundOrg1 = true;
-			} else if(result.getOrganizationName().equals(org2.getName())) {
+			} else if(result.getLocationName().equals(org2.getName())) {
 				foundOrg2 = true;
 			}
 		}
@@ -430,13 +430,13 @@ public class QueryStatisticsTest extends TestCase {
 		toInsert.setUserId("kekey");
 		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
 		orgQuery1.setOrgId(org1.getId());
-		orgQuery1.setStatus(QueryOrganizationStatus.Active);
+		orgQuery1.setStatus(QueryLocationStatus.Active);
 		Calendar startCal = Calendar.getInstance();
 		orgQuery1.setStartDate(startCal.getTime());
 		toInsert.getOrgStatuses().add(orgQuery1);
 		QueryOrganizationDTO orgQuery2 = new QueryOrganizationDTO();
 		orgQuery2.setOrgId(org2.getId());
-		orgQuery2.setStatus(QueryOrganizationStatus.Active);
+		orgQuery2.setStatus(QueryLocationStatus.Active);
 		startCal = Calendar.getInstance();
 		orgQuery2.setStartDate(startCal.getTime());
 		toInsert.getOrgStatuses().add(orgQuery2);

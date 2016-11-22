@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
 @Service
 public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
@@ -102,7 +102,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 			logger.error("Could not find query organization for query ID " + queryId + " and org ID " + orgId);
 			return null;
 		}
-		toUpdate.setStatus(QueryOrganizationStatus.Cancelled);
+		toUpdate.setStatus(QueryLocationStatus.Cancelled);
 		queryDao.updateQueryOrganization(toUpdate);
 		
 		return updateQueryStatusFromOrganizations(queryId);

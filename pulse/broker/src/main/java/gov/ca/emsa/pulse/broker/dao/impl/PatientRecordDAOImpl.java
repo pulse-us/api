@@ -18,7 +18,7 @@ import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
 import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
 import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientGenderEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientLocationMapEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
@@ -57,7 +57,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setPatientGenderId(patientGenderEntity.getId());
 		patient.setPhoneNumber(dto.getPhoneNumber());
 		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
-		patient.setQueryOrganizationId(dto.getQueryOrganizationId());
+		patient.setQueryLocationId(dto.getQueryOrganizationId());
 		
 		entityManager.persist(patient);
 		entityManager.flush();
@@ -139,7 +139,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setPatientGenderId(patientGenderEntity.getId());
 		patient.setPhoneNumber(dto.getPhoneNumber());
 		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
-		patient.setQueryOrganizationId(dto.getQueryOrganizationId());
+		patient.setQueryLocationId(dto.getQueryOrganizationId());
 
 		patient = entityManager.merge(patient);
 		entityManager.flush();

@@ -1,7 +1,7 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.QueryEntity;
-import gov.ca.emsa.pulse.broker.entity.QueryOrganizationEntity;
+import gov.ca.emsa.pulse.broker.entity.QueryLocationMapEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,7 +31,7 @@ public class QueryDTO {
 			this.lastReadDate = entity.getLastReadDate();
 			
 			if(entity.getOrgStatuses() != null && entity.getOrgStatuses().size() > 0) {
-				for(QueryOrganizationEntity orgStatus : entity.getOrgStatuses()) {
+				for(QueryLocationMapEntity orgStatus : entity.getOrgStatuses()) {
 					QueryOrganizationDTO dto = new QueryOrganizationDTO(orgStatus);
 					orgStatuses.add(dto);
 				}

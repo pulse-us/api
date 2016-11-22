@@ -1,13 +1,13 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientLocationMapEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
 public class PatientOrganizationMapDTO {
 	private Long id;
@@ -15,7 +15,7 @@ public class PatientOrganizationMapDTO {
 	private Long organizationId;
 	private OrganizationDTO org;
 	private String orgPatientRecordId;
-	private QueryOrganizationStatus documentsQueryStatus;
+	private QueryLocationStatus documentsQueryStatus;
 	private Date documentsQueryStart;
 	private Date documentsQueryEnd;
 	private List<DocumentDTO> documents;
@@ -24,15 +24,15 @@ public class PatientOrganizationMapDTO {
 		documents = new ArrayList<DocumentDTO>();
 	}
 	
-	public PatientOrganizationMapDTO(PatientOrganizationMapEntity entity) {
+	public PatientOrganizationMapDTO(PatientLocationMapEntity entity) {
 		this();
 		this.id = entity.getId();
 		this.patientId = entity.getPatientId();
-		this.organizationId = entity.getOrganizationId();
-		if(entity.getOrganization() != null) {
-			this.org = new OrganizationDTO(entity.getOrganization());
+		this.organizationId = entity.getLocationId();
+		if(entity.getLocation() != null) {
+			this.org = new OrganizationDTO(entity.getLocation());
 		}
-		this.orgPatientRecordId = entity.getOrganizationPatientRecordId();
+		this.orgPatientRecordId = entity.getExternalPatientRecordId();
 		if(entity.getStatus() != null) {
 			this.documentsQueryStatus = entity.getStatus().getStatus();
 		}
@@ -99,11 +99,11 @@ public class PatientOrganizationMapDTO {
 		this.documents = documents;
 	}
 
-	public QueryOrganizationStatus getDocumentsQueryStatus() {
+	public QueryLocationStatus getDocumentsQueryStatus() {
 		return documentsQueryStatus;
 	}
 
-	public void setDocumentsQueryStatus(QueryOrganizationStatus status) {
+	public void setDocumentsQueryStatus(QueryLocationStatus status) {
 		this.documentsQueryStatus = status;
 	}
 }

@@ -23,8 +23,8 @@ import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.entity.AddressEntity;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.broker.entity.PatientLocationMapEntity;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
 @Repository
 public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
@@ -54,12 +54,12 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 
 	@Override
 	public PatientOrganizationMapDTO createOrgMap(PatientOrganizationMapDTO toCreate) throws SQLException {
-		PatientOrganizationMapEntity orgMap = new PatientOrganizationMapEntity();
-		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(QueryOrganizationStatus.Active.name()).getId());
+		PatientLocationMapEntity orgMap = new PatientLocationMapEntity();
+		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(QueryLocationStatus.Active.name()).getId());
 		orgMap.setDocumentsQueryStart(new Date());
 		orgMap.setDocumentsQueryEnd(null);
-		orgMap.setOrganizationId(toCreate.getOrganizationId());
-		orgMap.setOrganizationPatientRecordId(toCreate.getOrgPatientRecordId());
+		orgMap.setLocationId(toCreate.getOrganizationId());
+		orgMap.setExternalPatientRecordId(toCreate.getOrgPatientRecordId());
 		orgMap.setPatientId(toCreate.getPatientId());
 
 		entityManager.persist(orgMap);
@@ -89,15 +89,15 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	@Override
 	public PatientOrganizationMapDTO updateOrgMap(PatientOrganizationMapDTO toUpdate) throws SQLException {
 		logger.debug("Looking up patient org map with id " + toUpdate.getId());
-		PatientOrganizationMapEntity orgMap = getOrgMapById(toUpdate.getId());
+		PatientLocationMapEntity orgMap = getOrgMapById(toUpdate.getId());
 		if(orgMap == null) {
 			logger.error("Could not find patient org map with id " + toUpdate.getId());
 		}		
 		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(toUpdate.getDocumentsQueryStatus().name()).getId());
 		orgMap.setDocumentsQueryStart(toUpdate.getDocumentsQueryStart());
 		orgMap.setDocumentsQueryEnd(toUpdate.getDocumentsQueryEnd());
-		orgMap.setOrganizationId(toUpdate.getOrganizationId());
-		orgMap.setOrganizationPatientRecordId(toUpdate.getOrgPatientRecordId());
+		orgMap.setLocationId(toUpdate.getOrganizationId());
+		orgMap.setExternalPatientRecordId(toUpdate.getOrgPatientRecordId());
 		orgMap.setPatientId(toUpdate.getPatientId());
 
 		entityManager.merge(orgMap);
@@ -132,17 +132,17 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 
 	@Override
 	public PatientOrganizationMapDTO getPatientOrgMapById(Long id) {
-		PatientOrganizationMapEntity entity = null;
+		PatientLocationMapEntity entity = null;
 
 		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
 				+ "LEFT OUTER JOIN FETCH pat.organization "
 				+ "LEFT OUTER JOIN FETCH pat.status "
 				+ "where pat.id = :entityid) ", 
-				PatientOrganizationMapEntity.class );
+				PatientLocationMapEntity.class );
 
 		query.setParameter("entityid", id);
-		List<PatientOrganizationMapEntity> result = query.getResultList();
+		List<PatientLocationMapEntity> result = query.getResultList();
 		if(result.size() == 1) {
 			entity = result.get(0);
 		}
@@ -193,19 +193,19 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		return entity;
 	}
 
-	private PatientOrganizationMapEntity getOrgMapById(Long id) {		
+	private PatientLocationMapEntity getOrgMapById(Long id) {		
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientOrganizationMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.organization "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
 				+ "LEFT OUTER JOIN FETCH pat.documents " 
 				+ "LEFT OUTER JOIN FETCH pat.status "
 				+ "where pat.id = :entityid) ", 
-				PatientOrganizationMapEntity.class );
+				PatientLocationMapEntity.class );
 
 		query.setParameter("entityid", id);
 
-		PatientOrganizationMapEntity entity = null;
-		List<PatientOrganizationMapEntity> orgMaps = query.getResultList();
+		PatientLocationMapEntity entity = null;
+		List<PatientLocationMapEntity> orgMaps = query.getResultList();
 		if(orgMaps.size() != 0) {
 			entity = orgMaps.get(0);
 		}

@@ -2,7 +2,7 @@ package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientLocationMapEntity;
 import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 
 import java.time.LocalDate;
@@ -38,7 +38,7 @@ public class PatientDTO {
 			this.acf = new AlternateCareFacilityDTO(entity.getAcf());
 		}
 		if(entity.getOrgMaps() != null && entity.getOrgMaps().size() > 0) {
-			for(PatientOrganizationMapEntity orgMap : entity.getOrgMaps()) {
+			for(PatientLocationMapEntity orgMap : entity.getOrgMaps()) {
 				PatientOrganizationMapDTO orgMapDto = new PatientOrganizationMapDTO(orgMap);
 				this.orgMaps.add(orgMapDto);
 			}

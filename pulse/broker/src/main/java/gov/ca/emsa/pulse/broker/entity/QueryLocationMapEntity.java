@@ -17,8 +17,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="query_organization")
-public class QueryOrganizationEntity {
+@Table(name="query_location_map")
+public class QueryLocationMapEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,21 +28,21 @@ public class QueryOrganizationEntity {
 	@Column(name="query_id")
 	private Long queryId;
 	
-	@Column(name = "organization_id")
-	private Long organizationId;
+	@Column(name = "location_id")
+	private Long locationId;
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "organization_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private OrganizationEntity org;
+	@JoinColumn(name = "location_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private LocationEntity location;
 	
-	@Column(name = "query_organization_status_id")
+	@Column(name = "query_location_status_id")
 	private Long statusId;
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "query_organization_status_id", unique=true, nullable = false, insertable=false, updatable= false)
-	private QueryOrganizationStatusEntity status;
+	@JoinColumn(name = "query_location_status_id", unique=true, nullable = false, insertable=false, updatable= false)
+	private QueryLocationStatusEntity status;
 	
 	@Column(name = "start_date", insertable = false, updatable = false)
 	private Date startDate;
@@ -56,8 +56,8 @@ public class QueryOrganizationEntity {
 	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "queryOrganizationId"  )
-	@Column( name = "query_organization_id", nullable = false  )
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "queryLocationId"  )
+	@Column( name = "query_location_map_id", nullable = false  )
 	private Set<PatientRecordEntity> results = new HashSet<PatientRecordEntity>();
 	
 	public Long getId() {
@@ -84,11 +84,11 @@ public class QueryOrganizationEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public QueryOrganizationStatusEntity getStatus() {
+	public QueryLocationStatusEntity getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryOrganizationStatusEntity status) {
+	public void setStatus(QueryLocationStatusEntity status) {
 		this.status = status;
 	}
 
@@ -100,20 +100,20 @@ public class QueryOrganizationEntity {
 		this.queryId = queryId;
 	}
 
-	public Long getOrganizationId() {
-		return organizationId;
+	public Long getLocationId() {
+		return locationId;
 	}
 
-	public void setOrganizationId(Long organizationId) {
-		this.organizationId = organizationId;
+	public void setLocationId(Long locationId) {
+		this.locationId = locationId;
 	}
 
-	public OrganizationEntity getOrg() {
-		return org;
+	public LocationEntity getLocation() {
+		return location;
 	}
 
-	public void setOrg(OrganizationEntity org) {
-		this.org = org;
+	public void setLocation(LocationEntity location) {
+		this.location = location;
 	}
 
 	public Date getStartDate() {

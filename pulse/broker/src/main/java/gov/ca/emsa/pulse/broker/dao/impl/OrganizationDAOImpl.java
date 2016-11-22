@@ -2,7 +2,7 @@ package gov.ca.emsa.pulse.broker.dao.impl;
 
 import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.entity.OrganizationEntity;
+import gov.ca.emsa.pulse.broker.entity.LocationEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,12 +19,12 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 	public OrganizationDTO create(OrganizationDTO dto) throws EntityExistsException{
 
-		OrganizationEntity entity = null;
+		LocationEntity entity = null;
 		if(getByOrgId(dto.getOrganizationId()) != null){
 			throw new EntityExistsException();
 		} else {
-			entity = new OrganizationEntity();
-			entity.setOrganizationId(dto.getOrganizationId());
+			entity = new LocationEntity();
+			entity.setExternalId(dto.getOrganizationId());
 			entity.setName(dto.getName());
 			entity.setActive(dto.isActive());
 			entity.setAdapter(dto.getAdapter());
@@ -53,7 +53,7 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 	public OrganizationDTO update(OrganizationDTO dto){
 
-		OrganizationEntity entity =  getByOrgId(dto.getOrganizationId());
+		LocationEntity entity =  getByOrgId(dto.getOrganizationId());
 
 		boolean changed = false;
 
@@ -106,17 +106,17 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	}
 
 	public void delete(OrganizationDTO organizationDTO) {
-		OrganizationEntity toDelete = getOrganizationById(organizationDTO.getId());
+		LocationEntity toDelete = getOrganizationById(organizationDTO.getId());
 		deleteOrganization(toDelete);
 	}
 
 	@Override
 	public List<OrganizationDTO> findAll() {
 
-		List<OrganizationEntity> entities = getAllEntities();
+		List<LocationEntity> entities = getAllEntities();
 		List<OrganizationDTO> dtos = new ArrayList<>();
 
-		for (OrganizationEntity entity : entities) {
+		for (LocationEntity entity : entities) {
 			OrganizationDTO dto = new OrganizationDTO(entity);
 			dtos.add(dto);
 		}
@@ -128,13 +128,13 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 		Query query = entityManager.createQuery( "SELECT org from OrganizationEntity org "
 				+ "where org.name LIKE :name", 
-				OrganizationEntity.class );
+				LocationEntity.class );
 
 		query.setParameter("name", name);
-		List<OrganizationEntity> entities = query.getResultList();
+		List<LocationEntity> entities = query.getResultList();
 
 		List<OrganizationDTO> dtos = new ArrayList<>();
-		for (OrganizationEntity entity : entities) {
+		for (LocationEntity entity : entities) {
 			OrganizationDTO dto = new OrganizationDTO(entity);
 			dtos.add(dto);
 		}
@@ -143,38 +143,38 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 
 	@Override
 	public OrganizationDTO findById(Long id) {
-		OrganizationEntity org = getOrganizationById(id);
+		LocationEntity org = getOrganizationById(id);
 		if(org == null) {
 			return null;
 		}
 		return new OrganizationDTO(org);
 	}
 
-	private void create(OrganizationEntity entity) {
+	private void create(LocationEntity entity) {
 
 		entityManager.persist(entity);
 		entityManager.flush();
 
 	}
 
-	private void update(OrganizationEntity entity) {
+	private void update(LocationEntity entity) {
 
 		entityManager.merge(entity);
 		entityManager.flush();
 
 	}
 
-	private OrganizationEntity getOrganizationById(Long id) {
-		OrganizationEntity org = entityManager.find(OrganizationEntity.class, id);
+	private LocationEntity getOrganizationById(Long id) {
+		LocationEntity org = entityManager.find(LocationEntity.class, id);
 		return org;
 	}
 
-	private OrganizationEntity getByOrgId(Long orgId) {
+	private LocationEntity getByOrgId(Long orgId) {
 		Query query = entityManager.createQuery("from OrganizationEntity o "
-				+ "WHERE o.organizationId = :orgId", OrganizationEntity.class);
+				+ "WHERE o.organizationId = :orgId", LocationEntity.class);
 		query.setParameter("orgId", orgId);
 		
-		List<OrganizationEntity> result = query.getResultList();
+		List<LocationEntity> result = query.getResultList();
 		if(result != null && result.size() > 0) {
 			return result.get(0);
 		}
@@ -182,12 +182,12 @@ public class OrganizationDAOImpl extends BaseDAOImpl implements OrganizationDAO 
 	}
 	
 	@Override
-	public List<OrganizationEntity> getAllEntities() {
-		Query query = entityManager.createQuery("from OrganizationEntity", OrganizationEntity.class);
+	public List<LocationEntity> getAllEntities() {
+		Query query = entityManager.createQuery("from OrganizationEntity", LocationEntity.class);
 		return query.getResultList();
 	}
 
-	public void deleteOrganization(OrganizationEntity org){
+	public void deleteOrganization(LocationEntity org){
 		entityManager.remove(org);
 		entityManager.flush();
 	}

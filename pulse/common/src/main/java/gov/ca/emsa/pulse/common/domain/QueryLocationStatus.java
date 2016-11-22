@@ -1,5 +1,5 @@
 package gov.ca.emsa.pulse.common.domain;
 
-public enum QueryOrganizationStatus {
+public enum QueryLocationStatus {
 	Active, Successful, Cancelled, Failed
 }

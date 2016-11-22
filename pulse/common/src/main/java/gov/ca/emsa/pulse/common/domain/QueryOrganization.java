@@ -8,7 +8,7 @@ public class QueryOrganization {
 	private Long id;
 	private Long queryId;
 	private Organization org;
-	private QueryOrganizationStatus status;
+	private QueryLocationStatus status;
 	private Date startDate;
 	private Date endDate;
 	private List<PatientRecord> results;
@@ -33,11 +33,11 @@ public class QueryOrganization {
 		this.queryId = queryId;
 	}
 
-	public QueryOrganizationStatus getStatus() {
+	public QueryLocationStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryOrganizationStatus status) {
+	public void setStatus(QueryLocationStatus status) {
 		this.status = status;
 	}
 

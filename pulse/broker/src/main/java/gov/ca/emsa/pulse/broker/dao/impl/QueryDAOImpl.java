@@ -4,7 +4,7 @@ import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
 import gov.ca.emsa.pulse.broker.entity.QueryEntity;
-import gov.ca.emsa.pulse.broker.entity.QueryOrganizationEntity;
+import gov.ca.emsa.pulse.broker.entity.QueryLocationMapEntity;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.util.ArrayList;
@@ -18,8 +18,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
-import gov.ca.emsa.pulse.broker.entity.QueryOrganizationStatusEntity;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.broker.entity.QueryLocationStatusEntity;
 
 @Repository
 public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
@@ -39,11 +39,11 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		
 		if(dto.getOrgStatuses() != null && dto.getOrgStatuses().size() > 0) {
 			for(QueryOrganizationDTO orgStatus : dto.getOrgStatuses()) {
-				QueryOrganizationEntity orgMap = new QueryOrganizationEntity();
-				orgMap.setOrganizationId(orgStatus.getOrgId());
+				QueryLocationMapEntity orgMap = new QueryLocationMapEntity();
+				orgMap.setLocationId(orgStatus.getOrgId());
 				orgMap.setQueryId(query.getId());
 				orgMap.setStartDate(new Date());
-				QueryOrganizationStatusEntity status = statusDao.getStatusByName(QueryOrganizationStatus.Active.name());
+				QueryLocationStatusEntity status = statusDao.getStatusByName(QueryLocationStatus.Active.name());
 				orgMap.setStatusId(status == null ? null : status.getId());
 				orgMap.setStatus(status);
 				entityManager.persist(orgMap);
@@ -56,15 +56,15 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 
 	public QueryOrganizationDTO getQueryOrganizationById(Long queryOrgId) {
-		QueryOrganizationEntity entity = null;
+		QueryLocationMapEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
 				+ "JOIN FETCH q.status "
 				+ "where q.id = :entityid) ", 
-				QueryOrganizationEntity.class );
+				QueryLocationMapEntity.class );
 		
 		query.setParameter("entityid", queryOrgId);
-		List<QueryOrganizationEntity> results = query.getResultList();
+		List<QueryLocationMapEntity> results = query.getResultList();
 		if(results.size() != 0) {
 			entity = results.get(0);
 		}
@@ -72,17 +72,17 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	public QueryOrganizationDTO getQueryOrganizationByQueryAndOrg(Long queryId, Long orgId) {
-		QueryOrganizationEntity entity = null;
+		QueryLocationMapEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryOrganizationEntity q "
 				+ "JOIN FETCH q.status "
 				+ "where q.queryId = :queryId " 
 				+ "AND q.organizationId = :orgId", 
-				QueryOrganizationEntity.class );
+				QueryLocationMapEntity.class );
 		
 		query.setParameter("queryId", queryId);
 		query.setParameter("orgId", orgId);
-		List<QueryOrganizationEntity> results = query.getResultList();
+		List<QueryLocationMapEntity> results = query.getResultList();
 		if(results.size() != 0) {
 			entity = results.get(0);
 		}
@@ -90,11 +90,11 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	public QueryOrganizationDTO createQueryOrganization(QueryOrganizationDTO orgStatus) {
-		QueryOrganizationEntity orgMap = new QueryOrganizationEntity();
-		orgMap.setOrganizationId(orgStatus.getOrgId());
+		QueryLocationMapEntity orgMap = new QueryLocationMapEntity();
+		orgMap.setLocationId(orgStatus.getOrgId());
 		orgMap.setQueryId(orgStatus.getQueryId());
 		orgMap.setStartDate(new Date());
-		QueryOrganizationStatusEntity status = statusDao.getStatusByName(QueryOrganizationStatus.Active.name());
+		QueryLocationStatusEntity status = statusDao.getStatusByName(QueryLocationStatus.Active.name());
 		orgMap.setStatusId(status == null ? null : status.getId());
 		entityManager.persist(orgMap);
 		return new QueryOrganizationDTO(orgMap);
@@ -103,12 +103,12 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	@Override
 	public QueryOrganizationDTO updateQueryOrganization(QueryOrganizationDTO newOrgMap) {
 		logger.info("Update query organization " + newOrgMap.getId() + " with status " + newOrgMap.getStatus());
-		QueryOrganizationEntity existingOrgMap = this.getQueryStatusById(newOrgMap.getId());
+		QueryLocationMapEntity existingOrgMap = this.getQueryStatusById(newOrgMap.getId());
 		existingOrgMap.setEndDate(newOrgMap.getEndDate());
 		if(existingOrgMap.getStatus() != null && 
-				existingOrgMap.getStatus().getStatus() != QueryOrganizationStatus.Cancelled) {
+				existingOrgMap.getStatus().getStatus() != QueryLocationStatus.Cancelled) {
 			//don't change the status if it was previously cancelled.
-			QueryOrganizationStatusEntity newStatus = 
+			QueryLocationStatusEntity newStatus = 
 					statusDao.getStatusByName(newOrgMap.getStatus().name());
 			existingOrgMap.setStatusId(newStatus == null ? null : newStatus.getId());
 		} 
@@ -221,7 +221,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	public Boolean hasActiveOrganizations(Long queryId) {		
-		QueryOrganizationStatusEntity statusEntity = statusDao.getStatusByName(QueryOrganizationStatus.Active.name());
+		QueryLocationStatusEntity statusEntity = statusDao.getStatusByName(QueryLocationStatus.Active.name());
 		if(statusEntity == null) {
 			return Boolean.FALSE;
 		}
@@ -237,18 +237,18 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return activeCount > 0;
 	}
 	
-	private QueryOrganizationEntity getQueryStatusById(Long id) {
-		QueryOrganizationEntity entity = null;
+	private QueryLocationMapEntity getQueryStatusById(Long id) {
+		QueryLocationMapEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryOrganizationEntity q "
 				+ "LEFT OUTER JOIN FETCH q.org " 
 				+ "LEFT OUTER JOIN FETCH q.results "
 				+ "JOIN FETCH q.status "
 				+ "where q.id = :entityid) ", 
-				QueryOrganizationEntity.class );
+				QueryLocationMapEntity.class );
 		
 		query.setParameter("entityid", id);
-		List<QueryOrganizationEntity> result = query.getResultList();
+		List<QueryLocationMapEntity> result = query.getResultList();
 		if(result.size() == 1) {
 			entity = result.get(0);
 		}

@@ -37,7 +37,7 @@ public class DocumentDTO {
 		this.repositoryUniqueId = entity.getRepositoryUniqueId();
 		this.documentUniqueId = entity.getDocumentUniqueId();
 		this.contents = entity.getContents();
-		this.patientOrgMapId = entity.getPatientOrgMapId();
+		this.patientOrgMapId = entity.getPatientLocationMapId();
 	}
 	
 	public long getId() {

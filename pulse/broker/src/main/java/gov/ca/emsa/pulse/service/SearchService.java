@@ -27,7 +27,7 @@ import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -87,7 +87,7 @@ public class SearchService {
 				QueryOrganizationDTO queryOrg = new QueryOrganizationDTO();
 				queryOrg.setOrgId(org.getId());
 				queryOrg.setQueryId(query.getId());
-				queryOrg.setStatus(QueryOrganizationStatus.Active);
+				queryOrg.setStatus(QueryLocationStatus.Active);
 				queryOrg = searchManager.createOrUpdateQueryOrganization(queryOrg);
 				query.getOrgStatuses().add(queryOrg);
 			}

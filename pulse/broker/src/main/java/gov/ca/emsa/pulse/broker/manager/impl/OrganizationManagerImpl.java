@@ -151,10 +151,10 @@ public class OrganizationManagerImpl implements OrganizationManager {
 				result.setCalculationEnd(endDate);
 				//don't have a filter param for calculating based on the last N events yet
 				Organization org = new Organization();
-				org.setId(stat.getOrganizationId());
-				org.setName(stat.getOrganizationName());
-				org.setActive(stat.getOrgIsActive());
-				org.setAdapter(stat.getOrgAdapter());
+				org.setId(stat.getLocationId());
+				org.setName(stat.getLocationName());
+				org.setActive(stat.getLocationStatus());
+				org.setAdapter(stat.getLocationType());
 				result.setOrg(org);
 				RequestStatistics orgStat = new RequestStatistics();
 				orgStat.setRequestCount(stat.getTotalRequestCount());
