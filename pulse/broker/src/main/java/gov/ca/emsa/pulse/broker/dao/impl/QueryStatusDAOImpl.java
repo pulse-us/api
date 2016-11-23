@@ -16,7 +16,7 @@ public class QueryStatusDAOImpl extends BaseDAOImpl implements QueryStatusDAO {
 	private static final Logger logger = LogManager.getLogger(QueryStatusDAOImpl.class);
 
 	public QueryLocationStatusEntity getStatusByName(String name) {
-		Query statusQuery = entityManager.createQuery("from QueryOrganizationStatusEntity "
+		Query statusQuery = entityManager.createQuery("from QueryLocationStatusEntity "
 				+ "WHERE status = '" + name + "'",
 				QueryLocationStatusEntity.class);
 		List<QueryLocationStatusEntity> results = statusQuery.getResultList();

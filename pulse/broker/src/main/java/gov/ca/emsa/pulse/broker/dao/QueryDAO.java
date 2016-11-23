@@ -8,15 +8,15 @@ import java.util.List;
 
 public interface QueryDAO {
 	public QueryDTO create(QueryDTO dto);
-	public QueryLocationMapDTO updateQueryOrganization(QueryLocationMapDTO orgStatus);
+	public QueryLocationMapDTO updateQueryLocationMap(QueryLocationMapDTO orgStatus);
 	public QueryDTO update(QueryDTO dto);
-	public QueryLocationMapDTO createQueryOrganization(QueryLocationMapDTO orgStatus);
+	public QueryLocationMapDTO createQueryLocationMap(QueryLocationMapDTO orgStatus);
 	public void delete(Long id);
 	public List<QueryDTO> findAllForUser(String userToken);	
 	public List<QueryDTO> findAllForUserWithStatus(String userToken, String status);	
 	public QueryDTO getById(Long id);
 	public QueryLocationMapDTO getQueryOrganizationById(Long queryOrgId);
-	public QueryLocationMapDTO getQueryOrganizationByQueryAndOrg(Long queryId, Long orgId);
+	public QueryLocationMapDTO getQueryLocationMapByQueryAndOrg(Long queryId, Long orgId);
 	public void deleteItemsOlderThan(Date oldestDate);
-	public Boolean hasActiveOrganizations(Long queryId);
+	public Boolean hasActiveLocations(Long queryId);
 }

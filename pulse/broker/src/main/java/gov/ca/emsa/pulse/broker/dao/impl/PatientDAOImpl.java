@@ -130,9 +130,9 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	public PatientLocationMapDTO getPatientLocationMapById(Long id) {
 		PatientLocationMapEntity entity = null;
 
-		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "
+		Query query = entityManager.createQuery( "SELECT pat from PatientLocationMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
-				+ "LEFT OUTER JOIN FETCH pat.organization "
+				+ "LEFT OUTER JOIN FETCH pat.location "
 				+ "LEFT OUTER JOIN FETCH pat.status "
 				+ "where pat.id = :entityid) ", 
 				PatientLocationMapEntity.class );
@@ -150,7 +150,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.acf "
-				+ "LEFT OUTER JOIN FETCH pat.orgMaps "
+				+ "LEFT OUTER JOIN FETCH pat.locationMaps "
 				+ "where pat.acfId = :acfId) ", 
 				PatientEntity.class );
 
@@ -190,8 +190,8 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	private PatientLocationMapEntity getOrgMapById(Long id) {		
-		Query query = entityManager.createQuery( "SELECT distinct pat from PatientOrganizationMapEntity pat "
-				+ "LEFT OUTER JOIN FETCH pat.organization "
+		Query query = entityManager.createQuery( "SELECT distinct pat from PatientLocationMapEntity pat "
+				+ "LEFT OUTER JOIN FETCH pat.location "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
 				+ "LEFT OUTER JOIN FETCH pat.documents " 
 				+ "LEFT OUTER JOIN FETCH pat.status "
@@ -201,9 +201,9 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		query.setParameter("entityid", id);
 
 		PatientLocationMapEntity entity = null;
-		List<PatientLocationMapEntity> orgMaps = query.getResultList();
-		if(orgMaps.size() != 0) {
-			entity = orgMaps.get(0);
+		List<PatientLocationMapEntity> results = query.getResultList();
+		if(results.size() != 0) {
+			entity = results.get(0);
 		}
 		return entity;
 	}

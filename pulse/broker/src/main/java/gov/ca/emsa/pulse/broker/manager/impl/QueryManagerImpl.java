@@ -84,7 +84,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	public QueryDTO updateQueryStatusFromLocations(Long queryId) {
 		QueryDTO query = getById(queryId);
 		//see if the entire query is complete
-		Boolean isStillActive = queryDao.hasActiveOrganizations(queryId);
+		Boolean isStillActive = queryDao.hasActiveLocations(queryId);
 		if(!isStillActive) {
 			logger.info("Setting query " + queryId + " to COMPLETE.");
 			query.setStatus(QueryStatus.COMPLETE.name());
@@ -97,13 +97,13 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Override
 	@Transactional
 	public QueryDTO cancelQueryToLocation(Long queryId, Long orgId) {
-		QueryLocationMapDTO toUpdate = queryDao.getQueryOrganizationByQueryAndOrg(queryId, orgId);
+		QueryLocationMapDTO toUpdate = queryDao.getQueryLocationMapByQueryAndOrg(queryId, orgId);
 		if(toUpdate == null) {
 			logger.error("Could not find query organization for query ID " + queryId + " and org ID " + orgId);
 			return null;
 		}
 		toUpdate.setStatus(QueryLocationStatus.Cancelled);
-		queryDao.updateQueryOrganization(toUpdate);
+		queryDao.updateQueryLocationMap(toUpdate);
 		
 		return updateQueryStatusFromLocations(queryId);
 	}
@@ -119,9 +119,9 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	public QueryLocationMapDTO createOrUpdateQueryLocation(QueryLocationMapDTO toUpdate) {
 		QueryLocationMapDTO updated = null;
 		if(toUpdate.getId() == null) {
-			updated = queryDao.createQueryOrganization(toUpdate);
+			updated = queryDao.createQueryLocationMap(toUpdate);
 		} else {
-			updated = queryDao.updateQueryOrganization(toUpdate);
+			updated = queryDao.updateQueryLocationMap(toUpdate);
 		}
 		return updated;
 	}

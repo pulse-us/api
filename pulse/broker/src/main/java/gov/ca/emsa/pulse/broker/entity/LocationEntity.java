@@ -2,7 +2,9 @@ package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -54,7 +56,7 @@ public class LocationEntity {
 	
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "locationId"  )
 	@Column( name = "location_id", nullable = false  )
-	private List<LocationAddressLineEntity> lines = new ArrayList<LocationAddressLineEntity>();
+	private Set<LocationAddressLineEntity> lines = new LinkedHashSet<LocationAddressLineEntity>();
  	
 	@Column(name = "city")
 	private String city;
@@ -79,7 +81,7 @@ public class LocationEntity {
 	
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "locationId"  )
 	@Column( name = "location_id", nullable = false  )
-	private List<LocationEndpointEntity> endpoints = new ArrayList<LocationEndpointEntity>();
+	private Set<LocationEndpointEntity> endpoints = new LinkedHashSet<LocationEndpointEntity>();
 	
 	public Long getId() {
 		return id;
@@ -201,19 +203,19 @@ public class LocationEntity {
 		this.externalLastUpdatedDate = externalLastUpdatedDate;
 	}
 
-	public List<LocationAddressLineEntity> getLines() {
+	public Set<LocationAddressLineEntity> getLines() {
 		return lines;
 	}
 
-	public void setLines(List<LocationAddressLineEntity> lines) {
+	public void setLines(Set<LocationAddressLineEntity> lines) {
 		this.lines = lines;
 	}
 
-	public List<LocationEndpointEntity> getEndpoints() {
+	public Set<LocationEndpointEntity> getEndpoints() {
 		return endpoints;
 	}
 
-	public void setEndpoints(List<LocationEndpointEntity> endpoints) {
+	public void setEndpoints(Set<LocationEndpointEntity> endpoints) {
 		this.endpoints = endpoints;
 	}
 

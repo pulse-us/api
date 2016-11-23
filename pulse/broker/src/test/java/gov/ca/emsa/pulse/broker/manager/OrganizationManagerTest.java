@@ -7,6 +7,7 @@ import gov.ca.emsa.pulse.common.domain.Endpoint;
 import gov.ca.emsa.pulse.common.domain.EndpointStatus;
 import gov.ca.emsa.pulse.common.domain.EndpointType;
 import gov.ca.emsa.pulse.common.domain.Location;
+import gov.ca.emsa.pulse.common.domain.LocationStatus;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +39,9 @@ public class OrganizationManagerTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void createDirectoryCacheTest(){
+		LocationStatus locStatus = new LocationStatus();
+		locStatus.setId(1L);
+		
 		ArrayList<Location> locations = new ArrayList<Location>();
 		Location location1 = new Location();
 		location1.setExternalId("1");
@@ -46,6 +50,7 @@ public class OrganizationManagerTest extends TestCase {
 		location1.setType("Hospital");
 		location1.setExternalLastUpdateDate(new Date());
 		location1.setParentOrgName("EHealth Parent Org");
+		location1.setStatus(locStatus);
 		locations.add(location1);
 		
 		Location location2 = new Location();
@@ -55,6 +60,7 @@ public class OrganizationManagerTest extends TestCase {
 		location2.setType("Hospital");
 		location2.setExternalLastUpdateDate(new Date());
 		location2.setParentOrgName("EHealth Parent Org");
+		location2.setStatus(locStatus);
 		locations.add(location2);
 		
 		Location location3 = new Location();
@@ -64,6 +70,7 @@ public class OrganizationManagerTest extends TestCase {
 		location3.setType("Hospital");
 		location3.setExternalLastUpdateDate(new Date());
 		location3.setParentOrgName("EHealth Parent Org");
+		location3.setStatus(locStatus);
 		Endpoint endpoint = new Endpoint();
 		endpoint.setAdapter("eHealth");
 		EndpointStatus status = new EndpointStatus();
@@ -99,6 +106,9 @@ public class OrganizationManagerTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void removeLocationDirectoryCacheTest(){
+		LocationStatus locStatus = new LocationStatus();
+		locStatus.setId(1L);
+		
 		ArrayList<Location> locations = new ArrayList<Location>();
 		Location location1 = new Location();
 		location1.setExternalId("1");
@@ -107,6 +117,7 @@ public class OrganizationManagerTest extends TestCase {
 		location1.setType("Hospital");
 		location1.setExternalLastUpdateDate(new Date());
 		location1.setParentOrgName("EHealth Parent Org");
+		location1.setStatus(locStatus);
 		locations.add(location1);
 		
 		Location location2 = new Location();
@@ -116,6 +127,7 @@ public class OrganizationManagerTest extends TestCase {
 		location2.setType("Hospital");
 		location2.setExternalLastUpdateDate(new Date());
 		location2.setParentOrgName("EHealth Parent Org");
+		location2.setStatus(locStatus);
 		locations.add(location2);
 		
 		Location location3 = new Location();
@@ -125,6 +137,7 @@ public class OrganizationManagerTest extends TestCase {
 		location3.setType("Hospital");
 		location3.setExternalLastUpdateDate(new Date());
 		location3.setParentOrgName("EHealth Parent Org");
+		location3.setStatus(locStatus);
 		Endpoint endpoint = new Endpoint();
 		endpoint.setAdapter("eHealth");
 		EndpointStatus status = new EndpointStatus();

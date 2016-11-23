@@ -92,7 +92,7 @@ public class LocationAddressLineDAOImpl extends BaseDAOImpl implements LocationA
 		
 		//get the first address line
 		Query query = entityManager.createQuery( "from LocationAddressLineEntity a "
-				+ "where (locationId = :v)", 
+				+ "where (locationId = :locationId)", 
 				LocationAddressLineEntity.class );
 		query.setParameter("locationId", locationId);
 		return query.getResultList();

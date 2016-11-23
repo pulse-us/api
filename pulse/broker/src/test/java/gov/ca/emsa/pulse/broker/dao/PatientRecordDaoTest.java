@@ -18,6 +18,7 @@ import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationStatusDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressDTO;
@@ -54,6 +55,9 @@ public class PatientRecordDaoTest extends TestCase {
 		assertNotNull(acf.getId());
 		assertTrue(acf.getId().longValue() > 0);
 		
+		LocationStatusDTO locStatus = new LocationStatusDTO();
+		locStatus.setId(1L);
+		
 		location1 = new LocationDTO();
 		location1.setExternalId("1");
 		location1.setName("John's Hopkins Medical Center");
@@ -61,6 +65,7 @@ public class PatientRecordDaoTest extends TestCase {
 		location1.setType("Hospital");
 		location1.setExternalLastUpdateDate(new Date());
 		location1.setParentOrgName("EHealth Parent Org");
+		location1.setStatus(locStatus);
 		location1 = locationDao.create(location1);
 		
 		location2 = new LocationDTO();
@@ -70,6 +75,7 @@ public class PatientRecordDaoTest extends TestCase {
 		location2.setType("Hospital");
 		location2.setExternalLastUpdateDate(new Date());
 		location2.setParentOrgName("EHealth Parent Org");
+		location2.setStatus(locStatus);
 		location2 = locationDao.create(location2);
 		
 		patientGenderFemale = new PatientGenderDTO();

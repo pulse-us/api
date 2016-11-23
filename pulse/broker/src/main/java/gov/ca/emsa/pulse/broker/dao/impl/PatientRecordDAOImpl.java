@@ -171,7 +171,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		entityManager.clear();
 		Query query = entityManager.createQuery( "SELECT DISTINCT pat "
 				+ "FROM PatientRecordEntity pat "
-				+ "LEFT OUTER JOIN FETCH pat.queryOrganization "
+				+ "LEFT OUTER JOIN FETCH pat.queryLocation "
 				+ "LEFT OUTER JOIN FETCH pat.patientRecordName "
 				+ "LEFT OUTER JOIN FETCH pat.patientRecordAddress "
 				+ "where pat.id = :entityid ", 

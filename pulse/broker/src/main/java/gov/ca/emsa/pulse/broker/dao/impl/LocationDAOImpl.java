@@ -309,8 +309,7 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 				+ "FROM LocationEntity loc "
 				+ "JOIN FETCH loc.locationStatus "
 				+ "LEFT OUTER JOIN FETCH loc.lines " 
-				+ "LEFT OUTER JOIN FETCH loc.endpoints "
-				+ "WHERE loc.externalId = :externalId", LocationEntity.class);
+				+ "LEFT OUTER JOIN FETCH loc.endpoints ", LocationEntity.class);
 		return query.getResultList();
 	}
 	

@@ -129,7 +129,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	
 	private List<DocumentEntity> getEntityByPatientId(Long patientId) {		
 		Query query = entityManager.createQuery( "SELECT doc "
-				+ "from DocumentEntity doc, PatientOrganizationMapEntity orgMap "
+				+ "from DocumentEntity doc, PatientLocationMapEntity orgMap "
 				+ "where doc.patientOrgMapId = orgMap.id "
 				+ "and orgMap.patientId = :patientId", 
 				DocumentEntity.class );
