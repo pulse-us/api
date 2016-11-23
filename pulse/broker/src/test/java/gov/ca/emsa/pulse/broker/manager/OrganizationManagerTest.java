@@ -2,9 +2,14 @@ package gov.ca.emsa.pulse.broker.manager;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
+import gov.ca.emsa.pulse.common.domain.Endpoint;
+import gov.ca.emsa.pulse.common.domain.EndpointStatus;
+import gov.ca.emsa.pulse.common.domain.EndpointType;
 import gov.ca.emsa.pulse.common.domain.Location;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -23,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrganizationManagerTest extends TestCase {
 	
 	@Autowired
-	private OrganizationManager organizationManager;
+	private LocationManager locationManager;
 
 	@Test
 	public void contextLoads() {
@@ -33,120 +38,116 @@ public class OrganizationManagerTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void createDirectoryCacheTest(){
-		ArrayList<Location> orgs = new ArrayList<Location>();
-		Location org1 = new Location();
-		org1.setOrganizationId((long) 1);
-		org1.setName("OrganizationOne");
-		org1.setAdapter("eHealth");
-		org1.setIpAddress("127.0.0.1");
-		org1.setActive(true);
-		org1.setUsername("org1User");
-		org1.setPassword("password1");
-		orgs.add(org1);
-		Location org2 = new Location();
-		org2.setOrganizationId((long) 2);
-		org2.setName("OrganizationTwo");
-		org2.setAdapter("eHealth");
-		org2.setIpAddress("127.0.0.1");
-		org2.setActive(true);
-		org2.setCertificationKey("1234567");
-		orgs.add(org2);
-		Location org3 = new Location();
-		org3.setOrganizationId((long) 3);
-		org3.setName("OrganizationThree");
-		org3.setAdapter("eHealth");
-		org3.setIpAddress("127.0.0.1");
-		org3.setActive(true);
-		org3.setUsername("org3User");
-		org3.setPassword("password3");
-		orgs.add(org3);
-		organizationManager.updateOrganizations(orgs);
-		List<LocationDTO> orgDTO = organizationManager.getAll();
-		assertEquals(3, orgDTO.size());
-	}
-	
-	@Test
-	@Transactional
-	@Rollback(true)
-	public void removeOrgDirectoryCacheTest(){
-		ArrayList<Location> orgs = new ArrayList<Location>();
-		Location org1 = new Location();
-		org1.setOrganizationId((long) 1);
-		org1.setName("OrganizationOne");
-		org1.setAdapter("eHealth");
-		org1.setIpAddress("127.0.0.1");
-		org1.setActive(true);
-		org1.setUsername("org1User");
-		org1.setPassword("password1");
-		orgs.add(org1);
-		Location org2 = new Location();
-		org2.setOrganizationId((long) 2);
-		org2.setName("OrganizationTwo");
-		org2.setAdapter("eHealth");
-		org2.setIpAddress("127.0.0.1");
-		org2.setActive(true);
-		org2.setCertificationKey("1234567");
-		orgs.add(org2);
-		Location org3 = new Location();
-		org3.setOrganizationId((long) 3);
-		org3.setName("OrganizationThree");
-		org3.setAdapter("eHealth");
-		org3.setIpAddress("127.0.0.1");
-		org3.setActive(true);
-		org3.setUsername("org3User");
-		org3.setPassword("password3");
-		orgs.add(org3);
-		organizationManager.updateOrganizations(orgs);
-		List<LocationDTO> orgDTO1 = organizationManager.getAll();
-		assertEquals(3, orgDTO1.size());
-		orgs.remove(orgs.size()-1);
-		organizationManager.updateOrganizations(orgs);
-		List<LocationDTO> orgDTO2 = organizationManager.getAll();
-		assertEquals(2, orgDTO2.size());
-	}
-	
-	@Test
-	@Transactional
-	@Rollback(true)
-	public void updateOrgDirectoryCacheTest(){
-		ArrayList<Location> orgs = new ArrayList<Location>();
-		Location org1 = new Location();
-		org1.setOrganizationId((long) 1);
-		org1.setName("OrganizationOne");
-		org1.setAdapter("eHealth");
-		org1.setIpAddress("127.0.0.1");
-		org1.setActive(true);
-		org1.setUsername("org1User");
-		org1.setPassword("password1");
-		orgs.add(org1);
-		Location org2 = new Location();
-		org2.setOrganizationId((long) 2);
-		org2.setName("OrganizationTwo");
-		org2.setAdapter("eHealth");
-		org2.setIpAddress("127.0.0.1");
-		org2.setActive(true);
-		org2.setCertificationKey("1234567");
-		orgs.add(org2);
-		Location org3 = new Location();
-		org3.setOrganizationId((long) 3);
-		org3.setName("OrganizationThree");
-		org3.setAdapter("eHealth");
-		org3.setIpAddress("127.0.0.1");
-		org3.setActive(true);
-		org3.setUsername("org3User");
-		org3.setPassword("password3");
-		orgs.add(org3);
-		organizationManager.updateOrganizations(orgs);
-		List<LocationDTO> orgDTO1 = organizationManager.getAll();
-		assertEquals(3, orgDTO1.size());
-		orgs.get(0).setName("OrganizationOneUpdated");
-		organizationManager.updateOrganizations(orgs);
-		List<LocationDTO> orgDTO2 = organizationManager.getAll();
-		for(LocationDTO orgdto: orgDTO2){
-			if(orgdto.getId() == 1){
-				assertEquals("OrganizationOneUpdated", orgdto.getName());
+		ArrayList<Location> locations = new ArrayList<Location>();
+		Location location1 = new Location();
+		location1.setExternalId("1");
+		location1.setName("John's Hopkins Medical Center");
+		location1.setDescription("A hospital");
+		location1.setType("Hospital");
+		location1.setExternalLastUpdateDate(new Date());
+		location1.setParentOrgName("EHealth Parent Org");
+		locations.add(location1);
+		
+		Location location2 = new Location();
+		location2.setExternalId("2");
+		location2.setName("University of Maryland Medical Center");
+		location2.setDescription("A hospital");
+		location2.setType("Hospital");
+		location2.setExternalLastUpdateDate(new Date());
+		location2.setParentOrgName("EHealth Parent Org");
+		locations.add(location2);
+		
+		Location location3 = new Location();
+		location3.setExternalId("3");
+		location3.setName("University of Maryland Medical Service");
+		location3.setDescription("A building");
+		location3.setType("Hospital");
+		location3.setExternalLastUpdateDate(new Date());
+		location3.setParentOrgName("EHealth Parent Org");
+		Endpoint endpoint = new Endpoint();
+		endpoint.setAdapter("eHealth");
+		EndpointStatus status = new EndpointStatus();
+		status.setName("Active");
+		endpoint.setEndpointStatus(status);
+		EndpointType type = new EndpointType();
+		type.setName("Patient Discovery");
+		endpoint.setEndpointType(type);
+		endpoint.setExternalId("1");
+		endpoint.setExternalLastUpdateDate(new Date());
+		endpoint.setPayloadFormat("application/xml");
+		endpoint.setPayloadType("HL7 CCDA");
+		endpoint.setPublicKey("lkdskdshsfdiujjksjewjfdsfdsjfdsfdsfds");
+		endpoint.setUrl("http://www.google.com");
+		location3.getEndpoints().add(endpoint);
+		locations.add(location3);
+		
+		locationManager.updateLocations(locations);
+		List<LocationDTO> locationResults = locationManager.getAll();
+		assertEquals(3, locationResults.size());
+		
+		//make sure one location has an endpoint
+		boolean foundEndpoint = false;
+		for(LocationDTO loc : locationResults) {
+			if(loc.getEndpoints() != null && loc.getEndpoints().size() == 1) {
+				foundEndpoint = true;
 			}
 		}
+		assertTrue(foundEndpoint);
 	}
-
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void removeLocationDirectoryCacheTest(){
+		ArrayList<Location> locations = new ArrayList<Location>();
+		Location location1 = new Location();
+		location1.setExternalId("1");
+		location1.setName("John's Hopkins Medical Center");
+		location1.setDescription("A hospital");
+		location1.setType("Hospital");
+		location1.setExternalLastUpdateDate(new Date());
+		location1.setParentOrgName("EHealth Parent Org");
+		locations.add(location1);
+		
+		Location location2 = new Location();
+		location2.setExternalId("2");
+		location2.setName("University of Maryland Medical Center");
+		location2.setDescription("A hospital");
+		location2.setType("Hospital");
+		location2.setExternalLastUpdateDate(new Date());
+		location2.setParentOrgName("EHealth Parent Org");
+		locations.add(location2);
+		
+		Location location3 = new Location();
+		location3.setExternalId("3");
+		location3.setName("University of Maryland Medical Service");
+		location3.setDescription("A building");
+		location3.setType("Hospital");
+		location3.setExternalLastUpdateDate(new Date());
+		location3.setParentOrgName("EHealth Parent Org");
+		Endpoint endpoint = new Endpoint();
+		endpoint.setAdapter("eHealth");
+		EndpointStatus status = new EndpointStatus();
+		status.setName("Active");
+		endpoint.setEndpointStatus(status);
+		EndpointType type = new EndpointType();
+		type.setName("Patient Discovery");
+		endpoint.setEndpointType(type);
+		endpoint.setExternalId("1");
+		endpoint.setExternalLastUpdateDate(new Date());
+		endpoint.setPayloadFormat("application/xml");
+		endpoint.setPayloadType("HL7 CCDA");
+		endpoint.setPublicKey("lkdskdshsfdiujjksjewjfdsfdsjfdsfdsfds");
+		endpoint.setUrl("http://www.google.com");
+		location3.getEndpoints().add(endpoint);
+		locations.add(location3);
+		
+		locationManager.updateLocations(locations);
+		List<LocationDTO> locationResults = locationManager.getAll();
+		assertEquals(3, locationResults.size());
+		locations.remove(0);
+		locationManager.updateLocations(locations);
+		locationResults = locationManager.getAll();
+		assertEquals(2, locationResults.size());
+	}
 }

@@ -21,10 +21,10 @@ public class PatientDiscoveryQueryStatisticsDAOImpl extends BaseDAOImpl
 		logger.info("Getting statistics between " + startFilter + " and " + endFilter);
 		String sql = 
 		"SELECT " +
-			"organization.id as organization_id, " +
-			"organization.name as organization_name, " +
-			"organization.is_active as organization_is_active, " +
-			"organization.adapter as organization_adapter, " +
+			"location.id as location_id, " +
+			"location.name as location_name, " +
+			"location.location_type as location_type, " +
+			"locStatus.name as location_status_name, " +
 			"COALESCE(allRequests.totalCount, 0) as total_request_count, " + 
 			"EXTRACT(EPOCH from allRequests.averageTime) as total_request_average_seconds, " +
 			"COALESCE(successfulRequests.totalCount, 0) as successful_request_count, " +
@@ -33,10 +33,12 @@ public class PatientDiscoveryQueryStatisticsDAOImpl extends BaseDAOImpl
 			"EXTRACT(EPOCH from failedRequests.averageTime) as failed_request_average_seconds, " +
 			"COALESCE(cancelledRequests.totalCount, 0) as cancelled_request_count, " +
 			"EXTRACT(EPOCH from cancelledRequests.averageTime) as cancelled_request_average_seconds " +
-			"FROM organization " +
+			"FROM location " +
+			"JOIN pulse.location_status locStatus ON " +
+				"location.location_status_id = locStatus.id " +
 			"LEFT OUTER JOIN  " +
 				"(SELECT count(*) as totalCount,  " + 
-				"	AVG(end_date - start_date) as averageTime, organization_id " + 
+				"	AVG(end_date - start_date) as averageTime, location_id " + 
 				"	FROM pulse.patient_discovery_query_stats " +
 				"	WHERE status NOT LIKE 'Active' ";
 		if(startFilter != null) {
@@ -45,11 +47,11 @@ public class PatientDiscoveryQueryStatisticsDAOImpl extends BaseDAOImpl
 		if(endFilter != null) {
 			sql += "AND end_date <= :endFilter ";
 		}
-		sql +=	"	group by organization_id) allRequests " +
-				"ON organization.id = allRequests.organization_id " +
+		sql +=	"	group by location_id) allRequests " +
+				"ON location.id = allRequests.location_id " +
 			"LEFT OUTER JOIN " +
 				"(SELECT count(*) as totalCount, " + 
-					"AVG(end_date - start_date) as averageTime, organization_id " + 
+					"AVG(end_date - start_date) as averageTime, location_id " + 
 					"FROM pulse.patient_discovery_query_stats " +
 					"WHERE status LIKE 'Successful' ";
 		if(startFilter != null) {
@@ -58,11 +60,11 @@ public class PatientDiscoveryQueryStatisticsDAOImpl extends BaseDAOImpl
 		if(endFilter != null) {
 			sql += "AND end_date <= :endFilter ";
 		}
-		sql += "group by organization_id, status) successfulRequests " +
-				"ON organization.id = successfulRequests.organization_id " +
+		sql += "group by location_id, status) successfulRequests " +
+				"ON location.id = successfulRequests.location_id " +
 			"LEFT OUTER JOIN " +
 				"(SELECT count(*) as totalCount, AVG(end_date - start_date) as averageTime, " + 
-					"organization_id  " +
+					"location_id  " +
 					"FROM pulse.patient_discovery_query_stats " +
 					"WHERE status LIKE 'Failed' ";
 		if(startFilter != null) {
@@ -71,11 +73,11 @@ public class PatientDiscoveryQueryStatisticsDAOImpl extends BaseDAOImpl
 		if(endFilter != null) {
 			sql += "AND end_date <= :endFilter ";
 		}
-		sql += "group by organization_id, status) failedRequests " +
-				"ON organization.id = failedRequests.organization_id " +
+		sql += "group by location_id, status) failedRequests " +
+				"ON location.id = failedRequests.location_id " +
 			"LEFT OUTER JOIN " +
 				"(SELECT count(*) as totalCount, AVG(end_date - start_date) as averageTime, " +
-					"organization_id  " +
+					"location_id  " +
 					"FROM pulse.patient_discovery_query_stats " +
 					"WHERE status LIKE 'Cancelled' ";
 		if(startFilter != null) {
@@ -84,8 +86,8 @@ public class PatientDiscoveryQueryStatisticsDAOImpl extends BaseDAOImpl
 		if(endFilter != null) {
 			sql += "AND end_date <= :endFilter ";
 		}
-		sql += "group by organization_id, status) cancelledRequests " +
-				"ON organization.id = cancelledRequests.organization_id";
+		sql += "group by location_id, status) cancelledRequests " +
+				"ON location.id = cancelledRequests.location_id";
 		
 		Query query = entityManager.createNativeQuery(sql, PatientDiscoveryRequestStatisticsEntity.class);
 		

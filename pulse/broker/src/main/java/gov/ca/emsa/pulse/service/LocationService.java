@@ -5,9 +5,8 @@ import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditManager;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.common.domain.Location;
-import gov.ca.emsa.pulse.common.domain.OrganizationBase;
 import gov.ca.emsa.pulse.common.domain.stats.LocationStatistics;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,28 +21,28 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(value = "organizations")
+@Api(value = "locations")
 @RestController
-@RequestMapping("/organizations")
-public class OrganizationService {
-	@Autowired OrganizationManager orgManager;
+@RequestMapping("/locations")
+public class LocationService {
+	@Autowired LocationManager locationManager;
 	@Autowired AuditManager auditManager;
 
 	@ApiOperation(value="Get the list of organizations")
 	@RequestMapping(value="", method=RequestMethod.GET)
-    public List<OrganizationBase> getAll() {
+    public List<Location> getAll() {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.GET_ALL_ORGANIZATIONS, "/organizations", user.getSubjectName());
-		List<LocationDTO> orgDtos = orgManager.getAll();
-		List<OrganizationBase> orgs = new ArrayList<OrganizationBase>();
-		for(LocationDTO orgDto : orgDtos) {
-			Location org = DtoToDomainConverter.convert(orgDto);
-			orgs.add(org);
+		auditManager.addAuditEntry(QueryType.GET_ALL_ORGANIZATIONS, "/locations", user.getSubjectName());
+		List<LocationDTO> locationDtos = locationManager.getAll();
+		List<Location> locations = new ArrayList<Location>();
+		for(LocationDTO locationDto : locationDtos) {
+			Location location = DtoToDomainConverter.convert(locationDto);
+			locations.add(location);
 		}
-       return orgs;
+       return locations;
     }
 	
-	@ApiOperation(value = "Get dynamically calculated statistics on how quickly each organization is responding to requests. "
+	@ApiOperation(value = "Get dynamically calculated statistics on how quickly each location is responding to requests. "
 			+ "Either startDate, endDate, or both may be null.")
 	@RequestMapping(value="/statistics", method=RequestMethod.GET)
 	public List<LocationStatistics> getPatientDiscoveryRequestStatistics(
@@ -57,6 +56,6 @@ public class OrganizationService {
 		if(endMillis != null) {
 			endDate = new Date(endMillis);
 		}
-		return orgManager.getPatientDiscoveryRequestStatistics(startDate, endDate);
+		return locationManager.getPatientDiscoveryRequestStatistics(startDate, endDate);
 	}
 }

@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.broker.adapter;
 
-import gov.ca.emsa.pulse.broker.dto.LocationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -12,13 +12,13 @@ public class AdapterFactory {
 	private static final Logger logger = LogManager.getLogger(AdapterFactory.class);
 	@Autowired private EHealthAdapter ehealthAdapter;
 	
-	public Adapter getAdapter(LocationDTO org) {
-		if(org.getAdapter().equalsIgnoreCase("ehealth")) {
+	public Adapter getAdapter(LocationEndpointDTO endpoint) {
+		if(endpoint.getAdapter().equalsIgnoreCase("ehealth")) {
 			return getEhealthAdapter();
 		} 
 		//TODO: if we want to add future types like IHE, they will go here as else if{}
 		else {
-			logger.error("Could not find a matching adapter for org type : " + org.getAdapter());
+			logger.error("Could not find a matching adapter for endpoint type : " + endpoint.getAdapter());
 		}
 		return null;
 	}

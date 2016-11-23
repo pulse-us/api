@@ -4,7 +4,7 @@ import gov.ca.emsa.pulse.broker.auth.AcfLastAccessFilter;
 import gov.ca.emsa.pulse.broker.cache.CacheCleanupJob;
 import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.manager.impl.DocumentQueryService;
@@ -34,7 +34,7 @@ public class BrokerApplication {
 		SpringApplication.run(BrokerApplication.class, args);
 	}
 	
-	@Autowired private OrganizationManager organizationManager;
+	@Autowired private LocationManager organizationManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private PatientManager patientManager;
 	@Autowired private QueryManager queryManager;

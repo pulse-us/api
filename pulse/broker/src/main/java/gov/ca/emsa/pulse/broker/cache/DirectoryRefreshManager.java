@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.broker.cache;
 
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.common.domain.Location;
 
 import java.util.ArrayList;
@@ -14,16 +14,16 @@ import org.springframework.web.client.RestTemplate;
 public class DirectoryRefreshManager extends TimerTask {
 	private static final Logger logger = LogManager.getLogger(DirectoryRefreshManager.class);
 
-	private OrganizationManager organizationManager;
+	private LocationManager locationManager;
 	private String directoryServicesUrl;
 	private long expirationMillis;
 	
 	public void getDirectories(){
 		System.out.println("Updating the directories...");
 		RestTemplate restTemplate = new RestTemplate();
-		Location[] orgs = restTemplate.getForObject(directoryServicesUrl, Location[].class);
-		ArrayList<Location> orgList = new ArrayList<Location>(Arrays.asList(orgs));
-		organizationManager.updateOrganizations(orgList);
+		Location[] remoteLocations = restTemplate.getForObject(directoryServicesUrl, Location[].class);
+		ArrayList<Location> locations = new ArrayList<Location>(Arrays.asList(remoteLocations));
+		locationManager.updateLocations(locations);
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class DirectoryRefreshManager extends TimerTask {
 		try {
 			getDirectories();
 		} catch(Exception ex) {
-			logger.error("Error updating organization cache", ex);
+			logger.error("Error updating location cache", ex);
 		}
 		}
 
@@ -43,8 +43,8 @@ public class DirectoryRefreshManager extends TimerTask {
 		return expirationMillis;
 	}
 	
-	public void setManager(OrganizationManager orgMan){
-		this.organizationManager = orgMan;
+	public void setManager(LocationManager locationManager){
+		this.locationManager = locationManager;
 	}
 
 	public String getDirectoryServicesUrl() {

@@ -21,7 +21,7 @@ import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditManager;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
@@ -39,7 +39,7 @@ public class SearchService {
 
 	private static final Logger logger = LogManager.getLogger(SearchService.class);
 	@Autowired private QueryManager searchManager;
-	@Autowired private OrganizationManager orgManager;
+	@Autowired private LocationManager orgManager;
 	public static String dobFormat = "yyyy-MM-dd";
 	@Autowired private AuditManager auditManager;
 
@@ -88,7 +88,7 @@ public class SearchService {
 				queryOrg.setLocationId(org.getId());
 				queryOrg.setQueryId(query.getId());
 				queryOrg.setStatus(QueryLocationStatus.Active);
-				queryOrg = searchManager.createOrUpdateQueryOrganization(queryOrg);
+				queryOrg = searchManager.createOrUpdateQueryLocation(queryOrg);
 				query.getLocationStatuses().add(queryOrg);
 			}
 	

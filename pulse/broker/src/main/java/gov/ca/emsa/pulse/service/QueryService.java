@@ -67,7 +67,7 @@ public class QueryService {
 	@RequestMapping(value = "/{queryId}/{organizationId}/cancel", method = RequestMethod.POST)
 	public Query cancelOrganizationQuery(@PathVariable(value="queryId") Long queryId,
 			@PathVariable(value="organizationId") Long orgId) {
-		queryManager.cancelQueryToOrganization(queryId, orgId);
+		queryManager.cancelQueryToLocation(queryId, orgId);
 		QueryDTO queryWithCancelledOrg = queryManager.getById(queryId);
 		return DtoToDomainConverter.convert(queryWithCancelledOrg);
 	}
@@ -108,7 +108,7 @@ public class QueryService {
 
 		//create patient organization mappings based on the patientrecords we are using
 		for(Long patientRecordId : request.getPatientRecordIds()) {
-			PatientLocationMapDTO orgMapDto = patientManager.createOrganizationMapFromPatientRecord(patient, patientRecordId);
+			PatientLocationMapDTO orgMapDto = patientManager.createPatientLocationMapFromPatientRecord(patient, patientRecordId);
 
 			//kick off document list retrieval service
 			SAMLInput input = new SAMLInput();

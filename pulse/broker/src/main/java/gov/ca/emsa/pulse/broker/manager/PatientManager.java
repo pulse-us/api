@@ -13,7 +13,7 @@ public interface PatientManager extends CachedDataManager {
 	public PatientDTO update(PatientDTO toUpdate) throws SQLException;
 	public void delete(Long patientId) throws SQLException;
 	
-	public PatientLocationMapDTO updateOrganizationMap(PatientLocationMapDTO toUpdate) throws SQLException;
-	public PatientLocationMapDTO createOrganizationMap(PatientLocationMapDTO toCreate) throws SQLException;
-	public PatientLocationMapDTO createOrganizationMapFromPatientRecord(PatientDTO patient, Long patientRecordId) throws SQLException;	
+	public PatientLocationMapDTO updatePatientLocationMap(PatientLocationMapDTO toUpdate) throws SQLException;
+	public PatientLocationMapDTO createPatientLocationMap(PatientLocationMapDTO toCreate) throws SQLException;
+	public PatientLocationMapDTO createPatientLocationMapFromPatientRecord(PatientDTO patient, Long patientRecordId) throws SQLException;	
 }

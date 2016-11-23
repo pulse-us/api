@@ -7,11 +7,12 @@ import java.util.List;
 
 public interface LocationDAO {
 	
-	public LocationDTO create(LocationDTO org);
-	public LocationDTO update(LocationDTO org);
+	public LocationDTO create(LocationDTO location);
+	public LocationDTO update(LocationDTO location);
 	public List<LocationEntity> getAllEntities();
 	public List<LocationDTO> findAll();
-	public void delete(LocationDTO organizationDTO);
+	public void delete(LocationDTO locationDto);
 	public LocationDTO findById(Long id);
+	public LocationDTO findByExternalId(String externalId);
 	public List<LocationDTO> findByName(String name);
 }

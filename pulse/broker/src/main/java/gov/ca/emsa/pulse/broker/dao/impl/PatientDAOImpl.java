@@ -49,7 +49,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public PatientLocationMapDTO createOrgMap(PatientLocationMapDTO toCreate) throws SQLException {
+	public PatientLocationMapDTO createPatientLocationMap(PatientLocationMapDTO toCreate) throws SQLException {
 		PatientLocationMapEntity orgMap = new PatientLocationMapEntity();
 		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(QueryLocationStatus.Active.name()).getId());
 		orgMap.setDocumentsQueryStart(new Date());
@@ -83,7 +83,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public PatientLocationMapDTO updateOrgMap(PatientLocationMapDTO toUpdate) throws SQLException {
+	public PatientLocationMapDTO updatePatientLocationMap(PatientLocationMapDTO toUpdate) throws SQLException {
 		logger.debug("Looking up patient org map with id " + toUpdate.getId());
 		PatientLocationMapEntity orgMap = getOrgMapById(toUpdate.getId());
 		if(orgMap == null) {
@@ -127,7 +127,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public PatientLocationMapDTO getPatientOrgMapById(Long id) {
+	public PatientLocationMapDTO getPatientLocationMapById(Long id) {
 		PatientLocationMapEntity entity = null;
 
 		Query query = entityManager.createQuery( "SELECT pat from PatientOrganizationMapEntity pat "

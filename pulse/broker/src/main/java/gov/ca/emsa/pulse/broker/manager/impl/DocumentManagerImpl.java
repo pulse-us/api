@@ -4,8 +4,10 @@ import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
+import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
@@ -53,8 +55,8 @@ public class DocumentManagerImpl implements DocumentManager {
 	public void queryForDocuments(SAMLInput samlInput, PatientLocationMapDTO dto) {
 		DocumentQueryService service = getDocumentQueryService();
 		service.setSamlInput(samlInput);
-		service.setPatientOrgMap(dto);
-		service.setOrg(dto.getLocation());
+		service.setPatientLocationMap(dto);
+		service.setLocation(dto.getLocation());
 		pool.execute(service);
 	}
 	
@@ -68,13 +70,28 @@ public class DocumentManagerImpl implements DocumentManager {
 	//multiple documents from the same organization if we want to do that in the future
 	@Override
 	@Transactional
-	public void queryForDocumentContents(SAMLInput samlInput, LocationDTO org, List<DocumentDTO> docsFromOrg) {
+	public void queryForDocumentContents(SAMLInput samlInput, LocationDTO location, List<DocumentDTO> docsFromLocation) {
 		boolean querySuccess = true;
-		Adapter adapter = adapterFactory.getAdapter(org);
+		LocationEndpointDTO endpointToQuery = null;
+		if(location.getEndpoints() != null) {
+			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
+				if(endpoint.getEndpointType() != null && 
+						endpoint.getEndpointType().getName().equalsIgnoreCase(EndpointTypeEnum.DOCUMENT_RETRIEVE.getName())) {
+						endpointToQuery = endpoint;
+					}
+			}
+		}
+		
+		if(endpointToQuery == null) {
+			logger.error("The location " + location.getName() + " does not have a document retrieval endpoint.");
+			return;
+		}
+		
+		Adapter adapter = adapterFactory.getAdapter(endpointToQuery);
 		if(adapter != null) {
-			logger.info("Starting query to " + org.getAdapter() + " for document contents.");
+			logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "' for document contents.");
 			try {
-				adapter.retrieveDocumentsContents(org, docsFromOrg, samlInput);
+				adapter.retrieveDocumentsContents(endpointToQuery, docsFromLocation, samlInput);
 			} catch(Exception ex) {
 				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 				querySuccess = false;
@@ -83,13 +100,13 @@ public class DocumentManagerImpl implements DocumentManager {
 		
 		if(querySuccess) {
 			//store the returned document contents
-			for(DocumentDTO doc : docsFromOrg) {
+			for(DocumentDTO doc : docsFromLocation) {
 				if(doc.getContents() != null && doc.getContents().length > 0) {
 					docDao.update(doc);
 				}
 			}
 			
-			logger.info("Completed query to " + org.getAdapter() + " for contents of " + docsFromOrg.size() + " documents.");
+			logger.info("Completed query to endpoint with external id '" + endpointToQuery.getEndpointStatus() + "' for contents of " + docsFromLocation.size() + " documents.");
 		}
 	}
 	
@@ -104,8 +121,8 @@ public class DocumentManagerImpl implements DocumentManager {
 		}
 		
 		//update patient last read time when document is cached or viewed
-		PatientLocationMapDTO patientOrgMap = patientDao.getPatientOrgMapById(cachedDoc.getPatientLocationMapId());
-		PatientDTO patient = patientDao.getById(patientOrgMap.getPatientId());
+		PatientLocationMapDTO patientLocationMap = patientDao.getPatientLocationMapById(cachedDoc.getPatientLocationMapId());
+		PatientDTO patient = patientDao.getById(patientLocationMap.getPatientId());
 		patient.setLastReadDate(new Date());
 		patientManager.update(patient);
 		if(patient.getAcf() != null) {
@@ -119,7 +136,7 @@ public class DocumentManagerImpl implements DocumentManager {
 		} else {
 			List<DocumentDTO> docsToGet = new ArrayList<DocumentDTO>();
 			docsToGet.add(cachedDoc);
-			queryForDocumentContents(samlInput, patientOrgMap.getLocation(), docsToGet);
+			queryForDocumentContents(samlInput, patientLocationMap.getLocation(), docsToGet);
 			byte[] retrievedContents = docsToGet.get(0).getContents();
 			docContents = retrievedContents == null ? "" : new String(retrievedContents);
 		}

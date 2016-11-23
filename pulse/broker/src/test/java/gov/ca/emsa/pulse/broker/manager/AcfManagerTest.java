@@ -4,8 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.cache.CacheCleanupException;
-import gov.ca.emsa.pulse.broker.dao.AddressDAO;
-import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 
 import java.util.Date;

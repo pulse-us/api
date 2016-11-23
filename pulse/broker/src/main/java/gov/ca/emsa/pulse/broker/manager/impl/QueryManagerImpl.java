@@ -7,7 +7,7 @@ import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -37,7 +37,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Autowired QueryDAO queryDao;
 	@Autowired PatientRecordDAO patientRecordDao;
-	@Autowired private OrganizationManager orgManager;
+	@Autowired private LocationManager orgManager;
 	private ApplicationContext context;
 	private final ExecutorService pool;
 
@@ -81,7 +81,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public QueryDTO updateQueryStatusFromOrganizations(Long queryId) {
+	public QueryDTO updateQueryStatusFromLocations(Long queryId) {
 		QueryDTO query = getById(queryId);
 		//see if the entire query is complete
 		Boolean isStillActive = queryDao.hasActiveOrganizations(queryId);
@@ -96,7 +96,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	
 	@Override
 	@Transactional
-	public QueryDTO cancelQueryToOrganization(Long queryId, Long orgId) {
+	public QueryDTO cancelQueryToLocation(Long queryId, Long orgId) {
 		QueryLocationMapDTO toUpdate = queryDao.getQueryOrganizationByQueryAndOrg(queryId, orgId);
 		if(toUpdate == null) {
 			logger.error("Could not find query organization for query ID " + queryId + " and org ID " + orgId);
@@ -105,7 +105,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		toUpdate.setStatus(QueryLocationStatus.Cancelled);
 		queryDao.updateQueryOrganization(toUpdate);
 		
-		return updateQueryStatusFromOrganizations(queryId);
+		return updateQueryStatusFromLocations(queryId);
 	}
 	
 	@Override
@@ -116,7 +116,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public QueryLocationMapDTO createOrUpdateQueryOrganization(QueryLocationMapDTO toUpdate) {
+	public QueryLocationMapDTO createOrUpdateQueryLocation(QueryLocationMapDTO toUpdate) {
 		QueryLocationMapDTO updated = null;
 		if(toUpdate.getId() == null) {
 			updated = queryDao.createQueryOrganization(toUpdate);
@@ -143,7 +143,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 				PatientQueryService service = getPatientQueryService();
 				service.setSamlInput(samlInput);
 				service.setToSearch(toSearch);
-				service.setQueryOrg(queryOrg);
+				service.setQueryLocation(queryOrg);
 				pool.execute(service);
 			}
 		}

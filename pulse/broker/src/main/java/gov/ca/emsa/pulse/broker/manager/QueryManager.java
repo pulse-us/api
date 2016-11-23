@@ -19,12 +19,12 @@ public interface QueryManager extends CachedDataManager {
 	public QueryDTO updateQuery(QueryDTO toUpdate);
 	public QueryDTO createQuery(QueryDTO toCreate);
 	public void delete(Long queryId);
-	public QueryDTO cancelQueryToOrganization(Long queryId, Long orgId);
-	public QueryLocationMapDTO createOrUpdateQueryOrganization(QueryLocationMapDTO toUpdate);
+	public QueryDTO cancelQueryToLocation(Long queryId, Long orgId);
+	public QueryLocationMapDTO createOrUpdateQueryLocation(QueryLocationMapDTO toUpdate);
 
 	public PatientRecordDTO getPatientRecordById(Long patientRecordId);
 	public QueryDTO queryForPatientRecords(SAMLInput samlMessage, PatientSearch toSearch, QueryDTO query, CommonUser user) throws JsonProcessingException;
 	public PatientRecordDTO addPatientRecord(PatientRecordDTO record);
 	public void removePatientRecord(Long prId);
-	public QueryDTO updateQueryStatusFromOrganizations(Long queryId);
+	public QueryDTO updateQueryStatusFromLocations(Long queryId);
 }

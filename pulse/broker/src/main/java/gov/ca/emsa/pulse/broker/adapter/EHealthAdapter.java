@@ -1,27 +1,5 @@
 package gov.ca.emsa.pulse.broker.adapter;
 
-import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
-import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
-import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
-import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
-import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
-import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.LocationDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.SearchResultConverter;
-import gov.ca.emsa.pulse.broker.saml.SAMLInput;
-import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.NameType;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientRecord;
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
-import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -33,9 +11,6 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.SOAPException;
-
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.LogManager;
@@ -51,6 +26,28 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
+import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
+import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
+import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
+import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
+import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
+import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+
 @Component
 public class EHealthAdapter implements Adapter {
 	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
@@ -61,7 +58,7 @@ public class EHealthAdapter implements Adapter {
 	@Autowired NameTypeDAO nameTypeDao;
 	
 	@Override
-	public List<PatientRecordDTO> queryPatients(LocationDTO org, PatientSearch toSearch, SAMLInput samlInput) {
+	public List<PatientRecordDTO> queryPatients(LocationEndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) {
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch);
 		String requestBodyXml = null;
 		try {
@@ -70,7 +67,7 @@ public class EHealthAdapter implements Adapter {
 			logger.error(ex.getMessage(), ex);
 		}
 
-		String postUrl = org.getEndpointUrl() + "/patientDiscovery";
+		String postUrl = endpoint.getUrl() + "/patientDiscovery";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_XML);   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
@@ -107,7 +104,7 @@ public class EHealthAdapter implements Adapter {
 	}
 
 	@Override
-	public List<DocumentDTO> queryDocuments(LocationDTO org, PatientLocationMapDTO toSearch, SAMLInput samlInput) {
+	public List<DocumentDTO> queryDocuments(LocationEndpointDTO endpoint, PatientLocationMapDTO toSearch, SAMLInput samlInput) {
 		Patient patientToSearch = new Patient();
 		toSearch.setExternalPatientRecordId(toSearch.getExternalPatientRecordId());
 		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientToSearch);
@@ -118,7 +115,7 @@ public class EHealthAdapter implements Adapter {
 			logger.error(ex.getMessage(), ex);
 		}
 		
-		String postUrl = org.getEndpointUrl() + "/documentQuery";
+		String postUrl = endpoint.getUrl() + "/documentQuery";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_XML);   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
@@ -156,7 +153,7 @@ public class EHealthAdapter implements Adapter {
 	 * @return
 	 */
 	@Override
-	public void retrieveDocumentsContents(LocationDTO org, List<DocumentDTO> documents, SAMLInput samlInput) {
+	public void retrieveDocumentsContents(LocationEndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput) {
 		List<Document> docsToSearch = new ArrayList<Document>();
 		for(DocumentDTO docDto : documents) {
 			Document doc = DtoToDomainConverter.convert(docDto);
@@ -170,7 +167,7 @@ public class EHealthAdapter implements Adapter {
 			logger.error(ex.getMessage(), ex);
 		}
 		
-		String postUrl = org.getEndpointUrl() + "/retrieveDocumentSet";
+		String postUrl = endpoint.getUrl() + "/retrieveDocumentSet";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_XML);   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
