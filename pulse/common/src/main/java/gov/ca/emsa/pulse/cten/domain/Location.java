@@ -4,18 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Location {
-	private List<LocationResource> resource;
+	private LocationResource resource;
 	private String fullUrl;
 	private Search search;
 	
 	public Location() {
-		resource = new ArrayList<LocationResource>();
 	}
 	
-	public List<LocationResource> getResource() {
+	public LocationResource getResource() {
 		return resource;
 	}
-	public void setResource(List<LocationResource> resource) {
+	public void setResource(LocationResource resource) {
 		this.resource = resource;
 	}
 	public String getFullUrl() {

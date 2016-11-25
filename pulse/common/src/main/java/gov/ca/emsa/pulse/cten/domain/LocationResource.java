@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LocationResource {
+	private String id;
 	private String status;
 	private String name;
 	private String mode;
@@ -14,9 +15,12 @@ public class LocationResource {
 	private ManagingOrganization managingOrganization;
 	private ResourceMetadata meta;
 	private List<EndpointMetadata> endpoint;
+	private List<LocationIdentifier> identifier;
+	private String resourceType;
 	
 	public LocationResource() {
 		endpoint = new ArrayList<EndpointMetadata>();
+		identifier = new ArrayList<LocationIdentifier>();
 	}
 	
 	public String getStatus() {
@@ -78,5 +82,29 @@ public class LocationResource {
 	}
 	public void setEndpoint(List<EndpointMetadata> endpoint) {
 		this.endpoint = endpoint;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public List<LocationIdentifier> getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(List<LocationIdentifier> identifier) {
+		this.identifier = identifier;
+	}
+
+	public String getResourceType() {
+		return resourceType;
+	}
+
+	public void setResourceType(String resourceType) {
+		this.resourceType = resourceType;
 	}
 }

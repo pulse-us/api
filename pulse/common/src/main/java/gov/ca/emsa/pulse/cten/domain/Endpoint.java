@@ -4,18 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Endpoint {
-	private List<EndpointResource> resource;
+	private EndpointResource resource;
 	private String fullUrl;
 	private Search search;
 	
 	public Endpoint() {
-		resource = new ArrayList<EndpointResource>();
 	}
 	
-	public List<EndpointResource> getResource() {
+	public EndpointResource getResource() {
 		return resource;
 	}
-	public void setResource(List<EndpointResource> resource) {
+	public void setResource(EndpointResource resource) {
 		this.resource = resource;
 	}
 	public String getFullUrl() {
