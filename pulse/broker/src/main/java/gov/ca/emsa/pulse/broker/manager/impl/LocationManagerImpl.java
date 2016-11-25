@@ -1,8 +1,15 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDiscoveryQueryStatisticsDAO;
-import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.entity.PatientDiscoveryRequestStatisticsEntity;
@@ -11,20 +18,6 @@ import gov.ca.emsa.pulse.common.domain.Location;
 import gov.ca.emsa.pulse.common.domain.LocationStatus;
 import gov.ca.emsa.pulse.common.domain.stats.LocationStatistics;
 import gov.ca.emsa.pulse.common.domain.stats.RequestStatistics;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.EntityExistsException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LocationManagerImpl implements LocationManager {
@@ -37,7 +30,7 @@ public class LocationManagerImpl implements LocationManager {
 	}
 	
 	@Transactional
-	public void updateLocations(ArrayList<Location> newLocations){
+	public void updateLocations(List<Location> newLocations){
 		List<LocationDTO> currentLocations = getAll();
 		
 		//look at the old locations for anything not in the new locations and delete

@@ -55,8 +55,10 @@ public class BrokerApplication {
 	private String patientCacheCleanupMinutes1;
 	@Value("${directoryRefreshSeconds}")
 	private String directoryRefreshSeconds;
-	@Value("${directoryServicesUrl}")
-	private String directoryServicesUrl;
+	@Value("${locationDirectoryUrl}")
+	private String locationDirectoryUrl;
+	@Value("${endpointDirectoryUrl}")
+	private String endpointDirectoryUrl;
 	
 	//TODO: the env is still null when the entity manager bean gets called and 
 	//i really have no idea why. This is a short-term fix. The longer answer is that
@@ -153,7 +155,8 @@ public class BrokerApplication {
 			qcTask = new DirectoryRefreshManager();
 			qcTask.setManager(organizationManager);
 			qcTask.setExpirationMillis(directoryRefreshExpirationMillis);
-			qcTask.setDirectoryServicesUrl(directoryServicesUrl);
+			qcTask.setLocationDirectoryUrl(locationDirectoryUrl);
+			qcTask.setEndpointDirectoryUrl(endpointDirectoryUrl);
 			
 			Timer timer = new Timer();
 			timer.scheduleAtFixedRate(qcTask, 0, directoryRefreshExpirationMillis);

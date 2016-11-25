@@ -222,9 +222,9 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 	
 	private LocationStatusEntity getLocationStatusByName(String name) {
 		LocationStatusEntity result = null;
-		Query query = entityManager.createQuery("from LocationStatusEntity where name LIKE :name",
+		Query query = entityManager.createQuery("from LocationStatusEntity where UPPER(name) = :name",
 				LocationStatusEntity.class);
-		query.setParameter("name", name);
+		query.setParameter("name", name.toUpperCase());
 		List<LocationStatusEntity> results = query.getResultList();
 		if(results == null || results.size() == 0) {
 			return null;
@@ -235,9 +235,9 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 	
 	private EndpointStatusEntity getEndpointStatusByName(String name) {
 		EndpointStatusEntity result = null;
-		Query query = entityManager.createQuery("from EndpointStatusEntity where name LIKE :name",
+		Query query = entityManager.createQuery("from EndpointStatusEntity where UPPER(name) = :name",
 				EndpointStatusEntity.class);
-		query.setParameter("name", name);
+		query.setParameter("name", name.toUpperCase());
 		List<EndpointStatusEntity> results = query.getResultList();
 		if(results == null || results.size() == 0) {
 			return null;
@@ -248,9 +248,9 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 	
 	private EndpointTypeEntity getEndpointTypeByName(String name) {
 		EndpointTypeEntity result = null;
-		Query query = entityManager.createQuery("from EndpointTypeEntity where name LIKE :name",
+		Query query = entityManager.createQuery("from EndpointTypeEntity where UPPER(name) = :name",
 				EndpointTypeEntity.class);
-		query.setParameter("name", name);
+		query.setParameter("name", name.toUpperCase());
 		List<EndpointTypeEntity> results = query.getResultList();
 		if(results == null || results.size() == 0) {
 			return null;
