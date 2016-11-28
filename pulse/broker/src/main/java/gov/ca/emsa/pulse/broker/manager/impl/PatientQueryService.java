@@ -10,24 +10,27 @@ import org.springframework.stereotype.Component;
 
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
+import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
+import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
 @Component
 public class PatientQueryService implements Runnable {
 	private static final Logger logger = LogManager.getLogger(PatientQueryService.class);
 
-	private QueryOrganizationDTO queryOrg;
+	private QueryLocationMapDTO queryLocationMap;
 	@Autowired private QueryManager queryManager;
 	@Autowired private PatientManager patientManager;
-	@Autowired private OrganizationManager orgManager;
+	@Autowired private LocationManager locationManager;
 	@Autowired private AdapterFactory adapterFactory;
 	private PatientSearch toSearch;
 	private SAMLInput samlInput;
@@ -37,19 +40,34 @@ public class PatientQueryService implements Runnable {
 		boolean queryError = false;
 		//query this organization directly for patient matches
 		List<PatientRecordDTO> searchResults = null;
+		LocationEndpointDTO endpointToQuery = null;
 		
-		OrganizationDTO org = orgManager.getById(queryOrg.getOrgId());
-		if(org == null) {
-			logger.error("Could not find org with id " + queryOrg.getOrgId());
+		LocationDTO location = locationManager.getById(queryLocationMap.getLocationId());
+		if(location == null) {
+			logger.error("Could not find location with id " + queryLocationMap.getLocationId());
+			return;
+		} else if(location.getEndpoints() != null) {
+			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
+				if(endpoint.getEndpointType() != null && 
+					endpoint.getEndpointType().getName().equalsIgnoreCase(EndpointTypeEnum.PATIENT_DISCOVERY.getName()) && 
+					endpoint.getEndpointStatus() != null && 
+					endpoint.getEndpointStatus().getName().equalsIgnoreCase(EndpointStatusEnum.ACTIVE.getName())) {
+					endpointToQuery = endpoint;
+				}
+			}
+		}
+		
+		if(endpointToQuery == null) {
+			logger.error("The location " + location.getName() + " does not have an active patient discovery endpoint.");
 			return;
 		}
 		
-		Adapter adapter = adapterFactory.getAdapter(org);
+		Adapter adapter = adapterFactory.getAdapter(endpointToQuery);
 		if(adapter != null) {
-			logger.info("Starting query to " + org.getAdapter() + " for orgStatus " + queryOrg.getId());
+			logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 			try {
-				searchResults = adapter.queryPatients(org, toSearch, samlInput);
-				logger.info("Successfully queried " + org.getAdapter());
+				searchResults = adapter.queryPatients(endpointToQuery, toSearch, samlInput);
+				logger.info("Successfully queried endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 			} catch(Exception ex) {
 				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 				queryError = true;
@@ -57,33 +75,34 @@ public class PatientQueryService implements Runnable {
 		}
 		//store the patients returned so we can retrieve them later when all orgs have finished querying
 		if(searchResults != null && searchResults.size() > 0) {
-			logger.info("Found " + searchResults.size() + " results for " + org.getAdapter());
+			logger.info("Found " + searchResults.size() + " results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 			for(PatientRecordDTO patient : searchResults) {
-				patient.setQueryOrganizationId(queryOrg.getId());
+				patient.setQueryLocationId(queryLocationMap.getId());
 					
 				//save the search results
 				queryManager.addPatientRecord(patient);
-				logger.info("Added patient record to the orgStatus " + queryOrg.getId());
+				logger.info("Added patient record to the orgStatus " + queryLocationMap.getId());
 			}
 		} else {
-			logger.info("Found 0 results for " + org.getAdapter());
+			logger.info("Found 0 results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 		}
 		
-		synchronized(queryOrg.getQueryId()) {
-			queryOrg.setStatus(queryError ? QueryOrganizationStatus.Failed : QueryOrganizationStatus.Successful);
-			queryOrg.setEndDate(new Date());
-			queryManager.createOrUpdateQueryOrganization(queryOrg);
-			queryManager.updateQueryStatusFromOrganizations(queryOrg.getQueryId());
+		synchronized(queryLocationMap.getQueryId()) {
+			queryLocationMap.setStatus(queryError ? QueryLocationStatus.Failed : QueryLocationStatus.Successful);
+			queryLocationMap.setEndDate(new Date());
+			queryManager.createOrUpdateQueryLocation(queryLocationMap);
+			queryManager.updateQueryStatusFromLocations(queryLocationMap.getQueryId());
 		}
-		logger.info("Completed query to " + org.getAdapter() + " for orgStatus" + queryOrg.getId());
+		logger.info("Completed query to endpoint with external id '" + 
+				endpointToQuery.getExternalId());
 	}
 
-	public QueryOrganizationDTO getQueryOrg() {
-		return queryOrg;
+	public QueryLocationMapDTO getQueryLocation() {
+		return queryLocationMap;
 	}
 
-	public void setQueryOrg(QueryOrganizationDTO queryOrg) {
-		this.queryOrg = queryOrg;
+	public void setQueryLocation(QueryLocationMapDTO queryLocationMap) {
+		this.queryLocationMap = queryLocationMap;
 	}
 
 	public QueryManager getQueryManager() {
@@ -118,12 +137,12 @@ public class PatientQueryService implements Runnable {
 		this.toSearch = toSearch;
 	}
 
-	public OrganizationManager getOrgManager() {
-		return orgManager;
+	public LocationManager getLocationManager() {
+		return locationManager;
 	}
 
-	public void setOrgManager(OrganizationManager orgManager) {
-		this.orgManager = orgManager;
+	public void setLocationManager(LocationManager locationManager) {
+		this.locationManager = locationManager;
 	}
 
 	public SAMLInput getSamlInput() {

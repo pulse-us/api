@@ -58,7 +58,7 @@ public class DocumentService {
 		return docList;
 	}
 
-	@ApiOperation(value="Retrieve a specific Document from an organization.")
+	@ApiOperation(value="Retrieve a specific Document from an endpoint.")
 	@RequestMapping(value = "/patients/{patientId}/documents/{documentId}", method = RequestMethod.GET)
 	public DocumentWrapper getDocumentContents(@PathVariable("documentId") Long documentId,
 			@PathVariable("patientId") Long patientId,

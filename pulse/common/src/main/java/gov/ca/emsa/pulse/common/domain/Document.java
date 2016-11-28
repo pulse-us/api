@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Document {
 	private String id;
 	private Boolean cached;
-	private Long orgMapId;
+	private Long locationMapId;
 	private Patient patient;
 	
 	//metadata
@@ -18,7 +18,7 @@ public class Document {
 	private String creationTime;
 	
 	//required to get the document back later
-	//identifies a document uniquely to an organization
+	//identifies a document uniquely to a location
 	private DocumentIdentifier identifier;
 		
 	public Document() {}
@@ -35,11 +35,11 @@ public class Document {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Long getOrgMapId() {
-		return orgMapId;
+	public Long getLocationMapId() {
+		return locationMapId;
 	}
-	public void setOrgMapId(Long orgMapId) {
-		this.orgMapId = orgMapId;
+	public void setLocationMapId(Long locationMapId) {
+		this.locationMapId = locationMapId;
 	}
 
 	public Patient getPatient() {

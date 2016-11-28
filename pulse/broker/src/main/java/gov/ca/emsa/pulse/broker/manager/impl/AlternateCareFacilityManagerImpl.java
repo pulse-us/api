@@ -1,7 +1,6 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
 import gov.ca.emsa.pulse.broker.cache.CacheCleanupException;
-import gov.ca.emsa.pulse.broker.dao.AddressDAO;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityManager {
 	@Autowired AlternateCareFacilityDAO acfDao;
-	@Autowired AddressDAO addressDao;
 
 	@Override
 	public List<AlternateCareFacilityDTO> getAll() {

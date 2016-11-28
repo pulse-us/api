@@ -56,7 +56,7 @@ public class SwaggerConfig implements EnvironmentAware {
     private Predicate<String> paths() {
     	return or(
     			regex("/acfs.*"),
-    			regex("/organizations.*"),
+    			regex("/locations.*"),
     			regex("/documents.*"),
     			regex("/patients.*"),
     			regex("/queries.*"),

@@ -1,8 +1,7 @@
 package gov.ca.emsa.pulse.broker.manager;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,17 +14,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientGenderDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationStatusDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import junit.framework.TestCase;
 
@@ -34,14 +34,14 @@ import junit.framework.TestCase;
 public class PatientRecordManagerTest extends TestCase {
 	@Autowired QueryManager queryManager;
 	@Autowired QueryDAO queryDao;
-	@Autowired OrganizationDAO orgDao;
+	@Autowired LocationDAO locationDao;
 	@Autowired AlternateCareFacilityDAO acfDao;
 	@Autowired PatientRecordDAO prDao;
 	@Autowired PatientGenderDAO patientGenderDao;
 	private AlternateCareFacilityDTO acf;
-	private OrganizationDTO org1, org2;
+	private LocationDTO location1, location2;
 	private QueryDTO query;
-	private QueryOrganizationDTO orgQuery1, orgQuery2;
+	private QueryLocationMapDTO queryLocation1, queryLocation2;
 	private PatientGenderDTO patientGenderMale;
 	
 	@Before
@@ -53,53 +53,56 @@ public class PatientRecordManagerTest extends TestCase {
 		assertNotNull(acf.getId());
 		assertTrue(acf.getId().longValue() > 0);
 		
-		org1 = new OrganizationDTO();
-		org1.setOrganizationId(1L);
-		org1.setName("IHE Org");
-		org1.setAdapter("IHE");
-		org1.setEndpointUrl("http://www.localhost.com");
-		org1.setPassword("pwd");
-		org1.setUsername("kekey");
-		org1.setActive(true);
-		org1 = orgDao.create(org1);
+		LocationStatusDTO locStatus = new LocationStatusDTO();
+		locStatus.setId(1L);
 		
-		org2 = new OrganizationDTO();
-		org2.setOrganizationId(2L);
-		org2.setName("eHealth Org");
-		org2.setAdapter("eHealth");
-		org2.setEndpointUrl("http://www.localhost.com");
-		org2.setPassword("pwd");
-		org2.setUsername("kekey");
-		org2.setActive(true);
-		org2 = orgDao.create(org2);
+		location1 = new LocationDTO();
+		location1.setExternalId("1");
+		location1.setName("John's Hopkins Medical Center");
+		location1.setDescription("A hospital");
+		location1.setType("Hospital");
+		location1.setExternalLastUpdateDate(new Date());
+		location1.setParentOrgName("EHealth Parent Org");
+		location1.setStatus(locStatus);
+		location1 = locationDao.create(location1);
+		
+		location2 = new LocationDTO();
+		location2.setExternalId("2");
+		location2.setName("University of Maryland Medical Center");
+		location2.setDescription("A hospital");
+		location2.setType("Hospital");
+		location2.setExternalLastUpdateDate(new Date());
+		location2.setParentOrgName("EHealth Parent Org");
+		location2.setStatus(locStatus);
+		location2 = locationDao.create(location2);
 		
 		QueryDTO toInsert = new QueryDTO();
 		toInsert.setStatus(QueryStatus.ACTIVE.name());
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		
-		orgQuery1 = new QueryOrganizationDTO();
-		orgQuery1.setOrgId(org1.getId());
-		orgQuery1.setStatus(QueryOrganizationStatus.Active);
-		toInsert.getOrgStatuses().add(orgQuery1);
+		queryLocation1 = new QueryLocationMapDTO();
+		queryLocation1.setLocationId(location1.getId());
+		queryLocation1.setStatus(QueryLocationStatus.Active);
+		toInsert.getLocationStatuses().add(queryLocation1);
 		
-		orgQuery2 = new QueryOrganizationDTO();
-		orgQuery2.setOrgId(org2.getId());
-		orgQuery2.setStatus(QueryOrganizationStatus.Active);
-		toInsert.getOrgStatuses().add(orgQuery2);
+		queryLocation2 = new QueryLocationMapDTO();
+		queryLocation2.setLocationId(location2.getId());
+		queryLocation2.setStatus(QueryLocationStatus.Active);
+		toInsert.getLocationStatuses().add(queryLocation2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
 		assertNotNull(inserted);
 		assertNotNull(inserted.getId());
 		assertTrue(inserted.getId().longValue() > 0);
-		assertNotNull(inserted.getOrgStatuses());
-		assertEquals(2, inserted.getOrgStatuses().size());
-		orgQuery1 = inserted.getOrgStatuses().get(0);
-		assertNotNull(inserted.getOrgStatuses().get(0).getId());
-		assertTrue(inserted.getOrgStatuses().get(0).getId().longValue() > 0);
-		orgQuery2 = inserted.getOrgStatuses().get(1);
-		assertNotNull(inserted.getOrgStatuses().get(1).getId());
-		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
+		assertNotNull(inserted.getLocationStatuses());
+		assertEquals(2, inserted.getLocationStatuses().size());
+		queryLocation1 = inserted.getLocationStatuses().get(0);
+		assertNotNull(inserted.getLocationStatuses().get(0).getId());
+		assertTrue(inserted.getLocationStatuses().get(0).getId().longValue() > 0);
+		queryLocation2 = inserted.getLocationStatuses().get(1);
+		assertNotNull(inserted.getLocationStatuses().get(1).getId());
+		assertTrue(inserted.getLocationStatuses().get(1).getId().longValue() > 0);
 		
 		patientGenderMale = new PatientGenderDTO();
 		patientGenderMale = patientGenderDao.getById(2L);
@@ -108,14 +111,14 @@ public class PatientRecordManagerTest extends TestCase {
 		assertNotNull(query);
 		assertNotNull(query.getId());
 		assertTrue(query.getId().longValue() > 0);
-		assertNotNull(query.getOrgStatuses());
-		assertEquals(2, query.getOrgStatuses().size());
-		orgQuery1 = query.getOrgStatuses().get(0);
-		assertNotNull(query.getOrgStatuses().get(0).getId());
-		assertTrue(query.getOrgStatuses().get(0).getId().longValue() > 0);
-		orgQuery2 = query.getOrgStatuses().get(1);
-		assertNotNull(query.getOrgStatuses().get(1).getId());
-		assertTrue(query.getOrgStatuses().get(1).getId().longValue() > 0);
+		assertNotNull(query.getLocationStatuses());
+		assertEquals(2, query.getLocationStatuses().size());
+		queryLocation1 = query.getLocationStatuses().get(0);
+		assertNotNull(query.getLocationStatuses().get(0).getId());
+		assertTrue(query.getLocationStatuses().get(0).getId().longValue() > 0);
+		queryLocation2 = query.getLocationStatuses().get(1);
+		assertNotNull(query.getLocationStatuses().get(1).getId());
+		assertTrue(query.getLocationStatuses().get(1).getId().longValue() > 0);
 	}
 	
 	@Test
@@ -127,7 +130,7 @@ public class PatientRecordManagerTest extends TestCase {
 		String date = "20160110";
 		dto.setDateOfBirth(date);
 		dto.setPhoneNumber("443-745-0888");
-		dto.setQueryOrganizationId(orgQuery1.getId());
+		dto.setQueryLocationId(queryLocation1.getId());
 		dto.setSsn("555-55-5555");
 
 		dto.setPatientGender(patientGenderMale);
@@ -148,19 +151,19 @@ public class PatientRecordManagerTest extends TestCase {
 	@Rollback(true)
 	public void testCancelPatientDiscoveryQueryToOrganization() {	
 		System.out.println("query id " + query.getId());
-		queryManager.cancelQueryToOrganization(query.getId(), org1.getId());
+		queryManager.cancelQueryToLocation(query.getId(), location1.getId());
 		QueryDTO updatedQuery = queryManager.getById(query.getId());
 		
 		assertNotNull(updatedQuery);
 		assertEquals(query.getId(), updatedQuery.getId());
-		assertEquals(2, updatedQuery.getOrgStatuses().size());
+		assertEquals(2, updatedQuery.getLocationStatuses().size());
 		boolean queryHadOrg = false;
-		for(QueryOrganizationDTO orgStatus : updatedQuery.getOrgStatuses()) {
-			assertNotNull(orgStatus.getOrgId());
-			if(orgStatus.getOrgId().longValue() == org1.getId().longValue()) {
+		for(QueryLocationMapDTO orgStatus : updatedQuery.getLocationStatuses()) {
+			assertNotNull(orgStatus.getLocationId());
+			if(orgStatus.getLocationId().longValue() == location1.getId().longValue()) {
 				queryHadOrg = true;
 				
-				assertEquals(QueryOrganizationStatus.Cancelled, orgStatus.getStatus());
+				assertEquals(QueryLocationStatus.Cancelled, orgStatus.getStatus());
 			}
 		}
 		assertTrue(queryHadOrg);

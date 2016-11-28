@@ -1,29 +1,23 @@
 package gov.ca.emsa.pulse.broker.dto;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.util.StringUtils;
 
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityAddressLineEntity;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
 
-public class AlternateCareFacilityDTO {
+public class AlternateCareFacilityDTO extends AddressableDTO {
 
 	private Long id;
 	private String name;
 	private String phoneNumber;
-	private List<AddressLineDTO> lines;
-	private String city;
-	private String state;
-	private String zipcode;
-	private String country;
 	private Date lastReadDate;
 	private Date creationDate;
 	private Date lastModifiedDate;
 	
 	public AlternateCareFacilityDTO(){
-		lines = new ArrayList<AddressLineDTO>();
+		super();
 	}
 	
 	public AlternateCareFacilityDTO(AlternateCareFacilityEntity entity) {
@@ -108,45 +102,5 @@ public class AlternateCareFacilityDTO {
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
-	}
-
-	public List<AddressLineDTO> getLines() {
-		return lines;
-	}
-
-	public void setLines(List<AddressLineDTO> lines) {
-		this.lines = lines;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public String getZipcode() {
-		return zipcode;
-	}
-
-	public void setZipcode(String zipcode) {
-		this.zipcode = zipcode;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
 	}
 }

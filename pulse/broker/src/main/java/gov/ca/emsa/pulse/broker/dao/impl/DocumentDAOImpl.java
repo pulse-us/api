@@ -34,7 +34,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		doc.setSize(dto.getSize());
 		doc.setContents(dto.getContents());
 		doc.setLastReadDate(new Date());
-		doc.setPatientOrgMapId(dto.getPatientOrgMapId());
+		doc.setPatientLocationMapId(dto.getPatientLocationMapId());
 		
 		entityManager.persist(doc);
 		entityManager.flush();
@@ -56,7 +56,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		doc.setSize(dto.getSize());
 		doc.setContents(dto.getContents());
 		doc.setLastReadDate(new Date());
-		doc.setPatientOrgMapId(dto.getPatientOrgMapId());
+		doc.setPatientLocationMapId(dto.getPatientLocationMapId());
 		
 		doc = entityManager.merge(doc);
 		entityManager.flush();
@@ -114,7 +114,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		DocumentEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT doc from DocumentEntity doc "
-				+ "LEFT JOIN FETCH doc.patientOrgMap "
+				+ "LEFT JOIN FETCH doc.patientLocationMap "
 				+ "where doc.id = :entityid) ", 
 				DocumentEntity.class );
 		
@@ -129,9 +129,9 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	
 	private List<DocumentEntity> getEntityByPatientId(Long patientId) {		
 		Query query = entityManager.createQuery( "SELECT doc "
-				+ "from DocumentEntity doc, PatientOrganizationMapEntity orgMap "
-				+ "where doc.patientOrgMapId = orgMap.id "
-				+ "and orgMap.patientId = :patientId", 
+				+ "from DocumentEntity doc, PatientLocationMapEntity patientLocationMap "
+				+ "where doc.patientLocationMapId = patientLocationMap.id "
+				+ "and patientLocationMap.patientId = :patientId", 
 				DocumentEntity.class );
 		
 		query.setParameter("patientId", patientId);

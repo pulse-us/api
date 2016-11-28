@@ -1,36 +1,30 @@
 package gov.ca.emsa.pulse.broker.dao;
 
-import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
-import gov.ca.emsa.pulse.broker.dto.AddressDTO;
-import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
-import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
-import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
-import gov.ca.emsa.pulse.common.domain.NameType;
-import gov.ca.emsa.pulse.common.domain.PatientRecordName;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-
-import junit.framework.TestCase;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationStatusDTO;
+import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
+import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
@@ -38,7 +32,7 @@ public class PatientRecordDaoTest extends TestCase {
 
 	@Autowired QueryDAO queryDao;
 	@Autowired PatientRecordAddressDAO addrDao;
-	@Autowired OrganizationDAO orgDao;
+	@Autowired LocationDAO locationDao;
 	@Autowired AlternateCareFacilityDAO acfDao;
 	@Autowired PatientRecordDAO patientRecordDao;
 	@Autowired PatientDAO patientDao;
@@ -47,7 +41,7 @@ public class PatientRecordDaoTest extends TestCase {
 	@Autowired NameTypeDAO nameTypeDao;
 	@Autowired PatientGenderDAO patientGenderDao;
 	private AlternateCareFacilityDTO acf;
-	private OrganizationDTO org1, org2;
+	private LocationDTO location1, location2;
 	private PatientRecordDTO queryResult1, queryResult2;
 	private NameTypeDTO nameTypeCodeLegal;
 	private PatientGenderDTO patientGenderMale, patientGenderFemale, patientGenderUn;
@@ -61,26 +55,28 @@ public class PatientRecordDaoTest extends TestCase {
 		assertNotNull(acf.getId());
 		assertTrue(acf.getId().longValue() > 0);
 		
-		org1 = new OrganizationDTO();
-		org1.setOrganizationId(1L);
-		org1.setName("IHE Org");
-		org1.setAdapter("IHE");
-		org1.setEndpointUrl("http://www.localhost.com");
-		org1.setPassword("pwd");
-		org1.setUsername("kekey");
-		org1.setActive(true);
-		org1 = orgDao.create(org1);
+		LocationStatusDTO locStatus = new LocationStatusDTO();
+		locStatus.setId(1L);
 		
-		org2 = new OrganizationDTO();
-		org2.setOrganizationId(2L);
-		org2.setName("eHealth Org");
-		org2.setAdapter("eHealth");
-		org2.setEndpointUrl("http://www.localhost.com");
-		org2.setPassword("pwd");
-		org2.setUsername("kekey");
-		org2.setActive(true);
-		org2 = orgDao.create(org2);
+		location1 = new LocationDTO();
+		location1.setExternalId("1");
+		location1.setName("John's Hopkins Medical Center");
+		location1.setDescription("A hospital");
+		location1.setType("Hospital");
+		location1.setExternalLastUpdateDate(new Date());
+		location1.setParentOrgName("EHealth Parent Org");
+		location1.setStatus(locStatus);
+		location1 = locationDao.create(location1);
 		
+		location2 = new LocationDTO();
+		location2.setExternalId("2");
+		location2.setName("University of Maryland Medical Center");
+		location2.setDescription("A hospital");
+		location2.setType("Hospital");
+		location2.setExternalLastUpdateDate(new Date());
+		location2.setParentOrgName("EHealth Parent Org");
+		location2.setStatus(locStatus);
+		location2 = locationDao.create(location2);
 		
 		patientGenderFemale = new PatientGenderDTO();
 		patientGenderFemale = patientGenderDao.getByCode("F");

@@ -8,10 +8,8 @@ import gov.ca.emsa.pulse.auth.jwt.JWTValidationException;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
-import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
-import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -450,7 +448,7 @@ public class JSONToSoapTest {
 	public void testCreateDocumentQueryRequest() throws JAXBException, 
 		SAMLException, SOAPException, JWTValidationException {
 		Patient patient = new Patient();
-		patient.setOrgPatientId("11.5.4.4.6667.110");
+		patient.setLocationPatientId("11.5.4.4.6667.110");
 		
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");

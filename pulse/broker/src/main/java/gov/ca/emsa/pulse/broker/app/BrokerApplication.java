@@ -4,7 +4,7 @@ import gov.ca.emsa.pulse.broker.auth.AcfLastAccessFilter;
 import gov.ca.emsa.pulse.broker.cache.CacheCleanupJob;
 import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.manager.impl.DocumentQueryService;
@@ -34,7 +34,7 @@ public class BrokerApplication {
 		SpringApplication.run(BrokerApplication.class, args);
 	}
 	
-	@Autowired private OrganizationManager organizationManager;
+	@Autowired private LocationManager organizationManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private PatientManager patientManager;
 	@Autowired private QueryManager queryManager;
@@ -55,8 +55,10 @@ public class BrokerApplication {
 	private String patientCacheCleanupMinutes1;
 	@Value("${directoryRefreshSeconds}")
 	private String directoryRefreshSeconds;
-	@Value("${directoryServicesUrl}")
-	private String directoryServicesUrl;
+	@Value("${locationDirectoryUrl}")
+	private String locationDirectoryUrl;
+	@Value("${endpointDirectoryUrl}")
+	private String endpointDirectoryUrl;
 	
 	//TODO: the env is still null when the entity manager bean gets called and 
 	//i really have no idea why. This is a short-term fix. The longer answer is that
@@ -153,7 +155,8 @@ public class BrokerApplication {
 			qcTask = new DirectoryRefreshManager();
 			qcTask.setManager(organizationManager);
 			qcTask.setExpirationMillis(directoryRefreshExpirationMillis);
-			qcTask.setDirectoryServicesUrl(directoryServicesUrl);
+			qcTask.setLocationDirectoryUrl(locationDirectoryUrl);
+			qcTask.setEndpointDirectoryUrl(endpointDirectoryUrl);
 			
 			Timer timer = new Timer();
 			timer.scheduleAtFixedRate(qcTask, 0, directoryRefreshExpirationMillis);

@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.common.soap;
 
-import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
+import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.DocumentQuery;
@@ -9,7 +9,6 @@ import gov.ca.emsa.pulse.common.domain.GivenName;
 import gov.ca.emsa.pulse.common.domain.NameType;
 import gov.ca.emsa.pulse.common.domain.PatientGender;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
-import gov.ca.emsa.pulse.common.domain.PatientRecordAddressLine;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.PatientSearchAddress;
@@ -164,9 +163,9 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				List<II> ids = patient.getId();
 				if(ids != null && ids.size() > 0) {
 					//TODO: prob want to store the extension and root separately
-					patientRecord.setOrganizationPatientRecordId(ids.get(0).getExtension() + "^^^&amp;" + ids.get(0).getRoot() + "&amp;ISO");
+					patientRecord.setLocationPatientRecordId(ids.get(0).getExtension() + "^^^&amp;" + ids.get(0).getRoot() + "&amp;ISO");
 				} else {
-					patientRecord.setOrganizationPatientRecordId("COULD NOT PARSE OR WAS EMPTY");
+					patientRecord.setLocationPatientRecordId("COULD NOT PARSE OR WAS EMPTY");
 				}
 				
 				//set given and family name
@@ -204,10 +203,10 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				
 				List<ADExplicit> addressList = patientPerson.getValue().getAddr();
 				if(addressList.size() >= 1) {
-					ArrayList<PatientRecordAddress> addresses = new ArrayList<PatientRecordAddress>();
+					ArrayList<Address> addresses = new ArrayList<Address>();
 					ArrayList<String> addressLines = new ArrayList<String>();
 					for(ADExplicit adex : addressList) {
-						PatientRecordAddress address = new PatientRecordAddress();
+						Address address = new Address();
 						List<Serializable> addressContent = adex.getContent();
 						for(Serializable namePart : addressContent){
 							if(namePart instanceof JAXBElement<?>) {

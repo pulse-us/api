@@ -35,7 +35,7 @@ public class SearchResultConverter {
 		result.setDateOfBirth(domainObj.getDateOfBirth());
 		result.setPhoneNumber(domainObj.getPhoneNumber());
 		result.setSsn(domainObj.getSsn());
-		result.setOrganizationPatientRecordId(domainObj.getOrgPatientId());
+		result.setLocationPatientRecordId(domainObj.getLocationPatientId());
 
 		return result;
 	}

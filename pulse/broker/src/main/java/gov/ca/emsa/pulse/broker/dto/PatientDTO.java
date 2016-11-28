@@ -1,14 +1,11 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import gov.ca.emsa.pulse.broker.entity.PatientEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
-import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import gov.ca.emsa.pulse.broker.entity.PatientEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientLocationMapEntity;
 
 public class PatientDTO {
 	private Long id;
@@ -19,10 +16,10 @@ public class PatientDTO {
 	private String gender;
 	private Date lastReadDate;
 	private AlternateCareFacilityDTO acf;
-	private List<PatientOrganizationMapDTO> orgMaps;
+	private List<PatientLocationMapDTO> locationMaps;
 	
 	public PatientDTO() {
-		orgMaps = new ArrayList<PatientOrganizationMapDTO>();
+		locationMaps = new ArrayList<PatientLocationMapDTO>();
 	}
 	
 	public PatientDTO(PatientEntity entity) {
@@ -37,10 +34,10 @@ public class PatientDTO {
 		if(entity.getAcf() != null) {
 			this.acf = new AlternateCareFacilityDTO(entity.getAcf());
 		}
-		if(entity.getOrgMaps() != null && entity.getOrgMaps().size() > 0) {
-			for(PatientOrganizationMapEntity orgMap : entity.getOrgMaps()) {
-				PatientOrganizationMapDTO orgMapDto = new PatientOrganizationMapDTO(orgMap);
-				this.orgMaps.add(orgMapDto);
+		if(entity.getLocationMaps() != null && entity.getLocationMaps().size() > 0) {
+			for(PatientLocationMapEntity locationMap : entity.getLocationMaps()) {
+				PatientLocationMapDTO locationMapDto = new PatientLocationMapDTO(locationMap);
+				this.locationMaps.add(locationMapDto);
 			}
 		}
 	}
@@ -87,12 +84,12 @@ public class PatientDTO {
 		this.lastReadDate = lastReadDate;
 	}
 
-	public List<PatientOrganizationMapDTO> getOrgMaps() {
-		return orgMaps;
+	public List<PatientLocationMapDTO> getLocationMaps() {
+		return locationMaps;
 	}
 
-	public void setOrgMaps(List<PatientOrganizationMapDTO> orgMaps) {
-		this.orgMaps = orgMaps;
+	public void setLocationMaps(List<PatientLocationMapDTO> locationMaps) {
+		this.locationMaps = locationMaps;
 	}
 
 	public String getFullName() {

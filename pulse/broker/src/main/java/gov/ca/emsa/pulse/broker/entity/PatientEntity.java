@@ -1,7 +1,5 @@
 package gov.ca.emsa.pulse.broker.entity;
 
-import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -64,7 +62,7 @@ public class PatientEntity {
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientId"  )
 	@Fetch(FetchMode.JOIN)
 	@Column( name = "patient_id", nullable = false  )
-	private Set<PatientOrganizationMapEntity> orgMaps = new HashSet<PatientOrganizationMapEntity>();
+	private Set<PatientLocationMapEntity> locationMaps = new HashSet<PatientLocationMapEntity>();
 	
 	public Long getId() {
 		return id;
@@ -138,12 +136,12 @@ public class PatientEntity {
 		this.lastReadDate = lastReadDate;
 	}
 
-	public Set<PatientOrganizationMapEntity> getOrgMaps() {
-		return orgMaps;
+	public Set<PatientLocationMapEntity> getLocationMaps() {
+		return locationMaps;
 	}
 
-	public void setOrgMaps(Set<PatientOrganizationMapEntity> orgMaps) {
-		this.orgMaps = orgMaps;
+	public void setLocationMaps(Set<PatientLocationMapEntity> locationMaps) {
+		this.locationMaps = locationMaps;
 	}
 
 	public String getFullName() {

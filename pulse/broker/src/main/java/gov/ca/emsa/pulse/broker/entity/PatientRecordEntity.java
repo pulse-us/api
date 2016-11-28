@@ -37,18 +37,18 @@ public class PatientRecordEntity {
 	@JoinColumn(name="patient_gender_id", insertable= false, updatable = false)
 	private PatientGenderEntity patientGender;
 	
-	@Column(name = "organization_patient_record_id")
-	private String organizationPatientRecordId;
+	@Column(name = "location_patient_record_id")
+	private String locationPatientRecordId;
 	
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
-	@Column(name = "query_organization_id")
-	private Long queryOrganizationId;
+	@Column(name = "query_location_map_id")
+	private Long queryLocationId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "query_organization_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private QueryOrganizationEntity queryOrganization;
+	@JoinColumn(name = "query_location_map_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private QueryLocationMapEntity queryLocation;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId")
 	@Column( name = "patient_record_id", nullable = false  )
@@ -128,20 +128,20 @@ public class PatientRecordEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public Long getQueryOrganizationId() {
-		return queryOrganizationId;
+	public Long getQueryLocationId() {
+		return queryLocationId;
 	}
 
-	public void setQueryOrganizationId(Long queryOrganizationId) {
-		this.queryOrganizationId = queryOrganizationId;
+	public void setQueryLocationId(Long queryLocationId) {
+		this.queryLocationId = queryLocationId;
 	}
 
-	public QueryOrganizationEntity getQueryOrganization() {
-		return queryOrganization;
+	public QueryLocationMapEntity getQueryLocation() {
+		return queryLocation;
 	}
 
-	public void setQueryOrganization(QueryOrganizationEntity queryOrganization) {
-		this.queryOrganization = queryOrganization;
+	public void setQueryLocation(QueryLocationMapEntity queryLocation) {
+		this.queryLocation = queryLocation;
 	}
 	
 	public Set<PatientRecordNameEntity> getPatientRecordName() {
@@ -152,12 +152,12 @@ public class PatientRecordEntity {
 		this.patientRecordName = patientRecordName;
 	}
 
-	public String getOrganizationPatientRecordId() {
-		return organizationPatientRecordId;
+	public String getLocationPatientRecordId() {
+		return locationPatientRecordId;
 	}
 
-	public void setOrganizationPatientRecordId(String organizationPatientRecordId) {
-		this.organizationPatientRecordId = organizationPatientRecordId;
+	public void setLocationPatientRecordId(String locationPatientRecordId) {
+		this.locationPatientRecordId = locationPatientRecordId;
 	}
 
 	public Set<PatientRecordAddressEntity> getPatientRecordAddress() {

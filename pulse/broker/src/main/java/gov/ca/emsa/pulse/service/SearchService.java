@@ -17,17 +17,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditManager;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
+import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,14 +39,14 @@ public class SearchService {
 
 	private static final Logger logger = LogManager.getLogger(SearchService.class);
 	@Autowired private QueryManager searchManager;
-	@Autowired private OrganizationManager orgManager;
+	@Autowired private LocationManager locationManager;
 	public static String dobFormat = "yyyy-MM-dd";
 	@Autowired private AuditManager auditManager;
 
 	public SearchService() {
 	}
 
-	@ApiOperation(value="Query all organizations for patients. This runs asynchronously and returns a query object"
+	@ApiOperation(value="Query all locations for patients. This runs asynchronously and returns a query object"
 			+ "which can later be used to get the results.")
 	@RequestMapping(method = RequestMethod.POST,
 		produces="application/json; charset=utf-8",consumes="application/json")
@@ -74,22 +74,22 @@ public class SearchService {
 
 		String queryTermsJson = JSONUtils.toJSON(toSearch);
 
-		List<OrganizationDTO> orgsToQuery = orgManager.getAll();
-		if(orgsToQuery != null && orgsToQuery.size() > 0) {
+		List<LocationDTO> locationsToQuery = locationManager.getAll();
+		if(locationsToQuery != null && locationsToQuery.size() > 0) {
 			QueryDTO query = new QueryDTO();
 			query.setUserId(user.getSubjectName());
 			query.setTerms(queryTermsJson);
 			query.setStatus(QueryStatus.ACTIVE.name());
 			query = searchManager.createQuery(query);
 	
-			//get the list of organizations		
-			for(OrganizationDTO org : orgsToQuery) {
-				QueryOrganizationDTO queryOrg = new QueryOrganizationDTO();
-				queryOrg.setOrgId(org.getId());
-				queryOrg.setQueryId(query.getId());
-				queryOrg.setStatus(QueryOrganizationStatus.Active);
-				queryOrg = searchManager.createOrUpdateQueryOrganization(queryOrg);
-				query.getOrgStatuses().add(queryOrg);
+			//get the list of locations		
+			for(LocationDTO location : locationsToQuery) {
+				QueryLocationMapDTO queryLocMap = new QueryLocationMapDTO();
+				queryLocMap.setLocationId(location.getId());
+				queryLocMap.setQueryId(query.getId());
+				queryLocMap.setStatus(QueryLocationStatus.Active);
+				queryLocMap = searchManager.createOrUpdateQueryLocation(queryLocMap);
+				query.getLocationStatuses().add(queryLocMap);
 			}
 	
 	        QueryDTO initiatedQuery = searchManager.queryForPatientRecords(input, toSearch, query, user);

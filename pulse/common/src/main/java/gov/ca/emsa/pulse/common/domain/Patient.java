@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Patient {
 	private Long id;
-	private String orgPatientId;
+	private String locationPatientId;
 	private String fullName;
 	private String friendlyName;
 	private String dateOfBirth;
@@ -15,10 +15,10 @@ public class Patient {
 	private String ssn;
 	private Date lastRead;
 	private AlternateCareFacility acf;
-	private List<PatientOrganizationMap> orgMaps;
+	private List<PatientLocationMap> locationMaps;
 	
 	public Patient() {
-		this.orgMaps = new ArrayList<PatientOrganizationMap>();
+		this.locationMaps = new ArrayList<PatientLocationMap>();
 	}
 	
 	public Long getId() {
@@ -28,12 +28,12 @@ public class Patient {
 		this.id = id;
 	}
 	
-	public String getOrgPatientId() {
-		return orgPatientId;
+	public String getLocationPatientId() {
+		return locationPatientId;
 	}
 
-	public void setOrgPatientId(String orgPatientId) {
-		this.orgPatientId = orgPatientId;
+	public void setLocationPatientId(String locationPatientId) {
+		this.locationPatientId = locationPatientId;
 	}
 
 	public String getDateOfBirth() {
@@ -67,12 +67,12 @@ public class Patient {
 		this.ssn = ssn;
 	}
 
-	public List<PatientOrganizationMap> getOrgMaps() {
-		return orgMaps;
+	public List<PatientLocationMap> getLocationMaps() {
+		return locationMaps;
 	}
 
-	public void setOrgMaps(List<PatientOrganizationMap> orgMaps) {
-		this.orgMaps = orgMaps;
+	public void setLocationMaps(List<PatientLocationMap> locationMaps) {
+		this.locationMaps = locationMaps;
 	}
 
 	public Date getLastRead() {
