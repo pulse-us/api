@@ -6,6 +6,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class AdapterFactory {
@@ -13,7 +14,11 @@ public class AdapterFactory {
 	@Autowired private EHealthAdapter ehealthAdapter;
 	
 	public Adapter getAdapter(LocationEndpointDTO endpoint) {
-		if(endpoint.getAdapter().equalsIgnoreCase("ehealth")) {
+		if(StringUtils.isEmpty(endpoint.getAdapter())) {
+			return null;
+		}
+		
+		if(endpoint.getAdapter().toUpperCase().contains("EHEALTH")) {
 			return getEhealthAdapter();
 		} 
 		//TODO: if we want to add future types like IHE, they will go here as else if{}
