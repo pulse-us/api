@@ -26,43 +26,43 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Api(value="Organizations")
+@Api(value="Locations")
 @RestController
-public class OrganizationService {
+public class LocationService {
 
-	private static final Logger logger = LogManager.getLogger(OrganizationService.class);
+	private static final Logger logger = LogManager.getLogger(LocationService.class);
 
 	@Value("${brokerUrl}")
 	private String brokerUrl;
 
-	// get all organizations
-	@ApiOperation(value="Get all organizations.")
-	@RequestMapping(value = "/organizations", method = RequestMethod.GET)
-	public ArrayList<Location> getOrganizations() throws JsonProcessingException {
+	// get all locations
+	@ApiOperation(value="Get all locations.")
+	@RequestMapping(value = "/locations", method = RequestMethod.GET)
+	public ArrayList<Location> getLocations() throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
 
 		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
-		ArrayList<Location> orgList = null;
+		ArrayList<Location> locList = null;
 		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
 		}else{
             //mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 			headers.set("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<Location[]> entity = new HttpEntity<Location[]>(headers);
-			HttpEntity<Location[]> response = query.exchange(brokerUrl + "/organizations", HttpMethod.GET, entity, Location[].class);
+			HttpEntity<Location[]> response = query.exchange(brokerUrl + "/locations", HttpMethod.GET, entity, Location[].class);
 			logger.info("Request sent to broker from services REST.");
-			orgList = new ArrayList<Location>(Arrays.asList(response.getBody()));
+			locList = new ArrayList<Location>(Arrays.asList(response.getBody()));
 		}
-		return orgList;
+		return locList;
 	}
 	
-	// get all organizations
-	@ApiOperation(value="Get all organizations.")
-	@RequestMapping(value = "/organizations/statistics", method = RequestMethod.GET)
-	public ArrayList<LocationStatistics> getOrganizationRequestStatistics(
+	// get all location statistics
+	@ApiOperation(value="Get query time statistics for all locations.")
+	@RequestMapping(value = "/locations/statistics", method = RequestMethod.GET)
+	public ArrayList<LocationStatistics> getLocationRequestStatistics(
 			@RequestParam(name="start", required=false) Long startMillis, 
 			@RequestParam(name="end", required=false) Long endMillis) throws JsonProcessingException {
 
@@ -77,7 +77,7 @@ public class OrganizationService {
 		}else{
 			headers.set("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<LocationStatistics[]> entity = new HttpEntity<LocationStatistics[]>(headers);
-			String url = brokerUrl + "/organizations/statistics";
+			String url = brokerUrl + "/locations/statistics";
 			if(startMillis != null) {
 				url += "?start=" + startMillis;
 				if(endMillis != null) {

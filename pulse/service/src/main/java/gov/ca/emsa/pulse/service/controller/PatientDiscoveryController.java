@@ -76,8 +76,8 @@ public class PatientDiscoveryController {
 			logger.error(e);
 		}
 		List<PatientRecord> patientRecords = results.get(0).getResults();
-		for(QueryLocationMap queryOrg: results){
-			patientRecords.addAll(queryOrg.getResults());
+		for(QueryLocationMap queryLoc: results){
+			patientRecords.addAll(queryLoc.getResults());
 		}
 		PRPAIN201310UV02 responseObj = JSONConverter.convertPatientRecordListToSOAPResponse(patientRecords);
 		logger.info("Patient discovery Response object(" + creationTime + "): " + responseObj.toString());

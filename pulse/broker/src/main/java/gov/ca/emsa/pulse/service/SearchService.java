@@ -39,14 +39,14 @@ public class SearchService {
 
 	private static final Logger logger = LogManager.getLogger(SearchService.class);
 	@Autowired private QueryManager searchManager;
-	@Autowired private LocationManager orgManager;
+	@Autowired private LocationManager locationManager;
 	public static String dobFormat = "yyyy-MM-dd";
 	@Autowired private AuditManager auditManager;
 
 	public SearchService() {
 	}
 
-	@ApiOperation(value="Query all organizations for patients. This runs asynchronously and returns a query object"
+	@ApiOperation(value="Query all locations for patients. This runs asynchronously and returns a query object"
 			+ "which can later be used to get the results.")
 	@RequestMapping(method = RequestMethod.POST,
 		produces="application/json; charset=utf-8",consumes="application/json")
@@ -74,22 +74,22 @@ public class SearchService {
 
 		String queryTermsJson = JSONUtils.toJSON(toSearch);
 
-		List<LocationDTO> orgsToQuery = orgManager.getAll();
-		if(orgsToQuery != null && orgsToQuery.size() > 0) {
+		List<LocationDTO> locationsToQuery = locationManager.getAll();
+		if(locationsToQuery != null && locationsToQuery.size() > 0) {
 			QueryDTO query = new QueryDTO();
 			query.setUserId(user.getSubjectName());
 			query.setTerms(queryTermsJson);
 			query.setStatus(QueryStatus.ACTIVE.name());
 			query = searchManager.createQuery(query);
 	
-			//get the list of organizations		
-			for(LocationDTO org : orgsToQuery) {
-				QueryLocationMapDTO queryOrg = new QueryLocationMapDTO();
-				queryOrg.setLocationId(org.getId());
-				queryOrg.setQueryId(query.getId());
-				queryOrg.setStatus(QueryLocationStatus.Active);
-				queryOrg = searchManager.createOrUpdateQueryLocation(queryOrg);
-				query.getLocationStatuses().add(queryOrg);
+			//get the list of locations		
+			for(LocationDTO location : locationsToQuery) {
+				QueryLocationMapDTO queryLocMap = new QueryLocationMapDTO();
+				queryLocMap.setLocationId(location.getId());
+				queryLocMap.setQueryId(query.getId());
+				queryLocMap.setStatus(QueryLocationStatus.Active);
+				queryLocMap = searchManager.createOrUpdateQueryLocation(queryLocMap);
+				query.getLocationStatuses().add(queryLocMap);
 			}
 	
 	        QueryDTO initiatedQuery = searchManager.queryForPatientRecords(input, toSearch, query, user);

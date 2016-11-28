@@ -28,7 +28,7 @@ public class LocationService {
 	@Autowired LocationManager locationManager;
 	@Autowired AuditManager auditManager;
 
-	@ApiOperation(value="Get the list of organizations")
+	@ApiOperation(value="Get the list of locations")
 	@RequestMapping(value="", method=RequestMethod.GET)
     public List<Location> getAll() {
 		CommonUser user = UserUtil.getCurrentUser();

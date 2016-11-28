@@ -29,6 +29,7 @@ public class LocationManagerImpl implements LocationManager {
 	@Autowired private LocationDAO locationDao;
 	@Autowired private PatientDiscoveryQueryStatisticsDAO statsDao;
 	
+	@Transactional(readOnly = true)
 	public LocationDTO getById(Long id) {
 		return locationDao.findById(id);
 	}

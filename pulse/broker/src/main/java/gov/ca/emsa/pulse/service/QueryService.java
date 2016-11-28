@@ -63,13 +63,13 @@ public class QueryService {
        return DtoToDomainConverter.convert(initiatedQuery);
     }
 
-	@ApiOperation(value = "Cancel part of a query that's going to a specific organization")
-	@RequestMapping(value = "/{queryId}/{organizationId}/cancel", method = RequestMethod.POST)
-	public Query cancelOrganizationQuery(@PathVariable(value="queryId") Long queryId,
-			@PathVariable(value="organizationId") Long orgId) {
-		queryManager.cancelQueryToLocation(queryId, orgId);
-		QueryDTO queryWithCancelledOrg = queryManager.getById(queryId);
-		return DtoToDomainConverter.convert(queryWithCancelledOrg);
+	@ApiOperation(value = "Cancel part of a query that's going to a specific location")
+	@RequestMapping(value = "/{queryId}/{locationId}/cancel", method = RequestMethod.POST)
+	public Query cancelLocationQuery(@PathVariable(value="queryId") Long queryId,
+			@PathVariable(value="locationId") Long locId) {
+		queryManager.cancelQueryToLocation(queryId, locId);
+		QueryDTO queryWithCancelledLocation = queryManager.getById(queryId);
+		return DtoToDomainConverter.convert(queryWithCancelledLocation);
 	}
 	
 	@ApiOperation(value = "Delete a query")
@@ -106,9 +106,9 @@ public class QueryService {
 
 		PatientDTO patient = patientManager.create(patientToCreate);
 
-		//create patient organization mappings based on the patientrecords we are using
+		//create patient location mappings based on the patientrecords we are using
 		for(Long patientRecordId : request.getPatientRecordIds()) {
-			PatientLocationMapDTO orgMapDto = patientManager.createPatientLocationMapFromPatientRecord(patient, patientRecordId);
+			PatientLocationMapDTO patLocMapDto = patientManager.createPatientLocationMapFromPatientRecord(patient, patientRecordId);
 
 			//kick off document list retrieval service
 			SAMLInput input = new SAMLInput();
@@ -119,11 +119,11 @@ public class QueryService {
 			HashMap<String, String> customAttributes = new HashMap<String,String>();
 			customAttributes.put("RequesterFirstName", user.getFirstName());
 			customAttributes.put("RequestReason", "Get patient documents");
-			customAttributes.put("PatientRecordId", orgMapDto.getExternalPatientRecordId());
+			customAttributes.put("PatientRecordId", patLocMapDto.getExternalPatientRecordId());
 			input.setAttributes(customAttributes);
 
-			patient.getLocationMaps().add(orgMapDto);
-			docManager.queryForDocuments(input, orgMapDto);
+			patient.getLocationMaps().add(patLocMapDto);
+			docManager.queryForDocuments(input, patLocMapDto);
 		}
 
 		//delete query (all associated items should cascade)

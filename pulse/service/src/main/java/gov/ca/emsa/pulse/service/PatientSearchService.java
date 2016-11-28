@@ -38,36 +38,36 @@ public class PatientSearchService extends EHealthQueryService implements Callabl
 		this.query = queryResponse;
 	}
 	
-	public boolean areOrgsComplete(List<QueryLocationMap> queryOrgs){
-		for(QueryLocationMap queryOrg: queryOrgs){
-			if(queryOrg.getStatus().equals(QueryStatus.ACTIVE.name())){
+	public boolean areLocationsComplete(List<QueryLocationMap> queryLocs){
+		for(QueryLocationMap queryLoc : queryLocs){
+			if(queryLoc.getStatus().equals(QueryStatus.ACTIVE.name())){
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	public List<QueryLocationMap> waitForOrgs(List<QueryLocationMap> queryOrgs) throws InterruptedException{
-		boolean waitingForOrgs = true;
+	public List<QueryLocationMap> waitForLocations(List<QueryLocationMap> queryLocs) throws InterruptedException{
+		boolean waitingForLocs = true;
 		int runs = 0;
-		while(waitingForOrgs && runs < Integer.parseInt(timeout)){
-			if(areOrgsComplete(queryOrgs)){
-				return queryOrgs;
+		while(waitingForLocs && runs < Integer.parseInt(timeout)){
+			if(areLocationsComplete(queryLocs)){
+				return queryLocs;
 			}else{
 				runs++;
 				Thread.sleep(Integer.parseInt(delaySeconds) * 1000);
 				HttpEntity<Patient[]> entity = new HttpEntity<Patient[]>(this.getHeaders());
 				HttpEntity<Query> response = this.getRestTemplate().exchange("http://localhost:" + this.getPort() + "/queries/" + this.query.getId() , HttpMethod.GET, entity, Query.class);
 				logger.info("Query "  + this.query.getId() + " request sent to broker from services REST.");
-				queryOrgs = response.getBody().getLocationStatuses();
+				queryLocs = response.getBody().getLocationStatuses();
 			}
 		}
-		return queryOrgs;
+		return queryLocs;
 	}
 	
 	@Override
 	public List<QueryLocationMap> call() throws Exception {
-		return waitForOrgs(this.query.getLocationStatuses());
+		return waitForLocations(this.query.getLocationStatuses());
 	}
 	
 }
