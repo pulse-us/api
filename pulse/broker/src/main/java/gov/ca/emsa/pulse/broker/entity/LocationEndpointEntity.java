@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
+
 @Entity
 @Table(name="location_endpoint")
 public class LocationEndpointEntity {
@@ -186,5 +188,13 @@ public class LocationEndpointEntity {
 
 	public void setExternalLastUpdateDate(Date externalLastUpdateDate) {
 		this.externalLastUpdateDate = externalLastUpdateDate;
+	}
+	
+	public boolean hasRequiredFields() {
+		return !StringUtils.isEmpty(this.getExternalId()) && 
+				this.getEndpointTypeId() != null && this.getEndpointStatusId() != null && 
+				this.getLocationId() != null && !StringUtils.isEmpty(this.getAdapter()) && 
+				!StringUtils.isEmpty(this.getPayloadFormat()) && 
+				!StringUtils.isEmpty(this.getPayloadType());
 	}
 }

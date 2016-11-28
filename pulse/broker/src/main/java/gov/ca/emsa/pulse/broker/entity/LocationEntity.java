@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -219,6 +220,10 @@ public class LocationEntity {
 		this.endpoints = endpoints;
 	}
 
-	
-	
+	public boolean hasRequiredFields() {
+		return !StringUtils.isEmpty(this.getName()) && 
+				!StringUtils.isEmpty(this.getParentOrganizationName()) &&
+				!StringUtils.isEmpty(this.getExternalId()) &&
+				this.getLocationStatusId() != null;
+	}
 }

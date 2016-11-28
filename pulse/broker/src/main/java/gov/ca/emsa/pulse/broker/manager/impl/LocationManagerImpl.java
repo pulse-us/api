@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDiscoveryQueryStatisticsDAO;
+import gov.ca.emsa.pulse.broker.dao.impl.LocationDAOImpl;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.entity.PatientDiscoveryRequestStatisticsEntity;
@@ -21,7 +24,8 @@ import gov.ca.emsa.pulse.common.domain.stats.RequestStatistics;
 
 @Service
 public class LocationManagerImpl implements LocationManager {
-	
+	private static final Logger logger = LogManager.getLogger(LocationManagerImpl.class);
+
 	@Autowired private LocationDAO locationDao;
 	@Autowired private PatientDiscoveryQueryStatisticsDAO statsDao;
 	
@@ -52,12 +56,20 @@ public class LocationManagerImpl implements LocationManager {
 			String externalId = newLocation.getExternalId();
 			LocationDTO existingLocation = locationDao.findByExternalId(externalId);
 			if(existingLocation == null) {
-				LocationDTO toCreate = DomainToDtoConverter.convert(newLocation);
-				locationDao.create(toCreate);
+				try {
+					LocationDTO toCreate = DomainToDtoConverter.convert(newLocation);
+					locationDao.create(toCreate);
+				} catch(Exception ex) {
+					logger.error("Error creating location with external id " + externalId, ex);
+				}
 			} else {
-				LocationDTO toUpdate = DomainToDtoConverter.convert(newLocation);
-				toUpdate.setId(existingLocation.getId());
-				locationDao.update(toUpdate);
+				try {
+					LocationDTO toUpdate = DomainToDtoConverter.convert(newLocation);
+					toUpdate.setId(existingLocation.getId());
+					locationDao.update(toUpdate);
+				} catch(Exception ex) {
+					logger.error("Error updating location with id " + existingLocation.getId(), ex);
+				}
 			}
 		}
 	}

@@ -55,6 +55,10 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 		entity.setState(dto.getState());
 		entity.setZipcode(dto.getZipcode());
 		entity.setCountry(dto.getCountry());
+		if(!entity.hasRequiredFields()) {
+			logger.error("Cannot insert entity because a required field was null or empty.");
+			return null;
+		}
 		entityManager.persist(entity);
 		entityManager.flush();
 		
@@ -76,9 +80,12 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 			for(LocationEndpointDTO endpointDto : dto.getEndpoints()) {
 				LocationEndpointEntity endpointEntity = convert(endpointDto);
 				endpointEntity.setLocationId(entity.getId());
-				entityManager.persist(endpointEntity);
-				entityManager.flush();
-				entity.getEndpoints().add(endpointEntity);
+				//insert the endpoint if required fields are set
+				if(endpointEntity.hasRequiredFields()) {
+					entityManager.persist(endpointEntity);
+					entityManager.flush();
+					entity.getEndpoints().add(endpointEntity);
+				}
 			}
 		}
 		return new LocationDTO(entity);
@@ -94,7 +101,16 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 		entity.setParentOrganizationName(dto.getParentOrgName());
 		entity.setType(dto.getType());
 		if(dto.getStatus() != null) {
-			entity.setLocationStatusId(dto.getStatus().getId());
+			if(dto.getStatus().getId() != null) {
+				entity.setLocationStatusId(dto.getStatus().getId());
+			} else if(!StringUtils.isEmpty(dto.getStatus().getName())) {
+				LocationStatusEntity statusEntity = getLocationStatusByName(dto.getStatus().getName());
+				if(statusEntity != null) {
+					entity.setLocationStatusId(statusEntity.getId());
+				} else {
+					logger.error("Could not find location status with name " + dto.getStatus().getName());
+				}
+			}
 		}
 		entity.setExternalId(dto.getExternalId());
 		entity.setExternalLastUpdatedDate(dto.getExternalLastUpdateDate());
@@ -102,6 +118,10 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 		entity.setState(dto.getState());
 		entity.setZipcode(dto.getZipcode());
 		entity.setCountry(dto.getCountry());
+		if(!entity.hasRequiredFields()) {
+			logger.error("Cannot insert entity because a required field was null or empty.");
+			return null;
+		}
 		entityManager.merge(entity);
 		entityManager.flush();
 		
@@ -134,8 +154,11 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 				LocationEndpointEntity updatedEndpointEntity = convert(updatedEndpointDto);
 				updatedEndpointEntity.setId(currEndpointEntity.getId());
 				updatedEndpointEntity.setLocationId(currEndpointEntity.getLocationId());
-				entityManager.merge(updatedEndpointEntity);
-				entityManager.flush();
+				//insert the endpoint if required fields are set
+				if(updatedEndpointEntity.hasRequiredFields()) {
+					entityManager.merge(updatedEndpointEntity);
+					entityManager.flush();
+				}
 			} else {
 				//the existing endpoint was not found in the update
 				entityManager.remove(currEndpointEntity);
@@ -155,9 +178,12 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 			if(!alreadyExists) {
 				LocationEndpointEntity endpointEntity = convert(endpointDto);
 				endpointEntity.setLocationId(entity.getId());
-				entityManager.persist(endpointEntity);
-				entityManager.flush();
-				entity.getEndpoints().add(endpointEntity);
+				
+				if(endpointEntity.hasRequiredFields()) {
+					entityManager.persist(endpointEntity);
+					entityManager.flush();
+					entity.getEndpoints().add(endpointEntity);
+				}
 			}
 		}
 		return new LocationDTO(entity);

@@ -7,8 +7,7 @@ import gov.ca.emsa.pulse.cten.CtenToPulseConverter;
 import gov.ca.emsa.pulse.cten.domain.EndpointWrapper;
 import gov.ca.emsa.pulse.cten.domain.LocationWrapper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TimerTask;
 
@@ -43,11 +42,18 @@ public class DirectoryRefreshManager extends TimerTask {
 		//each endpoint under "locations" only has the external id filled in
 		//so we need to find it's match under "endpoints" and populate with all the data
 		for(Location location : locations) {
-			for(Endpoint endpointMeta : location.getEndpoints()) {
+			for(int locEndpointIdx = 0; locEndpointIdx < location.getEndpoints().size(); locEndpointIdx++) {
+				Endpoint endpointMeta = location.getEndpoints().get(locEndpointIdx);
 				String endpointExternalId = endpointMeta.getExternalId();
 				for(Endpoint endpoint : endpoints) {
+					//look for the endpoint with the same externalId but
+					//make sure to ignore any that are "test" URLs
 					if(endpoint.getExternalId().equalsIgnoreCase(endpointExternalId)) {
-						endpointMeta = endpoint;
+						if(endpoint.getUrl().contains("test")) {
+							location.getEndpoints().set(locEndpointIdx, null);
+						} else {
+							location.getEndpoints().set(locEndpointIdx, endpoint);
+						}
 					}
 				}
 			}

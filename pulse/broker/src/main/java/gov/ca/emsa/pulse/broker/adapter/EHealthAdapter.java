@@ -67,7 +67,6 @@ public class EHealthAdapter implements Adapter {
 			logger.error(ex.getMessage(), ex);
 		}
 
-		String postUrl = endpoint.getUrl() + "/patientDiscovery";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_XML);   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
@@ -75,10 +74,10 @@ public class EHealthAdapter implements Adapter {
 		String searchResults = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
-			logger.info("Querying " + postUrl + " with request " + request);
-			searchResults = restTemplate.postForObject(postUrl, request, String.class);
+			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
+			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
-			logger.error("Exception when querying " + postUrl, ex);
+			logger.error("Exception when querying " + endpoint.getUrl(), ex);
 			throw ex;
 		}
 		
@@ -115,7 +114,6 @@ public class EHealthAdapter implements Adapter {
 			logger.error(ex.getMessage(), ex);
 		}
 		
-		String postUrl = endpoint.getUrl() + "/documentQuery";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_XML);   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
@@ -123,10 +121,10 @@ public class EHealthAdapter implements Adapter {
 		String searchResults = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
-			logger.info("Querying " + postUrl + " with request " + request);
-			searchResults = restTemplate.postForObject(postUrl, request, String.class);
+			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
+			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
-			logger.error("Exception when querying " + postUrl, ex);
+			logger.error("Exception when querying " + endpoint.getUrl(), ex);
 			throw ex;
 		}
 		
@@ -167,7 +165,6 @@ public class EHealthAdapter implements Adapter {
 			logger.error(ex.getMessage(), ex);
 		}
 		
-		String postUrl = endpoint.getUrl() + "/retrieveDocumentSet";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_XML);   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
@@ -175,10 +172,10 @@ public class EHealthAdapter implements Adapter {
 		String searchResults = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
-			logger.info("Querying " + postUrl + " with request " + request);
-			searchResults = restTemplate.postForObject(postUrl, request, String.class);
+			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
+			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
-			logger.error("Exception when querying " + postUrl, ex);
+			logger.error("Exception when querying " + endpoint.getUrl(), ex);
 			throw ex;
 		}
 		

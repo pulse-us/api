@@ -191,8 +191,10 @@ public class DomainToDtoConverter {
 		
 		if(domain.getEndpoints() != null) {
 			for(Endpoint endpoint : domain.getEndpoints()) {
-				LocationEndpointDTO endpointDto = convert(endpoint);
-				result.getEndpoints().add(endpointDto);
+				if(endpoint != null) {
+					LocationEndpointDTO endpointDto = convert(endpoint);
+					result.getEndpoints().add(endpointDto);
+				}
 			}
 		}
 		return result;
