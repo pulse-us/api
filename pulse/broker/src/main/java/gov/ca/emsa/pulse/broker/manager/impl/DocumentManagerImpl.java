@@ -4,6 +4,7 @@ import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
+import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
@@ -76,14 +77,16 @@ public class DocumentManagerImpl implements DocumentManager {
 		if(location.getEndpoints() != null) {
 			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
 				if(endpoint.getEndpointType() != null && 
-						endpoint.getEndpointType().getName().equalsIgnoreCase(EndpointTypeEnum.DOCUMENT_RETRIEVE.getName())) {
+						endpoint.getEndpointType().getName().equalsIgnoreCase(EndpointTypeEnum.DOCUMENT_RETRIEVE.getName()) && 
+						endpoint.getEndpointStatus() != null && 
+						endpoint.getEndpointStatus().getName().equalsIgnoreCase(EndpointStatusEnum.ACTIVE.getName())) {
 						endpointToQuery = endpoint;
 					}
 			}
 		}
 		
 		if(endpointToQuery == null) {
-			logger.error("The location " + location.getName() + " does not have a document retrieval endpoint.");
+			logger.error("The location " + location.getName() + " does not have an active document retrieval endpoint.");
 			return;
 		}
 		

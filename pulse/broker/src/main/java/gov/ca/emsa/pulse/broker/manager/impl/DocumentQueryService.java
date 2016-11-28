@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
+import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
@@ -46,14 +47,16 @@ public class DocumentQueryService implements Runnable {
 		if(location.getEndpoints() != null) {
 			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
 				if(endpoint.getEndpointType() != null && 
-						endpoint.getEndpointType().getName().equalsIgnoreCase(EndpointTypeEnum.DOCUMENT_DISCOVERY.getName())) {
+						endpoint.getEndpointType().getName().equalsIgnoreCase(EndpointTypeEnum.DOCUMENT_DISCOVERY.getName()) && 
+						endpoint.getEndpointStatus() != null && 
+						endpoint.getEndpointStatus().getName().equalsIgnoreCase(EndpointStatusEnum.ACTIVE.getName())) {
 						endpointToQuery = endpoint;
 					}
 			}
 		}
 		
 		if(endpointToQuery == null) {
-			logger.error("The location " + location.getName() + " does not have a document discovery endpoint.");
+			logger.error("The location " + location.getName() + " does not have an active document discovery endpoint.");
 			return;
 		}
 		

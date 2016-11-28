@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
+import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
@@ -48,14 +49,16 @@ public class PatientQueryService implements Runnable {
 		} else if(location.getEndpoints() != null) {
 			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
 				if(endpoint.getEndpointType() != null && 
-					endpoint.getEndpointType().getName().equalsIgnoreCase(EndpointTypeEnum.PATIENT_DISCOVERY.getName())) {
+					endpoint.getEndpointType().getName().equalsIgnoreCase(EndpointTypeEnum.PATIENT_DISCOVERY.getName()) && 
+					endpoint.getEndpointStatus() != null && 
+					endpoint.getEndpointStatus().getName().equalsIgnoreCase(EndpointStatusEnum.ACTIVE.getName())) {
 					endpointToQuery = endpoint;
 				}
 			}
 		}
 		
 		if(endpointToQuery == null) {
-			logger.error("The location " + location.getName() + " does not have a patient discovery endpoint.");
+			logger.error("The location " + location.getName() + " does not have an active patient discovery endpoint.");
 			return;
 		}
 		
