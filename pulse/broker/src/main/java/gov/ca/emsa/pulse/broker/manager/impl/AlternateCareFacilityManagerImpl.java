@@ -12,11 +12,15 @@ import java.util.List;
 import javax.persistence.EntityExistsException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityManager {
+	@Value("${acfWritesAllowed}")
+	private Boolean acfWritesAllowed;
+	
 	@Autowired AlternateCareFacilityDAO acfDao;
 
 	@Override
@@ -67,12 +71,14 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 	@Override
 	@Transactional
 	public void cleanupCache(Date oldestAllowed) throws CacheCleanupException {
-		try {
-			acfDao.deleteItemsOlderThan(oldestAllowed);
-		} catch(SQLException sql) {
-			throw new CacheCleanupException("Error updating the database. Message is: " + sql.getMessage());
-		} catch(Exception ex) {
-			throw new CacheCleanupException(ex.getMessage());
+		if(acfWritesAllowed != null && acfWritesAllowed.booleanValue() == true) {
+			try {
+				acfDao.deleteItemsOlderThan(oldestAllowed);
+			} catch(SQLException sql) {
+				throw new CacheCleanupException("Error updating the database. Message is: " + sql.getMessage());
+			} catch(Exception ex) {
+				throw new CacheCleanupException(ex.getMessage());
+			}
 		}
 	}
 }
