@@ -8,18 +8,18 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="audit_patient")
-public class AuditPatientEntity {
+@Table(name = "audit_document")
+public class AuditDocumentEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="participant_object_type_code") // "1" (person)
+	@Column(name="participant_object_type_code")
 	private int participantObjectTypeCode;
 	
-	@Column(name="participant_object_type_code_role") // "1" (patient)
+	@Column(name="participant_object_type_code_role")
 	private int participantObjectTypeCodeRole;
 	
 	@Column(name="participant_object_data_lifecycle")
@@ -31,7 +31,7 @@ public class AuditPatientEntity {
 	@Column(name="participant_object_sensitivity")
 	private String participantObjectSensitivity;
 	
-	@Column(name="participant_object_id") // The patient ID in HL7 CX format (see ITI TF-2x: appendix E).
+	@Column(name="participant_object_id")
 	private String participantObjectId;
 	
 	@Column(name="participant_object_name")
@@ -40,9 +40,9 @@ public class AuditPatientEntity {
 	@Column(name="participant_object_query")
 	private String participantObjectQuery;
 	
-	@Column(name="participant_object_detail")
+	@Column(name="participant_object_detail") 
 	private String participantObjectDetail;
-
+	
 	public Long getId() {
 		return id;
 	}

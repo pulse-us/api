@@ -1,29 +1,26 @@
-package gov.ca.emsa.pulse.broker.entity;
+package gov.ca.emsa.pulse.broker.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import gov.ca.emsa.pulse.broker.entity.AuditSourceEntity;
 
-@Entity
-@Table(name = "audit_source")
-public class AuditSourceEntity {
+public class AuditSourceDTO {
 	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="audit_source_id")
 	private String auditSourceId;
 	
-	@Column(name = "audit_enterprise_site_id")
 	private String auditEnterpriseSiteId;
 	
-	@Column(name = "audit_source_type_code")
 	private String auditSourceTypeCode;
+	
+	public AuditSourceDTO(){
+		
+	}
+	
+	public AuditSourceDTO(AuditSourceEntity entity) {
+		this.auditSourceId = entity.getAuditSourceId();
+		this.auditEnterpriseSiteId = entity.getAuditEnterpriseSiteId();
+		this.auditSourceTypeCode = entity.getAuditSourceTypeCode();
+	}
 
 	public Long getId() {
 		return id;

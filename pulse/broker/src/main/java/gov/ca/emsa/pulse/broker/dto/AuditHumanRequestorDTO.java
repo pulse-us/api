@@ -1,41 +1,42 @@
-package gov.ca.emsa.pulse.broker.entity;
+package gov.ca.emsa.pulse.broker.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import gov.ca.emsa.pulse.broker.entity.AuditHumanRequestorEntity;
 
-@Table(name ="audit_request_destination")
-@Entity
-public class AuditRequestDestinationEntity {
+public class AuditHumanRequestorDTO {
 	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="user_id")
 	private String userId;
 	
-	@Column(name="alternative_user_id")
+	private Long auditEventId;
+	
 	private String alternativeUserId;
 	
-	@Column(name="user_name")
 	private String userName;
 	
-	@Column(name="user_is_requestor")
 	private boolean userIsRequestor;
 	
-	@Column(name="role_id_code")
 	private String roleIdCode;
 	
-	@Column(name="network_access_point_type_code")
 	private String networkAccessPointTypeCode;
 	
-	@Column(name="network_access_point_id")
 	private String networkAccessPointId;
+	
+	public AuditHumanRequestorDTO(){
+		
+	}
+	
+	public AuditHumanRequestorDTO(AuditHumanRequestorEntity entity){
+		this.userId = entity.getUserId();
+		this.alternativeUserId = entity.getAlternativeUserId();
+		this.auditEventId = entity.getAuditEventId();
+		this.userName = entity.getUserName();
+		this.userIsRequestor = entity.isUserIsRequestor();
+		this.roleIdCode = entity.getRoleIdCode();
+		this.networkAccessPointTypeCode = entity.getNetworkAccessPointTypeCode();
+		this.networkAccessPointId = entity.getNetworkAccessPointId();
+		
+	}
 
 	public Long getId() {
 		return id;
@@ -49,16 +50,16 @@ public class AuditRequestDestinationEntity {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getAlternativeUserId() {
-		return alternativeUserId;
+	public void setUserId(String string) {
+		this.userId = string;
 	}
 
 	public void setAlternativeUserId(String alternativeUserId) {
 		this.alternativeUserId = alternativeUserId;
+	}
+
+	public String getAlternativeUserId() {
+		return alternativeUserId;
 	}
 
 	public String getUserName() {
@@ -97,8 +98,16 @@ public class AuditRequestDestinationEntity {
 		return networkAccessPointId;
 	}
 
-	public void setNetworkAccessPointId(String networkAccessPointId) {
-		this.networkAccessPointId = networkAccessPointId;
+	public void setNetworkAccessPointId(String string) {
+		this.networkAccessPointId = string;
 	}
 
+	public Long getAuditEventId() {
+		return auditEventId;
+	}
+
+	public void setAuditEventId(Long auditEventId) {
+		this.auditEventId = auditEventId;
+	}
+	
 }

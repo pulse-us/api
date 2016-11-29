@@ -6,7 +6,7 @@ import gov.ca.emsa.pulse.broker.dto.AuditEventDTO;
 
 import java.util.List;
 
-public interface AuditManager {
-	public AuditEventDTO addAuditEntry(AuditEvent ae);
+public interface AuditEventManager {
+	public AuditEventDTO addAuditEventEntryIG(AuditEventDTO ae);
 	public List<AuditEventDTO> findAllAuditEvents();
 }

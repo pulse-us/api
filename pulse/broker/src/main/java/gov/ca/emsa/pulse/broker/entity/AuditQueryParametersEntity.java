@@ -16,16 +16,16 @@ public class AuditQueryParametersEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="participant_object_type_code") // "2" (system object)
-	private String participantObjectTypeCode;
+	@Column(name="participant_object_type_code")
+	private int participantObjectTypeCode;
 	
-	@Column(name="participant_object_type_code_role") // "24" (query)
-	private String participantObjectTypeCodeRole;
+	@Column(name="participant_object_type_code_role")
+	private int participantObjectTypeCodeRole;
 	
 	@Column(name="participant_object_data_lifecycle")
 	private String participantObjectDataLifecycle;
 	
-	@Column(name="participant_object_id_type_code") // EV("ITI-47", "IHE Transactions", "Patient Demographics Query")
+	@Column(name="participant_object_id_type_code")
 	private String participantObjectIdTypeCode;
 	
 	@Column(name="participant_object_sensitivity")
@@ -37,12 +37,12 @@ public class AuditQueryParametersEntity {
 	@Column(name="participant_object_name")
 	private String participantObjectName;
 	
-	@Column(name="participant_object_query") // the QueryByParameter segment of the query, base64 encoded
+	@Column(name="participant_object_query")
 	private String participantObjectQuery;
 	
-	@Column(name="participant_object_detail")
+	@Column(name="participant_object_detail") 
 	private String participantObjectDetail;
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -51,20 +51,19 @@ public class AuditQueryParametersEntity {
 		this.id = id;
 	}
 
-	public String getParticipantObjectTypeCode() {
+	public int getParticipantObjectTypeCode() {
 		return participantObjectTypeCode;
 	}
 
-	public void setParticipantObjectTypeCode(String participantObjectTypeCode) {
+	public void setParticipantObjectTypeCode(int participantObjectTypeCode) {
 		this.participantObjectTypeCode = participantObjectTypeCode;
 	}
 
-	public String getParticipantObjectTypeCodeRole() {
+	public int getParticipantObjectTypeCodeRole() {
 		return participantObjectTypeCodeRole;
 	}
 
-	public void setParticipantObjectTypeCodeRole(
-			String participantObjectTypeCodeRole) {
+	public void setParticipantObjectTypeCodeRole(int participantObjectTypeCodeRole) {
 		this.participantObjectTypeCodeRole = participantObjectTypeCodeRole;
 	}
 

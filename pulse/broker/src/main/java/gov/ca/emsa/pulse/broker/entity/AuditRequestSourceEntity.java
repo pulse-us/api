@@ -13,14 +13,14 @@ public class AuditRequestSourceEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "id", nullable = false )
+	@Column( name = "id", nullable = false)
 	private Long id;
 	
 	@Column(name="user_id")
-	private Long userId;
+	private String userId;
 	
-	@Column(name="alternative_user_id") // the process ID as used within the local operating system in the local system logs
-	private Long alternativeUserId;
+	@Column(name="alternative_user_id")
+	private String alternativeUserId;
 	
 	@Column(name="user_name")
 	private String userName;
@@ -28,14 +28,14 @@ public class AuditRequestSourceEntity {
 	@Column(name="user_is_requestor")
 	private boolean userIsRequestor;
 	
-	@Column(name="role_id_code") // EV(110153, DCM, "Source")
+	@Column(name="role_id_code")
 	private String roleIdCode;
 	
-	@Column(name="network_access_point_type_code") // "1" for machine (DNS) name, "2" for IP address
+	@Column(name="network_access_point_type_code")
 	private String networkAccessPointTypeCode;
 	
-	@Column(name="network_access_point_id") // the machine name or IP address
-	private Long networkAccessPointId;
+	@Column(name="network_access_point_id")
+	private String networkAccessPointId;
 
 	public Long getId() {
 		return id;
@@ -45,19 +45,19 @@ public class AuditRequestSourceEntity {
 		this.id = id;
 	}
 
-	public Long getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
-	public Long getAlternativeUserId() {
+	public String getAlternativeUserId() {
 		return alternativeUserId;
 	}
 
-	public void setAlternativeUserId(Long alternativeUserId) {
+	public void setAlternativeUserId(String alternativeUserId) {
 		this.alternativeUserId = alternativeUserId;
 	}
 
@@ -93,11 +93,11 @@ public class AuditRequestSourceEntity {
 		this.networkAccessPointTypeCode = networkAccessPointTypeCode;
 	}
 
-	public Long getNetworkAccessPointId() {
+	public String getNetworkAccessPointId() {
 		return networkAccessPointId;
 	}
 
-	public void setNetworkAccessPointId(Long networkAccessPointId) {
+	public void setNetworkAccessPointId(String networkAccessPointId) {
 		this.networkAccessPointId = networkAccessPointId;
 	}
 

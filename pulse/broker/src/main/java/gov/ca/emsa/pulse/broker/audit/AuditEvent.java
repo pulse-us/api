@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.broker.audit;
 
+import java.util.List;
+
 public class AuditEvent {
 	
 	private Long id;
@@ -21,6 +23,8 @@ public class AuditEvent {
 	private AuditSource auditSource;
 	
 	private AuditQueryParameters auditQueryParameters;
+	
+	private List<AuditHumanRequestor> humanRequestors;
 
 	public Long getId() {
 		return id;
@@ -101,6 +105,14 @@ public class AuditEvent {
 
 	public void setAuditQueryParameters(AuditQueryParameters auditQueryParameters) {
 		this.auditQueryParameters = auditQueryParameters;
+	}
+
+	public List<AuditHumanRequestor> getHumanRequestors() {
+		return humanRequestors;
+	}
+
+	public void setHumanRequestors(List<AuditHumanRequestor> humanRequestors) {
+		this.humanRequestors = humanRequestors;
 	}
 	
 }

@@ -1,48 +1,45 @@
-package gov.ca.emsa.pulse.broker.entity;
+package gov.ca.emsa.pulse.broker.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import gov.ca.emsa.pulse.broker.entity.AuditDocumentEntity;
 
-@Entity
-@Table(name="audit_patient")
-public class AuditPatientEntity {
+public class AuditDocumentDTO {
 	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="participant_object_type_code") // "1" (person)
 	private int participantObjectTypeCode;
 	
-	@Column(name="participant_object_type_code_role") // "1" (patient)
 	private int participantObjectTypeCodeRole;
 	
-	@Column(name="participant_object_data_lifecycle")
 	private String participantObjectDataLifecycle;
 	
-	@Column(name="participant_object_id_type_code")
 	private String participantObjectIdTypeCode;
 	
-	@Column(name="participant_object_sensitivity")
 	private String participantObjectSensitivity;
 	
-	@Column(name="participant_object_id") // The patient ID in HL7 CX format (see ITI TF-2x: appendix E).
 	private String participantObjectId;
 	
-	@Column(name="participant_object_name")
 	private String participantObjectName;
 	
-	@Column(name="participant_object_query")
 	private String participantObjectQuery;
 	
-	@Column(name="participant_object_detail")
 	private String participantObjectDetail;
-
+	
+	public AuditDocumentDTO(){
+		
+	}
+	
+	public AuditDocumentDTO(AuditDocumentEntity entity){
+		this.participantObjectTypeCode = entity.getParticipantObjectTypeCode();
+		this.participantObjectTypeCodeRole = entity.getParticipantObjectTypeCodeRole();
+		this.participantObjectDataLifecycle = entity.getParticipantObjectDataLifecycle();
+		this.participantObjectIdTypeCode = entity.getParticipantObjectIdTypeCode();
+		this.participantObjectSensitivity = entity.getParticipantObjectSensitivity();
+		this.participantObjectId = entity.getParticipantObjectId();
+		this.participantObjectName = entity.getParticipantObjectName();
+		this.participantObjectQuery = entity.getParticipantObjectQuery();
+		this.participantObjectDetail = entity.getParticipantObjectDetail();
+	}
+	
 	public Long getId() {
 		return id;
 	}

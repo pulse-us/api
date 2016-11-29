@@ -1,11 +1,11 @@
 package gov.ca.emsa.pulse.broker.entity;
 
-import gov.ca.emsa.pulse.broker.audit.AuditHumanRequestor;
+import java.util.List;
 
-import java.util.Date;
-
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,60 +18,66 @@ import javax.persistence.Table;
 @Table(name="audit_event")
 public class AuditEventEntity {
 	
+	// see Audit_Message_Information.xls for Audit message requirements
+	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="event_id")
-	private String eventId;
+	@Column(name="event_id", nullable = false)
+	private String eventId; 
 	
-	@Column(name="event_action_code")
+	@Column(name="event_action_code", nullable = false) 
 	private String eventActionCode;
 	
-	@Column(name="event_date_time")
+	@Column(name="event_date_time", nullable = false)
 	private String eventDateTime;
 	
-	@Column( name = "event_outcome_indicator", insertable = false, updatable = false)
+	@Column( name = "event_outcome_indicator", nullable = false)
 	private String eventOutcomeIndicator;
 	
-	@Column( name = "event_type_code", insertable = false, updatable = false)
+	@Column( name = "event_type_code", nullable = false)
 	private String eventTypeCode;
 	
-	@Column( name = "audit_request_source_id", insertable = false, updatable = false)
+	@Column( name = "audit_request_source_id", nullable = false)
 	private Long auditRequestSourceId;
 	
-	@OneToOne
-	@JoinColumn( name = "audit_request_source_id", insertable = false, updatable = false, nullable = false)
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn( name = "audit_request_source_id", insertable = false, updatable = false)
 	private AuditRequestSourceEntity auditRequestSource;
 	
-	@Column( name = "audit_request_destination_id", insertable = false, updatable = false, nullable = false)
+	@Column( name = "audit_request_destination_id", nullable = false)
 	private Long auditRequestDestinationId;
 	
-	@OneToOne
-	@JoinColumn( name = "audit_request_destination_id", insertable = false, updatable = false, nullable = false)
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn( name = "audit_request_destination_id", insertable = false, updatable = false)
 	private AuditRequestDestinationEntity auditRequestDestination;
 	
-	@Column( name = "audit_source_id", insertable = false, updatable = false, nullable = false)
+	@Column( name = "audit_source_id", nullable = false)
 	private Long auditSourceId;
 	
-	@OneToOne
-	@JoinColumn( name = "audit_source_id", insertable = false, updatable = false, nullable = false)
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn( name = "audit_source_id", insertable = false, updatable = false)
 	private AuditSourceEntity auditSource;
 	
-	@Column( name = "audit_query_parameters_id", insertable = false, updatable = false, nullable = false)
+	@Column( name = "audit_query_parameters_id", nullable = false)
 	private Long auditQueryParametersId;
 	
-	@OneToOne
-	@JoinColumn( name = "audit_query_parameters_id", insertable = false, updatable = false, nullable = false)
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn( name = "audit_query_parameters_id", insertable = false, updatable = false)
 	private AuditQueryParametersEntity auditQueryParameters;
 	
-	@Column( name = "human_requestor_id", insertable = false, updatable = false)
-	private Long humanRequestorId;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "auditEventId", cascade = CascadeType.ALL)
+	@Column( name = "audit_event_id")
+	private List<AuditHumanRequestorEntity> auditHumanRequestor;
 	
-	@OneToMany
-	@JoinColumn( name = "human_requestor_id", insertable = false, updatable = false)
-	private AuditHumanRequestorEntity auditHumanRequestor;
+	@Column( name = "audit_patient_id")
+	private Long auditPatientId;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn( name = "audit_patient_id", insertable = false, updatable = false)
+	private AuditPatientEntity auditPatient;
 
 	public Long getId() {
 		return id;
@@ -187,20 +193,28 @@ public class AuditEventEntity {
 		this.auditQueryParameters = auditQueryParameters;
 	}
 
-	public Long getHumanRequestorId() {
-		return humanRequestorId;
-	}
-
-	public void setHumanRequestorId(Long humanRequestorId) {
-		this.humanRequestorId = humanRequestorId;
-	}
-
-	public AuditHumanRequestorEntity getAuditHumanRequestor() {
+	public List<AuditHumanRequestorEntity> getAuditHumanRequestor() {
 		return auditHumanRequestor;
 	}
 
-	public void setAuditHumanRequestor(AuditHumanRequestorEntity auditHumanRequestor) {
+	public void setAuditHumanRequestor(
+			List<AuditHumanRequestorEntity> auditHumanRequestor) {
 		this.auditHumanRequestor = auditHumanRequestor;
 	}
 
+	public Long getAuditPatientId() {
+		return auditPatientId;
+	}
+
+	public void setAuditPatientId(Long auditPatientId) {
+		this.auditPatientId = auditPatientId;
+	}
+
+	public AuditPatientEntity getAuditPatient() {
+		return auditPatient;
+	}
+
+	public void setAuditPatient(AuditPatientEntity auditPatient) {
+		this.auditPatient = auditPatient;
+	}
 }

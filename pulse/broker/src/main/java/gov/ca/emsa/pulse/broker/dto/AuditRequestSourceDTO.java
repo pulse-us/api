@@ -1,41 +1,38 @@
-package gov.ca.emsa.pulse.broker.entity;
+package gov.ca.emsa.pulse.broker.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import gov.ca.emsa.pulse.broker.entity.AuditRequestSourceEntity;
 
-@Table(name ="audit_request_destination")
-@Entity
-public class AuditRequestDestinationEntity {
+public class AuditRequestSourceDTO {
 	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="user_id")
 	private String userId;
 	
-	@Column(name="alternative_user_id")
 	private String alternativeUserId;
 	
-	@Column(name="user_name")
 	private String userName;
 	
-	@Column(name="user_is_requestor")
 	private boolean userIsRequestor;
 	
-	@Column(name="role_id_code")
 	private String roleIdCode;
 	
-	@Column(name="network_access_point_type_code")
 	private String networkAccessPointTypeCode;
 	
-	@Column(name="network_access_point_id")
 	private String networkAccessPointId;
+	
+	public AuditRequestSourceDTO(){
+		
+	}
+	
+	public AuditRequestSourceDTO(AuditRequestSourceEntity entity){
+		this.userId = entity.getUserId();
+		this.alternativeUserId = entity.getAlternativeUserId();
+		this.userName = entity.getUserName();
+		this.userIsRequestor = entity.isUserIsRequestor();
+		this.roleIdCode = entity.getRoleIdCode();
+		this.networkAccessPointTypeCode = entity.getNetworkAccessPointTypeCode();
+		this.networkAccessPointId = entity.getNetworkAccessPointId();
+	}
 
 	public Long getId() {
 		return id;

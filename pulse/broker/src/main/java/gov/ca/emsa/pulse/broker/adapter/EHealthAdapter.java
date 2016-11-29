@@ -2,6 +2,12 @@ package gov.ca.emsa.pulse.broker.adapter;
 
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
 import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
+import gov.ca.emsa.pulse.broker.dto.AuditEventDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditHumanRequestorDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditQueryParametersDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditRequestDestinationDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditRequestSourceDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditSourceDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
@@ -10,6 +16,7 @@ import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.SearchResultConverter;
+import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.NameType;
@@ -18,6 +25,8 @@ import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import gov.ca.emsa.pulse.service.AuditUtil;
+import gov.ca.emsa.pulse.service.UserUtil;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
@@ -25,9 +34,13 @@ import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 
 import javax.activation.DataHandler;
@@ -54,14 +67,15 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class EHealthAdapter implements Adapter {
 	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
-	
+
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
 	@Autowired EHealthQueryProducerService queryProducer;
 	@Autowired NameTypeDAO nameTypeDao;
-	
+	@Autowired AuditEventManager auditManager;
+
 	@Override
-	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, PatientSearch toSearch, SAMLInput samlInput) {
+	public List<PatientRecordDTO> queryPatients(OrganizationDTO org, PatientSearch toSearch, SAMLInput samlInput) throws Exception {
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch);
 		String requestBodyXml = null;
 		try {
@@ -79,12 +93,14 @@ public class EHealthAdapter implements Adapter {
 		try {
 			RestTemplate restTemplate = new RestTemplate();
 			logger.info("Querying " + postUrl + " with request " + request);
+			String homeCommunityId = requestBody.getSender().getDevice().getAsAgent().getValue().getRepresentedOrganization().getValue().getId().get(0).getRoot();
+			createAuditEventIG(jsonConverterService.getQueryByParameter(requestBody).toString(), homeCommunityId);
 			searchResults = restTemplate.postForObject(postUrl, request, String.class);
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + postUrl, ex);
 			throw ex;
 		}
-		
+
 		List<PatientRecordDTO> records = new ArrayList<PatientRecordDTO>();
 		if(!StringUtils.isEmpty(searchResults)) {
 			try {
@@ -102,7 +118,7 @@ public class EHealthAdapter implements Adapter {
 				logger.error("Exception unmarshalling patient discovery response", ex);
 			}
 		}
-		
+
 		return records;
 	}
 
@@ -117,7 +133,7 @@ public class EHealthAdapter implements Adapter {
 		} catch(JAXBException ex) {
 			logger.error(ex.getMessage(), ex);
 		}
-		
+
 		String postUrl = org.getEndpointUrl() + "/documentQuery";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_XML);   
@@ -132,7 +148,7 @@ public class EHealthAdapter implements Adapter {
 			logger.error("Exception when querying " + postUrl, ex);
 			throw ex;
 		}
-		
+
 		List<DocumentDTO> records = new ArrayList<DocumentDTO>();
 		if(!StringUtils.isEmpty(searchResults)) {
 			try {
@@ -148,7 +164,7 @@ public class EHealthAdapter implements Adapter {
 		}
 		return records;
 	}
-	
+
 	/**
 	 * get all of the document contents available from the given organization
 	 * @param orgMap
@@ -169,7 +185,7 @@ public class EHealthAdapter implements Adapter {
 		} catch(JAXBException ex) {
 			logger.error(ex.getMessage(), ex);
 		}
-		
+
 		String postUrl = org.getEndpointUrl() + "/retrieveDocumentSet";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_XML);   
@@ -184,7 +200,7 @@ public class EHealthAdapter implements Adapter {
 			logger.error("Exception when querying " + postUrl, ex);
 			throw ex;
 		}
-		
+
 		if(!StringUtils.isEmpty(searchResults)) {
 			try {
 				RetrieveDocumentSetResponseType resultObj = queryProducer.unMarshallDocumentSetRetrieveResponseObject(searchResults);
@@ -195,12 +211,12 @@ public class EHealthAdapter implements Adapter {
 					for(int i = 0; i < documents.size() && matchingDto == null; i++) {
 						DocumentDTO currDto = documents.get(i);
 						if(currDto.getRepositoryUniqueId().equals(docResponse.getRepositoryUniqueId()) && 
-							currDto.getHomeCommunityId().equals(docResponse.getHomeCommunityId()) &&
-							currDto.getDocumentUniqueId().equals(docResponse.getDocumentUniqueId())) {
+								currDto.getHomeCommunityId().equals(docResponse.getHomeCommunityId()) &&
+								currDto.getDocumentUniqueId().equals(docResponse.getDocumentUniqueId())) {
 							matchingDto = currDto;
 						}
 					}
-					
+
 					if(matchingDto != null) {
 						//read the binary document data from this DocumentResponse
 						DataHandler dataHandler = docResponse.getDocument();
@@ -226,10 +242,65 @@ public class EHealthAdapter implements Adapter {
 			}
 		}
 	}
-	    
-	 private String base64DecodeMessage(String encodedMessage){       
-		 byte[] decoded = Base64.getDecoder().decode(encodedMessage);
-		 String decodedMessage = new String(decoded, Charset.forName("UTF-8"));
-		 return decodedMessage;
-	 }
+
+	private String base64DecodeMessage(String encodedMessage){       
+		byte[] decoded = Base64.getDecoder().decode(encodedMessage);
+		String decodedMessage = new String(decoded, Charset.forName("UTF-8"));
+		return decodedMessage;
+	}
+	
+	private byte[] base64EncodeMessage(String queryByParameters){
+		byte[] bytesEncoded = Base64.getEncoder().encode(queryByParameters.getBytes());
+		return bytesEncoded;
+	}
+
+	// create an audit event for an initiating gateway audit message
+	private void createAuditEventIG(String queryByParameter, String homeCommunityId) throws UnknownHostException{
+		AuditRequestSourceDTO auditRequestSourceDTO = AuditUtil.createAuditRequestSource(InetAddress.getLocalHost().toString() + "/patientDiscovery", // not sure about this
+				ManagementFactory.getRuntimeMXBean().getName().split("@")[0],
+				"", // this is optional
+				true, // this is optional
+				"EV(110153, DCM, “Source”)",
+				"2",
+				InetAddress.getLocalHost().toString());
+		ArrayList<AuditHumanRequestorDTO> auditHumanRequestorDTO = AuditUtil.createAuditHumanRequestor(UserUtil.getCurrentUser().getFirstName()
+				+ " " + UserUtil.getCurrentUser().getLastName() + " " + UserUtil.getCurrentUser().getEmail(), // the identity of the human that initiated the transaction
+				"", // optional
+				"", // optional
+				false, // optional
+				"", // optional
+				"", // optional
+				"");// optional
+		AuditRequestDestinationDTO auditRequestDestinationDTO = AuditUtil.createAuditRequestDestination("https://www.someihe.com/patientDiscovery",
+				"", // optional
+				"", // optional
+				false, 
+				"EV(110152, DCM, “Destination”)", 
+				"2", 
+				"The IP of the request destination ");
+		AuditQueryParametersDTO auditQueryParametersDTO = AuditUtil.createAuditQueryParameters(2, 
+				24, 
+				"", // optional 
+				"EV(“ITI-55, “IHE Transactions”, “Cross Gateway Patient Discovery”)", 
+				"", // optional 
+				"", // optional 
+				"", // optional
+				"", // the QueryByParameter segment of the query, base64 encoded.
+				""); // The value of “ihe:homeCommunityID” as the value of the attribute type and the value of the homeCommunityID as the value of the attribute value.
+		AuditSourceDTO auditSouceDTO = AuditUtil.createAuditSource("", // optional 
+				"", // optional 
+				""); // optional
+		AuditEventDTO auditEventDTO = new AuditEventDTO();
+		auditEventDTO.setEventId("EV(110112, DCM, “Query”)");
+		auditEventDTO.setEventActionCode("E");
+		auditEventDTO.setEventDateTime(new Date().toString());
+		auditEventDTO.setEventOutcomeIndicator(""); // TODO need to figure out this value
+		auditEventDTO.setEventTypeCode("EV(“ITI-55”, “IHE Transactions”, “Cross Gateway Patient Discovery”)");
+		auditEventDTO.setAuditRequestSource(auditRequestSourceDTO);
+		auditEventDTO.setAuditHumanRequestors(auditHumanRequestorDTO);
+		auditEventDTO.setAuditRequestDestination(auditRequestDestinationDTO);
+		auditEventDTO.setAuditQueryParameters(auditQueryParametersDTO);
+		auditEventDTO.setAuditSource(auditSouceDTO);
+		auditManager.addAuditEventEntryIG(auditEventDTO);
+	}
 }
