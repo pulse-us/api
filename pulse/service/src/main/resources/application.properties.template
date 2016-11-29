@@ -12,6 +12,9 @@ jwtIssuer=CALEMSA
 jwtAudience=CALEMSA
 jwtExpirationTimeMinutesInTheFuture=30
 jwtNotBeforeMinutesInThePast=4
+acfWritesAllowed=false
+
+#spring properties
 server.port=9090
 
 #allow detailed health information to come back without authentication
