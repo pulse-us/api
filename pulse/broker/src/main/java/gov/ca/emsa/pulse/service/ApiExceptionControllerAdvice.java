@@ -13,6 +13,12 @@ import gov.ca.emsa.pulse.common.domain.ErrorJSONObject;
 @ControllerAdvice
 public class ApiExceptionControllerAdvice {
 	
+	@ExceptionHandler(AcfChangesNotAllowedException.class)
+	public ResponseEntity<ErrorJSONObject> exception(AcfChangesNotAllowedException e) {
+		e.printStackTrace();
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("ACF changes are not allowed."), HttpStatus.BAD_REQUEST);
+	}
+	
 	@ExceptionHandler(InvalidArgumentsException.class)
 	public ResponseEntity<ErrorJSONObject> exception(InvalidArgumentsException e) {
 		e.printStackTrace();

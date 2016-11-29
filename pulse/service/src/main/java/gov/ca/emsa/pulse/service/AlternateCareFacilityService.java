@@ -9,14 +9,12 @@ import io.swagger.annotations.ApiOperation;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -25,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,23 +38,17 @@ public class AlternateCareFacilityService {
 
 	@Value("${brokerUrl}")
 	private String brokerUrl;
-	
-	@Value("${acfWritesAllowed}")
-	private Boolean acfWritesAllowed;
 
 	// POST - create an alternate care facility
 	@ApiOperation(value = "Create a new ACF")
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public ResponseEntity<AlternateCareFacility> createACF(@RequestBody AlternateCareFacility acf) 
+	public AlternateCareFacility createACF(@RequestBody AlternateCareFacility acf) 
 			throws UserRetrievalException, JsonProcessingException {
-		
-		if(acfWritesAllowed != null && acfWritesAllowed.booleanValue() == false) {
-			return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(null);
-		}
-		
+
 		RestTemplate query = new RestTemplate();
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		ObjectMapper mapper = new ObjectMapper();
+
 
 		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
 		AlternateCareFacility returnAcf = null;
@@ -68,7 +61,7 @@ public class AlternateCareFacilityService {
 			returnAcf = query.postForObject(brokerUrl + "/acfs/create", request, AlternateCareFacility.class);
 			logger.info("Request sent to broker from services REST.");
 		}
-		return ResponseEntity.ok(returnAcf);
+		return returnAcf;
 	}
 
 	// GET all acfs
@@ -123,12 +116,9 @@ public class AlternateCareFacilityService {
 		// edit an acf by its id
 	@ApiOperation(value = "Edit an existing ACF")
 	@RequestMapping(value = "/{acfId}/edit", method = RequestMethod.POST)
-	public ResponseEntity<AlternateCareFacility> editACFById(@PathVariable Long acfId, 
+	public AlternateCareFacility editACFById(@PathVariable Long acfId, 
 			@RequestBody AlternateCareFacility acf) throws UserRetrievalException, JsonProcessingException {
-		if(acfWritesAllowed != null && acfWritesAllowed.booleanValue() == false) {
-			return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(null);
-		}
-		
+
 		RestTemplate query = new RestTemplate();
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		ObjectMapper mapper = new ObjectMapper();
@@ -145,6 +135,6 @@ public class AlternateCareFacilityService {
 			logger.info("Request sent to broker from services REST.");
 		}
 
-		return ResponseEntity.ok(returnAcf);
+		return returnAcf;
 	}
 }

@@ -4,7 +4,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +30,9 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/acfs")
 public class AlternateCareFacilityService {
+	@Value("${acfWritesAllowed}")
+	private Boolean acfWritesAllowed;
+	
 	@Autowired AlternateCareFacilityManager acfManager;
 	@Autowired AuditManager auditManager;
 
@@ -55,7 +61,11 @@ public class AlternateCareFacilityService {
 	@ApiOperation(value = "Create a new ACF")
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public AlternateCareFacility create(@RequestBody(required=true) AlternateCareFacility toCreate) 
-		throws InvalidArgumentsException, SQLException {
+		throws InvalidArgumentsException, AcfChangesNotAllowedException, SQLException {
+		if(acfWritesAllowed != null && acfWritesAllowed.booleanValue() == false) {
+			throw new AcfChangesNotAllowedException();
+		}
+		
 		CommonUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.CREATE_ACF, "/create", user.getSubjectName());
 		AlternateCareFacilityDTO dto = DomainToDtoConverter.convert(toCreate);
@@ -64,13 +74,17 @@ public class AlternateCareFacilityService {
 		}
 		AlternateCareFacilityDTO created = acfManager.create(dto);
 		return DtoToDomainConverter.convert(created);
-
 	}
 
 	@ApiOperation(value = "Edit an existing ACF")
 	@RequestMapping(value = "/{acfId}/edit", method = RequestMethod.POST)
 	public AlternateCareFacility update(@RequestBody(required=true) AlternateCareFacility toUpdate)
-		throws InvalidArgumentsException, PermissionDeniedException, SQLException {
+		throws InvalidArgumentsException, PermissionDeniedException, 
+			AcfChangesNotAllowedException, SQLException {
+		if(acfWritesAllowed != null && acfWritesAllowed.booleanValue() == false) {
+			throw new AcfChangesNotAllowedException();
+		}
+		
 		CommonUser user = UserUtil.getCurrentUser();
 		auditManager.addAuditEntry(QueryType.EDIT_ACF, user.getAcf() + "/edit", user.getSubjectName());
 		if(user.getAcf() == null) {
