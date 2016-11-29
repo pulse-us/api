@@ -7,11 +7,11 @@ import java.util.List;
 public class PatientRecord {
 	private Long id;
 	private ArrayList<PatientRecordName> patientRecordName;
-	private String organizationPatientRecordId;
+	private String locationPatientRecordId;
 	private String dateOfBirth;
 	private PatientGender gender;
 	private String phoneNumber;
-	private List<PatientRecordAddress> address;
+	private List<Address> address;
 	private String ssn;
 	
 	public PatientRecord() {
@@ -46,10 +46,10 @@ public class PatientRecord {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	public List<PatientRecordAddress> getAddress() {
+	public List<Address> getAddress() {
 		return address;
 	}
-	public void setAddress(List<PatientRecordAddress> address) {
+	public void setAddress(List<Address> address) {
 		this.address = address;
 	}
 	public String getSsn() {
@@ -67,12 +67,12 @@ public class PatientRecord {
 		this.patientRecordName = patientRecordName;
 	}
 
-	public String getOrganizationPatientRecordId() {
-		return organizationPatientRecordId;
+	public String getLocationPatientRecordId() {
+		return locationPatientRecordId;
 	}
 
-	public void setOrganizationPatientRecordId(String organizationPatientRecordId) {
-		this.organizationPatientRecordId = organizationPatientRecordId;
+	public void setLocationPatientRecordId(String locationPatientRecordId) {
+		this.locationPatientRecordId = locationPatientRecordId;
 	}
 
 	

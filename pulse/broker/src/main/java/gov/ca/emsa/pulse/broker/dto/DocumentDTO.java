@@ -5,7 +5,7 @@ import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
 public class DocumentDTO {
 	private long id;
 	private byte[] contents;
-	private Long patientOrgMapId;
+	private Long patientLocationMapId;
 	
 	//metadata
 	private String format;
@@ -37,7 +37,7 @@ public class DocumentDTO {
 		this.repositoryUniqueId = entity.getRepositoryUniqueId();
 		this.documentUniqueId = entity.getDocumentUniqueId();
 		this.contents = entity.getContents();
-		this.patientOrgMapId = entity.getPatientOrgMapId();
+		this.patientLocationMapId = entity.getPatientLocationMapId();
 	}
 	
 	public long getId() {
@@ -71,12 +71,12 @@ public class DocumentDTO {
 		this.contents = contents;
 	}
 
-	public Long getPatientOrgMapId() {
-		return patientOrgMapId;
+	public Long getPatientLocationMapId() {
+		return patientLocationMapId;
 	}
 
-	public void setPatientOrgMapId(Long patientOrgMapId) {
-		this.patientOrgMapId = patientOrgMapId;
+	public void setPatientLocationMapId(Long patientLocationMapId) {
+		this.patientLocationMapId = patientLocationMapId;
 	}
 
 	public String getClassName() {

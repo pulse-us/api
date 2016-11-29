@@ -203,7 +203,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		SlotType1 slot = new SlotType1();
 		slot.setName("$XDSDocumentEntryPatientId");
 		ValueListType valueList = new ValueListType();
-		valueList.getValue().add(patient.getOrgPatientId());
+		valueList.getValue().add(patient.getLocationPatientId());
 		slot.setValueList(valueList);
 		slotList.getSlot().add(slot);
 		request.setRequestSlotList(slotList);

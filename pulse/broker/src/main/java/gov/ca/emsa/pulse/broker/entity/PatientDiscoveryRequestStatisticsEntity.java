@@ -9,11 +9,18 @@ import org.postgresql.util.PGInterval;
 @Entity
 public class PatientDiscoveryRequestStatisticsEntity {
 	@Id
-	@Column(name = "organization_id", insertable = false, updatable = false)
-	private Long organizationId;
+	@Column(name = "location_id", insertable = false, updatable = false)
+	private Long locationId;
 	
-	@Column(name = "organization_name", insertable = false, updatable = false)
-	private String organizationName;
+	@Column(name = "location_name", insertable = false, updatable = false)
+	private String locationName;
+	
+	@Column(name = "location_type", insertable = false, updatable = false)
+	private String locationType;
+	
+	//is the location active or whatever
+	@Column(name = "location_status_name", insertable = false, updatable = false)
+	private String locationStatus;
 	
 	@Column(name = "total_request_count", insertable = false, updatable = false)
 	private Long totalRequestCount;
@@ -39,20 +46,20 @@ public class PatientDiscoveryRequestStatisticsEntity {
 	@Column(name = "cancelled_request_average_seconds", insertable = false, updatable = false)
 	private Double cancelledRequestAverageSeconds;
 
-	public Long getOrganizationId() {
-		return organizationId;
+	public Long getLocationId() {
+		return locationId;
 	}
 
-	public void setOrganizationId(Long organizationId) {
-		this.organizationId = organizationId;
+	public void setLocationId(Long locationId) {
+		this.locationId = locationId;
 	}
 
-	public String getOrganizationName() {
-		return organizationName;
+	public String getLocationName() {
+		return locationName;
 	}
 
-	public void setOrganizationName(String organizationName) {
-		this.organizationName = organizationName;
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
 	}
 
 	public Long getTotalRequestCount() {
@@ -117,5 +124,21 @@ public class PatientDiscoveryRequestStatisticsEntity {
 
 	public void setCancelledRequestAverageSeconds(Double cancelledRequestAverageSeconds) {
 		this.cancelledRequestAverageSeconds = cancelledRequestAverageSeconds;
+	}
+
+	public String getLocationType() {
+		return locationType;
+	}
+
+	public void setLocationType(String locationType) {
+		this.locationType = locationType;
+	}
+
+	public String getLocationStatus() {
+		return locationStatus;
+	}
+
+	public void setLocationStatus(String locationStatus) {
+		this.locationStatus = locationStatus;
 	}
 }

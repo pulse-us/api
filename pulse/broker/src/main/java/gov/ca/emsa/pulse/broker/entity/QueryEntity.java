@@ -42,7 +42,7 @@ public class QueryEntity {
 	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "queryId"  )
 	@Column( name = "query_id", nullable = false  )
-	private Set<QueryOrganizationEntity> orgStatuses = new HashSet<QueryOrganizationEntity>();
+	private Set<QueryLocationMapEntity> locationStatuses = new HashSet<QueryLocationMapEntity>();
 	
 	public Long getId() {
 		return id;
@@ -92,12 +92,12 @@ public class QueryEntity {
 		this.terms = terms;
 	}
 
-	public Set<QueryOrganizationEntity> getOrgStatuses() {
-		return orgStatuses;
+	public Set<QueryLocationMapEntity> getLocationStatuses() {
+		return locationStatuses;
 	}
 
-	public void setOrgStatuses(Set<QueryOrganizationEntity> orgStatuses) {
-		this.orgStatuses = orgStatuses;
+	public void setLocationStatuses(Set<QueryLocationMapEntity> locationStatuses) {
+		this.locationStatuses = locationStatuses;
 	}
 
 	public Date getLastReadDate() {

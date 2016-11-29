@@ -1,34 +1,23 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import gov.ca.emsa.pulse.broker.dao.NameAssemblyDAO;
-import gov.ca.emsa.pulse.broker.dao.NameRepresentationDAO;
-import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
-import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
-import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
-import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
-import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
-import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.GivenName;
-import gov.ca.emsa.pulse.common.domain.NameAssembly;
-import gov.ca.emsa.pulse.common.domain.NameRepresentation;
-import gov.ca.emsa.pulse.common.domain.NameType;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientRecordAddressLine;
-import gov.ca.emsa.pulse.common.domain.PatientRecordName;
-import gov.ca.emsa.pulse.common.domain.PatientRecord;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 
+import gov.ca.emsa.pulse.broker.dao.NameAssemblyDAO;
+import gov.ca.emsa.pulse.broker.dao.NameRepresentationDAO;
+import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
+import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.Endpoint;
+import gov.ca.emsa.pulse.common.domain.Location;
+import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
+import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 
 public class DomainToDtoConverter {
 	private static final Logger logger = LogManager.getLogger(DomainToDtoConverter.class);
@@ -60,7 +49,7 @@ public class DomainToDtoConverter {
 		if(domainObj.getId() != null) {
 			result.setId(new Long(domainObj.getId()));
 		}
-		result.setOrganizationPatientRecordId(domainObj.getOrganizationPatientRecordId());
+		result.setLocationPatientRecordId(domainObj.getLocationPatientRecordId());
 		if(domainObj.getPatientRecordName() != null){
 			for(PatientRecordName patientRecordName : domainObj.getPatientRecordName()){
 				PatientRecordNameDTO patientRecordNameDTO = new PatientRecordNameDTO();
@@ -108,7 +97,7 @@ public class DomainToDtoConverter {
 		result.setSsn(domainObj.getSsn());
 		
 		List<PatientRecordAddressDTO> praDto = new ArrayList<PatientRecordAddressDTO>();
-		for(PatientRecordAddress pra : domainObj.getAddress()){
+		for(Address pra : domainObj.getAddress()){
 			PatientRecordAddressDTO address = new PatientRecordAddressDTO();
 			List<PatientRecordAddressLineDTO> lines = new ArrayList<PatientRecordAddressLineDTO>();
 			for(int i=0; i<pra.getLines().size(); i++){
@@ -137,7 +126,7 @@ public class DomainToDtoConverter {
 		result.setCreationTime(domainObj.getCreationTime());
 		result.setDescription(domainObj.getDescription());
 		result.setSize(domainObj.getSize());
-		result.setPatientOrgMapId(domainObj.getOrgMapId());
+		result.setPatientLocationMapId(domainObj.getLocationMapId());
 
 		if(domainObj.getIdentifier() != null) {
 			result.setDocumentUniqueId(domainObj.getIdentifier().getDocumentUniqueId());
@@ -165,6 +154,77 @@ public class DomainToDtoConverter {
 			result.setZipcode(domainObj.getAddress().getZipcode());
 			result.setCountry(domainObj.getAddress().getCountry());
 		}
+		return result;
+	}
+	
+	public static LocationDTO convert(Location domain){
+		LocationDTO result = new LocationDTO();
+		result.setId(domain.getId());
+		result.setName(domain.getName());
+
+		if(domain.getAddress() != null) {
+			if(domain.getAddress().getLines() != null) {
+				for(String line : domain.getAddress().getLines()) {
+					AddressLineDTO addrLine = new AddressLineDTO();
+					addrLine.setLine(line);
+					result.getLines().add(addrLine);				
+				}
+			}
+			result.setCity(domain.getAddress().getCity());
+			result.setState(domain.getAddress().getState());
+			result.setZipcode(domain.getAddress().getZipcode());
+			result.setCountry(domain.getAddress().getCountry());
+		}
+		if(domain.getStatus() != null) {
+			LocationStatusDTO status = new LocationStatusDTO();
+			status.setId(domain.getStatus().getId());
+			status.setName(domain.getStatus().getName());
+			result.setStatus(status);
+		}
+		result.setDescription(domain.getDescription());
+		result.setExternalId(domain.getExternalId());
+		result.setParentOrgName(domain.getParentOrgName());
+		result.setType(domain.getType());
+		result.setExternalLastUpdateDate(domain.getExternalLastUpdateDate());
+		result.setLastModifiedDate(domain.getLastModifiedDate());
+		result.setCreationDate(domain.getCreationDate());
+		
+		if(domain.getEndpoints() != null) {
+			for(Endpoint endpoint : domain.getEndpoints()) {
+				if(endpoint != null) {
+					LocationEndpointDTO endpointDto = convert(endpoint);
+					result.getEndpoints().add(endpointDto);
+				}
+			}
+		}
+		return result;
+	}
+
+	public static LocationEndpointDTO convert(Endpoint domain) {
+		LocationEndpointDTO result = new LocationEndpointDTO();
+		result.setId(domain.getId());
+		result.setAdapter(domain.getAdapter());
+		if(domain.getEndpointStatus() != null) {
+			EndpointStatusDTO status = new EndpointStatusDTO();
+			status.setId(domain.getEndpointStatus().getId());
+			status.setName(domain.getEndpointStatus().getName());
+			result.setEndpointStatus(status);
+		}
+		if(domain.getEndpointType() != null) {
+			EndpointTypeDTO type = new EndpointTypeDTO();
+			type.setId(domain.getEndpointType().getId());
+			type.setName(domain.getEndpointType().getName());
+			result.setEndpointType(type);
+		}
+		result.setExternalId(domain.getExternalId());
+		result.setPayloadFormat(domain.getPayloadFormat());
+		result.setPayloadType(domain.getPayloadType());
+		result.setPublicKey(domain.getPublicKey());
+		result.setUrl(domain.getUrl());
+		result.setLastModifiedDate(domain.getLastModifiedDate());
+		result.setExternalLastUpdateDate(domain.getExternalLastUpdateDate());
+		result.setCreationDate(domain.getCreationDate());
+		
 		return result;
 	}
 }

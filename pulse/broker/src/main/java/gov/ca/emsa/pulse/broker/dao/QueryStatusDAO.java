@@ -1,7 +1,7 @@
 package gov.ca.emsa.pulse.broker.dao;
 
-import gov.ca.emsa.pulse.broker.entity.QueryOrganizationStatusEntity;
+import gov.ca.emsa.pulse.broker.entity.QueryLocationStatusEntity;
 
 public interface QueryStatusDAO {
-	public QueryOrganizationStatusEntity getStatusByName(String name);
+	public QueryLocationStatusEntity getStatusByName(String name);
 }

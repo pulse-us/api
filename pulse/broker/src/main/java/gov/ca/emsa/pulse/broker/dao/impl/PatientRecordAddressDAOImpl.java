@@ -2,10 +2,8 @@ package gov.ca.emsa.pulse.broker.dao.impl;
 
 import gov.ca.emsa.pulse.broker.dao.PatientRecordAddressDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordAddressLineDAO;
-import gov.ca.emsa.pulse.broker.dto.AddressDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressLineDTO;
-import gov.ca.emsa.pulse.broker.entity.AddressEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity;
 

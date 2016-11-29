@@ -2,7 +2,7 @@ package gov.ca.emsa.pulse.service.controller;
 
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import gov.ca.emsa.pulse.common.domain.QueryOrganization;
+import gov.ca.emsa.pulse.common.domain.QueryLocationMap;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
 import gov.ca.emsa.pulse.service.EHealthQueryConsumerService;
@@ -68,16 +68,16 @@ public class PatientDiscoveryController {
 
 		pss.searchForPatientWithTerms(restTemplate, patientSearch);
 		
-		Future<List<QueryOrganization>> future = executor.submit(pss);
-		List<QueryOrganization> results = null;
+		Future<List<QueryLocationMap>> future = executor.submit(pss);
+		List<QueryLocationMap> results = null;
 		try {
 			results = future.get();
 		} catch (InterruptedException | ExecutionException e) {
 			logger.error(e);
 		}
 		List<PatientRecord> patientRecords = results.get(0).getResults();
-		for(QueryOrganization queryOrg: results){
-			patientRecords.addAll(queryOrg.getResults());
+		for(QueryLocationMap queryLoc: results){
+			patientRecords.addAll(queryLoc.getResults());
 		}
 		PRPAIN201310UV02 responseObj = JSONConverter.convertPatientRecordListToSOAPResponse(patientRecords);
 		logger.info("Patient discovery Response object(" + creationTime + "): " + responseObj.toString());

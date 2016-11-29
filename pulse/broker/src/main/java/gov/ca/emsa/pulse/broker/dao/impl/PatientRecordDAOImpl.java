@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
+import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientGenderDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordAddressDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
@@ -9,7 +9,7 @@ import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.NameAssemblyDTO;
 import gov.ca.emsa.pulse.broker.dto.NameRepresentationDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
@@ -18,7 +18,7 @@ import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
 import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
 import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientGenderEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientOrganizationMapEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientLocationMapEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
@@ -41,7 +41,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDAO {
 	private static final Logger logger = LogManager.getLogger(PatientRecordDAOImpl.class);
-	@Autowired OrganizationDAO orgDao;
+	@Autowired LocationDAO orgDao;
 	@Autowired PatientRecordNameDAO nameDao;
 	@Autowired PatientGenderDAO patientGenderDao;
 	@Autowired PatientRecordAddressDAO patientRecordAddressDao;
@@ -56,8 +56,8 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setPatientGender(patientGenderEntity);
 		patient.setPatientGenderId(patientGenderEntity.getId());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
-		patient.setQueryOrganizationId(dto.getQueryOrganizationId());
+		patient.setLocationPatientRecordId(dto.getLocationPatientRecordId());
+		patient.setQueryLocationId(dto.getQueryLocationId());
 		
 		entityManager.persist(patient);
 		entityManager.flush();
@@ -138,8 +138,8 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setPatientGender(patientGenderEntity);
 		patient.setPatientGenderId(patientGenderEntity.getId());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setOrganizationPatientRecordId(dto.getOrganizationPatientRecordId());
-		patient.setQueryOrganizationId(dto.getQueryOrganizationId());
+		patient.setLocationPatientRecordId(dto.getLocationPatientRecordId());
+		patient.setQueryLocationId(dto.getQueryLocationId());
 
 		patient = entityManager.merge(patient);
 		entityManager.flush();
@@ -171,7 +171,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		entityManager.clear();
 		Query query = entityManager.createQuery( "SELECT DISTINCT pat "
 				+ "FROM PatientRecordEntity pat "
-				+ "LEFT OUTER JOIN FETCH pat.queryOrganization "
+				+ "LEFT OUTER JOIN FETCH pat.queryLocation "
 				+ "LEFT OUTER JOIN FETCH pat.patientRecordName "
 				+ "LEFT OUTER JOIN FETCH pat.patientRecordAddress "
 				+ "where pat.id = :entityid ", 

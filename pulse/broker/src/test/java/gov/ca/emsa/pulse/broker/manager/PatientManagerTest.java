@@ -1,29 +1,8 @@
 package gov.ca.emsa.pulse.broker.manager;
 
-import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
-import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
-import gov.ca.emsa.pulse.broker.dao.QueryDAO;
-import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
-import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
-import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientOrganizationMapDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
-import gov.ca.emsa.pulse.common.domain.QueryOrganizationStatus;
-import gov.ca.emsa.pulse.common.domain.PatientRecordName;
-import gov.ca.emsa.pulse.common.domain.QueryStatus;
-
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,16 +13,33 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
+import gov.ca.emsa.pulse.broker.dao.LocationDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
+import gov.ca.emsa.pulse.broker.dao.QueryDAO;
+import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationStatusDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
+import gov.ca.emsa.pulse.common.domain.LocationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
+import junit.framework.TestCase;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
 public class PatientManagerTest extends TestCase {
 	@Autowired PatientManager patientManager;
 	@Autowired QueryDAO queryDao;
-	@Autowired OrganizationDAO orgDao;
+	@Autowired LocationDAO locationDao;
 	@Autowired AlternateCareFacilityDAO acfDao;
 	@Autowired PatientRecordDAO prDao;
 	private AlternateCareFacilityDTO acf;
-	private OrganizationDTO org1, org2;
+	private LocationDTO location1, location2;
 	private PatientRecordDTO queryResult1, queryResult2;
 	
 	@Before
@@ -55,53 +51,56 @@ public class PatientManagerTest extends TestCase {
 		assertNotNull(acf.getId());
 		assertTrue(acf.getId().longValue() > 0);
 		
-		org1 = new OrganizationDTO();
-		org1.setOrganizationId(1L);
-		org1.setName("IHE Org");
-		org1.setAdapter("IHE");
-		org1.setEndpointUrl("http://www.localhost.com");
-		org1.setPassword("pwd");
-		org1.setUsername("kekey");
-		org1.setActive(true);
-		org1 = orgDao.create(org1);
+		LocationStatusDTO locStatus = new LocationStatusDTO();
+		locStatus.setId(1L);
 		
-		org2 = new OrganizationDTO();
-		org2.setOrganizationId(2L);
-		org2.setName("eHealth Org");
-		org2.setAdapter("eHealth");
-		org2.setEndpointUrl("http://www.localhost.com");
-		org2.setPassword("pwd");
-		org2.setUsername("kekey");
-		org2.setActive(true);
-		org2 = orgDao.create(org2);
+		location1 = new LocationDTO();
+		location1.setExternalId("1");
+		location1.setName("John's Hopkins Medical Center");
+		location1.setDescription("A hospital");
+		location1.setType("Hospital");
+		location1.setExternalLastUpdateDate(new Date());
+		location1.setParentOrgName("EHealth Parent Org");
+		location1.setStatus(locStatus);
+		location1 = locationDao.create(location1);
+		
+		location2 = new LocationDTO();
+		location2.setExternalId("2");
+		location2.setName("University of Maryland Medical Center");
+		location2.setDescription("A hospital");
+		location2.setType("Hospital");
+		location2.setExternalLastUpdateDate(new Date());
+		location2.setParentOrgName("EHealth Parent Org");
+		location2.setStatus(locStatus);
+		location2 = locationDao.create(location2);
 		
 		QueryDTO toInsert = new QueryDTO();
 		toInsert.setStatus(QueryStatus.ACTIVE.name());
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		
-		QueryOrganizationDTO orgQuery1 = new QueryOrganizationDTO();
-		orgQuery1.setOrgId(org1.getId());
-		orgQuery1.setStatus(QueryOrganizationStatus.Active);
-		toInsert.getOrgStatuses().add(orgQuery1);
+		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();
+		orgQuery1.setLocationId(location1.getId());
+		orgQuery1.setStatus(QueryLocationStatus.Active);
+		toInsert.getLocationStatuses().add(orgQuery1);
 		
-		QueryOrganizationDTO orgQuery2 = new QueryOrganizationDTO();
-		orgQuery2.setOrgId(org2.getId());
-		orgQuery2.setStatus(QueryOrganizationStatus.Active);
-		toInsert.getOrgStatuses().add(orgQuery2);
+		QueryLocationMapDTO orgQuery2 = new QueryLocationMapDTO();
+		orgQuery2.setLocationId(location2.getId());
+		orgQuery2.setStatus(QueryLocationStatus.Active);
+		toInsert.getLocationStatuses().add(orgQuery2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
 		assertNotNull(inserted);
 		assertNotNull(inserted.getId());
 		assertTrue(inserted.getId().longValue() > 0);
-		assertNotNull(inserted.getOrgStatuses());
-		assertEquals(2, inserted.getOrgStatuses().size());
-		orgQuery1 = inserted.getOrgStatuses().get(0);
-		assertNotNull(inserted.getOrgStatuses().get(0).getId());
-		assertTrue(inserted.getOrgStatuses().get(0).getId().longValue() > 0);
-		orgQuery2 = inserted.getOrgStatuses().get(1);
-		assertNotNull(inserted.getOrgStatuses().get(1).getId());
-		assertTrue(inserted.getOrgStatuses().get(1).getId().longValue() > 0);
+		assertNotNull(inserted.getLocationStatuses());
+		assertEquals(2, inserted.getLocationStatuses().size());
+		orgQuery1 = inserted.getLocationStatuses().get(0);
+		assertNotNull(inserted.getLocationStatuses().get(0).getId());
+		assertTrue(inserted.getLocationStatuses().get(0).getId().longValue() > 0);
+		orgQuery2 = inserted.getLocationStatuses().get(1);
+		assertNotNull(inserted.getLocationStatuses().get(1).getId());
+		assertTrue(inserted.getLocationStatuses().get(1).getId().longValue() > 0);
 		
 //		queryResult1 = new PatientRecordDTO();
 //		queryResult1.setGivenName("John");
@@ -167,7 +166,7 @@ public class PatientManagerTest extends TestCase {
 		List<PatientDTO> patients = patientManager.getPatientsAtAcf(acf.getId());
 		assertNotNull(patients);
 		assertEquals(1, patients.size());
-		assertNotNull(patients.get(0).getOrgMaps());
+		assertNotNull(patients.get(0).getLocationMaps());
 		//TODO: this should work
 		//assertEquals(1, patients.get(0).getOrgMaps().size());
 	}

@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -30,7 +32,7 @@ public class ServiceExceptionControllerAdvice {
     	ObjectReader reader = new ObjectMapper().reader().forType(BrokerError.class);
     	try {
     		BrokerError brokerError = reader.readValue(responseBody);
-    		errorMessage = brokerError.getMessage();
+    		errorMessage = StringUtils.isEmpty(brokerError.getMessage()) ? brokerError.getError() : brokerError.getMessage();
     	} catch(IOException ex) {
     		logger.warn("Could not turn " + responseBody + " into BrokerError object", ex);
     	}
@@ -59,5 +61,17 @@ public class ServiceExceptionControllerAdvice {
 	public ResponseEntity<ErrorJSONObject> exception(UserRetrievalException e) {
 		logger.error(e.getMessage(), e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.UNAUTHORIZED);
+	}
+	
+	@ExceptionHandler(ResourceAccessException.class)
+	public ResponseEntity<ErrorJSONObject> exception(ResourceAccessException e) {
+		logger.error(e.getMessage(), e);
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorJSONObject> exception(Exception ex) {
+		logger.error(ex.getMessage(), ex);
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Unknown error. Message was: " + ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

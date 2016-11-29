@@ -1,27 +1,25 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
-import gov.ca.emsa.pulse.common.domain.PatientRecordAddress;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import gov.ca.emsa.pulse.broker.entity.GivenNameEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
+
 public class PatientRecordDTO {
 	private Long id;
-	private String organizationPatientRecordId;
+	private String locationPatientRecordId;
 	private List<PatientRecordNameDTO> patientRecordName;
 	private PatientGenderDTO patientGender;
 	private String dateOfBirth;
 	private String ssn;
 	private String phoneNumber;
 	private List<PatientRecordAddressDTO> address;
-	private Long queryOrganizationId;
+	private Long queryLocationId;
 	private Date lastModifiedDate;
 	private Long patientGenderId;
 	
@@ -69,7 +67,7 @@ public class PatientRecordDTO {
 		this.patientGender = patientGenderDTO;
 		this.patientGenderId = entity.getPatientGenderId();
 		this.phoneNumber = entity.getPhoneNumber();
-		this.organizationPatientRecordId = entity.getOrganizationPatientRecordId();
+		this.locationPatientRecordId = entity.getLocationPatientRecordId();
 		
 		List<PatientRecordAddressDTO> praArr = new ArrayList<PatientRecordAddressDTO>();
 		for(PatientRecordAddressEntity pra : entity.getPatientRecordAddress()){
@@ -90,7 +88,7 @@ public class PatientRecordDTO {
 		}
 		this.address = praArr;
 		
-		this.queryOrganizationId = entity.getQueryOrganizationId();
+		this.queryLocationId = entity.getQueryLocationId();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 	}
 	
@@ -125,20 +123,20 @@ public class PatientRecordDTO {
 		this.address = address;
 	}
 
-	public String getOrganizationPatientRecordId() {
-		return organizationPatientRecordId;
+	public String getLocationPatientRecordId() {
+		return locationPatientRecordId;
 	}
 
-	public void setOrganizationPatientRecordId(String organizationPatientRecordId) {
-		this.organizationPatientRecordId = organizationPatientRecordId;
+	public void setLocationPatientRecordId(String locationPatientRecordId) {
+		this.locationPatientRecordId = locationPatientRecordId;
 	}
 
-	public Long getQueryOrganizationId() {
-		return queryOrganizationId;
+	public Long getQueryLocationId() {
+		return queryLocationId;
 	}
 
-	public void setQueryOrganizationId(Long queryOrganizationId) {
-		this.queryOrganizationId = queryOrganizationId;
+	public void setQueryLocationId(Long queryLocationId) {
+		this.queryLocationId = queryLocationId;
 	}
 
 	public List<PatientRecordNameDTO> getPatientRecordName() {

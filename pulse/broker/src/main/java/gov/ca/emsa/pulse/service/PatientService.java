@@ -88,7 +88,7 @@ public class PatientService {
 		return results;
 	}
 
-	@ApiOperation(value="Retrieve a specific document from an organization.")
+	@ApiOperation(value="Retrieve a specific document from a location.")
 	@RequestMapping(value = "/{patientId}/documents/{documentId}")
 	public @ResponseBody String getDocumentContents(@PathVariable("patientId") Long patientId,
 			@PathVariable("documentId") Long documentId,

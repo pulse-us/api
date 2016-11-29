@@ -3,6 +3,7 @@ package gov.ca.emsa.pulse.broker.dto;
 import java.util.Date;
 
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityAddressLineEntity;
+import gov.ca.emsa.pulse.broker.entity.LocationAddressLineEntity;
 
 public class AddressLineDTO {
 
@@ -14,6 +15,13 @@ public class AddressLineDTO {
 	public AddressLineDTO(){}
 
 	public AddressLineDTO(AlternateCareFacilityAddressLineEntity entity) {
+		this.id = entity.getId();
+		this.line = entity.getLine();
+		this.creationDate = entity.getCreationDate();
+		this.lastModifiedDate = entity.getLastModifiedDate();
+	}
+	
+	public AddressLineDTO(LocationAddressLineEntity entity) {
 		this.id = entity.getId();
 		this.line = entity.getLine();
 		this.creationDate = entity.getCreationDate();
