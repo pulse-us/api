@@ -22,7 +22,7 @@ import gov.ca.emsa.pulse.broker.dto.AddressLineDTO;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
 public class AcfManagerTest {
-
+	
 	@Autowired AlternateCareFacilityManager acfManager;
 	
 	@Test

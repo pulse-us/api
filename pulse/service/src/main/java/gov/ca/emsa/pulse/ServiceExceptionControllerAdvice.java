@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -62,9 +63,15 @@ public class ServiceExceptionControllerAdvice {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.UNAUTHORIZED);
 	}
 	
+	@ExceptionHandler(ResourceAccessException.class)
+	public ResponseEntity<ErrorJSONObject> exception(ResourceAccessException e) {
+		logger.error(e.getMessage(), e);
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorJSONObject> exception(Exception ex) {
 		logger.error(ex.getMessage(), ex);
-		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Unknown error"), HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Unknown error. Message was: " + ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
