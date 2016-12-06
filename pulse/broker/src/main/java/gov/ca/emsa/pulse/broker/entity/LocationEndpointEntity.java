@@ -1,6 +1,8 @@
 package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -10,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -49,11 +52,12 @@ public class LocationEndpointEntity {
 	@Column(name = "adapter")
 	private String adapter;
 	
-	@Column(name = "payload_format")
-	private String payloadFormat;
-	
 	@Column(name = "payload_type")
 	private String payloadType;
+	
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "endpointId"  )
+	@Column( name = "location_endpoint_id", nullable = false  )
+	private Set<LocationEndpointMimeTypeEntity> mimeTypes = new LinkedHashSet<LocationEndpointMimeTypeEntity>();
 	
 	@Column(name = "public_key")
 	private String publicKey;
@@ -150,14 +154,6 @@ public class LocationEndpointEntity {
 		this.adapter = adapter;
 	}
 
-	public String getPayloadFormat() {
-		return payloadFormat;
-	}
-
-	public void setPayloadFormat(String payloadFormat) {
-		this.payloadFormat = payloadFormat;
-	}
-
 	public String getPayloadType() {
 		return payloadType;
 	}
@@ -194,7 +190,14 @@ public class LocationEndpointEntity {
 		return !StringUtils.isEmpty(this.getExternalId()) && 
 				this.getEndpointTypeId() != null && this.getEndpointStatusId() != null && 
 				this.getLocationId() != null && !StringUtils.isEmpty(this.getAdapter()) && 
-				!StringUtils.isEmpty(this.getPayloadFormat()) && 
 				!StringUtils.isEmpty(this.getPayloadType());
+	}
+
+	public Set<LocationEndpointMimeTypeEntity> getMimeTypes() {
+		return mimeTypes;
+	}
+
+	public void setMimeTypes(Set<LocationEndpointMimeTypeEntity> mimeTypes) {
+		this.mimeTypes = mimeTypes;
 	}
 }

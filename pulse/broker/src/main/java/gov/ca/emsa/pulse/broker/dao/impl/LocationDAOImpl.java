@@ -16,14 +16,14 @@ import gov.ca.emsa.pulse.broker.dao.LocationAddressLineDAO;
 import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationEndpointMimeTypeDTO;
 import gov.ca.emsa.pulse.broker.entity.EndpointStatusEntity;
 import gov.ca.emsa.pulse.broker.entity.EndpointTypeEntity;
 import gov.ca.emsa.pulse.broker.entity.LocationAddressLineEntity;
 import gov.ca.emsa.pulse.broker.entity.LocationEndpointEntity;
+import gov.ca.emsa.pulse.broker.entity.LocationEndpointMimeTypeEntity;
 import gov.ca.emsa.pulse.broker.entity.LocationEntity;
 import gov.ca.emsa.pulse.broker.entity.LocationStatusEntity;
-import gov.ca.emsa.pulse.broker.manager.impl.DocumentQueryService;
-import gov.ca.emsa.pulse.common.domain.LocationStatus;
 
 @Repository
 public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
@@ -33,7 +33,7 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 	
 	public LocationDTO create(LocationDTO dto) throws EntityExistsException{
 		LocationEntity entity = new LocationEntity();
-		entity.setName(dto.getName());
+		entity.setName(dto.getName().trim());
 		entity.setDescription(dto.getDescription());
 		entity.setParentOrganizationName(dto.getParentOrgName());
 		entity.setType(dto.getType());
@@ -85,6 +85,14 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 					entityManager.persist(endpointEntity);
 					entityManager.flush();
 					entity.getEndpoints().add(endpointEntity);
+					
+					if(endpointEntity.getMimeTypes() != null) {
+						for(LocationEndpointMimeTypeEntity mimeTypeEntity : endpointEntity.getMimeTypes()) {
+							mimeTypeEntity.setEndpointId(endpointEntity.getId());
+							entityManager.persist(mimeTypeEntity);
+							entityManager.flush();
+						}
+					}
 				}
 			}
 		}
@@ -159,6 +167,40 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 					entityManager.merge(updatedEndpointEntity);
 					entityManager.flush();
 				}
+				
+				//mime types to remove
+				if(updatedEndpointEntity.getMimeTypes() != null) {
+					for(LocationEndpointMimeTypeEntity mimetypeEntity : updatedEndpointEntity.getMimeTypes()) {
+						boolean mimeTypeExists = false;
+						for(LocationEndpointMimeTypeDTO mimetypeDto : updatedEndpointDto.getMimeTypes()) {
+							if(mimetypeEntity.getMimeType().equals(mimetypeDto.getMimeType())) {
+								mimeTypeExists = true;
+							}
+						}
+						if(!mimeTypeExists) {
+							entityManager.remove(mimetypeEntity);
+							entityManager.flush();
+						}
+					}
+					//mime types to add
+					if(updatedEndpointEntity.getMimeTypes() != null) {
+						for(LocationEndpointMimeTypeDTO mimetypeDto : updatedEndpointDto.getMimeTypes()) {
+							boolean mimeTypeExists = false;
+							for(LocationEndpointMimeTypeEntity mimetypeEntity : updatedEndpointEntity.getMimeTypes()) {
+								if(mimetypeEntity.getMimeType().equals(mimetypeDto.getMimeType())) {
+									mimeTypeExists = true;
+								}
+							}
+							if(!mimeTypeExists) {
+								LocationEndpointMimeTypeEntity mtEntityToAdd = new LocationEndpointMimeTypeEntity();
+								mtEntityToAdd.setMimeType(mimetypeDto.getMimeType());
+								mtEntityToAdd.setEndpointId(updatedEndpointEntity.getId());
+								entityManager.persist(mtEntityToAdd);
+								entityManager.flush();
+							}
+						}
+					}
+				}
 			} else {
 				//the existing endpoint was not found in the update
 				entityManager.remove(currEndpointEntity);
@@ -183,6 +225,14 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 					entityManager.persist(endpointEntity);
 					entityManager.flush();
 					entity.getEndpoints().add(endpointEntity);
+					
+					for(LocationEndpointMimeTypeDTO mimetypeDto : endpointDto.getMimeTypes()) {
+						LocationEndpointMimeTypeEntity mtEntityToAdd = new LocationEndpointMimeTypeEntity();
+						mtEntityToAdd.setMimeType(mimetypeDto.getMimeType());
+						mtEntityToAdd.setEndpointId(endpointEntity.getId());
+						entityManager.persist(mtEntityToAdd);
+						entityManager.flush();
+					}
 				}
 			}
 		}
@@ -285,12 +335,29 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 		return result;
 	}
 	
+	private LocationEndpointMimeTypeEntity getEndpointMimeType(Long endpointId, String mimeType) {
+		LocationEndpointMimeTypeEntity result = null;
+		Query query = entityManager.createQuery("from LocationEndpointMimeTypeEntity "
+				+ "WHERE endpointId = :endpointId "
+				+ "UPPER(mimeType) = :mimeType ",
+				LocationEndpointMimeTypeEntity.class);
+		query.setParameter("endpointId", endpointId);
+		query.setParameter("mimeType", mimeType.toUpperCase());
+		List<LocationEndpointMimeTypeEntity> results = query.getResultList();
+		if(results == null || results.size() == 0) {
+			return null;
+		}
+		result = results.get(0);
+		return result;
+	}
+	
 	private LocationEntity getById(Long id) {
 		Query query = entityManager.createQuery("SELECT DISTINCT loc "
 				+ "FROM LocationEntity loc "
 				+ "JOIN FETCH loc.locationStatus "
 				+ "LEFT OUTER JOIN FETCH loc.lines " 
-				+ "LEFT OUTER JOIN FETCH loc.endpoints "
+				+ "LEFT OUTER JOIN FETCH loc.endpoints endpoints "
+				+ "LEFT OUTER JOIN FETCH endpoints.mimeTypes "
 				+ "WHERE loc.id = :id", LocationEntity.class);
 		query.setParameter("id", id);
 		
@@ -306,7 +373,8 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 				+ "FROM LocationEntity loc "
 				+ "JOIN FETCH loc.locationStatus "
 				+ "LEFT OUTER JOIN FETCH loc.lines " 
-				+ "LEFT OUTER JOIN FETCH loc.endpoints "
+				+ "LEFT OUTER JOIN FETCH loc.endpoints endpoints "
+				+ "LEFT OUTER JOIN FETCH endpoints.mimeTypes "
 				+ "WHERE loc.name LIKE :name", LocationEntity.class);
 		query.setParameter("name", name);
 		
@@ -318,7 +386,8 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 				+ "FROM LocationEntity loc "
 				+ "JOIN FETCH loc.locationStatus "
 				+ "LEFT OUTER JOIN FETCH loc.lines " 
-				+ "LEFT OUTER JOIN FETCH loc.endpoints "
+				+ "LEFT OUTER JOIN FETCH loc.endpoints endpoints "
+				+ "LEFT OUTER JOIN FETCH endpoints.mimeTypes "
 				+ "WHERE loc.externalId = :externalId", LocationEntity.class);
 		query.setParameter("externalId", externalId);
 		
@@ -335,7 +404,8 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 				+ "FROM LocationEntity loc "
 				+ "JOIN FETCH loc.locationStatus "
 				+ "LEFT OUTER JOIN FETCH loc.lines " 
-				+ "LEFT OUTER JOIN FETCH loc.endpoints ", LocationEntity.class);
+				+ "LEFT OUTER JOIN FETCH loc.endpoints endpoints "
+				+ "LEFT OUTER JOIN FETCH endpoints.mimeTypes ", LocationEntity.class);
 		return query.getResultList();
 	}
 	
@@ -368,7 +438,25 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 		}
 		endpointEntity.setExternalId(endpointDto.getExternalId());
 		endpointEntity.setExternalLastUpdateDate(endpointDto.getExternalLastUpdateDate());
-		endpointEntity.setPayloadFormat(endpointDto.getPayloadFormat());
+		if(endpointDto.getMimeTypes() != null && endpointDto.getMimeTypes().size() > 0) {
+			for(LocationEndpointMimeTypeDTO mimetypeDto : endpointDto.getMimeTypes()) {
+				if(endpointDto.getId() != null) {
+					LocationEndpointMimeTypeEntity mtEntity = 
+							getEndpointMimeType(endpointDto.getId(), mimetypeDto.getMimeType());
+					if(mtEntity == null) {
+						mtEntity = new LocationEndpointMimeTypeEntity();
+						mtEntity.setMimeType(mimetypeDto.getMimeType());
+						endpointEntity.getMimeTypes().add(mtEntity);
+					} else {
+						endpointEntity.getMimeTypes().add(mtEntity);
+					}
+				} else {
+					LocationEndpointMimeTypeEntity mtEntity = new LocationEndpointMimeTypeEntity();
+					mtEntity.setMimeType(mimetypeDto.getMimeType());
+					endpointEntity.getMimeTypes().add(mtEntity);
+				}
+			}
+		}
 		endpointEntity.setPayloadType(endpointDto.getPayloadType());
 		endpointEntity.setPublicKey(endpointDto.getPublicKey());
 		endpointEntity.setUrl(endpointDto.getUrl());

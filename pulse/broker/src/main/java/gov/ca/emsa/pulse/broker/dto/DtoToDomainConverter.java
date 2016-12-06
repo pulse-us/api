@@ -15,6 +15,7 @@ import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.Endpoint;
+import gov.ca.emsa.pulse.common.domain.EndpointMimeType;
 import gov.ca.emsa.pulse.common.domain.EndpointStatus;
 import gov.ca.emsa.pulse.common.domain.EndpointType;
 import gov.ca.emsa.pulse.common.domain.Location;
@@ -270,7 +271,11 @@ public class DtoToDomainConverter {
 			result.setEndpointType(type);
 		}
 		result.setExternalId(dto.getExternalId());
-		result.setPayloadFormat(dto.getPayloadFormat());
+		if(dto.getMimeTypes() != null && dto.getMimeTypes().size() > 0) {
+			for(LocationEndpointMimeTypeDTO dtoMimeType : dto.getMimeTypes()) {
+				result.getMimeTypes().add(convert(dtoMimeType));
+			}
+		}
 		result.setPayloadType(dto.getPayloadType());
 		result.setPublicKey(dto.getPublicKey());
 		result.setUrl(dto.getUrl());
@@ -278,6 +283,13 @@ public class DtoToDomainConverter {
 		result.setExternalLastUpdateDate(dto.getExternalLastUpdateDate());
 		result.setCreationDate(dto.getCreationDate());
 		
+		return result;
+	}
+	
+	public static EndpointMimeType convert(LocationEndpointMimeTypeDTO dtoObj) {
+		EndpointMimeType result = new EndpointMimeType();
+		result.setId(dtoObj.getId());
+		result.setMimeType(dtoObj.getMimeType());
 		return result;
 	}
 	

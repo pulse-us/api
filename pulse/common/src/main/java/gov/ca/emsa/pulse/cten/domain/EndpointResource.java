@@ -8,7 +8,7 @@ public class EndpointResource {
 	private ResourceMetadata meta;
 	private String name;
 	private String address;
-	private String payloadFormat;
+	private List<String> payloadMimeType;
 	private List<ResourceType> payloadType;
 	private ResourceCoding connectionType;
 	private String publicKey;
@@ -17,6 +17,7 @@ public class EndpointResource {
 	
 	public EndpointResource() {
 		payloadType = new ArrayList<ResourceType>();
+		payloadMimeType = new ArrayList<String>();
 	}
 	public String getStatus() {
 		return status;
@@ -41,12 +42,6 @@ public class EndpointResource {
 	}
 	public void setAddress(String address) {
 		this.address = address;
-	}
-	public String getPayloadFormat() {
-		return payloadFormat;
-	}
-	public void setPayloadFormat(String payloadFormat) {
-		this.payloadFormat = payloadFormat;
 	}
 	public List<ResourceType> getPayloadType() {
 		return payloadType;
@@ -77,5 +72,11 @@ public class EndpointResource {
 	}
 	public void setId(String id) {
 		this.id = id;
+	}
+	public List<String> getPayloadMimeType() {
+		return payloadMimeType;
+	}
+	public void setPayloadMimeType(List<String> payloadMimeType) {
+		this.payloadMimeType = payloadMimeType;
 	}
 }

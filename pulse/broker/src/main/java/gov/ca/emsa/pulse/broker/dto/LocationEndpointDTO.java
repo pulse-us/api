@@ -1,8 +1,11 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import gov.ca.emsa.pulse.broker.entity.LocationEndpointEntity;
+import gov.ca.emsa.pulse.broker.entity.LocationEndpointMimeTypeEntity;
 
 public class LocationEndpointDTO {
 	
@@ -11,7 +14,7 @@ public class LocationEndpointDTO {
 	private EndpointTypeDTO endpointType;
 	private EndpointStatusDTO endpointStatus;
 	private String adapter;
-	private String payloadFormat;
+	private List<LocationEndpointMimeTypeDTO> mimeTypes;
 	private String payloadType;
 	private String publicKey;
 	private String url;
@@ -20,6 +23,7 @@ public class LocationEndpointDTO {
 	private Date lastModifiedDate;
 	
 	public LocationEndpointDTO(){
+		mimeTypes = new ArrayList<LocationEndpointMimeTypeDTO>();
 	}
 	
 	public LocationEndpointDTO(LocationEndpointEntity entity){
@@ -41,7 +45,12 @@ public class LocationEndpointDTO {
 			this.endpointStatus.setId(entity.getEndpointStatusId());
 		}
 		this.adapter = entity.getAdapter();
-		this.payloadFormat = entity.getPayloadFormat();
+		if(entity.getMimeTypes() != null && entity.getMimeTypes().size() > 0) {
+			for(LocationEndpointMimeTypeEntity entityMimeType : entity.getMimeTypes()) {
+				LocationEndpointMimeTypeDTO dtoMimeType = new LocationEndpointMimeTypeDTO(entityMimeType);
+				this.mimeTypes.add(dtoMimeType);
+			}
+		}
 		this.payloadType = entity.getPayloadType();
 		this.publicKey = entity.getPublicKey();
 		this.url = entity.getUrl();
@@ -114,14 +123,6 @@ public class LocationEndpointDTO {
 		this.adapter = adapter;
 	}
 
-	public String getPayloadFormat() {
-		return payloadFormat;
-	}
-
-	public void setPayloadFormat(String payloadFormat) {
-		this.payloadFormat = payloadFormat;
-	}
-
 	public String getPayloadType() {
 		return payloadType;
 	}
@@ -144,5 +145,13 @@ public class LocationEndpointDTO {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public List<LocationEndpointMimeTypeDTO> getMimeTypes() {
+		return mimeTypes;
+	}
+
+	public void setMimeTypes(List<LocationEndpointMimeTypeDTO> mimeTypes) {
+		this.mimeTypes = mimeTypes;
 	}
 }
