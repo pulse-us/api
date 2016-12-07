@@ -148,90 +148,26 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 			}
 		}
 		
-		//look for endpoints to remove or update
-		for(LocationEndpointEntity currEndpointEntity : entity.getEndpoints()) {
-			String externalId = currEndpointEntity.getExternalId();
-			LocationEndpointDTO updatedEndpointDto = null;
+		//it's very messy to figure out what to insert/update/delete so let's
+		//just delete them all and do an insert
+		deleteAllEndpointsForLocation(dto.getId());
+		//add all the endpoints
+		if(dto.getEndpoints() != null && dto.getEndpoints().size() > 0) {
 			for(LocationEndpointDTO endpointDto : dto.getEndpoints()) {
-				if(endpointDto.getExternalId().equals(externalId)) {
-					updatedEndpointDto = endpointDto;
-				}
-			}
-			
-			if(updatedEndpointDto != null) {
-				LocationEndpointEntity updatedEndpointEntity = convert(updatedEndpointDto);
-				updatedEndpointEntity.setId(currEndpointEntity.getId());
-				updatedEndpointEntity.setLocationId(currEndpointEntity.getLocationId());
-				//insert the endpoint if required fields are set
-				if(updatedEndpointEntity.hasRequiredFields()) {
-					entityManager.merge(updatedEndpointEntity);
-					entityManager.flush();
-				}
-				
-				//mime types to remove
-				if(updatedEndpointEntity.getMimeTypes() != null) {
-					for(LocationEndpointMimeTypeEntity mimetypeEntity : updatedEndpointEntity.getMimeTypes()) {
-						boolean mimeTypeExists = false;
-						for(LocationEndpointMimeTypeDTO mimetypeDto : updatedEndpointDto.getMimeTypes()) {
-							if(mimetypeEntity.getMimeType().equals(mimetypeDto.getMimeType())) {
-								mimeTypeExists = true;
-							}
-						}
-						if(!mimeTypeExists) {
-							entityManager.remove(mimetypeEntity);
-							entityManager.flush();
-						}
-					}
-					//mime types to add
-					if(updatedEndpointEntity.getMimeTypes() != null) {
-						for(LocationEndpointMimeTypeDTO mimetypeDto : updatedEndpointDto.getMimeTypes()) {
-							boolean mimeTypeExists = false;
-							for(LocationEndpointMimeTypeEntity mimetypeEntity : updatedEndpointEntity.getMimeTypes()) {
-								if(mimetypeEntity.getMimeType().equals(mimetypeDto.getMimeType())) {
-									mimeTypeExists = true;
-								}
-							}
-							if(!mimeTypeExists) {
-								LocationEndpointMimeTypeEntity mtEntityToAdd = new LocationEndpointMimeTypeEntity();
-								mtEntityToAdd.setMimeType(mimetypeDto.getMimeType());
-								mtEntityToAdd.setEndpointId(updatedEndpointEntity.getId());
-								entityManager.persist(mtEntityToAdd);
-								entityManager.flush();
-							}
-						}
-					}
-				}
-			} else {
-				//the existing endpoint was not found in the update
-				entityManager.remove(currEndpointEntity);
-				entityManager.flush();
-				entity.getEndpoints().remove(currEndpointEntity);
-			}
-		}
-		
-		//look for ones to add
-		for(LocationEndpointDTO endpointDto : dto.getEndpoints()) {
-			boolean alreadyExists = false;
-			for(LocationEndpointEntity currEndpointEntity : entity.getEndpoints()) {
-				if(currEndpointEntity.getExternalId().equals(endpointDto.getExternalId())) {
-					alreadyExists = true;
-				}
-			}
-			if(!alreadyExists) {
 				LocationEndpointEntity endpointEntity = convert(endpointDto);
 				endpointEntity.setLocationId(entity.getId());
-				
+				//insert the endpoint if required fields are set
 				if(endpointEntity.hasRequiredFields()) {
 					entityManager.persist(endpointEntity);
 					entityManager.flush();
 					entity.getEndpoints().add(endpointEntity);
 					
-					for(LocationEndpointMimeTypeDTO mimetypeDto : endpointDto.getMimeTypes()) {
-						LocationEndpointMimeTypeEntity mtEntityToAdd = new LocationEndpointMimeTypeEntity();
-						mtEntityToAdd.setMimeType(mimetypeDto.getMimeType());
-						mtEntityToAdd.setEndpointId(endpointEntity.getId());
-						entityManager.persist(mtEntityToAdd);
-						entityManager.flush();
+					if(endpointEntity.getMimeTypes() != null) {
+						for(LocationEndpointMimeTypeEntity mimeTypeEntity : endpointEntity.getMimeTypes()) {
+							mimeTypeEntity.setEndpointId(endpointEntity.getId());
+							entityManager.persist(mimeTypeEntity);
+							entityManager.flush();
+						}
 					}
 				}
 			}
@@ -294,6 +230,13 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 			return null;
 		}
 		return new LocationDTO(result);
+	}
+	
+	private void deleteAllEndpointsForLocation(Long locationId) {
+		Query query = entityManager.createQuery("DELETE from LocationEndpointEntity where locationId = :locationId");
+		query.setParameter("locationId", locationId);
+		query.executeUpdate();
+		entityManager.flush();
 	}
 	
 	private LocationStatusEntity getLocationStatusByName(String name) {

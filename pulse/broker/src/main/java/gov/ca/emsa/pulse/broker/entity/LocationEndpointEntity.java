@@ -189,8 +189,7 @@ public class LocationEndpointEntity {
 	public boolean hasRequiredFields() {
 		return !StringUtils.isEmpty(this.getExternalId()) && 
 				this.getEndpointTypeId() != null && this.getEndpointStatusId() != null && 
-				this.getLocationId() != null && !StringUtils.isEmpty(this.getAdapter()) && 
-				!StringUtils.isEmpty(this.getPayloadType());
+				this.getLocationId() != null && !StringUtils.isEmpty(this.getAdapter());
 	}
 
 	public Set<LocationEndpointMimeTypeEntity> getMimeTypes() {

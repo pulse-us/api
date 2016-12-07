@@ -62,6 +62,7 @@ public class LocationManagerImpl implements LocationManager {
 					locationDao.create(toCreate);
 				} catch(Exception ex) {
 					logger.error("Error creating location with external id " + externalId, ex);
+					ex.printStackTrace();
 				}
 			} else {
 				try {
@@ -70,6 +71,7 @@ public class LocationManagerImpl implements LocationManager {
 					locationDao.update(toUpdate);
 				} catch(Exception ex) {
 					logger.error("Error updating location with id " + existingLocation.getId(), ex);
+					ex.printStackTrace();
 				}
 			}
 		}
