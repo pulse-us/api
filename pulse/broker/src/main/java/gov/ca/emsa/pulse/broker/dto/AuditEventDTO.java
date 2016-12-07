@@ -31,6 +31,8 @@ public class AuditEventDTO {
 	
 	private AuditPatientDTO auditPatient;
 	
+	private AuditDocumentDTO auditDocument;
+	
 	public AuditEventDTO() {
 		auditHumanRequestors = new ArrayList<AuditHumanRequestorDTO>();
 	}
@@ -46,7 +48,12 @@ public class AuditEventDTO {
 		this.auditRequestSource = new AuditRequestSourceDTO(entity.getAuditRequestSource());
 		this.auditRequestDestination = new AuditRequestDestinationDTO(entity.getAuditRequestDestination());
 		this.auditSource = new AuditSourceDTO(entity.getAuditSource());
-		this.auditQueryParameters = new AuditQueryParametersDTO(entity.getAuditQueryParameters());
+		if(entity.getAuditQueryParameters() != null){
+			this.auditQueryParameters = new AuditQueryParametersDTO(entity.getAuditQueryParameters());
+		}
+		if(entity.getAuditDocument() != null){
+			this.auditDocument = new AuditDocumentDTO(entity.getAuditDocument());
+		}
 		if(entity.getAuditHumanRequestor() != null){
 			for(AuditHumanRequestorEntity humanRequestorEntity : entity.getAuditHumanRequestor()){
 				this.auditHumanRequestors.add(new AuditHumanRequestorDTO(humanRequestorEntity));
@@ -153,6 +160,14 @@ public class AuditEventDTO {
 
 	public void setAuditPatient(AuditPatientDTO auditPatient) {
 		this.auditPatient = auditPatient;
+	}
+
+	public AuditDocumentDTO getAuditDocument() {
+		return auditDocument;
+	}
+
+	public void setAuditDocument(AuditDocumentDTO auditDocument) {
+		this.auditDocument = auditDocument;
 	}
 	
 }

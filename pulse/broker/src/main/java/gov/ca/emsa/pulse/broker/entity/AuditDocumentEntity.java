@@ -43,6 +43,9 @@ public class AuditDocumentEntity {
 	@Column(name="participant_object_detail") 
 	private String participantObjectDetail;
 	
+	@Column(name="participant_object_detail_two") 
+	private String participantObjectDetail2;
+	
 	public Long getId() {
 		return id;
 	}
@@ -124,4 +127,12 @@ public class AuditDocumentEntity {
 		this.participantObjectDetail = participantObjectDetail;
 	}
 
+	public String getParticipantObjectDetail2() {
+		return participantObjectDetail2;
+	}
+
+	public void setParticipantObjectDetail2(String participantObjectDetail2) {
+		this.participantObjectDetail2 = participantObjectDetail2;
+	}
+	
 }

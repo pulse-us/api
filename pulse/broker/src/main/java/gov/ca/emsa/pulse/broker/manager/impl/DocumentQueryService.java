@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
@@ -37,6 +38,7 @@ public class DocumentQueryService implements Runnable {
 	@Autowired private AdapterFactory adapterFactory;
 	private PatientDTO toSearch;
 	private SAMLInput samlInput;
+	private CommonUser user;
 	
 	@Override
 	public void run() {
@@ -64,7 +66,7 @@ public class DocumentQueryService implements Runnable {
 		if(adapter != null) {
 			logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 			try {
-				searchResults = adapter.queryDocuments(endpointToQuery, patientLocationMap, samlInput);
+				searchResults = adapter.queryDocuments(user, endpointToQuery, patientLocationMap, samlInput);
 			} catch(Exception ex) {
 				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 				querySuccess = false;
@@ -99,6 +101,20 @@ public class DocumentQueryService implements Runnable {
 		
 		logger.info("Completed query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 	}
+	
+	
+
+	public CommonUser getUser() {
+		return user;
+	}
+
+
+
+	public void setUser(CommonUser user) {
+		this.user = user;
+	}
+
+
 
 	public LocationDTO getLocation() {
 		return location;

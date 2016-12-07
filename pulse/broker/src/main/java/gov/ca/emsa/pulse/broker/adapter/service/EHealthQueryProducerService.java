@@ -4,6 +4,7 @@ import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.SOAPException;
 
@@ -12,6 +13,7 @@ import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
+import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
 import org.opensaml.common.SAMLException;
 
 public interface EHealthQueryProducerService {
@@ -25,5 +27,6 @@ public interface EHealthQueryProducerService {
 	public PRPAIN201305UV02 unMarshallPatientDiscoveryRequestObject(String xml) throws SOAPException, SAMLException;
 	public AdhocQueryRequest unMarshallDocumentQueryRequestObject(String xml) throws SAMLException;
 	public RetrieveDocumentSetRequestType unMarshallDocumentSetRetrieveRequestObject(String xml) throws SAMLException;
+	public String marshallQueryByParameter(PRPAMT201306UV02QueryByParameter request) throws JAXBException;
 
 }

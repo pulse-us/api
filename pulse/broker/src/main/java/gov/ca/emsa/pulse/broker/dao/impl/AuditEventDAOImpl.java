@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import gov.ca.emsa.pulse.broker.dao.AuditDocumentDAO;
 import gov.ca.emsa.pulse.broker.dao.AuditEventDAO;
 import gov.ca.emsa.pulse.broker.dao.AuditHumanRequestorDAO;
 import gov.ca.emsa.pulse.broker.dao.AuditPatientDAO;
@@ -7,6 +8,7 @@ import gov.ca.emsa.pulse.broker.dao.AuditQueryParametersDAO;
 import gov.ca.emsa.pulse.broker.dao.AuditRequestDestinationDAO;
 import gov.ca.emsa.pulse.broker.dao.AuditRequestSourceDAO;
 import gov.ca.emsa.pulse.broker.dao.AuditSourceDAO;
+import gov.ca.emsa.pulse.broker.dto.AuditDocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditEventDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditHumanRequestorDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditPatientDTO;
@@ -14,6 +16,7 @@ import gov.ca.emsa.pulse.broker.dto.AuditQueryParametersDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditRequestDestinationDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditRequestSourceDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditSourceDTO;
+import gov.ca.emsa.pulse.broker.entity.AuditDocumentEntity;
 import gov.ca.emsa.pulse.broker.entity.AuditEventEntity;
 import gov.ca.emsa.pulse.broker.entity.AuditHumanRequestorEntity;
 import gov.ca.emsa.pulse.broker.entity.AuditPatientEntity;
@@ -42,6 +45,7 @@ public class AuditEventDAOImpl extends BaseDAOImpl implements AuditEventDAO {
 	@Autowired AuditRequestDestinationDAO auditRequestDestinationDAO;
 	@Autowired AuditRequestSourceDAO auditRequestSourceDAO;
 	@Autowired AuditSourceDAO auditSourceDAO;
+	@Autowired AuditDocumentDAO auditDocumentDAO;
 	
 	
 	@Override
@@ -84,22 +88,38 @@ public class AuditEventDAOImpl extends BaseDAOImpl implements AuditEventDAO {
 		toInsertAuditSourceEntity.setAuditSourceId(toInsertAuditSourceDTO.getAuditSourceId());
 		toInsertAuditSourceEntity.setAuditSourceTypeCode(toInsertAuditSourceDTO.getAuditSourceTypeCode());
 		audit.setAuditSource(toInsertAuditSourceEntity);
-
-		AuditQueryParametersEntity toInsertAuditQueryParameterEntity = new AuditQueryParametersEntity();
-		AuditQueryParametersDTO toInsertAuditQueryParameterDTO = auditQueryParametersDAO.createAuditQueryParameters(dto.getAuditQueryParameters());
-		toInsertAuditQueryParameterEntity.setId(toInsertAuditQueryParameterDTO.getId());
-		toInsertAuditQueryParameterEntity.setParticipantObjectDataLifecycle(toInsertAuditQueryParameterDTO.getParticipantObjectDataLifecycle());
-		toInsertAuditQueryParameterEntity.setParticipantObjectTypeCode(toInsertAuditQueryParameterDTO.getParticipantObjectTypeCode());
-		toInsertAuditQueryParameterEntity.setParticipantObjectTypeCodeRole(toInsertAuditQueryParameterDTO.getParticipantObjectTypeCodeRole());
-		toInsertAuditQueryParameterEntity.setParticipantObjectIdTypeCode(toInsertAuditQueryParameterDTO.getParticipantObjectIdTypeCode());
-		toInsertAuditQueryParameterEntity.setParticipantObjectSensitivity(toInsertAuditQueryParameterDTO.getParticipantObjectSensitivity());
-		toInsertAuditQueryParameterEntity.setParticipantObjectId(toInsertAuditQueryParameterDTO.getParticipantObjectId());
-		toInsertAuditQueryParameterEntity.setParticipantObjectName(toInsertAuditQueryParameterDTO.getParticipantObjectName());
-		toInsertAuditQueryParameterEntity.setParticipantObjectQuery(toInsertAuditQueryParameterDTO.getParticipantObjectQuery());
-		toInsertAuditQueryParameterEntity.setParticipantObjectDetail(toInsertAuditQueryParameterDTO.getParticipantObjectDetail());
-		audit.setAuditQueryParameters(toInsertAuditQueryParameterEntity);
 		
+		if(dto.getAuditQueryParameters() != null){
+			AuditQueryParametersEntity toInsertAuditQueryParameterEntity = new AuditQueryParametersEntity();
+			AuditQueryParametersDTO toInsertAuditQueryParameterDTO = auditQueryParametersDAO.createAuditQueryParameters(dto.getAuditQueryParameters());
+			toInsertAuditQueryParameterEntity.setId(toInsertAuditQueryParameterDTO.getId());
+			toInsertAuditQueryParameterEntity.setParticipantObjectDataLifecycle(toInsertAuditQueryParameterDTO.getParticipantObjectDataLifecycle());
+			toInsertAuditQueryParameterEntity.setParticipantObjectTypeCode(toInsertAuditQueryParameterDTO.getParticipantObjectTypeCode());
+			toInsertAuditQueryParameterEntity.setParticipantObjectTypeCodeRole(toInsertAuditQueryParameterDTO.getParticipantObjectTypeCodeRole());
+			toInsertAuditQueryParameterEntity.setParticipantObjectIdTypeCode(toInsertAuditQueryParameterDTO.getParticipantObjectIdTypeCode());
+			toInsertAuditQueryParameterEntity.setParticipantObjectSensitivity(toInsertAuditQueryParameterDTO.getParticipantObjectSensitivity());
+			toInsertAuditQueryParameterEntity.setParticipantObjectId(toInsertAuditQueryParameterDTO.getParticipantObjectId());
+			toInsertAuditQueryParameterEntity.setParticipantObjectName(toInsertAuditQueryParameterDTO.getParticipantObjectName());
+			toInsertAuditQueryParameterEntity.setParticipantObjectQuery(toInsertAuditQueryParameterDTO.getParticipantObjectQuery());
+			toInsertAuditQueryParameterEntity.setParticipantObjectDetail(toInsertAuditQueryParameterDTO.getParticipantObjectDetail());
+			audit.setAuditQueryParameters(toInsertAuditQueryParameterEntity);
+		}
 		
+		if(dto.getAuditDocument() != null){
+			AuditDocumentEntity toInsertAuditDocumentEntity = new AuditDocumentEntity();
+			AuditDocumentDTO toInsertAuditDocumentDTO = auditDocumentDAO.createAuditDocument(dto.getAuditDocument());
+			toInsertAuditDocumentEntity.setId(toInsertAuditDocumentDTO.getId());
+			toInsertAuditDocumentEntity.setParticipantObjectDataLifecycle(toInsertAuditDocumentDTO.getParticipantObjectDataLifecycle());
+			toInsertAuditDocumentEntity.setParticipantObjectTypeCode(toInsertAuditDocumentDTO.getParticipantObjectTypeCode());
+			toInsertAuditDocumentEntity.setParticipantObjectTypeCodeRole(toInsertAuditDocumentDTO.getParticipantObjectTypeCodeRole());
+			toInsertAuditDocumentEntity.setParticipantObjectIdTypeCode(toInsertAuditDocumentDTO.getParticipantObjectIdTypeCode());
+			toInsertAuditDocumentEntity.setParticipantObjectSensitivity(toInsertAuditDocumentDTO.getParticipantObjectSensitivity());
+			toInsertAuditDocumentEntity.setParticipantObjectId(toInsertAuditDocumentDTO.getParticipantObjectId());
+			toInsertAuditDocumentEntity.setParticipantObjectName(toInsertAuditDocumentDTO.getParticipantObjectName());
+			toInsertAuditDocumentEntity.setParticipantObjectQuery(toInsertAuditDocumentDTO.getParticipantObjectQuery());
+			toInsertAuditDocumentEntity.setParticipantObjectDetail(toInsertAuditDocumentDTO.getParticipantObjectDetail());
+			audit.setAuditDocument(toInsertAuditDocumentEntity);
+		}
 		
 		if(dto.getAuditPatient() != null){
 			AuditPatientEntity auditPatientEntity = new AuditPatientEntity();
@@ -163,6 +183,7 @@ public class AuditEventDAOImpl extends BaseDAOImpl implements AuditEventDAO {
 				+ "LEFT OUTER JOIN FETCH aud.auditSource "
 				+ "LEFT OUTER JOIN FETCH aud.auditQueryParameters "
 				+ "LEFT OUTER JOIN FETCH aud.auditHumanRequestor "
+				+ "LEFT OUTER JOIN FETCH aud.auditDocument "
 				+ "where aud.id = :entityid) ", 
 				AuditEventEntity.class );
 		

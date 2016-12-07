@@ -1,6 +1,8 @@
 package gov.ca.emsa.pulse.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Base64;
 
 import gov.ca.emsa.pulse.broker.audit.AuditHumanRequestor;
 import gov.ca.emsa.pulse.broker.dto.AuditDocumentDTO;
@@ -13,12 +15,18 @@ import gov.ca.emsa.pulse.broker.dto.AuditSourceDTO;
 
 public class AuditUtil {
 	
+	public static String base64EncodeMessage(String queryByParameters) throws UnsupportedEncodingException{
+		byte[] bytesEncoded = Base64.getEncoder().encode(queryByParameters.getBytes());
+		String encodedString = new String(bytesEncoded, "UTF-8");
+		return encodedString;
+	}
+	
 	public static AuditRequestSourceDTO createAuditRequestSource(String userId, String alternativeUserId, String userName, boolean userIsRequestor,
 			String roleIdCode, String networkAccessPointTypeCode, String networkAccessPointId){
 		AuditRequestSourceDTO auditRequestSourceDTO = new AuditRequestSourceDTO();
 		auditRequestSourceDTO.setUserId(userId);
 		auditRequestSourceDTO.setAlternativeUserId(alternativeUserId);
-		auditRequestSourceDTO.setUserName(userId);
+		auditRequestSourceDTO.setUserName(userName);
 		auditRequestSourceDTO.setUserIsRequestor(userIsRequestor);
 		auditRequestSourceDTO.setRoleIdCode(roleIdCode);
 		auditRequestSourceDTO.setNetworkAccessPointTypeCode(networkAccessPointTypeCode);
@@ -32,7 +40,7 @@ public class AuditUtil {
 		AuditHumanRequestorDTO auditHumanRequestorDTO = new AuditHumanRequestorDTO();
 		auditHumanRequestorDTO.setUserId(userId);
 		auditHumanRequestorDTO.setAlternativeUserId(alternativeUserId);
-		auditHumanRequestorDTO.setUserName(userId);
+		auditHumanRequestorDTO.setUserName(userName);
 		auditHumanRequestorDTO.setUserIsRequestor(userIsRequestor);
 		auditHumanRequestorDTO.setRoleIdCode(roleIdCode);
 		auditHumanRequestorDTO.setNetworkAccessPointTypeCode(networkAccessPointTypeCode);
@@ -47,7 +55,7 @@ public class AuditUtil {
 		AuditRequestDestinationDTO auditRequestDestinationDTO = new AuditRequestDestinationDTO();
 		auditRequestDestinationDTO.setUserId(userId);
 		auditRequestDestinationDTO.setAlternativeUserId(alternativeUserId);
-		auditRequestDestinationDTO.setUserName(userId);
+		auditRequestDestinationDTO.setUserName(userName);
 		auditRequestDestinationDTO.setUserIsRequestor(userIsRequestor);
 		auditRequestDestinationDTO.setRoleIdCode(roleIdCode);
 		auditRequestDestinationDTO.setNetworkAccessPointTypeCode(networkAccessPointTypeCode);
@@ -101,7 +109,7 @@ public class AuditUtil {
 	
 	public static AuditDocumentDTO createAuditDocument(int participantObjectTypeCode, int participantObjectTypeCodeRole,
 			String participantObjectDataLifecycle, String participantObjectIdTypeCode, String participantObjectSensitivity, String participantObjectId,
-			String participantObjectName, String participantObjectQuery, String participantObjectDetail){
+			String participantObjectName, String participantObjectQuery, String participantObjectDetail, String participantObjectDetail2){
 		AuditDocumentDTO auditDocumentDTO = new AuditDocumentDTO();
 		auditDocumentDTO.setParticipantObjectTypeCode(participantObjectTypeCode);
 		auditDocumentDTO.setParticipantObjectTypeCodeRole(participantObjectTypeCodeRole);
@@ -112,6 +120,7 @@ public class AuditUtil {
 		auditDocumentDTO.setParticipantObjectName(participantObjectName);
 		auditDocumentDTO.setParticipantObjectQuery(participantObjectQuery);
 		auditDocumentDTO.setParticipantObjectDetail(participantObjectDetail);
+		auditDocumentDTO.setParticipantObjectDetail2(participantObjectDetail2);
 		
 		return auditDocumentDTO;
 	}

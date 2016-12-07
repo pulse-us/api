@@ -113,9 +113,9 @@ public class PatientService {
 
 		String result = "";
 		if(cacheOnly == null || cacheOnly.booleanValue() == false) {
-			result = docManager.getDocumentById(input, documentId);
+			result = docManager.getDocumentById(user, input, documentId);
 		} else {
-			docManager.getDocumentById(input, documentId);
+			docManager.getDocumentById(user, input, documentId);
 		}
 		return result;
 	}
@@ -125,55 +125,5 @@ public class PatientService {
 	public void deletePatient(@PathVariable(value="patientId") Long patientId) 
 	 throws SQLException {
 		patientManager.delete(patientId);
-	}
-	
-	// create an audit event for an initiating gateway audit message
-	private void createAuditEventIG() throws UnknownHostException{
-		AuditRequestSourceDTO auditRequestSourceDTO = AuditUtil.createAuditRequestSource(InetAddress.getLocalHost().toString() + "/patientDiscovery", // not sure about this
-				ManagementFactory.getRuntimeMXBean().getName().split("@")[0],
-				"", // this is optional
-				true, // this is optional
-				"EV(110153, DCM, “Source”)",
-				"2",
-				InetAddress.getLocalHost().toString());
-		ArrayList<AuditHumanRequestorDTO> auditHumanRequestorDTO = AuditUtil.createAuditHumanRequestor(UserUtil.getCurrentUser().getFirstName()
-													+ " " + UserUtil.getCurrentUser().getLastName() + " " + UserUtil.getCurrentUser().getEmail(), 
-				"", // optional
-				"", // optional
-				false, // optional
-				"", // optional
-				"", // optional
-				"");// optional
-		AuditRequestDestinationDTO auditRequestDestinationDTO = AuditUtil.createAuditRequestDestination("https://www.someihe.com/patientDiscovery",
-				"", // optional
-				"", // optional
-				false, 
-				"EV(110152, DCM, “Destination”)", 
-				"2", 
-				"The IP of the request destination ");
-		AuditQueryParametersDTO auditQueryParametersDTO = AuditUtil.createAuditQueryParameters(2, 
-				24, 
-				"", // optional 
-				"EV(“ITI-55, “IHE Transactions”, “Cross Gateway Patient Discovery”)", 
-				"", // optional 
-				"", // optional 
-				"", // optional
-				"", // the QueryByParameter segment of the query, base64 encoded.
-				""); // The value of “ihe:homeCommunityID” as the value of the attribute type and the value of the homeCommunityID as the value of the attribute value.
-		AuditSourceDTO auditSouceDTO = AuditUtil.createAuditSource("", // optional 
-				"", // optional 
-				""); // optional
-		AuditEventDTO auditEventDTO = new AuditEventDTO();
-		auditEventDTO.setEventId("EV(110112, DCM, “Query”)");
-		auditEventDTO.setEventActionCode("E");
-		auditEventDTO.setEventDateTime(new Date().toString());
-		auditEventDTO.setEventOutcomeIndicator(""); // TODO need to figure out this value
-		auditEventDTO.setEventTypeCode("EV(“ITI-55”, “IHE Transactions”, “Cross Gateway Patient Discovery”)");
-		auditEventDTO.setAuditRequestSource(auditRequestSourceDTO);
-		auditEventDTO.setAuditHumanRequestors(auditHumanRequestorDTO);
-		auditEventDTO.setAuditRequestDestination(auditRequestDestinationDTO);
-		auditEventDTO.setAuditQueryParameters(auditQueryParametersDTO);
-		auditEventDTO.setAuditSource(auditSouceDTO);
-		auditManager.addAuditEventEntryIG(auditEventDTO);
 	}
 }

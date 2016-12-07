@@ -78,6 +78,13 @@ public class AuditEventEntity {
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn( name = "audit_patient_id", insertable = false, updatable = false)
 	private AuditPatientEntity auditPatient;
+	
+	@Column( name = "audit_document_id")
+	private Long auditDocumentId;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn( name = "audit_document_id", insertable = false, updatable = false)
+	private AuditDocumentEntity auditDocument;
 
 	public Long getId() {
 		return id;
@@ -217,4 +224,21 @@ public class AuditEventEntity {
 	public void setAuditPatient(AuditPatientEntity auditPatient) {
 		this.auditPatient = auditPatient;
 	}
+
+	public Long getAuditDocumentId() {
+		return auditDocumentId;
+	}
+
+	public void setAuditDocumentId(Long auditDocumentId) {
+		this.auditDocumentId = auditDocumentId;
+	}
+
+	public AuditDocumentEntity getAuditDocument() {
+		return auditDocument;
+	}
+
+	public void setAuditDocument(AuditDocumentEntity auditDocument) {
+		this.auditDocument = auditDocument;
+	}
+
 }

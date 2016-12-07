@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
@@ -36,6 +37,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
+import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
 import org.opensaml.common.SAMLException;
 import org.opensaml.xml.io.MarshallingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,6 +164,16 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 			e.printStackTrace();
 		}
 		return sw.toString();
+	}
+	
+	public String marshallQueryByParameter(PRPAMT201306UV02QueryByParameter request) throws JAXBException{
+
+		JAXBElement<PRPAMT201306UV02QueryByParameter> je = new JAXBElement<PRPAMT201306UV02QueryByParameter>(new QName("PRPAMT201306UV02QueryByParameter"), PRPAMT201306UV02QueryByParameter.class, request);
+		Marshaller documentMarshaller = createMarshaller(createJAXBContext(PRPAMT201306UV02QueryByParameter.class));
+		StringWriter sw = new StringWriter();
+		documentMarshaller.marshal(je, sw);
+		return sw.toString();
+		
 	}
 	
 	public String marshallDocumentQueryRequest(SAMLInput samlInput, AdhocQueryRequest request) throws JAXBException{

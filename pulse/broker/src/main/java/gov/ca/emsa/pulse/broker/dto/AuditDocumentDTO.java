@@ -24,6 +24,8 @@ public class AuditDocumentDTO {
 	
 	private String participantObjectDetail;
 	
+	private String participantObjectDetail2;
+	
 	public AuditDocumentDTO(){
 		
 	}
@@ -38,6 +40,7 @@ public class AuditDocumentDTO {
 		this.participantObjectName = entity.getParticipantObjectName();
 		this.participantObjectQuery = entity.getParticipantObjectQuery();
 		this.participantObjectDetail = entity.getParticipantObjectDetail();
+		this.participantObjectDetail2 = entity.getParticipantObjectDetail2();
 	}
 	
 	public Long getId() {
@@ -121,4 +124,12 @@ public class AuditDocumentDTO {
 		this.participantObjectDetail = participantObjectDetail;
 	}
 
+	public String getParticipantObjectDetail2() {
+		return participantObjectDetail2;
+	}
+
+	public void setParticipantObjectDetail2(String participantObjectDetail2) {
+		this.participantObjectDetail2 = participantObjectDetail2;
+	}
+	
 }
