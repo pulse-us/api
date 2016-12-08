@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.LocationAddressLineEntity;
 import gov.ca.emsa.pulse.broker.entity.LocationEndpointEntity;
+import gov.ca.emsa.pulse.broker.entity.LocationEndpointMimeTypeEntity;
 import gov.ca.emsa.pulse.broker.entity.LocationEntity;
 
 import java.util.ArrayList;

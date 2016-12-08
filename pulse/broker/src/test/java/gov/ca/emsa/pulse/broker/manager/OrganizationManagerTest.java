@@ -4,6 +4,7 @@ import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
 import gov.ca.emsa.pulse.common.domain.Endpoint;
+import gov.ca.emsa.pulse.common.domain.EndpointMimeType;
 import gov.ca.emsa.pulse.common.domain.EndpointStatus;
 import gov.ca.emsa.pulse.common.domain.EndpointType;
 import gov.ca.emsa.pulse.common.domain.Location;
@@ -81,7 +82,9 @@ public class OrganizationManagerTest extends TestCase {
 		endpoint.setEndpointType(type);
 		endpoint.setExternalId("1");
 		endpoint.setExternalLastUpdateDate(new Date());
-		endpoint.setPayloadFormat("application/xml");
+		EndpointMimeType mimeType = new EndpointMimeType();
+		mimeType.setMimeType("application/xml");
+		endpoint.getMimeTypes().add(mimeType);
 		endpoint.setPayloadType("HL7 CCDA");
 		endpoint.setPublicKey("lkdskdshsfdiujjksjewjfdsfdsjfdsfdsfds");
 		endpoint.setUrl("http://www.google.com");
@@ -97,6 +100,11 @@ public class OrganizationManagerTest extends TestCase {
 		for(LocationDTO loc : locationResults) {
 			if(loc.getEndpoints() != null && loc.getEndpoints().size() == 1) {
 				foundEndpoint = true;
+				
+				LocationEndpointDTO locEndpoint = loc.getEndpoints().get(0);
+				assertNotNull(locEndpoint);
+				assertEquals(1, locEndpoint.getMimeTypes().size());
+				assertEquals("application/xml", locEndpoint.getMimeTypes().get(0).getMimeType());
 			}
 		}
 		assertTrue(foundEndpoint);
@@ -148,7 +156,9 @@ public class OrganizationManagerTest extends TestCase {
 		endpoint.setEndpointType(type);
 		endpoint.setExternalId("1");
 		endpoint.setExternalLastUpdateDate(new Date());
-		endpoint.setPayloadFormat("application/xml");
+		EndpointMimeType mimeType = new EndpointMimeType();
+		mimeType.setMimeType("application/xml");
+		endpoint.getMimeTypes().add(mimeType);
 		endpoint.setPayloadType("HL7 CCDA");
 		endpoint.setPublicKey("lkdskdshsfdiujjksjewjfdsfdsjfdsfdsfds");
 		endpoint.setUrl("http://www.google.com");

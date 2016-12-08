@@ -6,6 +6,7 @@ import java.util.List;
 
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.Endpoint;
+import gov.ca.emsa.pulse.common.domain.EndpointMimeType;
 import gov.ca.emsa.pulse.common.domain.EndpointStatus;
 import gov.ca.emsa.pulse.common.domain.EndpointType;
 import gov.ca.emsa.pulse.common.domain.Location;
@@ -111,7 +112,13 @@ public class CtenToPulseConverter {
 		if(ctenResource.getMeta() != null && ctenResource.getMeta().getLastUpdated() != null) {
 			result.setExternalLastUpdateDate(new Date(ctenResource.getMeta().getLastUpdated()));
 		}
-		result.setPayloadFormat(ctenResource.getPayloadFormat());
+		if(ctenResource.getPayloadMimeType() != null && ctenResource.getPayloadMimeType().size() > 0) {
+			for(String mimeType : ctenResource.getPayloadMimeType()) {
+				EndpointMimeType mtDomain = new EndpointMimeType();
+				mtDomain.setMimeType(mimeType);
+				result.getMimeTypes().add(mtDomain);
+			}
+		}
 		if(ctenResource.getPayloadType() != null && ctenResource.getPayloadType().size() > 0) {
 			if(ctenResource.getPayloadType().get(0).getCoding() != null && 
 				ctenResource.getPayloadType().get(0).getCoding().size() > 0)
