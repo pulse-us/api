@@ -15,7 +15,6 @@ public class AuditRequestSourceDAOImpl extends BaseDAOImpl implements AuditReque
 	public AuditRequestSourceDTO createAuditRequestSource(AuditRequestSourceDTO dto){
 		AuditRequestSourceEntity toInsertAuditRequestSourceEntity = new AuditRequestSourceEntity();
 		toInsertAuditRequestSourceEntity.setAlternativeUserId(dto.getAlternativeUserId());
-		toInsertAuditRequestSourceEntity.setId(dto.getId());
 		toInsertAuditRequestSourceEntity.setNetworkAccessPointId(dto.getNetworkAccessPointId());
 		toInsertAuditRequestSourceEntity.setNetworkAccessPointTypeCode(dto.getNetworkAccessPointTypeCode());
 		toInsertAuditRequestSourceEntity.setRoleIdCode(dto.getRoleIdCode());

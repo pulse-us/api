@@ -16,6 +16,9 @@ public class AuditDocumentEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
+	@Column(name="audit_event_id")
+	private Long auditEventId;
+	
 	@Column(name="participant_object_type_code")
 	private int participantObjectTypeCode;
 	
@@ -133,6 +136,14 @@ public class AuditDocumentEntity {
 
 	public void setParticipantObjectDetail2(String participantObjectDetail2) {
 		this.participantObjectDetail2 = participantObjectDetail2;
+	}
+
+	public Long getAuditEventId() {
+		return auditEventId;
+	}
+
+	public void setAuditEventId(Long auditEventId) {
+		this.auditEventId = auditEventId;
 	}
 	
 }

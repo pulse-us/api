@@ -17,6 +17,7 @@ public class AuditSourceDTO {
 	}
 	
 	public AuditSourceDTO(AuditSourceEntity entity) {
+		this.id = entity.getId();
 		this.auditSourceId = entity.getAuditSourceId();
 		this.auditEnterpriseSiteId = entity.getAuditEnterpriseSiteId();
 		this.auditSourceTypeCode = entity.getAuditSourceTypeCode();

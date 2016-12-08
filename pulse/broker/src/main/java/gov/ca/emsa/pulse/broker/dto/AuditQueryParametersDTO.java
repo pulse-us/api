@@ -29,6 +29,7 @@ public class AuditQueryParametersDTO {
 	}
 	
 	public AuditQueryParametersDTO(AuditQueryParametersEntity entity){
+		this.id = entity.getId();
 		this.participantObjectTypeCode = entity.getParticipantObjectTypeCode();
 		this.participantObjectTypeCodeRole = entity.getParticipantObjectTypeCodeRole();
 		this.participantObjectDataLifecycle = entity.getParticipantObjectDataLifecycle();

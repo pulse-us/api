@@ -26,6 +26,7 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -55,6 +56,7 @@ public class AuditDaoTest {
 	
 	@Test
 	@Transactional
+	@Rollback(true)
 	public void testInsertAuditPatientDiscovery() throws UnknownHostException {
 		
 		AuditEventDTO auditEventDTO = new AuditEventDTO();
@@ -64,7 +66,7 @@ public class AuditDaoTest {
 		auditEventDTO.setEventTypeCode("EV(“ITI-55”, “IHE Transactions”, “Cross Gateway Patient Discovery”)");
 		
 		AuditRequestSourceDTO auditRequestSourceDTO = new AuditRequestSourceDTO();
-		auditRequestSourceDTO.setUserId(""); // i dunno if this is right
+		auditRequestSourceDTO.setUserId("");
 		auditRequestSourceDTO.setAlternativeUserId(ManagementFactory.getRuntimeMXBean().getName());
 		auditRequestSourceDTO.setNetworkAccessPointId(InetAddress.getLocalHost().toString());
 		auditRequestSourceDTO.setNetworkAccessPointTypeCode("2");
@@ -93,14 +95,6 @@ public class AuditDaoTest {
 		auditQueryParametersDTO.setParticipantObjectDetail("urn:uuid:a02ca8cd-86fa-4afc-a27c-616c183b2055"); // homeCommunityId
 		auditEventDTO.setAuditQueryParameters(auditQueryParametersDTO);
 		
-		AuditPatientDTO auditPatientDTO = new AuditPatientDTO();
-		auditPatientDTO.setParticipantObjectTypeCode(2);
-		auditPatientDTO.setParticipantObjectTypeCodeRole(24);
-		auditPatientDTO.setParticipantObjectIdTypeCode("EV(“ITI-55, “IHE Transactions”, “Cross Gateway Patient Discovery”)");
-		auditPatientDTO.setParticipantObjectQuery("DBKHOIUDFIFO*G#(*OFDGTD(&#GIUFDOUFD(UG(GFDH");
-		auditPatientDTO.setParticipantObjectDetail("urn:uuid:a02ca8cd-86fa-4afc-a27c-616c183b2055"); // homeCommunityId
-		auditEventDTO.setAuditPatient(auditPatientDTO);
-		
 		AuditHumanRequestorDTO auditHumanRequestorDTO = new AuditHumanRequestorDTO();
 		auditHumanRequestorDTO.setUserId("https://www.someihe.com/patientDiscovery");
 		auditHumanRequestorDTO.setUserIsRequestor(true);
@@ -113,6 +107,10 @@ public class AuditDaoTest {
 		
 		AuditEventDTO insertedAuditEvent = auditDao.createAuditEvent(auditEventDTO);
 		
+		//AuditEventDTO auditEvent = auditDao.getAuditEventById(insertedAuditEvent.getId());
+		
+		//assertNotNull(auditEvent);
+		
 		assertNotNull(insertedAuditEvent);
 		assertEquals(auditEventDTO.getEventTypeCode(), insertedAuditEvent.getEventTypeCode());
 		assertEquals(auditEventDTO.getAuditRequestSource().getNetworkAccessPointId(), insertedAuditEvent.getAuditRequestSource().getNetworkAccessPointId());
@@ -120,12 +118,11 @@ public class AuditDaoTest {
 		assertEquals(auditEventDTO.getAuditSource().getAuditEnterpriseSiteId(), insertedAuditEvent.getAuditSource().getAuditEnterpriseSiteId());
 		assertEquals(auditEventDTO.getAuditQueryParameters().getParticipantObjectIdTypeCode(), insertedAuditEvent.getAuditQueryParameters().getParticipantObjectIdTypeCode());
 		assertEquals(auditEventDTO.getAuditHumanRequestors().get(0).getNetworkAccessPointId(), insertedAuditEvent.getAuditHumanRequestors().get(0).getNetworkAccessPointId());
-		assertEquals(auditEventDTO.getAuditPatient().getParticipantObjectName(), insertedAuditEvent.getAuditPatient().getParticipantObjectName());
-
 	}
 	
 	@Test
 	@Transactional
+	@Rollback(true)
 	public void testInsertAuditDocumentQuery() throws UnknownHostException {
 		
 		AuditEventDTO auditEventDTO = new AuditEventDTO();
@@ -135,7 +132,7 @@ public class AuditDaoTest {
 		auditEventDTO.setEventTypeCode("EV(“ITI-38”, “IHE Transactions”, and “Cross Gateway Query”)");
 		
 		AuditRequestSourceDTO auditRequestSourceDTO = new AuditRequestSourceDTO();
-		auditRequestSourceDTO.setUserId(""); // i dunno if this is right
+		auditRequestSourceDTO.setUserId("");
 		auditRequestSourceDTO.setAlternativeUserId(ManagementFactory.getRuntimeMXBean().getName());
 		auditRequestSourceDTO.setNetworkAccessPointId(InetAddress.getLocalHost().toString());
 		auditRequestSourceDTO.setNetworkAccessPointTypeCode("2");
@@ -181,9 +178,15 @@ public class AuditDaoTest {
 		auditDocumentDTO.setParticipantObjectId("urn:id:blahblahblah");
 		auditDocumentDTO.setParticipantObjectQuery("urn:oid:1.2.3.928.955");
 		auditDocumentDTO.setParticipantObjectDetail("urn:oid:1.2.3.928.955");
-		auditEventDTO.setAuditDocument(auditDocumentDTO);
+		ArrayList<AuditDocumentDTO> auditDocuments = new ArrayList<AuditDocumentDTO>();
+		auditDocuments.add(auditDocumentDTO);
+		auditEventDTO.setAuditDocument(auditDocuments);
 		
 		AuditEventDTO insertedAuditEvent = auditDao.createAuditEvent(auditEventDTO);
+		
+		//AuditEventDTO auditEvent = auditDao.getAuditEventById(insertedAuditEvent.getId());
+		
+		//assertNotNull(auditEvent);
 		
 		assertNotNull(insertedAuditEvent);
 		assertEquals(auditEventDTO.getEventTypeCode(), insertedAuditEvent.getEventTypeCode());
@@ -192,6 +195,6 @@ public class AuditDaoTest {
 		assertEquals(auditEventDTO.getAuditSource().getAuditEnterpriseSiteId(), insertedAuditEvent.getAuditSource().getAuditEnterpriseSiteId());
 		assertEquals(auditEventDTO.getAuditHumanRequestors().get(0).getNetworkAccessPointId(), insertedAuditEvent.getAuditHumanRequestors().get(0).getNetworkAccessPointId());
 		assertEquals(auditEventDTO.getAuditPatient().getParticipantObjectName(), insertedAuditEvent.getAuditPatient().getParticipantObjectName());
-		assertEquals(auditEventDTO.getAuditDocument().getParticipantObjectId(), insertedAuditEvent.getAuditDocument().getParticipantObjectId());
+		assertEquals(auditEventDTO.getAuditDocument().get(0).getParticipantObjectId(), insertedAuditEvent.getAuditDocument().get(0).getParticipantObjectId());
 	}
 }

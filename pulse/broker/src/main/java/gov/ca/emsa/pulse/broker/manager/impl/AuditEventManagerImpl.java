@@ -158,7 +158,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				null, // optional
 				null, // 
 				null); //
-		AuditDocumentDTO auditDocumentDTO = AuditUtil.createAuditDocument(2, 
+		ArrayList<AuditDocumentDTO> auditDocumentDTO = AuditUtil.createAuditDocument(2, 
 				3, 
 				null, // optional 
 				"EV(“ITI-38”, “IHE Transactions”, and “Cross Gateway Query”)", // not specialized
@@ -220,7 +220,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				null, // optional
 				null, // optional
 				null); // optional
-		AuditDocumentDTO auditDocumentDTO = AuditUtil.createAuditDocument(2, 
+		ArrayList<AuditDocumentDTO> auditDocumentDTO = AuditUtil.createAuditDocument(2, 
 				3, 
 				null, // optional 
 				"EV(“ITI-39”, “IHE Transactions”, and “Cross Gateway Retrieve”)", // not specialized

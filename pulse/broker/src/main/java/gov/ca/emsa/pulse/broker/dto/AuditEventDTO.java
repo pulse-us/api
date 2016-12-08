@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import gov.ca.emsa.pulse.broker.entity.AuditDocumentEntity;
 import gov.ca.emsa.pulse.broker.entity.AuditEventEntity;
 import gov.ca.emsa.pulse.broker.entity.AuditHumanRequestorEntity;
 
@@ -19,22 +20,33 @@ public class AuditEventDTO {
 	
 	private String eventTypeCode;
 	
+	private Long auditRequestSourceId;
+	
 	private AuditRequestSourceDTO auditRequestSource;
+	
+	private Long auditRequestDestinationId;
 	
 	private AuditRequestDestinationDTO auditRequestDestination;
 	
+	private Long auditSourceId;
+	
 	private AuditSourceDTO auditSource;
+	
+	private Long auditQueryParametersId;
 	
 	private AuditQueryParametersDTO auditQueryParameters;
 	
-	private ArrayList<AuditHumanRequestorDTO> auditHumanRequestors;
+	private Long auditPatientId;
 	
 	private AuditPatientDTO auditPatient;
 	
-	private AuditDocumentDTO auditDocument;
+	private ArrayList<AuditHumanRequestorDTO> auditHumanRequestors;
+	
+	private ArrayList<AuditDocumentDTO> auditDocument;
 	
 	public AuditEventDTO() {
 		auditHumanRequestors = new ArrayList<AuditHumanRequestorDTO>();
+		auditDocument = new ArrayList<AuditDocumentDTO>();
 	}
 	
 	public AuditEventDTO(AuditEventEntity entity) {
@@ -45,22 +57,29 @@ public class AuditEventDTO {
 		this.eventDateTime = entity.getEventDateTime();
 		this.eventOutcomeIndicator = entity.getEventOutcomeIndicator();
 		this.eventTypeCode = entity.getEventTypeCode();
+		this.auditPatientId = entity.getAuditPatientId();
+		this.auditQueryParametersId = entity.getAuditQueryParametersId();
+		this.auditRequestDestinationId = entity.getAuditRequestDestinationId();
+		this.auditRequestSourceId = entity.getAuditRequestSourceId();
+		this.auditSourceId = entity.getAuditSourceId();
 		this.auditRequestSource = new AuditRequestSourceDTO(entity.getAuditRequestSource());
 		this.auditRequestDestination = new AuditRequestDestinationDTO(entity.getAuditRequestDestination());
 		this.auditSource = new AuditSourceDTO(entity.getAuditSource());
 		if(entity.getAuditQueryParameters() != null){
 			this.auditQueryParameters = new AuditQueryParametersDTO(entity.getAuditQueryParameters());
 		}
+		if(entity.getAuditPatient() != null){
+			this.auditPatient = new AuditPatientDTO(entity.getAuditPatient());
+		}
 		if(entity.getAuditDocument() != null){
-			this.auditDocument = new AuditDocumentDTO(entity.getAuditDocument());
+			for(AuditDocumentEntity auditDocumentEntity : entity.getAuditDocument()){
+				this.auditDocument.add(new AuditDocumentDTO(auditDocumentEntity));
+			}
 		}
 		if(entity.getAuditHumanRequestor() != null){
 			for(AuditHumanRequestorEntity humanRequestorEntity : entity.getAuditHumanRequestor()){
 				this.auditHumanRequestors.add(new AuditHumanRequestorDTO(humanRequestorEntity));
 			}
-		}
-		if(entity.getAuditPatient() != null){
-			this.auditPatient = new AuditPatientDTO(entity.getAuditPatient());
 		}
 	}
 
@@ -162,12 +181,52 @@ public class AuditEventDTO {
 		this.auditPatient = auditPatient;
 	}
 
-	public AuditDocumentDTO getAuditDocument() {
+	public ArrayList<AuditDocumentDTO> getAuditDocument() {
 		return auditDocument;
 	}
 
-	public void setAuditDocument(AuditDocumentDTO auditDocument) {
+	public void setAuditDocument(ArrayList<AuditDocumentDTO> auditDocument) {
 		this.auditDocument = auditDocument;
+	}
+
+	public Long getAuditRequestSourceId() {
+		return auditRequestSourceId;
+	}
+
+	public void setAuditRequestSourceId(Long auditRequestSourceId) {
+		this.auditRequestSourceId = auditRequestSourceId;
+	}
+
+	public Long getAuditRequestDestinationId() {
+		return auditRequestDestinationId;
+	}
+
+	public void setAuditRequestDestinationId(Long auditRequestDestinationId) {
+		this.auditRequestDestinationId = auditRequestDestinationId;
+	}
+
+	public Long getAuditSourceId() {
+		return auditSourceId;
+	}
+
+	public void setAuditSourceId(Long auditSourceId) {
+		this.auditSourceId = auditSourceId;
+	}
+
+	public Long getAuditQueryParametersId() {
+		return auditQueryParametersId;
+	}
+
+	public void setAuditQueryParametersId(Long auditQueryParametersId) {
+		this.auditQueryParametersId = auditQueryParametersId;
+	}
+
+	public Long getAuditPatientId() {
+		return auditPatientId;
+	}
+
+	public void setAuditPatientId(Long auditPatientId) {
+		this.auditPatientId = auditPatientId;
 	}
 	
 }

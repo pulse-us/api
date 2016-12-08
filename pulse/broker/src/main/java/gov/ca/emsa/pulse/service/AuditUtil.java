@@ -107,7 +107,7 @@ public class AuditUtil {
 		return auditPatientDTO;
 	}
 	
-	public static AuditDocumentDTO createAuditDocument(int participantObjectTypeCode, int participantObjectTypeCodeRole,
+	public static ArrayList<AuditDocumentDTO> createAuditDocument(int participantObjectTypeCode, int participantObjectTypeCodeRole,
 			String participantObjectDataLifecycle, String participantObjectIdTypeCode, String participantObjectSensitivity, String participantObjectId,
 			String participantObjectName, String participantObjectQuery, String participantObjectDetail, String participantObjectDetail2){
 		AuditDocumentDTO auditDocumentDTO = new AuditDocumentDTO();
@@ -121,8 +121,10 @@ public class AuditUtil {
 		auditDocumentDTO.setParticipantObjectQuery(participantObjectQuery);
 		auditDocumentDTO.setParticipantObjectDetail(participantObjectDetail);
 		auditDocumentDTO.setParticipantObjectDetail2(participantObjectDetail2);
+		ArrayList<AuditDocumentDTO> auditDocumentDTOs = new ArrayList<AuditDocumentDTO>();
+		auditDocumentDTOs.add(auditDocumentDTO);
 		
-		return auditDocumentDTO;
+		return auditDocumentDTOs;
 	}
 
 }

@@ -94,7 +94,6 @@ public class EHealthAdapter implements Adapter {
 		String searchResults = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
-			
 			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {

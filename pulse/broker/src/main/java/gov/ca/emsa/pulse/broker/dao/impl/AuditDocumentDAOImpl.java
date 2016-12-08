@@ -24,6 +24,7 @@ public class AuditDocumentDAOImpl extends BaseDAOImpl implements AuditDocumentDA
 		auditEntity.setParticipantObjectSensitivity(dto.getParticipantObjectSensitivity());
 		auditEntity.setParticipantObjectTypeCode(dto.getParticipantObjectTypeCode());
 		auditEntity.setParticipantObjectTypeCodeRole(dto.getParticipantObjectTypeCodeRole());
+		auditEntity.setAuditEventId(dto.getAuditEventId());
 		entityManager.persist(auditEntity);
 		entityManager.flush();
 		return new AuditDocumentDTO(auditEntity);

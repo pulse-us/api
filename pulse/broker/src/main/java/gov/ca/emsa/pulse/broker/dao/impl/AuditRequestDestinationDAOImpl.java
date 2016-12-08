@@ -13,7 +13,6 @@ public class AuditRequestDestinationDAOImpl extends BaseDAOImpl implements Audit
 	public AuditRequestDestinationDTO createAuditRequestDestination(AuditRequestDestinationDTO dto){
 		AuditRequestDestinationEntity toInsertAuditRequestDestinationEntity = new AuditRequestDestinationEntity();
 		toInsertAuditRequestDestinationEntity.setAlternativeUserId(dto.getAlternativeUserId());
-		toInsertAuditRequestDestinationEntity.setId(dto.getId());
 		toInsertAuditRequestDestinationEntity.setNetworkAccessPointId(dto.getNetworkAccessPointId());
 		toInsertAuditRequestDestinationEntity.setNetworkAccessPointTypeCode(dto.getNetworkAccessPointTypeCode());
 		toInsertAuditRequestDestinationEntity.setRoleIdCode(dto.getRoleIdCode());

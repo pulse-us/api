@@ -6,6 +6,8 @@ public class AuditDocumentDTO {
 	
 	private Long id;
 	
+	private Long auditEventId;
+	
 	private int participantObjectTypeCode;
 	
 	private int participantObjectTypeCodeRole;
@@ -31,6 +33,7 @@ public class AuditDocumentDTO {
 	}
 	
 	public AuditDocumentDTO(AuditDocumentEntity entity){
+		this.auditEventId = entity.getAuditEventId();
 		this.participantObjectTypeCode = entity.getParticipantObjectTypeCode();
 		this.participantObjectTypeCodeRole = entity.getParticipantObjectTypeCodeRole();
 		this.participantObjectDataLifecycle = entity.getParticipantObjectDataLifecycle();
@@ -130,6 +133,14 @@ public class AuditDocumentDTO {
 
 	public void setParticipantObjectDetail2(String participantObjectDetail2) {
 		this.participantObjectDetail2 = participantObjectDetail2;
+	}
+
+	public Long getAuditEventId() {
+		return auditEventId;
+	}
+
+	public void setAuditEventId(Long auditEventId) {
+		this.auditEventId = auditEventId;
 	}
 	
 }

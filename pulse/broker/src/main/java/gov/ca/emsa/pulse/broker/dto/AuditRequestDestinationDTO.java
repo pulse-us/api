@@ -25,6 +25,7 @@ public class AuditRequestDestinationDTO {
 	}
 	
 	public AuditRequestDestinationDTO(AuditRequestDestinationEntity entity){
+		this.id = entity.getId();
 		this.userId = entity.getUserId();
 		this.alternativeUserId = entity.getAlternativeUserId();
 		this.userName = entity.getUserName();

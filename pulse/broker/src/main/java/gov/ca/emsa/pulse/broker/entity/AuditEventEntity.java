@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -13,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
 
 @Entity
 @Table(name="audit_event")
@@ -68,23 +70,20 @@ public class AuditEventEntity {
 	@JoinColumn( name = "audit_query_parameters_id", insertable = false, updatable = false)
 	private AuditQueryParametersEntity auditQueryParameters;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "auditEventId", cascade = CascadeType.ALL)
-	@Column( name = "audit_event_id")
-	private List<AuditHumanRequestorEntity> auditHumanRequestor;
-	
-	@Column( name = "audit_patient_id")
+	@Column( name = "audit_patient_id", nullable = false)
 	private Long auditPatientId;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn( name = "audit_patient_id", insertable = false, updatable = false)
 	private AuditPatientEntity auditPatient;
 	
-	@Column( name = "audit_document_id")
-	private Long auditDocumentId;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "auditEventId")
+	@Column( name = "audit_event_id")
+	private List<AuditHumanRequestorEntity> auditHumanRequestor = new ArrayList<AuditHumanRequestorEntity>();
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn( name = "audit_document_id", insertable = false, updatable = false)
-	private AuditDocumentEntity auditDocument;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "auditEventId")
+	@Column( name = "audit_event_id")
+	private List<AuditDocumentEntity> auditDocument = new ArrayList<AuditDocumentEntity>();
 
 	public Long getId() {
 		return id;
@@ -150,14 +149,6 @@ public class AuditEventEntity {
 		this.auditRequestSource = auditRequestSource;
 	}
 
-	public Long getAuditRequestDestinationId() {
-		return auditRequestDestinationId;
-	}
-
-	public void setAuditRequestDestinationId(Long auditRequestDestinationId) {
-		this.auditRequestDestinationId = auditRequestDestinationId;
-	}
-
 	public AuditRequestDestinationEntity getAuditRequestDestination() {
 		return auditRequestDestination;
 	}
@@ -167,28 +158,12 @@ public class AuditEventEntity {
 		this.auditRequestDestination = auditRequestDestination;
 	}
 
-	public Long getAuditSourceId() {
-		return auditSourceId;
-	}
-
-	public void setAuditSourceId(Long auditSourceId) {
-		this.auditSourceId = auditSourceId;
-	}
-
 	public AuditSourceEntity getAuditSource() {
 		return auditSource;
 	}
 
 	public void setAuditSource(AuditSourceEntity auditSource) {
 		this.auditSource = auditSource;
-	}
-
-	public Long getAuditQueryParametersId() {
-		return auditQueryParametersId;
-	}
-
-	public void setAuditQueryParametersId(Long auditQueryParametersId) {
-		this.auditQueryParametersId = auditQueryParametersId;
 	}
 
 	public AuditQueryParametersEntity getAuditQueryParameters() {
@@ -205,16 +180,8 @@ public class AuditEventEntity {
 	}
 
 	public void setAuditHumanRequestor(
-			List<AuditHumanRequestorEntity> auditHumanRequestor) {
+			ArrayList<AuditHumanRequestorEntity> auditHumanRequestor) {
 		this.auditHumanRequestor = auditHumanRequestor;
-	}
-
-	public Long getAuditPatientId() {
-		return auditPatientId;
-	}
-
-	public void setAuditPatientId(Long auditPatientId) {
-		this.auditPatientId = auditPatientId;
 	}
 
 	public AuditPatientEntity getAuditPatient() {
@@ -225,20 +192,44 @@ public class AuditEventEntity {
 		this.auditPatient = auditPatient;
 	}
 
-	public Long getAuditDocumentId() {
-		return auditDocumentId;
-	}
-
-	public void setAuditDocumentId(Long auditDocumentId) {
-		this.auditDocumentId = auditDocumentId;
-	}
-
-	public AuditDocumentEntity getAuditDocument() {
+	public List<AuditDocumentEntity> getAuditDocument() {
 		return auditDocument;
 	}
 
-	public void setAuditDocument(AuditDocumentEntity auditDocument) {
+	public void setAuditDocument(ArrayList<AuditDocumentEntity> auditDocument) {
 		this.auditDocument = auditDocument;
+	}
+
+	public Long getAuditRequestDestinationId() {
+		return auditRequestDestinationId;
+	}
+
+	public void setAuditRequestDestinationId(Long auditRequestDestinationId) {
+		this.auditRequestDestinationId = auditRequestDestinationId;
+	}
+
+	public Long getAuditSourceId() {
+		return auditSourceId;
+	}
+
+	public void setAuditSourceId(Long auditSourceId) {
+		this.auditSourceId = auditSourceId;
+	}
+
+	public Long getAuditQueryParametersId() {
+		return auditQueryParametersId;
+	}
+
+	public void setAuditQueryParametersId(Long auditQueryParametersId) {
+		this.auditQueryParametersId = auditQueryParametersId;
+	}
+
+	public Long getAuditPatientId() {
+		return auditPatientId;
+	}
+
+	public void setAuditPatientId(Long auditPatientId) {
+		this.auditPatientId = auditPatientId;
 	}
 
 }
