@@ -9,6 +9,7 @@ import java.util.Base64;
 import java.util.List;
 
 import javax.activation.DataHandler;
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.SOAPException;
 
@@ -19,9 +20,12 @@ import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.opensaml.common.SAMLException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -52,10 +56,26 @@ import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 public class EHealthAdapter implements Adapter {
 	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
 	
+	@Value("${defaultRequestTimeoutSeconds}")
+	private Long defaultRequestTimeoutSeconds;
+	
+	@Value("${defaultConnectTimeoutSeconds}")
+	private Long defaultConnectTimeoutSeconds;
+	
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
 	@Autowired EHealthQueryProducerService queryProducer;
 	@Autowired NameTypeDAO nameTypeDao;
+	private RestTemplate restTemplate;
+	
+	@PostConstruct
+	public void initRestTemplate() {
+		restTemplate = new RestTemplate();
+		SimpleClientHttpRequestFactory rf =
+			    (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
+		rf.setConnectTimeout(defaultConnectTimeoutSeconds.intValue() * 1000);
+		rf.setReadTimeout(defaultRequestTimeoutSeconds.intValue() * 1000);
+	}
 	
 	@Override
 	public List<PatientRecordDTO> queryPatients(LocationEndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) {
@@ -73,11 +93,10 @@ public class EHealthAdapter implements Adapter {
 
 		String searchResults = null;
 		try {
-			RestTemplate restTemplate = new RestTemplate();
-			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
+			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
-			logger.error("Exception when querying " + endpoint.getUrl(), ex);
+			logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
 			throw ex;
 		}
 		
@@ -120,11 +139,10 @@ public class EHealthAdapter implements Adapter {
 
 		String searchResults = null;
 		try {
-			RestTemplate restTemplate = new RestTemplate();
-			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
+			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
-			logger.error("Exception when querying " + endpoint.getUrl(), ex);
+			logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
 			throw ex;
 		}
 		
@@ -171,11 +189,10 @@ public class EHealthAdapter implements Adapter {
 
 		String searchResults = null;
 		try {
-			RestTemplate restTemplate = new RestTemplate();
-			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
+			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
-			logger.error("Exception when querying " + endpoint.getUrl(), ex);
+			logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
 			throw ex;
 		}
 		
