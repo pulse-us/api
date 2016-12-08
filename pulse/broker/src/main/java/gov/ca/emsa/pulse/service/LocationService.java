@@ -4,7 +4,7 @@ import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
-import gov.ca.emsa.pulse.broker.manager.AuditManager;
+import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.common.domain.Location;
 import gov.ca.emsa.pulse.common.domain.stats.LocationStatistics;
@@ -26,13 +26,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/locations")
 public class LocationService {
 	@Autowired LocationManager locationManager;
-	@Autowired AuditManager auditManager;
+	@Autowired AuditEventManager auditManager;
+
 
 	@ApiOperation(value="Get the list of locations")
 	@RequestMapping(value="", method=RequestMethod.GET)
     public List<Location> getAll() {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.GET_ALL_ORGANIZATIONS, "/locations", user.getSubjectName());
+		//auditManager.addAuditEventEntry(QueryType.GET_ALL_ORGANIZATIONS, "/locations", user.getSubjectName());
 		List<LocationDTO> locationDtos = locationManager.getAll();
 		List<Location> locations = new ArrayList<Location>();
 		for(LocationDTO locationDto : locationDtos) {

@@ -1,24 +1,36 @@
 package gov.ca.emsa.pulse.service;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
+import gov.ca.emsa.pulse.broker.audit.AuditEvent;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
+import gov.ca.emsa.pulse.broker.dto.AuditEventDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditHumanRequestorDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditQueryParametersDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditRequestDestinationDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditRequestSourceDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditSourceDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
-import gov.ca.emsa.pulse.broker.manager.AuditManager;
+import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.InvalidParameterException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,20 +53,18 @@ public class PatientService {
 	@Autowired private PatientManager patientManager;
 	@Autowired private DocumentManager docManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
-	@Autowired private AuditManager auditManager;
+	@Autowired private AuditEventManager auditManager;
 
 	public PatientService() {
 	}
 
 	@ApiOperation(value="Get all patients at the logged-in user's ACF")
 	@RequestMapping("")
-	public List<Patient> getPatientsAtAcf() throws InvalidParameterException {
+	public List<Patient> getPatientsAtAcf() throws InvalidParameterException, UnknownHostException {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.GET_ALL_PATIENTS, "/patients", user.getSubjectName());
 		if(user.getAcf() == null || user.getAcf().getId() == null) {
 			throw new InvalidParameterException("There was no ACF supplied in the User header, or the ACF had a null ID.");
 		}
-
 		List<PatientDTO> queryResults = patientManager.getPatientsAtAcf(user.getAcf().getId());
 		List<Patient> results = new ArrayList<Patient>(queryResults.size());
         for(PatientDTO patientDto : queryResults) {
@@ -69,7 +79,7 @@ public class PatientService {
 	@RequestMapping("/{patientId}/documents")
 	public List<Document> getDocumentListForPatient(@PathVariable("patientId")Long patientId) {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.SEARCH_DOCUMENT, "/" + patientId + "/documents", user.getSubjectName());
+		//auditManager.addAuditEntry(QueryType.SEARCH_DOCUMENT, "/" + patientId + "/documents", user.getSubjectName());
 		List<DocumentDTO> docDtos = docManager.getDocumentsForPatient(patientId);
 		List<Document> results = new ArrayList<Document>(docDtos.size());
 		for(DocumentDTO docDto : docDtos) {
@@ -86,7 +96,7 @@ public class PatientService {
 		throws SQLException {
 		
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getSubjectName());
+		//auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getSubjectName());
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID(user.getFirstName());
@@ -103,9 +113,9 @@ public class PatientService {
 
 		String result = "";
 		if(cacheOnly == null || cacheOnly.booleanValue() == false) {
-			result = docManager.getDocumentById(input, documentId);
+			result = docManager.getDocumentById(user, input, documentId);
 		} else {
-			docManager.getDocumentById(input, documentId);
+			docManager.getDocumentById(user, input, documentId);
 		}
 		return result;
 	}

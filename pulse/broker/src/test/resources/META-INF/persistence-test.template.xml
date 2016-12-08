@@ -1,9 +1,16 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
   <persistence-unit name="pulse-test" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <class>gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityAddressLineEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityAddressLineEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity</class>
-    <class>gov.ca.emsa.pulse.broker.entity.AuditEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.AuditEventEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.AuditDocumentEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.AuditHumanRequestorEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.AuditPatientEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.AuditQueryParametersEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.AuditRequestDestinationEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.AuditRequestSourceEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.AuditSourceEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.DocumentEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.EndpointStatusEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.EndpointTypeEntity</class>

@@ -55,7 +55,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 				AlternateCareFacilityAddressLineEntity addrLine = new AlternateCareFacilityAddressLineEntity();
 				addrLine.setAcfId(toInsert.getId());
 				addrLine.setOrder(i);
-				addrLine.setLine(dto.getLines().get(i).getLine());	
+				addrLine.setLine(dto.getLines().get(i).getLine());
 				entityManager.persist(addrLine);
 				entityManager.flush();
 				toInsert.getLines().add(addrLine);

@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
@@ -53,11 +54,12 @@ public class DocumentManagerImpl implements DocumentManager {
 	}
 	
 	@Override
-	public void queryForDocuments(SAMLInput samlInput, PatientLocationMapDTO dto) {
+	public void queryForDocuments(CommonUser user, SAMLInput samlInput, PatientLocationMapDTO dto) {
 		DocumentQueryService service = getDocumentQueryService();
 		service.setSamlInput(samlInput);
 		service.setPatientLocationMap(dto);
 		service.setLocation(dto.getLocation());
+		service.setUser(user);
 		pool.execute(service);
 	}
 	
@@ -71,7 +73,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	//multiple documents from the same organization if we want to do that in the future
 	@Override
 	@Transactional
-	public void queryForDocumentContents(SAMLInput samlInput, LocationDTO location, List<DocumentDTO> docsFromLocation) {
+	public void queryForDocumentContents(CommonUser user, SAMLInput samlInput, LocationDTO location, List<DocumentDTO> docsFromLocation, PatientLocationMapDTO dto) {
 		boolean querySuccess = true;
 		LocationEndpointDTO endpointToQuery = null;
 		if(location.getEndpoints() != null) {
@@ -94,7 +96,7 @@ public class DocumentManagerImpl implements DocumentManager {
 		if(adapter != null) {
 			logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "' for document contents.");
 			try {
-				adapter.retrieveDocumentsContents(endpointToQuery, docsFromLocation, samlInput);
+				adapter.retrieveDocumentsContents(user, endpointToQuery, docsFromLocation, samlInput, dto);
 			} catch(Exception ex) {
 				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 				querySuccess = false;
@@ -114,7 +116,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	}
 	
 	@Override
-	public String getDocumentById(SAMLInput samlInput, Long documentId) throws SQLException {
+	public String getDocumentById(CommonUser user, SAMLInput samlInput, Long documentId) throws SQLException {
 		String docContents = "";		
 		
 		DocumentDTO cachedDoc = docDao.getById(documentId);
@@ -139,7 +141,7 @@ public class DocumentManagerImpl implements DocumentManager {
 		} else {
 			List<DocumentDTO> docsToGet = new ArrayList<DocumentDTO>();
 			docsToGet.add(cachedDoc);
-			queryForDocumentContents(samlInput, patientLocationMap.getLocation(), docsToGet);
+			queryForDocumentContents(user, samlInput, patientLocationMap.getLocation(), docsToGet, patientLocationMap);
 			byte[] retrievedContents = docsToGet.get(0).getContents();
 			docContents = retrievedContents == null ? "" : new String(retrievedContents);
 		}

@@ -3,9 +3,14 @@ package gov.ca.emsa.pulse.broker.adapter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 
 import javax.activation.DataHandler;
@@ -26,8 +31,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
 import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
+import gov.ca.emsa.pulse.broker.dto.AuditDocumentDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditEventDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditHumanRequestorDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditPatientDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditQueryParametersDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditRequestDestinationDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditRequestSourceDTO;
+import gov.ca.emsa.pulse.broker.dto.AuditSourceDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
@@ -35,6 +49,7 @@ import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Patient;
@@ -42,23 +57,28 @@ import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import gov.ca.emsa.pulse.service.AuditUtil;
+import gov.ca.emsa.pulse.service.UserUtil;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 
 @Component
 public class EHealthAdapter implements Adapter {
 	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
-	
+
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
 	@Autowired EHealthQueryProducerService queryProducer;
 	@Autowired NameTypeDAO nameTypeDao;
+	@Autowired AuditEventManager auditManager;
 	
+
 	@Override
-	public List<PatientRecordDTO> queryPatients(LocationEndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) {
+	public List<PatientRecordDTO> queryPatients(CommonUser user, LocationEndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) throws Exception {
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch);
 		String requestBodyXml = null;
 		try {
@@ -70,16 +90,18 @@ public class EHealthAdapter implements Adapter {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_XML);   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
-
+		String homeCommunityId = "urn:oid:1.2.3.928.955";
 		String searchResults = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
 			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
+			auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), homeCommunityId);
 			logger.error("Exception when querying " + endpoint.getUrl(), ex);
 			throw ex;
 		}
+		auditManager.createAuditEventIG("SUCCESS", user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), homeCommunityId);
 		
 		List<PatientRecordDTO> records = new ArrayList<PatientRecordDTO>();
 		if(!StringUtils.isEmpty(searchResults)) {
@@ -98,12 +120,12 @@ public class EHealthAdapter implements Adapter {
 				logger.error("Exception unmarshalling patient discovery response", ex);
 			}
 		}
-		
+
 		return records;
 	}
 
 	@Override
-	public List<DocumentDTO> queryDocuments(LocationEndpointDTO endpoint, PatientLocationMapDTO toSearch, SAMLInput samlInput) {
+	public List<DocumentDTO> queryDocuments(CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO toSearch, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException {
 		Patient patientToSearch = new Patient();
 		toSearch.setExternalPatientRecordId(toSearch.getExternalPatientRecordId());
 		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientToSearch);
@@ -113,21 +135,26 @@ public class EHealthAdapter implements Adapter {
 		} catch(JAXBException ex) {
 			logger.error(ex.getMessage(), ex);
 		}
-		
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_XML);   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
-
+		
+		String patientId = toSearch.getExternalPatientRecordId();
+		
 		String searchResults = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
 			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
+			auditManager.createAuditEventDCXGatewayQuery("FAILURE", user, endpoint.getUrl(),"", "", patientId);
 			logger.error("Exception when querying " + endpoint.getUrl(), ex);
 			throw ex;
 		}
 		
+		
+
 		List<DocumentDTO> records = new ArrayList<DocumentDTO>();
 		if(!StringUtils.isEmpty(searchResults)) {
 			try {
@@ -135,6 +162,7 @@ public class EHealthAdapter implements Adapter {
 				List<Document> documentResults = soapConverterService.convertToDocumentQueryResponse(resultObj);
 				for(int i = 0; i < documentResults.size(); i++) {
 					DocumentDTO record = DomainToDtoConverter.convert(documentResults.get(i));
+					auditManager.createAuditEventDCXGatewayQuery("SUCCESS", user, endpoint.getUrl(),record.getRepositoryUniqueId(), record.getDocumentUniqueId(), patientId);
 					records.add(record);
 				}
 			} catch(SAMLException | SOAPException ex) {
@@ -143,15 +171,17 @@ public class EHealthAdapter implements Adapter {
 		}
 		return records;
 	}
-	
+
 	/**
 	 * get all of the document contents available from the given organization
 	 * @param orgMap
 	 * @param documents
 	 * @return
+	 * @throws UnsupportedEncodingException 
+	 * @throws UnknownHostException 
 	 */
 	@Override
-	public void retrieveDocumentsContents(LocationEndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput) {
+	public void retrieveDocumentsContents(CommonUser user, LocationEndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput, PatientLocationMapDTO patientMap) throws UnknownHostException, UnsupportedEncodingException {
 		List<Document> docsToSearch = new ArrayList<Document>();
 		for(DocumentDTO docDto : documents) {
 			Document doc = DtoToDomainConverter.convert(docDto);
@@ -164,7 +194,6 @@ public class EHealthAdapter implements Adapter {
 		} catch(JAXBException ex) {
 			logger.error(ex.getMessage(), ex);
 		}
-		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_XML);   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
@@ -175,10 +204,13 @@ public class EHealthAdapter implements Adapter {
 			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
+			for(Document doc : docsToSearch){
+				auditManager.createAuditEventDCXGatewayRetrieve("FAILURE", user, endpoint.getUrl(), doc.getIdentifier().getRepositoryUniqueId(), doc.getIdentifier().getDocumentUniqueId(), doc.getIdentifier().getHomeCommunityId(), patientMap.getExternalPatientRecordId());
+			}
 			logger.error("Exception when querying " + endpoint.getUrl(), ex);
 			throw ex;
 		}
-		
+
 		if(!StringUtils.isEmpty(searchResults)) {
 			try {
 				RetrieveDocumentSetResponseType resultObj = queryProducer.unMarshallDocumentSetRetrieveResponseObject(searchResults);
@@ -188,13 +220,14 @@ public class EHealthAdapter implements Adapter {
 					DocumentDTO matchingDto = null;
 					for(int i = 0; i < documents.size() && matchingDto == null; i++) {
 						DocumentDTO currDto = documents.get(i);
+						auditManager.createAuditEventDCXGatewayRetrieve("SUCCESS", user, endpoint.getUrl(), docResponse.getRepositoryUniqueId(), docResponse.getDocumentUniqueId(), docResponse.getHomeCommunityId(), patientMap.getExternalPatientRecordId());
 						if(currDto.getRepositoryUniqueId().equals(docResponse.getRepositoryUniqueId()) && 
-							currDto.getHomeCommunityId().equals(docResponse.getHomeCommunityId()) &&
-							currDto.getDocumentUniqueId().equals(docResponse.getDocumentUniqueId())) {
+								currDto.getHomeCommunityId().equals(docResponse.getHomeCommunityId()) &&
+								currDto.getDocumentUniqueId().equals(docResponse.getDocumentUniqueId())) {
 							matchingDto = currDto;
 						}
 					}
-					
+
 					if(matchingDto != null) {
 						//read the binary document data from this DocumentResponse
 						DataHandler dataHandler = docResponse.getDocument();
@@ -220,10 +253,10 @@ public class EHealthAdapter implements Adapter {
 			}
 		}
 	}
-	    
-	 private String base64DecodeMessage(String encodedMessage){       
-		 byte[] decoded = Base64.getDecoder().decode(encodedMessage);
-		 String decodedMessage = new String(decoded, Charset.forName("UTF-8"));
-		 return decodedMessage;
-	 }
+
+	private String base64DecodeMessage(String encodedMessage){       
+		byte[] decoded = Base64.getDecoder().decode(encodedMessage);
+		String decodedMessage = new String(decoded, Charset.forName("UTF-8"));
+		return decodedMessage;
+	}
 }
