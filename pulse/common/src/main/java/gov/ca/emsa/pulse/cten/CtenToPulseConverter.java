@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.Endpoint;
 import gov.ca.emsa.pulse.common.domain.EndpointMimeType;
@@ -39,7 +41,9 @@ public class CtenToPulseConverter {
 		result.setExternalId(ctenResource.getId());
 		if(ctenResource.getAddress() != null) {
 			Address locAddr = new Address();
-			locAddr.getLines().add(ctenResource.getAddress().getLine());
+			if(!StringUtils.isEmpty(ctenResource.getAddress().getLine())) {
+				locAddr.getLines().add(ctenResource.getAddress().getLine());
+			}
 			locAddr.setCity(ctenResource.getAddress().getCity());
 			locAddr.setState(ctenResource.getAddress().getState());
 			locAddr.setZipcode(ctenResource.getAddress().getPostalCode());
