@@ -1,6 +1,8 @@
 package gov.ca.emsa.pulse.common.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Endpoint {
 	
@@ -9,7 +11,7 @@ public class Endpoint {
 	private EndpointType endpointType;
 	private EndpointStatus endpointStatus;
 	private String adapter;
-	private String payloadFormat;
+	private List<EndpointMimeType> mimeTypes;
 	private String payloadType;
 	private String publicKey;
 	private String url;
@@ -17,7 +19,9 @@ public class Endpoint {
 	private Date creationDate;
 	private Date lastModifiedDate;
 	
-	public Endpoint(){}
+	public Endpoint(){
+		mimeTypes = new ArrayList<EndpointMimeType>();
+	}
 
 	public Long getId() {
 		return id;
@@ -57,14 +61,6 @@ public class Endpoint {
 
 	public void setAdapter(String adapter) {
 		this.adapter = adapter;
-	}
-
-	public String getPayloadFormat() {
-		return payloadFormat;
-	}
-
-	public void setPayloadFormat(String payloadFormat) {
-		this.payloadFormat = payloadFormat;
 	}
 
 	public String getPayloadType() {
@@ -113,6 +109,14 @@ public class Endpoint {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public List<EndpointMimeType> getMimeTypes() {
+		return mimeTypes;
+	}
+
+	public void setMimeTypes(List<EndpointMimeType> mimeTypes) {
+		this.mimeTypes = mimeTypes;
 	}
 	
 	

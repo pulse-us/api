@@ -63,7 +63,7 @@ public class AlternateCareFacilityService {
 	public AlternateCareFacility create(@RequestBody(required=true) AlternateCareFacility toCreate) 
 		throws InvalidArgumentsException, AcfChangesNotAllowedException, SQLException {
 		if(acfWritesAllowed != null && acfWritesAllowed.booleanValue() == false) {
-			throw new AcfChangesNotAllowedException();
+			throw new AcfChangesNotAllowedException("Alternate Care Facilities may not be added to the system.");
 		}
 		
 		CommonUser user = UserUtil.getCurrentUser();
@@ -78,12 +78,10 @@ public class AlternateCareFacilityService {
 
 	@ApiOperation(value = "Edit an existing ACF")
 	@RequestMapping(value = "/{acfId}/edit", method = RequestMethod.POST)
-	public AlternateCareFacility update(@RequestBody(required=true) AlternateCareFacility toUpdate)
+	public AlternateCareFacility update(@PathVariable("acfId") Long acfId, 
+			@RequestBody(required=true) AlternateCareFacility toUpdate)
 		throws InvalidArgumentsException, PermissionDeniedException, 
 			AcfChangesNotAllowedException, SQLException {
-		if(acfWritesAllowed != null && acfWritesAllowed.booleanValue() == false) {
-			throw new AcfChangesNotAllowedException();
-		}
 		
 		CommonUser user = UserUtil.getCurrentUser();
 		//auditManager.addAuditEntry(QueryType.EDIT_ACF, user.getAcf() + "/edit", user.getSubjectName());
@@ -94,12 +92,26 @@ public class AlternateCareFacilityService {
 			throw new PermissionDeniedException("User " + user.getSubjectName() + " does not have permission to edit ACF " + toUpdate.getName());
 		}
 
-		AlternateCareFacilityDTO dto = DomainToDtoConverter.convert(toUpdate);
+		AlternateCareFacilityDTO acfToUpdate = DomainToDtoConverter.convert(toUpdate);
+		//if writes aren't allowed check if the name is different
+		if(acfWritesAllowed != null && acfWritesAllowed.booleanValue() == false) {
+			AlternateCareFacilityDTO existingAcf = acfManager.getById(acfId);
+			if(existingAcf.getName() == null || 
+				acfToUpdate.getName() == null || 
+				!existingAcf.getName().equals(acfToUpdate.getName())) {
+				throw new AcfChangesNotAllowedException("Alternate Care Facility names cannot be changed.");
+			}
+		}
 		
-		if(dto.getId() == null) {
+		
+		
+		
+		
+		
+		if(acfToUpdate.getId() == null) {
 			throw new InvalidArgumentsException("An ACF id is required in the body of the update request.");
 		}
-		AlternateCareFacilityDTO updated = acfManager.update(dto);
+		AlternateCareFacilityDTO updated = acfManager.update(acfToUpdate);
 		return DtoToDomainConverter.convert(updated);
 	}
 }

@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,6 +22,7 @@ import gov.ca.emsa.pulse.broker.dto.AddressLineDTO;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
 public class AcfManagerTest {
+	
 	@Autowired AlternateCareFacilityManager acfManager;
 	
 	@Test

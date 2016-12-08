@@ -17,6 +17,7 @@
     <class>gov.ca.emsa.pulse.broker.entity.GivenNameEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.LocationAddressLineEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.LocationEndpointEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.LocationEndpointMimeTypeEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.LocationEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.LocationStatusEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity</class>
