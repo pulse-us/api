@@ -96,10 +96,10 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	
 	@Override
 	@Transactional
-	public QueryDTO cancelQueryToLocation(Long queryId, Long orgId) {
-		QueryLocationMapDTO toUpdate = queryDao.getQueryLocationMapByQueryAndOrg(queryId, orgId);
+	public QueryDTO cancelQueryToLocation(Long queryId, Long locationId) {
+		QueryLocationMapDTO toUpdate = queryDao.getQueryLocationMapByQueryAndLocation(queryId, locationId);
 		if(toUpdate == null) {
-			logger.error("Could not find query organization for query ID " + queryId + " and org ID " + orgId);
+			logger.error("Could not find query organization for query ID " + queryId + " and location ID " + locationId);
 			return null;
 		}
 		toUpdate.setStatus(QueryLocationStatus.Cancelled);
@@ -160,7 +160,14 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Override
 	@Transactional
 	public PatientRecordDTO addPatientRecord(PatientRecordDTO record) {
-		return patientRecordDao.create(record);
+		PatientRecordDTO result = record;
+		Long queryLocationMapId = record.getQueryLocationId();
+		QueryLocationMapDTO queryLoc = queryDao.getQueryLocationById(queryLocationMapId);
+		if(queryLoc != null && queryLoc.getStatus() != null && 
+				queryLoc.getStatus() != QueryLocationStatus.Cancelled) {
+			result = patientRecordDao.create(record);
+		}
+		return result;
 	}
 
 	@Override

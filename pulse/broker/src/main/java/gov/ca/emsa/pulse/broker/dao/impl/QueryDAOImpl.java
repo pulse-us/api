@@ -55,7 +55,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return new QueryDTO(query);
 	}
 
-	public QueryLocationMapDTO getQueryOrganizationById(Long queryOrgId) {
+	public QueryLocationMapDTO getQueryLocationById(Long queryOrgId) {
 		QueryLocationMapEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryLocationMapEntity q "
@@ -71,7 +71,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return new QueryLocationMapDTO(entity);
 	}
 	
-	public QueryLocationMapDTO getQueryLocationMapByQueryAndOrg(Long queryId, Long locationId) {
+	public QueryLocationMapDTO getQueryLocationMapByQueryAndLocation(Long queryId, Long locationId) {
 		QueryLocationMapEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryLocationMapEntity q "
