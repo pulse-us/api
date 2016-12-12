@@ -45,7 +45,6 @@ public class AcfManagerTest {
 		Assert.assertNull(dto.getCity());
 		Assert.assertNull(dto.getState());
 		Assert.assertNull(dto.getZipcode());
-		Assert.assertNull(dto.getCountry());
 		Assert.assertTrue(dto.getLines() == null || dto.getLines().size() == 0);
 		
 		dto = acfManager.getById(dto.getId());
@@ -54,7 +53,6 @@ public class AcfManagerTest {
 		Assert.assertNull(dto.getCity());
 		Assert.assertNull(dto.getState());
 		Assert.assertNull(dto.getZipcode());
-		Assert.assertNull(dto.getCountry());
 		Assert.assertTrue(dto.getLines() == null || dto.getLines().size() == 0);
 	}
 	
@@ -87,7 +85,6 @@ public class AcfManagerTest {
 		String city = "Baltimore";
 		String state = "MD";
 		String zip = "21227";
-		String country = "USA";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(name);
@@ -95,7 +92,6 @@ public class AcfManagerTest {
 		dto.setCity(city);
 		dto.setState(state);
 		dto.setZipcode(zip);
-		dto.setCountry(country);
 		AddressLineDTO addressLine = new AddressLineDTO();
 		addressLine.setLine(streetLine1);
 		List<AddressLineDTO> lines = new ArrayList<AddressLineDTO>();
@@ -111,7 +107,6 @@ public class AcfManagerTest {
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
-		Assert.assertEquals(country, dto.getCountry());
 		Assert.assertNotNull(dto.getLines());
 		Assert.assertEquals(1, dto.getLines().size());
 		Assert.assertEquals(streetLine1, dto.getLines().get(0).getLine());
@@ -125,7 +120,6 @@ public class AcfManagerTest {
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
-		Assert.assertEquals(country, dto.getCountry());
 		Assert.assertNotNull(dto.getLines());
 		Assert.assertEquals(1, dto.getLines().size());
 		Assert.assertEquals(streetLine1, dto.getLines().get(0).getLine());
@@ -169,7 +163,6 @@ public class AcfManagerTest {
 		String city = "Baltimore";
 		String state = "MD";
 		String zip = "21227";
-		String country = "USA";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(name);
@@ -177,7 +170,6 @@ public class AcfManagerTest {
 		dto.setCity(city);
 		dto.setState(state);
 		dto.setZipcode(zip);
-		dto.setCountry(country);
 		AddressLineDTO addressLine = new AddressLineDTO();
 		addressLine.setLine(streetLine1);
 		List<AddressLineDTO> lines = new ArrayList<AddressLineDTO>();
@@ -199,7 +191,6 @@ public class AcfManagerTest {
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
-		Assert.assertEquals(country, dto.getCountry());
 		Assert.assertNotNull(dto.getLines());
 		Assert.assertEquals(2, dto.getLines().size());
 		Assert.assertEquals(streetLine1, dto.getLines().get(0).getLine());
@@ -217,7 +208,6 @@ public class AcfManagerTest {
 		String city = "Baltimore";
 		String state = "MD";
 		String zip = "21227";
-		String country = "USA";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(name);
@@ -225,7 +215,6 @@ public class AcfManagerTest {
 		dto.setCity(city);
 		dto.setState(state);
 		dto.setZipcode(zip);
-		dto.setCountry(country);
 		AddressLineDTO addressLine = new AddressLineDTO();
 		addressLine.setLine(streetLine1);
 		AddressLineDTO addressLine2 = new AddressLineDTO();
@@ -251,7 +240,6 @@ public class AcfManagerTest {
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
-		Assert.assertEquals(country, dto.getCountry());
 		Assert.assertNotNull(dto.getLines());
 		Assert.assertEquals(1, dto.getLines().size());
 		Assert.assertEquals(streetLine1, dto.getLines().get(0).getLine());
@@ -268,7 +256,6 @@ public class AcfManagerTest {
 		String city = "Baltimore";
 		String state = "MD";
 		String zip = "21227";
-		String country = "USA";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(name);
@@ -276,7 +263,6 @@ public class AcfManagerTest {
 		dto.setCity(city);
 		dto.setState(state);
 		dto.setZipcode(zip);
-		dto.setCountry(country);
 		AddressLineDTO addressLine = new AddressLineDTO();
 		addressLine.setLine(streetLine1);
 		AddressLineDTO addressLine2 = new AddressLineDTO();
@@ -303,7 +289,6 @@ public class AcfManagerTest {
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
-		Assert.assertEquals(country, dto.getCountry());
 		Assert.assertNotNull(dto.getLines());
 		Assert.assertEquals(2, dto.getLines().size());
 		Assert.assertEquals(updatedAddressLine1, dto.getLines().get(0).getLine());
@@ -322,7 +307,6 @@ public class AcfManagerTest {
 		String city = "Baltimore";
 		String state = "MD";
 		String zip = "21227";
-		String country = "USA";
 		
 		AlternateCareFacilityDTO dto1 = new AlternateCareFacilityDTO();
 		dto1.setName(name);
@@ -334,7 +318,6 @@ public class AcfManagerTest {
 		dto2.setCity(city);
 		dto2.setState(state);
 		dto2.setZipcode(zip);
-		dto2.setCountry(country);
 		AddressLineDTO addressLine = new AddressLineDTO();
 		addressLine.setLine(streetLine1);
 		AddressLineDTO addressLine2 = new AddressLineDTO();

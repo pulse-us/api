@@ -68,9 +68,6 @@ public class LocationEntity {
 	@Column(name = "zipcode")
 	private String zipcode;
 	
-	@Column(name = "country")
-	private String country;
-	
 	@Column(name = "location_last_updated")
 	private Date externalLastUpdatedDate;
 	
@@ -186,14 +183,6 @@ public class LocationEntity {
 
 	public void setZipcode(String zipcode) {
 		this.zipcode = zipcode;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
 	}
 
 	public Date getExternalLastUpdatedDate() {

@@ -54,7 +54,6 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 		entity.setCity(dto.getCity());
 		entity.setState(dto.getState());
 		entity.setZipcode(dto.getZipcode());
-		entity.setCountry(dto.getCountry());
 		if(!entity.hasRequiredFields()) {
 			logger.error("Cannot insert entity because a required field was null or empty.");
 			return null;
@@ -125,7 +124,6 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 		entity.setCity(dto.getCity());
 		entity.setState(dto.getState());
 		entity.setZipcode(dto.getZipcode());
-		entity.setCountry(dto.getCountry());
 		if(!entity.hasRequiredFields()) {
 			logger.error("Cannot insert entity because a required field was null or empty.");
 			return null;

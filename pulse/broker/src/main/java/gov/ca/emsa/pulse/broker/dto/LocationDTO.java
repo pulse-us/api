@@ -57,7 +57,6 @@ public class LocationDTO extends AddressableDTO {
 		this.city = entity.getCity();
 		this.state = entity.getState();
 		this.zipcode = entity.getZipcode();
-		this.country = entity.getCountry();
 		this.externalLastUpdateDate = entity.getExternalLastUpdatedDate();
 		this.creationDate = entity.getCreationDate();
 		this.lastModifiedDate = entity.getLastModifiedDate();
