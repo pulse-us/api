@@ -46,7 +46,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 	public AuditEventDTO addAuditEventEntry(AuditEventDTO ae) {
 		AuditEventDTO auditEventDTO = new AuditEventDTO();
 		auditEventDTO.setEventId(ae.getEventId());
-		auditEventDTO.setEventActionCode(ae.getEventActionCode());
+		auditEventDTO.setEventActionCodeId(ae.getEventActionCodeId());
 		auditEventDTO.setEventDateTime(ae.getEventDateTime());
 		auditEventDTO.setEventOutcomeIndicator(ae.getEventOutcomeIndicator());
 		auditEventDTO.setEventTypeCode(ae.getEventTypeCode());
