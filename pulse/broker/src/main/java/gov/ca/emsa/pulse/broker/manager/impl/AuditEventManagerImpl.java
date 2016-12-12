@@ -120,7 +120,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				null); // optional
 		AuditEventDTO auditEventDTO = new AuditEventDTO();
 		auditEventDTO.setEventId("EV(110112, DCM, “Query”)");
-		auditEventDTO.setEventActionCode(eventActionCodeDao.getByCode("E"));
+		auditEventDTO.setEventActionCodeId(eventActionCodeDao.getByCode("E").getId());
 		auditEventDTO.setEventDateTime(new Date().toString());
 		auditEventDTO.setEventOutcomeIndicator(outcome);
 		auditEventDTO.setEventTypeCode("EV(“ITI-55”, “IHE Transactions”, “Cross Gateway Patient Discovery”)");
