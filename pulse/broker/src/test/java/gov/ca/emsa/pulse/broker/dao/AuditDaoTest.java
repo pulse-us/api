@@ -47,12 +47,10 @@ public class AuditDaoTest {
 	
 	@Autowired AuditEventDAO auditDao;
 	
-	@Autowired AuditHumanRequestorDAO auditHumanRequestorDAO;
-	@Autowired AuditPatientDAO auditPatientDAO;
-	@Autowired AuditQueryParametersDAO auditQueryParametersDAO;
-	@Autowired AuditRequestDestinationDAO auditRequestDestinationDAO;
-	@Autowired AuditRequestSourceDAO auditRequestSourceDAO;
-	@Autowired AuditSourceDAO auditSourceDAO;
+	@Autowired private EventActionCodeDAO eventActionCodeDao;
+	@Autowired private NetworkAccessPointTypeCodeDAO networkAccessPointTypeCodeDao;
+	@Autowired private ParticipantObjectTypeCodeDAO participantObjectTypeCodeDao;
+	@Autowired private ParticipantObjectTypeCodeRoleDAO participantObjectTypeCodeRoleDao;
 	
 	@Test
 	@Transactional
@@ -60,7 +58,7 @@ public class AuditDaoTest {
 	public void testInsertAuditPatientDiscovery() throws UnknownHostException {
 		
 		AuditEventDTO auditEventDTO = new AuditEventDTO();
-		auditEventDTO.setEventActionCode("E");
+		auditEventDTO.setEventActionCodeId(eventActionCodeDao.getByCode("E").getId());
 		auditEventDTO.setEventId("EV(110112, DCM, “Query”)");
 		auditEventDTO.setEventDateTime(new Date().toString());
 		auditEventDTO.setEventTypeCode("EV(“ITI-55”, “IHE Transactions”, “Cross Gateway Patient Discovery”)");
@@ -69,7 +67,7 @@ public class AuditDaoTest {
 		auditRequestSourceDTO.setUserId("");
 		auditRequestSourceDTO.setAlternativeUserId(ManagementFactory.getRuntimeMXBean().getName());
 		auditRequestSourceDTO.setNetworkAccessPointId(InetAddress.getLocalHost().toString());
-		auditRequestSourceDTO.setNetworkAccessPointTypeCode("2");
+		auditRequestSourceDTO.setNetworkAccessPointTypeCodeId(networkAccessPointTypeCodeDao.getByCode("2").getId());
 		auditRequestSourceDTO.setRoleIdCode("EV(110153, DCM, “Source”)");
 		auditRequestSourceDTO.setUserIsRequestor(true);
 		auditEventDTO.setAuditRequestSource(auditRequestSourceDTO);
@@ -78,7 +76,7 @@ public class AuditDaoTest {
 		auditRequestDestinationDTO.setUserId("https://www.someihe.com/patientDiscovery");
 		auditRequestDestinationDTO.setUserIsRequestor(true);
 		auditRequestDestinationDTO.setRoleIdCode("EV(110152, DCM, “Destination”)");
-		auditRequestDestinationDTO.setNetworkAccessPointTypeCode("2");
+		auditRequestDestinationDTO.setNetworkAccessPointTypeCodeId(networkAccessPointTypeCodeDao.getByCode("2").getId());
 		auditRequestDestinationDTO.setNetworkAccessPointId(InetAddress.getLocalHost().toString());
 		auditEventDTO.setAuditRequestDestination(auditRequestDestinationDTO);
 		
@@ -88,8 +86,8 @@ public class AuditDaoTest {
 		auditEventDTO.setAuditSource(auditSourceDTO);
 		
 		AuditQueryParametersDTO auditQueryParametersDTO = new AuditQueryParametersDTO();
-		auditQueryParametersDTO.setParticipantObjectTypeCode(2);
-		auditQueryParametersDTO.setParticipantObjectTypeCodeRole(24);
+		auditQueryParametersDTO.setParticipantObjectTypeCodeId(participantObjectTypeCodeDao.getByCode("2").getId());
+		auditQueryParametersDTO.setParticipantObjectTypeCodeRoleId(participantObjectTypeCodeRoleDao.getByCode("24").getId());
 		auditQueryParametersDTO.setParticipantObjectIdTypeCode("EV(“ITI-55, “IHE Transactions”, “Cross Gateway Patient Discovery”)");
 		auditQueryParametersDTO.setParticipantObjectQuery("DBKHOIUDFIFO*G#(*OFDGTD(&#GIUFDOUFD(UG(GFDH");
 		auditQueryParametersDTO.setParticipantObjectDetail("urn:uuid:a02ca8cd-86fa-4afc-a27c-616c183b2055"); // homeCommunityId
@@ -99,7 +97,8 @@ public class AuditDaoTest {
 		auditHumanRequestorDTO.setUserId("https://www.someihe.com/patientDiscovery");
 		auditHumanRequestorDTO.setUserIsRequestor(true);
 		auditHumanRequestorDTO.setRoleIdCode("EV(110152, DCM, “Destination”)");
-		auditHumanRequestorDTO.setNetworkAccessPointTypeCode("2");
+		auditHumanRequestorDTO.setNetworkAccessPointTypeCode(networkAccessPointTypeCodeDao.getByCode("2"));
+		auditHumanRequestorDTO.setNetworkAccessPointTypeCodeId(networkAccessPointTypeCodeDao.getByCode("2").getId());
 		auditHumanRequestorDTO.setNetworkAccessPointId(InetAddress.getLocalHost().toString());
 		ArrayList<AuditHumanRequestorDTO> humanRequestors = new ArrayList<AuditHumanRequestorDTO>();
 		humanRequestors.add(auditHumanRequestorDTO);
@@ -126,7 +125,7 @@ public class AuditDaoTest {
 	public void testInsertAuditDocumentQuery() throws UnknownHostException {
 		
 		AuditEventDTO auditEventDTO = new AuditEventDTO();
-		auditEventDTO.setEventActionCode("C");
+		auditEventDTO.setEventActionCodeId(eventActionCodeDao.getByCode("C").getId());
 		auditEventDTO.setEventId("EV(110107, DCM, “Import”)");
 		auditEventDTO.setEventDateTime(new Date().toString());
 		auditEventDTO.setEventTypeCode("EV(“ITI-38”, “IHE Transactions”, and “Cross Gateway Query”)");
@@ -135,7 +134,7 @@ public class AuditDaoTest {
 		auditRequestSourceDTO.setUserId("");
 		auditRequestSourceDTO.setAlternativeUserId(ManagementFactory.getRuntimeMXBean().getName());
 		auditRequestSourceDTO.setNetworkAccessPointId(InetAddress.getLocalHost().toString());
-		auditRequestSourceDTO.setNetworkAccessPointTypeCode("2");
+		auditRequestSourceDTO.setNetworkAccessPointTypeCodeId(networkAccessPointTypeCodeDao.getByCode("2").getId());
 		auditRequestSourceDTO.setRoleIdCode("EV(110153, DCM, “Source”)");
 		auditRequestSourceDTO.setUserIsRequestor(true);
 		auditEventDTO.setAuditRequestSource(auditRequestSourceDTO);
@@ -144,7 +143,7 @@ public class AuditDaoTest {
 		auditRequestDestinationDTO.setUserId("https://www.someihe.com/patientDiscovery");
 		auditRequestDestinationDTO.setUserIsRequestor(true);
 		auditRequestDestinationDTO.setRoleIdCode("EV(110152, DCM, “Destination”)");
-		auditRequestDestinationDTO.setNetworkAccessPointTypeCode("2");
+		auditRequestDestinationDTO.setNetworkAccessPointTypeCodeId(networkAccessPointTypeCodeDao.getByCode("2").getId());
 		auditRequestDestinationDTO.setNetworkAccessPointId(InetAddress.getLocalHost().toString());
 		auditEventDTO.setAuditRequestDestination(auditRequestDestinationDTO);
 		
@@ -154,8 +153,8 @@ public class AuditDaoTest {
 		auditEventDTO.setAuditSource(auditSourceDTO);
 		
 		AuditPatientDTO auditPatientDTO = new AuditPatientDTO();
-		auditPatientDTO.setParticipantObjectTypeCode(1);
-		auditPatientDTO.setParticipantObjectTypeCodeRole(1);
+		auditPatientDTO.setParticipantObjectTypeCodeId(participantObjectTypeCodeDao.getByCode("1").getId());
+		auditPatientDTO.setParticipantObjectTypeCodeRoleId(participantObjectTypeCodeRoleDao.getByCode("1").getId());
 		auditPatientDTO.setParticipantObjectIdTypeCode("");
 		auditPatientDTO.setParticipantObjectQuery("");
 		auditPatientDTO.setParticipantObjectDetail("");
@@ -165,15 +164,15 @@ public class AuditDaoTest {
 		auditHumanRequestorDTO.setUserId(UserUtil.getCurrentUser().getFirstName());
 		auditHumanRequestorDTO.setUserIsRequestor(true);
 		auditHumanRequestorDTO.setRoleIdCode("EV(110152, DCM, “Destination”)");
-		auditHumanRequestorDTO.setNetworkAccessPointTypeCode("2");
+		auditHumanRequestorDTO.setNetworkAccessPointTypeCodeId(networkAccessPointTypeCodeDao.getByCode("2").getId());
 		auditHumanRequestorDTO.setNetworkAccessPointId(InetAddress.getLocalHost().toString());
 		ArrayList<AuditHumanRequestorDTO> humanRequestors = new ArrayList<AuditHumanRequestorDTO>();
 		humanRequestors.add(auditHumanRequestorDTO);
 		auditEventDTO.setAuditHumanRequestors(humanRequestors);
 		
 		AuditDocumentDTO auditDocumentDTO = new AuditDocumentDTO();
-		auditDocumentDTO.setParticipantObjectTypeCode(2);
-		auditDocumentDTO.setParticipantObjectTypeCodeRole(3);
+		auditDocumentDTO.setParticipantObjectTypeCodeId(participantObjectTypeCodeDao.getByCode("2").getId());
+		auditDocumentDTO.setParticipantObjectTypeCodeRoleId(participantObjectTypeCodeRoleDao.getByCode("3").getId());
 		auditDocumentDTO.setParticipantObjectIdTypeCode("");
 		auditDocumentDTO.setParticipantObjectId("urn:id:blahblahblah");
 		auditDocumentDTO.setParticipantObjectQuery("urn:oid:1.2.3.928.955");

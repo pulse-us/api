@@ -2,6 +2,10 @@ package gov.ca.emsa.pulse.broker.manager.impl;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.dao.AuditEventDAO;
+import gov.ca.emsa.pulse.broker.dao.EventActionCodeDAO;
+import gov.ca.emsa.pulse.broker.dao.NetworkAccessPointTypeCodeDAO;
+import gov.ca.emsa.pulse.broker.dao.ParticipantObjectTypeCodeDAO;
+import gov.ca.emsa.pulse.broker.dao.ParticipantObjectTypeCodeRoleDAO;
 import gov.ca.emsa.pulse.broker.dto.AuditDocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditEventDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditHumanRequestorDTO;
@@ -29,8 +33,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuditEventManagerImpl implements AuditEventManager{
 
-	@Autowired
-	private AuditEventDAO auditEventDao;
+	
+	@Autowired private AuditEventDAO auditEventDao;
+	@Autowired private EventActionCodeDAO eventActionCodeDao;
+	@Autowired private NetworkAccessPointTypeCodeDAO networkAccessPointTypeCodeDao;
+	@Autowired private ParticipantObjectTypeCodeDAO participantObjectTypeCodeDao;
+	@Autowired private ParticipantObjectTypeCodeRoleDAO participantObjectTypeCodeRoleDao;
 
 	// Initiating gateway audit event
 	@Override
@@ -81,7 +89,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				user.getEmail(), // this is optional
 				true, // this is optional
 				"EV(110153, DCM, “Source”)",
-				"2",
+				networkAccessPointTypeCodeDao.getByCode("2").getId(),
 				InetAddress.getLocalHost().toString());
 		ArrayList<AuditHumanRequestorDTO> auditHumanRequestorDTO = AuditUtil.createAuditHumanRequestor(user.getFirstName()
 				+ " " + user.getLastName(), // the identity of the human that initiated the transaction
@@ -96,10 +104,10 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				null, // optional
 				true, 
 				"EV(110152, DCM, “Destination”)", 
-				"2", 
+				networkAccessPointTypeCodeDao.getByCode("2").getId(), 
 				endpointUrl);
-		AuditQueryParametersDTO auditQueryParametersDTO = AuditUtil.createAuditQueryParameters(2, 
-				24, 
+		AuditQueryParametersDTO auditQueryParametersDTO = AuditUtil.createAuditQueryParameters(participantObjectTypeCodeDao.getByCode("2").getId(), 
+				participantObjectTypeCodeRoleDao.getByCode("24").getId(), 
 				null, // optional 
 				"EV(“ITI-55, “IHE Transactions”, “Cross Gateway Patient Discovery”)", 
 				null, // optional 
@@ -112,7 +120,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				null); // optional
 		AuditEventDTO auditEventDTO = new AuditEventDTO();
 		auditEventDTO.setEventId("EV(110112, DCM, “Query”)");
-		auditEventDTO.setEventActionCode("E");
+		auditEventDTO.setEventActionCode(eventActionCodeDao.getByCode("E"));
 		auditEventDTO.setEventDateTime(new Date().toString());
 		auditEventDTO.setEventOutcomeIndicator(outcome);
 		auditEventDTO.setEventTypeCode("EV(“ITI-55”, “IHE Transactions”, “Cross Gateway Patient Discovery”)");
@@ -132,7 +140,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				user.getEmail(), // this is optional
 				true, // this is optional
 				"EV(110153, DCM, “Source”)",
-				"2",
+				networkAccessPointTypeCodeDao.getByCode("2").getId(),
 				InetAddress.getLocalHost().toString());
 		ArrayList<AuditHumanRequestorDTO> auditHumanRequestorDTO = AuditUtil.createAuditHumanRequestor(user.getFirstName()
 				+ " " + user.getLastName(), // optional
@@ -147,10 +155,10 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				null, // optional
 				true, 
 				"EV(110152, DCM, “Destination”)", 
-				"2", 
+				networkAccessPointTypeCodeDao.getByCode("2").getId(), 
 				endpointUrl);
-		AuditPatientDTO auditPatientDTO = AuditUtil.createAuditPatient(1, // optional
-				1, 
+		AuditPatientDTO auditPatientDTO = AuditUtil.createAuditPatient(participantObjectTypeCodeDao.getByCode("1").getId(), // optional
+				participantObjectTypeCodeRoleDao.getByCode("1").getId(), 
 				null, // optional 
 				"EV(“ITI-38”, “IHE Transactions”, and “Cross Gateway Query”)", 
 				null, // optional 
@@ -158,8 +166,8 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				null, // optional
 				null, // 
 				null); //
-		ArrayList<AuditDocumentDTO> auditDocumentDTO = AuditUtil.createAuditDocument(2, 
-				3, 
+		ArrayList<AuditDocumentDTO> auditDocumentDTO = AuditUtil.createAuditDocument(participantObjectTypeCodeDao.getByCode("2").getId(), 
+				participantObjectTypeCodeRoleDao.getByCode("3").getId(), 
 				null, // optional 
 				"EV(“ITI-38”, “IHE Transactions”, and “Cross Gateway Query”)", // not specialized
 				null, // optional 
@@ -173,7 +181,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				null); // optional
 		AuditEventDTO auditEventDTO = new AuditEventDTO();
 		auditEventDTO.setEventId("EV(110107, DCM, “Import”)");
-		auditEventDTO.setEventActionCode("C");
+		auditEventDTO.setEventActionCodeId(eventActionCodeDao.getByCode("C").getId());
 		auditEventDTO.setEventDateTime(new Date().toString());
 		auditEventDTO.setEventOutcomeIndicator(outcome); 
 		auditEventDTO.setEventTypeCode("EV(“ITI-38”, “IHE Transactions”, and “Cross Gateway Query”)");
@@ -194,7 +202,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				user.getEmail(), // this is optional
 				true, // this is optional
 				"EV(110153, DCM, “Source”)",
-				"2",
+				networkAccessPointTypeCodeDao.getByCode("2").getId(),
 				InetAddress.getLocalHost().toString());
 		ArrayList<AuditHumanRequestorDTO> auditHumanRequestorDTO = AuditUtil.createAuditHumanRequestor(user.getFirstName()
 				+ " " + user.getLastName(), // optional
@@ -209,10 +217,10 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				null, // optional
 				true, 
 				"EV(110152, DCM, “Destination”)", 
-				"2", 
+				networkAccessPointTypeCodeDao.getByCode("2").getId(), 
 				endpointUrl);
-		AuditPatientDTO auditPatientDTO = AuditUtil.createAuditPatient(1, // optional
-				1, 
+		AuditPatientDTO auditPatientDTO = AuditUtil.createAuditPatient(participantObjectTypeCodeDao.getByCode("1").getId(), // optional
+				participantObjectTypeCodeRoleDao.getByCode("1").getId(), 
 				null, // optional 
 				"EV(“ITI-39”, “IHE Transactions”, and “Cross Gateway Retrieve”)", // not specialized
 				null, // optional 
@@ -220,8 +228,8 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				null, // optional
 				null, // optional
 				null); // optional
-		ArrayList<AuditDocumentDTO> auditDocumentDTO = AuditUtil.createAuditDocument(2, 
-				3, 
+		ArrayList<AuditDocumentDTO> auditDocumentDTO = AuditUtil.createAuditDocument(participantObjectTypeCodeDao.getByCode("2").getId(), 
+				participantObjectTypeCodeRoleDao.getByCode("3").getId(), 
 				null, // optional 
 				"EV(“ITI-39”, “IHE Transactions”, and “Cross Gateway Retrieve”)", // not specialized
 				null, // optional 
@@ -235,7 +243,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				null); // optional
 		AuditEventDTO auditEventDTO = new AuditEventDTO();
 		auditEventDTO.setEventId("EV(110107, DCM, “Import”)");
-		auditEventDTO.setEventActionCode("C");
+		auditEventDTO.setEventActionCodeId(eventActionCodeDao.getByCode("C").getId());
 		auditEventDTO.setEventDateTime(new Date().toString());
 		auditEventDTO.setEventOutcomeIndicator(outcome);
 		auditEventDTO.setEventTypeCode("EV(“ITI-39”, “IHE Transactions”, and “Cross Gateway Retrieve”)");

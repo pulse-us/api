@@ -1,14 +1,20 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import java.util.Date;
+
 import gov.ca.emsa.pulse.broker.entity.AuditPatientEntity;
 
 public class AuditPatientDTO {
 	
 	private Long id;
 	
-	private int participantObjectTypeCode;
+	private Long participantObjectTypeCodeId;
 	
-	private int participantObjectTypeCodeRole;
+	private ParticipantObjectTypeCodeDTO participantObjectTypeCode;
+	
+	private Long participantObjectTypeCodeRoleId;
+	
+	private ParticipantObjectTypeCodeRoleDTO participantObjectTypeCodeRole;
 	
 	private String participantObjectDataLifecycle;
 	
@@ -24,14 +30,20 @@ public class AuditPatientDTO {
 	
 	private String participantObjectDetail;
 	
+	private Date creationDate;
+	
+	private Date lastModifiedDate;
+	
 	public AuditPatientDTO(){
 		
 	}
 	
 	public AuditPatientDTO(AuditPatientEntity entity){
 		this.id = entity.getId();
-		this.participantObjectTypeCode = entity.getParticipantObjectTypeCode();
-		this.participantObjectTypeCodeRole = entity.getParticipantObjectTypeCodeRole();
+		this.participantObjectTypeCodeId = entity.getParticipantObjectTypeCodeId();
+		this.participantObjectTypeCodeRoleId = entity.getParticipantObjectTypeCodeRoleId();
+		//this.participantObjectTypeCode = new ParticipantObjectTypeCodeDTO(entity.getParticipantObjectTypeCode());
+		//this.participantObjectTypeCodeRole = new ParticipantObjectTypeCodeRoleDTO(entity.getParticipantObjectTypeCodeRole());
 		this.participantObjectDataLifecycle = entity.getParticipantObjectDataLifecycle();
 		this.participantObjectIdTypeCode = entity.getParticipantObjectIdTypeCode();
 		this.participantObjectSensitivity = entity.getParticipantObjectSensitivity();
@@ -39,6 +51,8 @@ public class AuditPatientDTO {
 		this.participantObjectName = entity.getParticipantObjectName();
 		this.participantObjectQuery = entity.getParticipantObjectQuery();
 		this.participantObjectDetail = entity.getParticipantObjectDetail();
+		this.creationDate = entity.getCreationDate();
+		this.lastModifiedDate = entity.getLastModifiedDate();
 	}
 
 	public Long getId() {
@@ -49,20 +63,22 @@ public class AuditPatientDTO {
 		this.id = id;
 	}
 
-	public int getParticipantObjectTypeCode() {
+	public ParticipantObjectTypeCodeDTO getParticipantObjectTypeCode() {
 		return participantObjectTypeCode;
 	}
 
-	public void setParticipantObjectTypeCode(int i) {
-		this.participantObjectTypeCode = i;
+	public void setParticipantObjectTypeCode(
+			ParticipantObjectTypeCodeDTO participantObjectTypeCode) {
+		this.participantObjectTypeCode = participantObjectTypeCode;
 	}
 
-	public int getParticipantObjectTypeCodeRole() {
+	public ParticipantObjectTypeCodeRoleDTO getParticipantObjectTypeCodeRole() {
 		return participantObjectTypeCodeRole;
 	}
 
-	public void setParticipantObjectTypeCodeRole(int i) {
-		this.participantObjectTypeCodeRole = i;
+	public void setParticipantObjectTypeCodeRole(
+			ParticipantObjectTypeCodeRoleDTO participantObjectTypeCodeRole) {
+		this.participantObjectTypeCodeRole = participantObjectTypeCodeRole;
 	}
 
 	public String getParticipantObjectDataLifecycle() {
@@ -121,5 +137,40 @@ public class AuditPatientDTO {
 	public void setParticipantObjectDetail(String participantObjectDetail) {
 		this.participantObjectDetail = participantObjectDetail;
 	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public Long getParticipantObjectTypeCodeId() {
+		return participantObjectTypeCodeId;
+	}
+
+	public void setParticipantObjectTypeCodeId(Long participantObjectTypeCodeId) {
+		this.participantObjectTypeCodeId = participantObjectTypeCodeId;
+	}
+
+	public Long getParticipantObjectTypeCodeRoleId() {
+		return participantObjectTypeCodeRoleId;
+	}
+
+	public void setParticipantObjectTypeCodeRoleId(
+			Long participantObjectTypeCodeRoleId) {
+		this.participantObjectTypeCodeRoleId = participantObjectTypeCodeRoleId;
+	}
+	
+	
 
 }

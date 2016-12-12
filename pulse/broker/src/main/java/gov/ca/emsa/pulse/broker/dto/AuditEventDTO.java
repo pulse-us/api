@@ -5,6 +5,7 @@ import gov.ca.emsa.pulse.broker.entity.AuditEventEntity;
 import gov.ca.emsa.pulse.broker.entity.AuditHumanRequestorEntity;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class AuditEventDTO {
 	
@@ -12,7 +13,9 @@ public class AuditEventDTO {
 	
 	private String eventId;
 	
-	private String eventActionCode;
+	private Long eventActionCodeId;
+	
+	private EventActionCodeDTO eventActionCode;
 	
 	private String eventDateTime;
 	
@@ -44,6 +47,10 @@ public class AuditEventDTO {
 	
 	private ArrayList<AuditDocumentDTO> auditDocument;
 	
+	private Date creationDate;
+	
+	private Date lastModifiedDate;
+	
 	public AuditEventDTO() {
 		auditHumanRequestors = new ArrayList<AuditHumanRequestorDTO>();
 		auditDocument = new ArrayList<AuditDocumentDTO>();
@@ -53,7 +60,8 @@ public class AuditEventDTO {
 		this();
 		this.id = entity.getId();
 		this.eventId = entity.getEventId();
-		this.eventActionCode = entity.getEventActionCode();
+		this.eventActionCodeId = entity.getEventActionCodeId();
+		//this.eventActionCode = new EventActionCodeDTO(entity.getEventActionCode());
 		this.eventDateTime = entity.getEventDateTime();
 		this.eventOutcomeIndicator = entity.getEventOutcomeIndicator();
 		this.eventTypeCode = entity.getEventTypeCode();
@@ -81,6 +89,8 @@ public class AuditEventDTO {
 				this.auditHumanRequestors.add(new AuditHumanRequestorDTO(humanRequestorEntity));
 			}
 		}
+		this.creationDate = entity.getCreationDate();
+		this.lastModifiedDate = entity.getLastModifiedDate();
 	}
 
 	public Long getId() {
@@ -99,11 +109,11 @@ public class AuditEventDTO {
 		this.eventId = eventId;
 	}
 
-	public String getEventActionCode() {
+	public EventActionCodeDTO getEventActionCode() {
 		return eventActionCode;
 	}
 
-	public void setEventActionCode(String eventActionCode) {
+	public void setEventActionCode(EventActionCodeDTO eventActionCode) {
 		this.eventActionCode = eventActionCode;
 	}
 
@@ -228,5 +238,31 @@ public class AuditEventDTO {
 	public void setAuditPatientId(Long auditPatientId) {
 		this.auditPatientId = auditPatientId;
 	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public Long getEventActionCodeId() {
+		return eventActionCodeId;
+	}
+
+	public void setEventActionCodeId(Long eventActionCodeId) {
+		this.eventActionCodeId = eventActionCodeId;
+	}
+	
+	
 	
 }
