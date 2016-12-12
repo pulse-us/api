@@ -1,10 +1,17 @@
 package gov.ca.emsa.pulse.broker.entity;
 
+import java.util.Date;
+
+import gov.ca.emsa.pulse.broker.dto.ParticipantObjectTypeCodeDTO;
+import gov.ca.emsa.pulse.broker.dto.ParticipantObjectTypeCodeRoleDTO;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -16,11 +23,19 @@ public class AuditQueryParametersEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="participant_object_type_code")
-	private int participantObjectTypeCode;
+	@Column(name="participant_object_type_code_id")
+	private Long participantObjectTypeCodeId;
 	
-	@Column(name="participant_object_type_code_role")
-	private int participantObjectTypeCodeRole;
+	@OneToOne
+	@JoinColumn(name="participant_object_type_code_id", insertable = false, updatable = false)
+	private ParticipantObjectTypeCodeEntity participantObjectTypeCode;
+	
+	@Column(name="participant_object_type_code_role_id")
+	private Long participantObjectTypeCodeRoleId;
+	
+	@OneToOne
+	@JoinColumn(name="participant_object_type_code_role_id", insertable = false, updatable = false)
+	private ParticipantObjectTypeCodeRoleEntity participantObjectTypeCodeRole;
 	
 	@Column(name="participant_object_data_lifecycle")
 	private String participantObjectDataLifecycle;
@@ -43,6 +58,12 @@ public class AuditQueryParametersEntity {
 	@Column(name="participant_object_detail") 
 	private String participantObjectDetail;
 	
+	@Column( name = "creation_date", insertable = false, updatable = false)
+	private Date creationDate;
+	
+	@Column( name = "last_modified_date", insertable = false, updatable = false)
+	private Date lastModifiedDate;
+	
 	public Long getId() {
 		return id;
 	}
@@ -51,19 +72,38 @@ public class AuditQueryParametersEntity {
 		this.id = id;
 	}
 
-	public int getParticipantObjectTypeCode() {
+	public Long getParticipantObjectTypeCodeId() {
+		return participantObjectTypeCodeId;
+	}
+
+	public void setParticipantObjectTypeCodeId(Long participantObjectTypeCodeId) {
+		this.participantObjectTypeCodeId = participantObjectTypeCodeId;
+	}
+
+	public ParticipantObjectTypeCodeEntity getParticipantObjectTypeCode() {
 		return participantObjectTypeCode;
 	}
 
-	public void setParticipantObjectTypeCode(int participantObjectTypeCode) {
+	public void setParticipantObjectTypeCode(
+			ParticipantObjectTypeCodeEntity participantObjectTypeCode) {
 		this.participantObjectTypeCode = participantObjectTypeCode;
 	}
 
-	public int getParticipantObjectTypeCodeRole() {
+	public Long getParticipantObjectTypeCodeRoleId() {
+		return participantObjectTypeCodeRoleId;
+	}
+
+	public void setParticipantObjectTypeCodeRoleId(
+			Long participantObjectTypeCodeRoleId) {
+		this.participantObjectTypeCodeRoleId = participantObjectTypeCodeRoleId;
+	}
+
+	public ParticipantObjectTypeCodeRoleEntity getParticipantObjectTypeCodeRole() {
 		return participantObjectTypeCodeRole;
 	}
 
-	public void setParticipantObjectTypeCodeRole(int participantObjectTypeCodeRole) {
+	public void setParticipantObjectTypeCodeRole(
+			ParticipantObjectTypeCodeRoleEntity participantObjectTypeCodeRole) {
 		this.participantObjectTypeCodeRole = participantObjectTypeCodeRole;
 	}
 
@@ -123,5 +163,23 @@ public class AuditQueryParametersEntity {
 	public void setParticipantObjectDetail(String participantObjectDetail) {
 		this.participantObjectDetail = participantObjectDetail;
 	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+	
+	
 
 }

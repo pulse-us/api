@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import java.util.Date;
+
 import gov.ca.emsa.pulse.broker.entity.AuditRequestSourceEntity;
 
 public class AuditRequestSourceDTO {
@@ -16,9 +18,15 @@ public class AuditRequestSourceDTO {
 	
 	private String roleIdCode;
 	
-	private String networkAccessPointTypeCode;
+	private Long networkAccessPointTypeCodeId;
+	
+	private NetworkAccessPointTypeCodeDTO networkAccessPointTypeCode;
 	
 	private String networkAccessPointId;
+	
+	private Date creationDate;
+	
+	private Date lastModifiedDate;
 	
 	public AuditRequestSourceDTO(){
 		
@@ -31,8 +39,11 @@ public class AuditRequestSourceDTO {
 		this.userName = entity.getUserName();
 		this.userIsRequestor = entity.isUserIsRequestor();
 		this.roleIdCode = entity.getRoleIdCode();
-		this.networkAccessPointTypeCode = entity.getNetworkAccessPointTypeCode();
+		this.networkAccessPointTypeCodeId = entity.getNetworkAccessPointTypeCodeId();
+		//this.networkAccessPointTypeCode = new NetworkAccessPointTypeCodeDTO(entity.getNetworkAccessPointTypeCode());
 		this.networkAccessPointId = entity.getNetworkAccessPointId();
+		this.creationDate = entity.getCreationDate();
+		this.lastModifiedDate = entity.getLastModifiedDate();
 	}
 
 	public Long getId() {
@@ -83,11 +94,12 @@ public class AuditRequestSourceDTO {
 		this.roleIdCode = roleIdCode;
 	}
 
-	public String getNetworkAccessPointTypeCode() {
+	public NetworkAccessPointTypeCodeDTO getNetworkAccessPointTypeCode() {
 		return networkAccessPointTypeCode;
 	}
 
-	public void setNetworkAccessPointTypeCode(String networkAccessPointTypeCode) {
+	public void setNetworkAccessPointTypeCode(
+			NetworkAccessPointTypeCodeDTO networkAccessPointTypeCode) {
 		this.networkAccessPointTypeCode = networkAccessPointTypeCode;
 	}
 
@@ -98,5 +110,31 @@ public class AuditRequestSourceDTO {
 	public void setNetworkAccessPointId(String networkAccessPointId) {
 		this.networkAccessPointId = networkAccessPointId;
 	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public Long getNetworkAccessPointTypeCodeId() {
+		return networkAccessPointTypeCodeId;
+	}
+
+	public void setNetworkAccessPointTypeCodeId(Long networkAccessPointTypeCodeId) {
+		this.networkAccessPointTypeCodeId = networkAccessPointTypeCodeId;
+	}
+	
+	
 
 }

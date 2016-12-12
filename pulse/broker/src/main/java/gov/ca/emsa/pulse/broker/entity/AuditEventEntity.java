@@ -1,6 +1,9 @@
 package gov.ca.emsa.pulse.broker.entity;
 
+import gov.ca.emsa.pulse.broker.dto.EventActionCodeDTO;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -28,10 +31,14 @@ public class AuditEventEntity {
 	private Long id;
 	
 	@Column(name="event_id", nullable = false)
-	private String eventId; 
+	private String eventId;
 	
-	@Column(name="event_action_code", nullable = false) 
-	private String eventActionCode;
+	@Column( name = "event_action_code_id", nullable = false)
+	private Long eventActionCodeId;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name="event_action_code_id", insertable = false, updatable = false) 
+	private EventActionCodeEntity eventActionCode;
 	
 	@Column(name="event_date_time", nullable = false)
 	private String eventDateTime;
@@ -85,6 +92,12 @@ public class AuditEventEntity {
 	@Column( name = "audit_event_id")
 	private List<AuditDocumentEntity> auditDocument = new ArrayList<AuditDocumentEntity>();
 
+	@Column( name = "creation_date", insertable = false, updatable = false)
+	private Date creationDate;
+	
+	@Column( name = "last_modified_date", insertable = false, updatable = false)
+	private Date lastModifiedDate;
+	
 	public Long getId() {
 		return id;
 	}
@@ -101,11 +114,11 @@ public class AuditEventEntity {
 		this.eventId = eventId;
 	}
 
-	public String getEventActionCode() {
+	public EventActionCodeEntity getEventActionCode() {
 		return eventActionCode;
 	}
 
-	public void setEventActionCode(String eventActionCode) {
+	public void setEventActionCode(EventActionCodeEntity eventActionCode) {
 		this.eventActionCode = eventActionCode;
 	}
 
@@ -231,5 +244,40 @@ public class AuditEventEntity {
 	public void setAuditPatientId(Long auditPatientId) {
 		this.auditPatientId = auditPatientId;
 	}
+
+	public Long getEventActionCodeId() {
+		return eventActionCodeId;
+	}
+
+	public void setEventActionCodeId(Long eventActionCodeId) {
+		this.eventActionCodeId = eventActionCodeId;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public void setAuditHumanRequestor(
+			List<AuditHumanRequestorEntity> auditHumanRequestor) {
+		this.auditHumanRequestor = auditHumanRequestor;
+	}
+
+	public void setAuditDocument(List<AuditDocumentEntity> auditDocument) {
+		this.auditDocument = auditDocument;
+	}
+	
+	
 
 }

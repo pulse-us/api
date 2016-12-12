@@ -1,14 +1,20 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import java.util.Date;
+
 import gov.ca.emsa.pulse.broker.entity.AuditQueryParametersEntity;
 
 public class AuditQueryParametersDTO {
 	
 	private Long id;
 	
-	private int participantObjectTypeCode;
+	private Long participantObjectTypeCodeId;
 	
-	private int participantObjectTypeCodeRole;
+	private ParticipantObjectTypeCodeDTO participantObjectTypeCode;
+	
+	private Long participantObjectTypeCodeRoleId;
+	
+	private ParticipantObjectTypeCodeRoleDTO participantObjectTypeCodeRole;
 	
 	private String participantObjectDataLifecycle;
 	
@@ -24,14 +30,18 @@ public class AuditQueryParametersDTO {
 	
 	private String participantObjectDetail;
 	
+	private Date creationDate;
+	
+	private Date lastModifiedDate;
+	
 	public AuditQueryParametersDTO(){
 		
 	}
 	
 	public AuditQueryParametersDTO(AuditQueryParametersEntity entity){
 		this.id = entity.getId();
-		this.participantObjectTypeCode = entity.getParticipantObjectTypeCode();
-		this.participantObjectTypeCodeRole = entity.getParticipantObjectTypeCodeRole();
+		this.participantObjectTypeCodeId = entity.getParticipantObjectTypeCodeId();
+		this.participantObjectTypeCodeRoleId = entity.getParticipantObjectTypeCodeRoleId();
 		this.participantObjectDataLifecycle = entity.getParticipantObjectDataLifecycle();
 		this.participantObjectIdTypeCode = entity.getParticipantObjectIdTypeCode();
 		this.participantObjectSensitivity = entity.getParticipantObjectSensitivity();
@@ -39,6 +49,8 @@ public class AuditQueryParametersDTO {
 		this.participantObjectName = entity.getParticipantObjectName();
 		this.participantObjectQuery = entity.getParticipantObjectQuery();
 		this.participantObjectDetail = entity.getParticipantObjectDetail();
+		this.creationDate = entity.getCreationDate();
+		this.lastModifiedDate = entity.getLastModifiedDate();
 	}
 	
 	public Long getId() {
@@ -49,19 +61,21 @@ public class AuditQueryParametersDTO {
 		this.id = id;
 	}
 
-	public int getParticipantObjectTypeCode() {
+	public ParticipantObjectTypeCodeDTO getParticipantObjectTypeCode() {
 		return participantObjectTypeCode;
 	}
 
-	public void setParticipantObjectTypeCode(int participantObjectTypeCode) {
+	public void setParticipantObjectTypeCode(
+			ParticipantObjectTypeCodeDTO participantObjectTypeCode) {
 		this.participantObjectTypeCode = participantObjectTypeCode;
 	}
 
-	public int getParticipantObjectTypeCodeRole() {
+	public ParticipantObjectTypeCodeRoleDTO getParticipantObjectTypeCodeRole() {
 		return participantObjectTypeCodeRole;
 	}
 
-	public void setParticipantObjectTypeCodeRole(int participantObjectTypeCodeRole) {
+	public void setParticipantObjectTypeCodeRole(
+			ParticipantObjectTypeCodeRoleDTO participantObjectTypeCodeRole) {
 		this.participantObjectTypeCodeRole = participantObjectTypeCodeRole;
 	}
 
@@ -121,5 +135,40 @@ public class AuditQueryParametersDTO {
 	public void setParticipantObjectDetail(String participantObjectDetail) {
 		this.participantObjectDetail = participantObjectDetail;
 	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public Long getParticipantObjectTypeCodeId() {
+		return participantObjectTypeCodeId;
+	}
+
+	public void setParticipantObjectTypeCodeId(Long participantObjectTypeCodeId) {
+		this.participantObjectTypeCodeId = participantObjectTypeCodeId;
+	}
+
+	public Long getParticipantObjectTypeCodeRoleId() {
+		return participantObjectTypeCodeRoleId;
+	}
+
+	public void setParticipantObjectTypeCodeRoleId(
+			Long participantObjectTypeCodeRoleId) {
+		this.participantObjectTypeCodeRoleId = participantObjectTypeCodeRoleId;
+	}
+	
+	
 
 }

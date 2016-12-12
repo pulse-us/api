@@ -14,6 +14,7 @@
     <class>gov.ca.emsa.pulse.broker.entity.DocumentEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.EndpointStatusEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.EndpointTypeEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.EventActionCodeEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.GivenNameEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.LocationAddressLineEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.LocationEndpointEntity</class>
@@ -23,6 +24,7 @@
     <class>gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.NameTypeEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.NetworkAccessPointTypeCodeEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.PatientDiscoveryRequestStatisticsEntity</class>    
     <class>gov.ca.emsa.pulse.broker.entity.PatientEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.PatientGenderEntity</class>
@@ -31,6 +33,8 @@
     <class>gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.PatientRecordEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.ParticipantObjectTypeCodeEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.ParticipantObjectTypeCodeRoleEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.QueryEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.QueryLocationMapEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.QueryLocationStatusEntity</class>

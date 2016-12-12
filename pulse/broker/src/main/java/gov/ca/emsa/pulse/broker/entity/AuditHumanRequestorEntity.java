@@ -1,10 +1,16 @@
 package gov.ca.emsa.pulse.broker.entity;
 
+import java.util.Date;
+
+import gov.ca.emsa.pulse.broker.dto.NetworkAccessPointTypeCodeDTO;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -34,11 +40,21 @@ public class AuditHumanRequestorEntity {
 	@Column(name="role_id_code")
 	private String roleIdCode;
 	
-	@Column(name="network_access_point_type_code")
-	private String networkAccessPointTypeCode;
+	@Column(name="network_access_point_type_code_id")
+	private Long networkAccessPointTypeCodeId;
+	
+	@OneToOne
+	@JoinColumn(name="network_access_point_type_code_id", insertable = false, updatable = false)
+	private NetworkAccessPointTypeCodeEntity networkAccessPointTypeCode;
 	
 	@Column(name="network_access_point_id")
 	private String networkAccessPointId;
+	
+	@Column( name = "creation_date", insertable = false, updatable = false)
+	private Date creationDate;
+	
+	@Column( name = "last_modified_date", insertable = false, updatable = false)
+	private Date lastModifiedDate;
 
 	public Long getId() {
 		return id;
@@ -88,11 +104,12 @@ public class AuditHumanRequestorEntity {
 		this.roleIdCode = roleIdCode;
 	}
 
-	public String getNetworkAccessPointTypeCode() {
+	public NetworkAccessPointTypeCodeEntity getNetworkAccessPointTypeCode() {
 		return networkAccessPointTypeCode;
 	}
 
-	public void setNetworkAccessPointTypeCode(String networkAccessPointTypeCode) {
+	public void setNetworkAccessPointTypeCode(
+			NetworkAccessPointTypeCodeEntity networkAccessPointTypeCode) {
 		this.networkAccessPointTypeCode = networkAccessPointTypeCode;
 	}
 
@@ -110,6 +127,30 @@ public class AuditHumanRequestorEntity {
 
 	public void setAuditEventId(Long auditEventId) {
 		this.auditEventId = auditEventId;
+	}
+
+	public Long getNetworkAccessPointTypeCodeId() {
+		return networkAccessPointTypeCodeId;
+	}
+
+	public void setNetworkAccessPointTypeCodeId(Long networkAccessPointTypeCodeId) {
+		this.networkAccessPointTypeCodeId = networkAccessPointTypeCodeId;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
 	}
 	
 	
