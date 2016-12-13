@@ -13,6 +13,7 @@ import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -61,8 +62,11 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public List<QueryDTO> getActiveQueriesForUser(String userKey) {
-		List<QueryDTO> results = queryDao.findAllForUserWithStatus(userKey, QueryStatus.ACTIVE.name());
+	public List<QueryDTO> getOpenQueriesForUser(String userKey) {
+		List<QueryStatus> openStatuses = new ArrayList<QueryStatus>();
+		openStatuses.add(QueryStatus.Active);
+		openStatuses.add(QueryStatus.Complete);
+		List<QueryDTO> results = queryDao.findAllForUserWithStatus(userKey, openStatuses);
 		return results;
 	}
 
@@ -70,7 +74,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public String getQueryStatus(Long queryId) {
 		QueryDTO query = queryDao.getById(queryId);
-		return query.getStatus();
+		return query.getStatus().name();
 	}
 
 	@Override
@@ -83,13 +87,16 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public QueryDTO updateQueryStatusFromLocations(Long queryId) {
 		QueryDTO query = getById(queryId);
-		//see if the entire query is complete
-		Boolean isStillActive = queryDao.hasActiveLocations(queryId);
-		if(!isStillActive) {
-			logger.info("Setting query " + queryId + " to COMPLETE.");
-			query.setStatus(QueryStatus.COMPLETE.name());
-			query.setLastReadDate(new Date());
-			query = queryDao.update(query);
+		//if the query has not already been closed/deleted, update the status
+		if(query.getStatus() != QueryStatus.Closed) {
+			//see if the entire query is complete
+			Boolean isStillActive = queryDao.hasActiveLocations(queryId);
+			if(!isStillActive) {
+				logger.info("Setting query " + queryId + " to COMPLETE.");
+				query.setStatus(QueryStatus.Complete);
+				query.setLastReadDate(new Date());
+				query = queryDao.update(query);
+			}
 		}
 		return query;
 	}
@@ -110,8 +117,8 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	
 	@Override
 	@Transactional
-	public void delete(Long queryId) {
-		queryDao.delete(queryId);
+	public void close(Long queryId) {
+		queryDao.close(queryId);
 	}
 
 	@Override

@@ -48,7 +48,7 @@ public class QueryService {
 	public List<Query> getQueries() {
 		CommonUser user = UserUtil.getCurrentUser();
 
-		List<QueryDTO> queries = queryManager.getAllQueriesForUser(user.getSubjectName());
+		List<QueryDTO> queries = queryManager.getOpenQueriesForUser(user.getSubjectName());
 		List<Query> results = new ArrayList<Query>();
 		for(QueryDTO query : queries) {
 			results.add(DtoToDomainConverter.convert(query));
@@ -75,7 +75,7 @@ public class QueryService {
 	@ApiOperation(value = "Delete a query")
 	@RequestMapping(value="/{queryId}/delete", method = RequestMethod.POST)
 	public void deleteQuery(@PathVariable(value="queryId") Long queryId) {
-		queryManager.delete(queryId);
+		queryManager.close(queryId);
 	}
 	
 	@ApiOperation(value="Create a Patient from multiple PatientRecords")
@@ -127,7 +127,7 @@ public class QueryService {
 		}
 
 		//delete query (all associated items should cascade)
-		queryManager.delete(queryId);
+		queryManager.close(queryId);
 		return DtoToDomainConverter.convert(patient);
     }
 }
