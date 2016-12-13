@@ -46,14 +46,12 @@ public class AlternateCareFacilityDTO extends AddressableDTO {
 		this.city = entity.getCity();
 		this.state = entity.getState();
 		this.zipcode = entity.getZipcode();
-		this.country = entity.getCountry();
 	}
 	
 	public boolean hasAddressParts() {
 		return (this.lines != null && this.lines.size() > 0) ||
 				!StringUtils.isEmpty(this.city) ||
 				!StringUtils.isEmpty(this.state) ||
-				!StringUtils.isEmpty(this.country) ||
 				!StringUtils.isEmpty(this.zipcode);
 	}
 	

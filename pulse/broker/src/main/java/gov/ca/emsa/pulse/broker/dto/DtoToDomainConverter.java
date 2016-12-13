@@ -101,7 +101,6 @@ public class DtoToDomainConverter {
 			acfAddr.setCity(acfDto.getCity());
 			acfAddr.setState(acfDto.getState());
 			acfAddr.setZipcode(acfDto.getZipcode());
-			acfAddr.setCountry(acfDto.getCountry());
 			acf.setAddress(acfAddr);
 		}
 		return acf;
@@ -228,7 +227,6 @@ public class DtoToDomainConverter {
 			addr.setCity(dto.getCity());
 			addr.setState(dto.getState());
 			addr.setZipcode(dto.getZipcode());
-			addr.setCountry(dto.getCountry());
 		}
 		result.setAddress(addr);
 		if(dto.getStatus() != null) {

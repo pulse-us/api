@@ -46,7 +46,6 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		toInsert.setCity(dto.getCity());
 		toInsert.setState(dto.getState());
 		toInsert.setZipcode(dto.getZipcode());
-		toInsert.setCountry(dto.getCountry());
 		entityManager.persist(toInsert);
 		entityManager.flush();
 		
@@ -73,7 +72,6 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		toUpdate.setCity(dto.getCity());
 		toUpdate.setState(dto.getState());
 		toUpdate.setZipcode(dto.getZipcode());
-		toUpdate.setCountry(dto.getCountry());
 		toUpdate = entityManager.merge(toUpdate);
 		entityManager.flush();
 		
