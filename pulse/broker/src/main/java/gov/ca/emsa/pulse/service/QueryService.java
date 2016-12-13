@@ -123,7 +123,7 @@ public class QueryService {
 			input.setAttributes(customAttributes);
 
 			patient.getLocationMaps().add(patLocMapDto);
-			docManager.queryForDocuments(input, patLocMapDto);
+			docManager.queryForDocuments(user, input, patLocMapDto);
 		}
 
 		//delete query (all associated items should cascade)

@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
@@ -25,6 +26,8 @@ import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
 @Component
 public class PatientQueryService implements Runnable {
+	
+
 	private static final Logger logger = LogManager.getLogger(PatientQueryService.class);
 
 	private QueryLocationMapDTO queryLocationMap;
@@ -34,6 +37,7 @@ public class PatientQueryService implements Runnable {
 	@Autowired private AdapterFactory adapterFactory;
 	private PatientSearch toSearch;
 	private SAMLInput samlInput;
+	private CommonUser user;
 	
 	@Override
 	public void run() {
@@ -66,7 +70,7 @@ public class PatientQueryService implements Runnable {
 		if(adapter != null) {
 			logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 			try {
-				searchResults = adapter.queryPatients(endpointToQuery, toSearch, samlInput);
+				searchResults = adapter.queryPatients(user, endpointToQuery, toSearch, samlInput);
 				logger.info("Successfully queried endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 			} catch(Exception ex) {
 				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
@@ -95,6 +99,14 @@ public class PatientQueryService implements Runnable {
 		}
 		logger.info("Completed query to endpoint with external id '" + 
 				endpointToQuery.getExternalId());
+	}
+	
+	public CommonUser getUser() {
+		return user;
+	}
+
+	public void setUser(CommonUser user) {
+		this.user = user;
 	}
 
 	public QueryLocationMapDTO getQueryLocation() {

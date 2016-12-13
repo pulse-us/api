@@ -151,6 +151,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 				service.setSamlInput(samlInput);
 				service.setToSearch(toSearch);
 				service.setQueryLocation(queryOrg);
+				service.setUser(user);
 				pool.execute(service);
 			}
 		}

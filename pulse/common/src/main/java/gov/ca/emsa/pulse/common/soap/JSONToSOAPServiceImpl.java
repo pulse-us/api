@@ -91,6 +91,10 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		return returnSOAP;
 	}
 	
+	public JAXBElement<PRPAMT201306UV02QueryByParameter> getQueryByParameter(PRPAIN201305UV02 message){
+		return message.getControlActProcess().getQueryByParameter();
+	}
+	
 	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch search) {
 		PRPAIN201305UV02 request = new PRPAIN201305UV02();
 		PRPAIN201305UV02QUQIMT021001UV01ControlActProcess controlActProcess = new PRPAIN201305UV02QUQIMT021001UV01ControlActProcess();

@@ -21,7 +21,7 @@ import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
-import gov.ca.emsa.pulse.broker.manager.AuditManager;
+import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,13 +34,13 @@ public class AlternateCareFacilityService {
 	private Boolean acfWritesAllowed;
 	
 	@Autowired AlternateCareFacilityManager acfManager;
-	@Autowired AuditManager auditManager;
+	@Autowired AuditEventManager auditManager;
 
 	@ApiOperation(value="Get the list of all alternate care facilities (ACFs)")
 	@RequestMapping(value="",  method = RequestMethod.GET)
     public List<AlternateCareFacility> getAll() {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.GET_ALL_ACFS, "/acfs", user.getSubjectName());
+		//auditManager.addAuditEntry(QueryType.GET_ALL_ACFS, "/acfs", user.getSubjectName());
 		List<AlternateCareFacilityDTO> dtos = acfManager.getAll();
 		List<AlternateCareFacility> results = new ArrayList<AlternateCareFacility>();
 		for(AlternateCareFacilityDTO dto : dtos) {
@@ -53,7 +53,7 @@ public class AlternateCareFacilityService {
 	@RequestMapping(value = "/{acfId}", method=RequestMethod.GET)
     public AlternateCareFacility getById(@PathVariable("acfId") Long acfId) {
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.GET_ACF_BY_ID, "/acfs" + acfId, user.getSubjectName());
+		//auditManager.addAuditEntry(QueryType.GET_ACF_BY_ID, "/acfs" + acfId, user.getSubjectName());
 		AlternateCareFacilityDTO dto = acfManager.getById(acfId);
 		return DtoToDomainConverter.convert(dto);
     }
@@ -67,7 +67,7 @@ public class AlternateCareFacilityService {
 		}
 		
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.CREATE_ACF, "/create", user.getSubjectName());
+		//auditManager.addAuditEntry(QueryType.CREATE_ACF, "/create", user.getSubjectName());
 		AlternateCareFacilityDTO dto = DomainToDtoConverter.convert(toCreate);
 		if(StringUtils.isEmpty(dto.getName())) {
 			throw new InvalidArgumentsException("ACF name is required.");
@@ -84,7 +84,7 @@ public class AlternateCareFacilityService {
 			AcfChangesNotAllowedException, SQLException {
 		
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.EDIT_ACF, user.getAcf() + "/edit", user.getSubjectName());
+		//auditManager.addAuditEntry(QueryType.EDIT_ACF, user.getAcf() + "/edit", user.getSubjectName());
 		if(user.getAcf() == null) {
 			throw new InvalidArgumentsException("No ACF was found in the User header.");
 		}

@@ -56,7 +56,6 @@ public class AcfDaoTest {
 		String city = "Baltimore";
 		String state = "MD";
 		String zip = "21227";
-		String country = "USA";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(name);
@@ -64,7 +63,6 @@ public class AcfDaoTest {
 		dto.setCity(city);
 		dto.setState(state);
 		dto.setZipcode(zip);
-		dto.setCountry(country);
 		AddressLineDTO addressLine = new AddressLineDTO();
 		addressLine.setLine(streetLine1);
 		List<AddressLineDTO> lines = new ArrayList<AddressLineDTO>();
@@ -80,7 +78,6 @@ public class AcfDaoTest {
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
-		Assert.assertEquals(country, dto.getCountry());
 		Assert.assertNotNull(dto.getLines());
 		Assert.assertEquals(1, dto.getLines().size());
 		Assert.assertEquals(streetLine1, dto.getLines().get(0).getLine());
@@ -94,7 +91,6 @@ public class AcfDaoTest {
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
-		Assert.assertEquals(country, dto.getCountry());
 		Assert.assertNotNull(dto.getLines());
 		Assert.assertEquals(1, dto.getLines().size());
 		Assert.assertEquals(streetLine1, dto.getLines().get(0).getLine());
@@ -111,7 +107,6 @@ public class AcfDaoTest {
 		String city = "Baltimore";
 		String state = "MD";
 		String zip = "21227";
-		String country = "USA";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(name);
@@ -119,7 +114,6 @@ public class AcfDaoTest {
 		dto.setCity(city);
 		dto.setState(state);
 		dto.setZipcode(zip);
-		dto.setCountry(country);
 		AddressLineDTO addressLine = new AddressLineDTO();
 		addressLine.setLine(streetLine1);
 		List<AddressLineDTO> lines = new ArrayList<AddressLineDTO>();
@@ -141,7 +135,6 @@ public class AcfDaoTest {
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
-		Assert.assertEquals(country, dto.getCountry());
 		Assert.assertNotNull(dto.getLines());
 		Assert.assertEquals(2, dto.getLines().size());
 		Assert.assertEquals(streetLine1, dto.getLines().get(0).getLine());
@@ -159,7 +152,6 @@ public class AcfDaoTest {
 		String city = "Baltimore";
 		String state = "MD";
 		String zip = "21227";
-		String country = "USA";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(name);
@@ -167,7 +159,6 @@ public class AcfDaoTest {
 		dto.setCity(city);
 		dto.setState(state);
 		dto.setZipcode(zip);
-		dto.setCountry(country);
 		AddressLineDTO addressLine = new AddressLineDTO();
 		addressLine.setLine(streetLine1);
 		AddressLineDTO addressLine2 = new AddressLineDTO();
@@ -193,7 +184,6 @@ public class AcfDaoTest {
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
-		Assert.assertEquals(country, dto.getCountry());
 		Assert.assertNotNull(dto.getLines());
 		Assert.assertEquals(1, dto.getLines().size());
 		Assert.assertEquals(streetLine1, dto.getLines().get(0).getLine());
@@ -210,7 +200,6 @@ public class AcfDaoTest {
 		String city = "Baltimore";
 		String state = "MD";
 		String zip = "21227";
-		String country = "USA";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(name);
@@ -218,7 +207,6 @@ public class AcfDaoTest {
 		dto.setCity(city);
 		dto.setState(state);
 		dto.setZipcode(zip);
-		dto.setCountry(country);
 		AddressLineDTO addressLine = new AddressLineDTO();
 		addressLine.setLine(streetLine1);
 		AddressLineDTO addressLine2 = new AddressLineDTO();
@@ -245,7 +233,6 @@ public class AcfDaoTest {
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
-		Assert.assertEquals(country, dto.getCountry());
 		Assert.assertNotNull(dto.getLines());
 		Assert.assertEquals(2, dto.getLines().size());
 		Assert.assertEquals(updatedAddressLine1, dto.getLines().get(0).getLine());
@@ -287,7 +274,6 @@ public class AcfDaoTest {
 		String city = "Baltimore";
 		String state = "MD";
 		String zip = "21227";
-		String country = "USA";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(name);
@@ -303,7 +289,6 @@ public class AcfDaoTest {
 		dto.setCity(city);
 		dto.setState(state);
 		dto.setZipcode(zip);
-		dto.setCountry(country);		
 		dto = acfDao.update(dto);
 		
 		Assert.assertEquals(name, dto.getName());
@@ -311,7 +296,6 @@ public class AcfDaoTest {
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
-		Assert.assertEquals(country, dto.getCountry());
 		
 		dto = acfDao.getById(dto.getId());
 		Assert.assertEquals(name, dto.getName());
@@ -319,7 +303,6 @@ public class AcfDaoTest {
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
-		Assert.assertEquals(country, dto.getCountry());
 	}
 	
 	@Test
@@ -355,7 +338,6 @@ public class AcfDaoTest {
 		String city = "Baltimore";
 		String state = "MD";
 		String zip = "21227";
-		String country = "USA";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
 		dto.setName(name);
@@ -363,7 +345,6 @@ public class AcfDaoTest {
 		dto.setCity(city);
 		dto.setState(state);
 		dto.setZipcode(zip);
-		dto.setCountry(country);
 		AddressLineDTO addressLine = new AddressLineDTO();
 		addressLine.setLine(streetLine1);
 		List<AddressLineDTO> lines = new ArrayList<AddressLineDTO>();

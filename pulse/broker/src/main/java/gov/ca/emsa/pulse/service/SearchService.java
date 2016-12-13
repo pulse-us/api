@@ -20,7 +20,7 @@ import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
-import gov.ca.emsa.pulse.broker.manager.AuditManager;
+import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
@@ -41,7 +41,7 @@ public class SearchService {
 	@Autowired private QueryManager searchManager;
 	@Autowired private LocationManager locationManager;
 	public static String dobFormat = "yyyy-MM-dd";
-	@Autowired private AuditManager auditManager;
+	@Autowired private AuditEventManager auditManager;
 
 	public SearchService() {
 	}
@@ -53,7 +53,7 @@ public class SearchService {
     public @ResponseBody Query searchPatients(@RequestBody(required=true) PatientSearch toSearch) throws JsonProcessingException {
 
 		CommonUser user = UserUtil.getCurrentUser();
-		auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
+		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
 
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");

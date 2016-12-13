@@ -43,9 +43,6 @@ public class AlternateCareFacilityEntity {
 	@Column(name = "zipcode")
 	private String zipcode;
 	
-	@Column(name = "country")
-	private String country;
-	
 	@Column(name = "last_read_date")
 	private Date lastReadDate;
 	
@@ -133,13 +130,5 @@ public class AlternateCareFacilityEntity {
 
 	public void setZipcode(String zipcode) {
 		this.zipcode = zipcode;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
 	}
 }
