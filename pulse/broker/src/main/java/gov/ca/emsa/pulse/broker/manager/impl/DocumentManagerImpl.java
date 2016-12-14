@@ -89,18 +89,19 @@ public class DocumentManagerImpl implements DocumentManager {
 		
 		if(endpointToQuery == null) {
 			logger.error("The location " + location.getName() + " does not have an active document retrieval endpoint.");
-			return;
-		}
-		
-		Adapter adapter = adapterFactory.getAdapter(endpointToQuery);
-		if(adapter != null) {
-			logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "' for document contents.");
-			try {
-				adapter.retrieveDocumentsContents(user, endpointToQuery, docsFromLocation, samlInput, dto);
-			} catch(Exception ex) {
-				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
-				querySuccess = false;
+			querySuccess = false;
+		} else {
+			Adapter adapter = adapterFactory.getAdapter(endpointToQuery);
+			if(adapter != null) {
+				logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "' for document contents.");
+				try {
+					adapter.retrieveDocumentsContents(user, endpointToQuery, docsFromLocation, samlInput, dto);
+				} catch(Exception ex) {
+					logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
+					querySuccess = false;
+				}
 			}
+			logger.info("Completed query to endpoint with external id '" + endpointToQuery.getEndpointStatus() + "' for contents of " + docsFromLocation.size() + " documents.");
 		}
 		
 		if(querySuccess) {
@@ -110,8 +111,6 @@ public class DocumentManagerImpl implements DocumentManager {
 					docDao.update(doc);
 				}
 			}
-			
-			logger.info("Completed query to endpoint with external id '" + endpointToQuery.getEndpointStatus() + "' for contents of " + docsFromLocation.size() + " documents.");
 		}
 	}
 	
