@@ -7,6 +7,7 @@ import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class QueryDaoTest extends TestCase {
 	@Rollback(true)
 	public void testInsertQueryWithoutOrgs() {
 		QueryDTO toInsert = new QueryDTO();
-		toInsert.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.setStatus(QueryStatus.Active);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("keekey");
 		QueryDTO inserted = queryDao.create(toInsert);
@@ -53,7 +54,7 @@ public class QueryDaoTest extends TestCase {
 		insertOrganizations();
 		
 		QueryDTO toInsert = new QueryDTO();
-		toInsert.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.setStatus(QueryStatus.Active);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		
@@ -90,7 +91,7 @@ public class QueryDaoTest extends TestCase {
 		insertOrganizations();
 
 		QueryDTO toInsert = new QueryDTO();
-		toInsert.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.setStatus(QueryStatus.Active);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();
@@ -136,7 +137,7 @@ public class QueryDaoTest extends TestCase {
 		insertOrganizations();
 
 		QueryDTO toInsert = new QueryDTO();
-		toInsert.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.setStatus(QueryStatus.Active);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();
@@ -164,16 +165,37 @@ public class QueryDaoTest extends TestCase {
 		List<QueryDTO> selected = queryDao.findAllForUser("kekey");
 		assertNotNull(selected);
 		assertEquals(1, selected.size());
-//		assertNotNull(selected.getId());
-//		assertTrue(selected.getId().longValue() > 0);
-//		assertNotNull(selected.getOrgStatuses());
-//		assertEquals(2, selected.getOrgStatuses().size());
-//		orgQuery1 = selected.getOrgStatuses().get(0);
-//		assertNotNull(orgQuery1.getId());
-//		assertTrue(orgQuery1.getId().longValue() > 0);
-//		orgQuery2 = selected.getOrgStatuses().get(0);
-//		assertNotNull(orgQuery2.getId());
-//		assertTrue(orgQuery2.getId().longValue() > 0);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testGetOpenQueries() {		
+		insertOrganizations();
+
+		QueryDTO toInsert = new QueryDTO();
+		toInsert.setStatus(QueryStatus.Active);
+		toInsert.setTerms("terms");
+		toInsert.setUserId("kekey");
+		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();
+		orgQuery1.setLocationId(location1.getId());
+		orgQuery1.setStatus(QueryLocationStatus.Active);
+		toInsert.getLocationStatuses().add(orgQuery1);
+		QueryLocationMapDTO orgQuery2 = new QueryLocationMapDTO();
+		orgQuery2.setLocationId(location2.getId());
+		orgQuery2.setStatus(QueryLocationStatus.Active);
+		toInsert.getLocationStatuses().add(orgQuery2);
+		
+		QueryDTO inserted = queryDao.create(toInsert);
+		assertNotNull(inserted);
+		assertNotNull(inserted.getId());
+		
+		List<QueryStatus> statuses = new ArrayList<QueryStatus>();
+		statuses.add(QueryStatus.Active);
+		statuses.add(QueryStatus.Complete);
+		List<QueryDTO> selected = queryDao.findAllForUserWithStatus("kekey", statuses);
+		assertNotNull(selected);
+		assertEquals(1, selected.size());
 	}
 	
 	@Test
@@ -183,7 +205,7 @@ public class QueryDaoTest extends TestCase {
 		insertOrganizations();
 		
 		QueryDTO toInsert = new QueryDTO();
-		toInsert.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.setStatus(QueryStatus.Active);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		QueryDTO inserted = queryDao.create(toInsert);
@@ -194,9 +216,33 @@ public class QueryDaoTest extends TestCase {
 		assertTrue(selected.getId().longValue() > 0);
 		assertEquals(0, selected.getLocationStatuses().size());
 		
-		selected.setStatus(QueryStatus.COMPLETE.name());
+		selected.setStatus(QueryStatus.Complete);
 		selected = queryDao.update(selected);
-		assertEquals(QueryStatus.COMPLETE.name(), selected.getStatus());
+		assertEquals(QueryStatus.Complete.name(), selected.getStatus().name());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testCloseQuery() {
+		insertOrganizations();
+		
+		QueryDTO toInsert = new QueryDTO();
+		toInsert.setStatus(QueryStatus.Active);
+		toInsert.setTerms("terms");
+		toInsert.setUserId("kekey");
+		QueryDTO inserted = queryDao.create(toInsert);
+		QueryDTO selected = queryDao.getById(inserted.getId());
+		
+		assertNotNull(selected);
+		assertNotNull(selected.getId());
+		assertTrue(selected.getId().longValue() > 0);
+		assertEquals(0, selected.getLocationStatuses().size());
+		
+		queryDao.close(selected.getId());
+		
+		selected = queryDao.getById(selected.getId());
+		assertEquals(QueryStatus.Closed.name(), selected.getStatus().name());
 	}
 	
 	private void insertOrganizations() {

@@ -75,7 +75,7 @@ public class PatientManagerTest extends TestCase {
 		location2 = locationDao.create(location2);
 		
 		QueryDTO toInsert = new QueryDTO();
-		toInsert.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.setStatus(QueryStatus.Active);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		

@@ -51,7 +51,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	@Override
 	public PatientLocationMapDTO createPatientLocationMap(PatientLocationMapDTO toCreate) throws SQLException {
 		PatientLocationMapEntity orgMap = new PatientLocationMapEntity();
-		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(QueryLocationStatus.Active.name()).getId());
+		orgMap.setDocumentsQueryStatusId(statusDao.getQueryLocationStatusByName(QueryLocationStatus.Active.name()).getId());
 		orgMap.setDocumentsQueryStart(new Date());
 		orgMap.setDocumentsQueryEnd(null);
 		orgMap.setLocationId(toCreate.getLocationId());
@@ -89,7 +89,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		if(orgMap == null) {
 			logger.error("Could not find patient org map with id " + toUpdate.getId());
 		}		
-		orgMap.setDocumentsQueryStatusId(statusDao.getStatusByName(toUpdate.getDocumentsQueryStatus().name()).getId());
+		orgMap.setDocumentsQueryStatusId(statusDao.getQueryLocationStatusByName(toUpdate.getDocumentsQueryStatus().name()).getId());
 		orgMap.setDocumentsQueryStart(toUpdate.getDocumentsQueryStart());
 		orgMap.setDocumentsQueryEnd(toUpdate.getDocumentsQueryEnd());
 		orgMap.setLocationId(toUpdate.getLocationId());

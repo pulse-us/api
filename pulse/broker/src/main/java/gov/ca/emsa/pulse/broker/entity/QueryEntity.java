@@ -4,13 +4,16 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -25,8 +28,13 @@ public class QueryEntity {
 	@Column(name="user_id")
 	private String userId;
 	
-	@Column(name="status")
-	private String status;
+	@Column(name = "query_status_id")
+	private Long statusId;
+	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "query_status_id", unique=true, nullable = false, insertable=false, updatable= false)
+	private QueryStatusEntity status;
 	
 	@Column(name = "terms")
 	private String terms;
@@ -76,14 +84,6 @@ public class QueryEntity {
 		this.userId = userId;
 	}
 
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
 	public String getTerms() {
 		return terms;
 	}
@@ -106,5 +106,21 @@ public class QueryEntity {
 
 	public void setLastReadDate(Date lastReadDate) {
 		this.lastReadDate = lastReadDate;
+	}
+
+	public Long getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Long statusId) {
+		this.statusId = statusId;
+	}
+
+	public QueryStatusEntity getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueryStatusEntity status) {
+		this.status = status;
 	}
 }

@@ -79,7 +79,7 @@ public class SearchService {
 			QueryDTO query = new QueryDTO();
 			query.setUserId(user.getSubjectName());
 			query.setTerms(queryTermsJson);
-			query.setStatus(QueryStatus.ACTIVE.name());
+			query.setStatus(QueryStatus.Active);
 			query = searchManager.createQuery(query);
 	
 			//get the list of locations		

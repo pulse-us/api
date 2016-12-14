@@ -7,7 +7,7 @@ import java.util.List;
 public class Query {
 	private Long id;
 	private String userToken;
-	private String status;
+	private QueryStatus status;
 	private PatientSearch terms;
 	private Date lastRead;
 	private List<QueryLocationMap> locationStatuses;
@@ -32,11 +32,11 @@ public class Query {
 		this.userToken = userToken;
 	}
 
-	public String getStatus() {
+	public QueryStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(QueryStatus status) {
 		this.status = status;
 	}
 

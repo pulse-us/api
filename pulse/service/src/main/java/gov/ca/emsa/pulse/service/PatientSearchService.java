@@ -40,7 +40,7 @@ public class PatientSearchService extends EHealthQueryService implements Callabl
 	
 	public boolean areLocationsComplete(List<QueryLocationMap> queryLocs){
 		for(QueryLocationMap queryLoc : queryLocs){
-			if(queryLoc.getStatus().equals(QueryStatus.ACTIVE.name())){
+			if(queryLoc.getStatus().equals(QueryStatus.Active.name())){
 				return false;
 			}
 		}

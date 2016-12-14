@@ -14,11 +14,11 @@ import gov.ca.emsa.pulse.common.domain.PatientSearch;
 public interface QueryManager extends CachedDataManager {
 	public QueryDTO getById(Long id);
 	public List<QueryDTO> getAllQueriesForUser(String userKey);
-	public List<QueryDTO> getActiveQueriesForUser(String userKey);
+	public List<QueryDTO> getOpenQueriesForUser(String userKey);
 	public String getQueryStatus(Long queryId);
 	public QueryDTO updateQuery(QueryDTO toUpdate);
 	public QueryDTO createQuery(QueryDTO toCreate);
-	public void delete(Long queryId);
+	public void close(Long queryId);
 	public QueryDTO cancelQueryToLocation(Long queryId, Long orgId);
 	public QueryLocationMapDTO createOrUpdateQueryLocation(QueryLocationMapDTO toUpdate);
 

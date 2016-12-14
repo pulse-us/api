@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.activation.DataHandler;
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.SOAPException;
 
@@ -24,9 +25,12 @@ import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.opensaml.common.SAMLException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -69,14 +73,29 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 @Component
 public class EHealthAdapter implements Adapter {
 	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
-
+	
+	@Value("${defaultRequestTimeoutSeconds}")
+	private Long defaultRequestTimeoutSeconds;
+	
+	@Value("${defaultConnectTimeoutSeconds}")
+	private Long defaultConnectTimeoutSeconds;
+	
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
 	@Autowired EHealthQueryProducerService queryProducer;
 	@Autowired NameTypeDAO nameTypeDao;
 	@Autowired AuditEventManager auditManager;
+	private RestTemplate restTemplate;
 	
-
+	@PostConstruct
+	public void initRestTemplate() {
+		restTemplate = new RestTemplate();
+		SimpleClientHttpRequestFactory rf =
+			    (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
+		rf.setConnectTimeout(defaultConnectTimeoutSeconds.intValue() * 1000);
+		rf.setReadTimeout(defaultRequestTimeoutSeconds.intValue() * 1000);
+	}
+	
 	@Override
 	public List<PatientRecordDTO> queryPatients(CommonUser user, LocationEndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) throws Exception {
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch);
@@ -93,12 +112,10 @@ public class EHealthAdapter implements Adapter {
 		String homeCommunityId = "urn:oid:1.2.3.928.955";
 		String searchResults = null;
 		try {
-			RestTemplate restTemplate = new RestTemplate();
-			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
+			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
 			auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), homeCommunityId);
-			logger.error("Exception when querying " + endpoint.getUrl(), ex);
 			throw ex;
 		}
 		auditManager.createAuditEventIG("SUCCESS", user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), homeCommunityId);
@@ -144,12 +161,11 @@ public class EHealthAdapter implements Adapter {
 		
 		String searchResults = null;
 		try {
-			RestTemplate restTemplate = new RestTemplate();
-			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
+			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
+			logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
 			auditManager.createAuditEventDCXGatewayQuery("FAILURE", user, endpoint.getUrl(),"", "", patientId);
-			logger.error("Exception when querying " + endpoint.getUrl(), ex);
 			throw ex;
 		}
 		
@@ -200,14 +216,13 @@ public class EHealthAdapter implements Adapter {
 
 		String searchResults = null;
 		try {
-			RestTemplate restTemplate = new RestTemplate();
-			logger.info("Querying " + endpoint.getUrl() + " with request " + request);
+			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
+			logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
 			for(Document doc : docsToSearch){
 				auditManager.createAuditEventDCXGatewayRetrieve("FAILURE", user, endpoint.getUrl(), doc.getIdentifier().getRepositoryUniqueId(), doc.getIdentifier().getDocumentUniqueId(), doc.getIdentifier().getHomeCommunityId(), patientMap.getExternalPatientRecordId());
 			}
-			logger.error("Exception when querying " + endpoint.getUrl(), ex);
 			throw ex;
 		}
 
