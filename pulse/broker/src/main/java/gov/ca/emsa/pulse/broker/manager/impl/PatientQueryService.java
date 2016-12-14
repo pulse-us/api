@@ -49,7 +49,7 @@ public class PatientQueryService implements Runnable {
 		LocationDTO location = locationManager.getById(queryLocationMap.getLocationId());
 		if(location == null) {
 			logger.error("Could not find location with id " + queryLocationMap.getLocationId());
-			return;
+			queryError = true;
 		} else if(location.getEndpoints() != null) {
 			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
 				if(endpoint.getEndpointType() != null && 
@@ -63,32 +63,34 @@ public class PatientQueryService implements Runnable {
 		
 		if(endpointToQuery == null) {
 			logger.error("The location " + location.getName() + " does not have an active patient discovery endpoint.");
-			return;
-		}
-		
-		Adapter adapter = adapterFactory.getAdapter(endpointToQuery);
-		if(adapter != null) {
-			logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
-			try {
-				searchResults = adapter.queryPatients(user, endpointToQuery, toSearch, samlInput);
-				logger.info("Successfully queried endpoint with external id '" + endpointToQuery.getExternalId() + "'");
-			} catch(Exception ex) {
-				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
-				queryError = true;
-			}
-		}
-		//store the patients returned so we can retrieve them later when all orgs have finished querying
-		if(searchResults != null && searchResults.size() > 0) {
-			logger.info("Found " + searchResults.size() + " results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
-			for(PatientRecordDTO patient : searchResults) {
-				patient.setQueryLocationId(queryLocationMap.getId());
-					
-				//save the search results
-				queryManager.addPatientRecord(patient);
-				logger.info("Added patient record to the orgStatus " + queryLocationMap.getId());
-			}
+			queryError = true;
 		} else {
-			logger.info("Found 0 results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+			Adapter adapter = adapterFactory.getAdapter(endpointToQuery);
+			if(adapter != null) {
+				logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+				try {
+					searchResults = adapter.queryPatients(user, endpointToQuery, toSearch, samlInput);
+					logger.info("Successfully queried endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+				} catch(Exception ex) {
+					logger.error("Exception thrown in adapter " + adapter.getClass() + ": " + ex.getMessage(), ex);
+					queryError = true;
+				}
+			}
+			//store the patients returned so we can retrieve them later when all orgs have finished querying
+			if(searchResults != null && searchResults.size() > 0) {
+				logger.info("Found " + searchResults.size() + " results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+				for(PatientRecordDTO patient : searchResults) {
+					patient.setQueryLocationId(queryLocationMap.getId());
+						
+					//save the search results
+					queryManager.addPatientRecord(patient);
+					logger.info("Added patient record to the orgStatus " + queryLocationMap.getId());
+				}
+			} else {
+				logger.info("Found 0 results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+			}
+			logger.info("Completed query to endpoint with external id '" + 
+					endpointToQuery.getExternalId());
 		}
 		
 		synchronized(queryLocationMap.getQueryId()) {
@@ -97,8 +99,6 @@ public class PatientQueryService implements Runnable {
 			queryManager.createOrUpdateQueryLocation(queryLocationMap);
 			queryManager.updateQueryStatusFromLocations(queryLocationMap.getQueryId());
 		}
-		logger.info("Completed query to endpoint with external id '" + 
-				endpointToQuery.getExternalId());
 	}
 	
 	public CommonUser getUser() {
