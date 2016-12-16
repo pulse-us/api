@@ -121,6 +121,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 			logger.error("Could not find query organization for query ID " + queryId + " and location ID " + locationId);
 			return null;
 		}
+		toUpdate.setStatus(QueryLocationStatus.Cancelled);
 		queryDao.updateQueryLocationMap(toUpdate);
 		
 		String endpointUrl = null;
@@ -134,14 +135,14 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		}
 		//if we later allow other types to be cancelled this won't work.
 		//Also, what if there were multiple PD endpoints for a given location? we wouldn't know which one was being cancelled.
-		if(!StringUtils.isEmpty(endpointUrl)) {
-			try {
-				auditManager.createAuditEventIG("CANCELLED" , UserUtil.getCurrentUser(), endpointUrl, "", EHealthAdapter.HOME_COMMUNITY_ID);
-			} catch(UnsupportedEncodingException ex) {
-				logger.error("Could not add audit record for cancelling request to location " + locationId + " for query " + queryId + ": " + ex.getMessage(), ex);
-			} catch(UnknownHostException ex) {
-				logger.error("Could not add audit record for cancelling request to location " + locationId + " for query " + queryId + ": " + ex.getMessage(), ex);
-			}
+		try {
+			auditManager.createAuditEventIG("CANCELLED" , UserUtil.getCurrentUser(), endpointUrl, "", EHealthAdapter.HOME_COMMUNITY_ID);
+		} catch(UnsupportedEncodingException ex) {
+			logger.warn("Could not add audit record for cancelling request to location " + locationId + " for query " + queryId + ": " + ex.getMessage(), ex);
+		} catch(UnknownHostException ex) {
+			logger.warn("Could not add audit record for cancelling request to location " + locationId + " for query " + queryId + ": " + ex.getMessage(), ex);
+		} catch(Exception ex) {
+			logger.warn("Could not add audit record for cancelleing request to locaiton " +locationId + " for query " + queryId + ": " + ex.getMessage(), ex);
 		}
 
 		return updateQueryStatusFromLocations(queryId);
