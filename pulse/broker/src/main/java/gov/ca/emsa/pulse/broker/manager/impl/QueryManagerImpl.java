@@ -1,18 +1,27 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
+import gov.ca.emsa.pulse.broker.adapter.EHealthAdapter;
+import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
+import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
+import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.common.domain.EndpointType;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
+import gov.ca.emsa.pulse.service.UserUtil;
 
+import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +37,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
@@ -37,8 +47,10 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	private static final Logger logger = LogManager.getLogger(QueryManagerImpl.class);
 
 	@Autowired QueryDAO queryDao;
+	@Autowired LocationDAO locationDao;
 	@Autowired PatientRecordDAO patientRecordDao;
-	@Autowired private LocationManager orgManager;
+	@Autowired private LocationManager locationManager;
+	@Autowired AuditEventManager auditManager;
 	private ApplicationContext context;
 	private final ExecutorService pool;
 
@@ -109,9 +121,29 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 			logger.error("Could not find query organization for query ID " + queryId + " and location ID " + locationId);
 			return null;
 		}
-		toUpdate.setStatus(QueryLocationStatus.Cancelled);
 		queryDao.updateQueryLocationMap(toUpdate);
 		
+		String endpointUrl = null;
+		LocationDTO location = locationDao.findById(locationId);
+		if(location != null) {
+			for(LocationEndpointDTO ept : location.getEndpoints()) {
+				if(ept.getEndpointType().getName().equals(EndpointTypeEnum.PATIENT_DISCOVERY)) {
+					endpointUrl = ept.getUrl();
+				}
+			}
+		}
+		//if we later allow other types to be cancelled this won't work.
+		//Also, what if there were multiple PD endpoints for a given location? we wouldn't know which one was being cancelled.
+		if(!StringUtils.isEmpty(endpointUrl)) {
+			try {
+				auditManager.createAuditEventIG("CANCELLED" , UserUtil.getCurrentUser(), endpointUrl, "", EHealthAdapter.HOME_COMMUNITY_ID);
+			} catch(UnsupportedEncodingException ex) {
+				logger.error("Could not add audit record for cancelling request to location " + locationId + " for query " + queryId + ": " + ex.getMessage(), ex);
+			} catch(UnknownHostException ex) {
+				logger.error("Could not add audit record for cancelling request to location " + locationId + " for query " + queryId + ": " + ex.getMessage(), ex);
+			}
+		}
+
 		return updateQueryStatusFromLocations(queryId);
 	}
 	
@@ -143,14 +175,16 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	public QueryDTO queryForPatientRecords(SAMLInput samlInput, PatientSearch toSearch, QueryDTO query, CommonUser user)
 			throws JsonProcessingException {
 
-		//get the list of organizations
-		List<LocationDTO> orgsToQuery = orgManager.getAll();
-		if(orgsToQuery != null && orgsToQuery.size() > 0) {
-			for(QueryLocationMapDTO queryOrg : query.getLocationStatuses()) {
+		List<EndpointTypeEnum> relevantEndpointTypes = new ArrayList<EndpointTypeEnum>();
+		relevantEndpointTypes.add(EndpointTypeEnum.PATIENT_DISCOVERY);
+		//get the list of locations
+		List<LocationDTO> locationsToQuery = locationManager.getAllWithEndpointType(relevantEndpointTypes);
+		if(locationsToQuery != null && locationsToQuery.size() > 0) {
+			for(QueryLocationMapDTO queryLoc : query.getLocationStatuses()) {
 				PatientQueryService service = getPatientQueryService();
 				service.setSamlInput(samlInput);
 				service.setToSearch(toSearch);
-				service.setQueryLocation(queryOrg);
+				service.setQueryLocation(queryLoc);
 				service.setUser(user);
 				pool.execute(service);
 			}
