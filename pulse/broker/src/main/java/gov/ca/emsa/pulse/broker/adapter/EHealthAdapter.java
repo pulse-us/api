@@ -72,6 +72,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 
 @Component
 public class EHealthAdapter implements Adapter {
+	public static final String HOME_COMMUNITY_ID = "urn:oid:1.2.3.928.955";
 	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
 	
 	@Value("${defaultRequestTimeoutSeconds}")
@@ -109,16 +110,15 @@ public class EHealthAdapter implements Adapter {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_XML);   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
-		String homeCommunityId = "urn:oid:1.2.3.928.955";
 		String searchResults = null;
 		try {
 			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
-			auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), homeCommunityId);
+			auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
 			throw ex;
 		}
-		auditManager.createAuditEventIG("SUCCESS", user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), homeCommunityId);
+		auditManager.createAuditEventIG("SUCCESS", user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
 		
 		List<PatientRecordDTO> records = new ArrayList<PatientRecordDTO>();
 		if(!StringUtils.isEmpty(searchResults)) {
