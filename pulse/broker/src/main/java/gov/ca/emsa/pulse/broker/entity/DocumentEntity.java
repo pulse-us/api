@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -63,6 +64,14 @@ public class DocumentEntity {
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "patient_location_map_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private PatientLocationMapEntity patientLocationMap;
+	
+	@Column(name = "status_id")
+	private Long statusId;
+	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "status_id", unique=true, nullable = false, insertable=false, updatable= false)
+	private QueryLocationStatusEntity status;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -207,5 +216,21 @@ public class DocumentEntity {
 
 	public void setDocumentUniqueId(String documentUniqueId) {
 		this.documentUniqueId = documentUniqueId;
+	}
+
+	public Long getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Long statusId) {
+		this.statusId = statusId;
+	}
+
+	public QueryLocationStatusEntity getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueryLocationStatusEntity status) {
+		this.status = status;
 	}
 }

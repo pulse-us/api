@@ -16,6 +16,7 @@ import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -95,6 +96,10 @@ public class DocumentManagerImpl implements DocumentManager {
 			if(adapter != null) {
 				logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "' for document contents.");
 				try {
+					for(DocumentDTO doc : docsFromLocation) {
+						doc.setStatus(QueryLocationStatus.Active);
+						docDao.update(doc);
+					}
 					adapter.retrieveDocumentsContents(user, endpointToQuery, docsFromLocation, samlInput, dto);
 				} catch(Exception ex) {
 					logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
@@ -108,6 +113,17 @@ public class DocumentManagerImpl implements DocumentManager {
 			//store the returned document contents
 			for(DocumentDTO doc : docsFromLocation) {
 				if(doc.getContents() != null && doc.getContents().length > 0) {
+					doc.setStatus(QueryLocationStatus.Successful);
+					docDao.update(doc);
+				}
+			}
+		} else {
+			for(DocumentDTO doc : docsFromLocation) {
+				if(doc.getContents() != null && doc.getContents().length > 0) {
+					doc.setStatus(QueryLocationStatus.Successful);
+					docDao.update(doc);
+				} else {
+					doc.setStatus(QueryLocationStatus.Failed);
 					docDao.update(doc);
 				}
 			}

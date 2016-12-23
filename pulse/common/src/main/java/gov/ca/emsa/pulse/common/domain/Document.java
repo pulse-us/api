@@ -7,6 +7,7 @@ public class Document {
 	private Boolean cached;
 	private Long locationMapId;
 	private Patient patient;
+	private QueryLocationStatus status;
 	
 	//metadata
 	private String className;
@@ -113,6 +114,14 @@ public class Document {
 
 	public void setIdentifier(DocumentIdentifier identifier) {
 		this.identifier = identifier;
+	}
+
+	public QueryLocationStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueryLocationStatus status) {
+		this.status = status;
 	}
 	
 }
