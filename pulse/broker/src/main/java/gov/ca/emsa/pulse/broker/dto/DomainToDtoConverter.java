@@ -120,6 +120,7 @@ public class DomainToDtoConverter {
 
 	public static DocumentDTO convert(Document domainObj) {
 		DocumentDTO result = new DocumentDTO();
+		result.setStatus(domainObj.getStatus());
 		result.setName(domainObj.getName());
 		result.setFormat(domainObj.getFormat());
 		result.setClassName(domainObj.getClassName());
