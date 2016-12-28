@@ -91,10 +91,7 @@ public class QueryService {
 
 		//create a new Patient
 		PatientDTO patientToCreate = DomainToDtoConverter.convertToPatient(request.getPatient());
-		//friendly and full name required by db
-		if(StringUtils.isEmpty(patientToCreate.getFriendlyName())) {
-			throw new InvalidArgumentsException("Patient friendly name is required.");
-		}
+		//full name required by db
 		if(StringUtils.isEmpty(StringUtils.isEmpty(patientToCreate.getFullName()))) {
 			throw new InvalidArgumentsException("Patient full name is required.");
 		}

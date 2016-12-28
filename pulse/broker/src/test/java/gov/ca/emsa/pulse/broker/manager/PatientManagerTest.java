@@ -155,6 +155,25 @@ public class PatientManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
+	public void testCreatePatientWithoutFriendlyName() throws SQLException  {		
+		PatientDTO toCreate = new PatientDTO();
+		toCreate.setAcf(acf);
+		toCreate.setFullName("Jon Snow");
+		toCreate.setSsn("111223344");
+		toCreate.setGender("Male");
+		
+		PatientDTO created = patientManager.create(toCreate);
+		assertNotNull(created);
+		assertNotNull(created.getId());
+		assertTrue(created.getId().longValue() > 0);
+		assertNotNull(created.getAcf());
+		assertNotNull(created.getAcf().getId());
+		assertEquals(created.getAcf().getId().longValue(), acf.getId().longValue());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void testGetPatientsAtAcf() throws SQLException  {		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setFriendlyName("Bri");
