@@ -59,28 +59,29 @@ public class DocumentQueryService implements Runnable {
 		
 		if(endpointToQuery == null) {
 			logger.error("The location " + location.getName() + " does not have an active document discovery endpoint.");
-			return;
-		}
-		
-		Adapter adapter = adapterFactory.getAdapter(endpointToQuery);
-		if(adapter != null) {
-			logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
-			try {
-				searchResults = adapter.queryDocuments(user, endpointToQuery, patientLocationMap, samlInput);
-			} catch(Exception ex) {
-				logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
-				querySuccess = false;
+			querySuccess = false;
+		} else {
+			Adapter adapter = adapterFactory.getAdapter(endpointToQuery);
+			if(adapter != null) {
+				logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+				try {
+					searchResults = adapter.queryDocuments(user, endpointToQuery, patientLocationMap, samlInput);
+				} catch(Exception ex) {
+					logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
+					querySuccess = false;
+				}
 			}
-		}
-		
-		//store the returned document info
-		if(searchResults != null && searchResults.size() > 0) {
-			for(DocumentDTO doc : searchResults) {
-				doc.setPatientLocationMapId(patientLocationMap.getId());
-				//save document
-				docManager.create(doc);
+			
+			//store the returned document info
+			if(searchResults != null && searchResults.size() > 0) {
+				for(DocumentDTO doc : searchResults) {
+					doc.setPatientLocationMapId(patientLocationMap.getId());
+					//save document
+					docManager.create(doc);
+				}
 			}
-		} 
+			logger.info("Completed query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+		}
 		
 		patientLocationMap.setDocumentsQueryEnd(new Date());
 		if(querySuccess) {
@@ -98,8 +99,6 @@ public class DocumentQueryService implements Runnable {
 					+ "orgId: " + patientLocationMap.getLocationId() + ", " 
 					+ "patientId: " + patientLocationMap.getPatientId() + "]");
 		}
-		
-		logger.info("Completed query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 	}
 	
 	

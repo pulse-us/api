@@ -20,6 +20,7 @@ import org.springframework.stereotype.Repository;
 import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
 import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 import gov.ca.emsa.pulse.broker.entity.QueryLocationStatusEntity;
+import gov.ca.emsa.pulse.broker.entity.QueryStatusEntity;
 
 @Repository
 public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
@@ -32,7 +33,11 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		
 		QueryEntity query = new QueryEntity();
 		query.setUserId(dto.getUserId());
-		query.setStatus(QueryStatus.ACTIVE.name());
+		QueryStatusEntity queryStatus = statusDao.getQueryStatusByName(dto.getStatus() != null ? dto.getStatus().name() : QueryStatus.Active.name());
+		query.setStatus(queryStatus);
+		if(queryStatus != null) {
+			query.setStatusId(queryStatus.getId());
+		}
 		query.setTerms(dto.getTerms());
 		query.setLastReadDate(new Date());
 		entityManager.persist(query);
@@ -43,7 +48,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 				queryLocMap.setLocationId(queryLocStatus.getLocationId());
 				queryLocMap.setQueryId(query.getId());
 				queryLocMap.setStartDate(new Date());
-				QueryLocationStatusEntity status = statusDao.getStatusByName(QueryLocationStatus.Active.name());
+				QueryLocationStatusEntity status = statusDao.getQueryLocationStatusByName(QueryLocationStatus.Active.name());
 				queryLocMap.setStatusId(status == null ? null : status.getId());
 				queryLocMap.setStatus(status);
 				entityManager.persist(queryLocMap);
@@ -55,7 +60,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return new QueryDTO(query);
 	}
 
-	public QueryLocationMapDTO getQueryOrganizationById(Long queryOrgId) {
+	public QueryLocationMapDTO getQueryLocationById(Long queryOrgId) {
 		QueryLocationMapEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryLocationMapEntity q "
@@ -71,7 +76,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return new QueryLocationMapDTO(entity);
 	}
 	
-	public QueryLocationMapDTO getQueryLocationMapByQueryAndOrg(Long queryId, Long locationId) {
+	public QueryLocationMapDTO getQueryLocationMapByQueryAndLocation(Long queryId, Long locationId) {
 		QueryLocationMapEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT q from QueryLocationMapEntity q "
@@ -94,7 +99,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		toInsert.setLocationId(queryLocationMapDto.getLocationId());
 		toInsert.setQueryId(queryLocationMapDto.getQueryId());
 		toInsert.setStartDate(new Date());
-		QueryLocationStatusEntity status = statusDao.getStatusByName(QueryLocationStatus.Active.name());
+		QueryLocationStatusEntity status = statusDao.getQueryLocationStatusByName(QueryLocationStatus.Active.name());
 		toInsert.setStatusId(status == null ? null : status.getId());
 		entityManager.persist(toInsert);
 		return new QueryLocationMapDTO(toInsert);
@@ -109,7 +114,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 				existingQueryLocationMap.getStatus().getStatus() != QueryLocationStatus.Cancelled) {
 			//don't change the status if it was previously cancelled.
 			QueryLocationStatusEntity newStatus = 
-					statusDao.getStatusByName(newQueryLocationMap.getStatus().name());
+					statusDao.getQueryLocationStatusByName(newQueryLocationMap.getStatus().name());
 			existingQueryLocationMap.setStatusId(newStatus == null ? null : newStatus.getId());
 		} 
 		existingQueryLocationMap = entityManager.merge(existingQueryLocationMap);
@@ -121,23 +126,34 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	@Override
 	public QueryDTO update(QueryDTO dto) {
 		QueryEntity query = this.getEntityById(dto.getId());
-		logger.info("Set last read date for query " + dto.getId() + " to " + dto.getLastReadDate());
-		query.setLastReadDate(dto.getLastReadDate());
-		logger.info("Set status for query " + dto.getId() + " to " + dto.getStatus());
-		query.setStatus(dto.getStatus());
-		//terms and user wouldn't change
-		//location statuses should be updated separately in a manager
-		entityManager.merge(query);
-		entityManager.flush();
+		if(query.getStatus().getStatus() != QueryStatus.Closed) {
+			logger.info("Set last read date for query " + dto.getId() + " to " + dto.getLastReadDate());
+			query.setLastReadDate(dto.getLastReadDate());
+			logger.info("Set status for query " + dto.getId() + " to " + dto.getStatus());
+			QueryStatusEntity qStatus = statusDao.getQueryStatusByName(dto.getStatus().name());
+			query.setStatus(qStatus);
+			if(qStatus != null) {
+				query.setStatusId(qStatus.getId());
+			}
+			//terms and user wouldn't change
+			//location statuses should be updated separately in a manager
+			entityManager.merge(query);
+			entityManager.flush();
+		} else {
+			logger.warn("Attempted to update query " + dto.getId() + " but it is already marked 'Closed'. Not updating.");
+		}
 		return new QueryDTO(query);
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void close(Long id) {
 		try {
+			QueryStatusEntity closedStatus = statusDao.getQueryStatusByName(QueryStatus.Closed.name());
 			QueryEntity toDelete = getEntityById(id);
-			if(toDelete != null) {
-				entityManager.remove(toDelete);
+			if(closedStatus != null && toDelete != null) {
+				toDelete.setStatus(closedStatus);
+				toDelete.setStatusId(closedStatus.getId());
+				entityManager.merge(toDelete);
 				entityManager.flush();
 			}
 		} catch(Exception ex) {
@@ -156,7 +172,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	@Override
-	public List<QueryDTO> findAllForUserWithStatus(String userToken, String status) {
+	public List<QueryDTO> findAllForUserWithStatus(String userToken, List<QueryStatus> status) {
 		List<QueryEntity> result = this.getEntitiesByUserAndStatus(userToken, status);
 		List<QueryDTO> dtos = new ArrayList<QueryDTO>(result.size());
 		for(QueryEntity entity : result) {
@@ -178,20 +194,21 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	@Override
-	public void deleteItemsOlderThan(Date oldestDate) {			
+	public void deleteItemsOlderThan(Date oldestDate) {		
+		//this was originally deleting queries but since we want to  keep
+		//them around for statistics, it's just marking them as Closed instead
 		Query query = entityManager.createQuery( "from QueryEntity qe "
 				+ " WHERE qe.lastReadDate <= :cacheDate");
 		
 		query.setParameter("cacheDate", oldestDate);
 		List<QueryEntity> oldQueries = query.getResultList();
-		
 		if(oldQueries.size() > 0) {
 			for(QueryEntity oldQuery : oldQueries) {
-				delete(oldQuery.getId());
-				logger.info("Deleted query with id " + oldQuery.getId() +" from the cache.");
+				close(oldQuery.getId());
+				logger.info("Query Cleanup: Closed query with id " + oldQuery.getId());
 			}
 		} else {
-			logger.info("Deleted 0 queries from the cache.");
+			logger.info("Query Cleanup: Closed 0 queries.");
 		}
 	}
 	
@@ -207,6 +224,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		
 		QueryEntity entity = null;
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
+				+ "LEFT OUTER JOIN FETCH q.status "
 				+ "LEFT OUTER JOIN FETCH q.locationStatuses locs "
 				+ "LEFT OUTER JOIN FETCH locs.status status "
 				+ "where q.id = :entityid) ", 
@@ -221,7 +239,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	public Boolean hasActiveLocations(Long queryId) {		
-		QueryLocationStatusEntity statusEntity = statusDao.getStatusByName(QueryLocationStatus.Active.name());
+		QueryLocationStatusEntity statusEntity = statusDao.getQueryLocationStatusByName(QueryLocationStatus.Active.name());
 		if(statusEntity == null) {
 			return Boolean.FALSE;
 		}
@@ -258,6 +276,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	
 	private List<QueryEntity> getEntitiesByUser(String user) {
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
+				+ "LEFT OUTER JOIN FETCH q.status "
 				+ "LEFT OUTER JOIN FETCH q.locationStatuses "
 				+ "where q.userId = :userId) ", 
 				QueryEntity.class );
@@ -267,15 +286,16 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return result;
 	}
 	
-	private List<QueryEntity> getEntitiesByUserAndStatus(String user, String status) {		
+	private List<QueryEntity> getEntitiesByUserAndStatus(String user, List<QueryStatus> statuses) {		
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
+				+ "LEFT OUTER JOIN FETCH q.status "
 				+ "LEFT OUTER JOIN FETCH q.locationStatuses "
 				+ "where q.userId = :userId "
-				+ "and q.status = :status) ", 
+				+ "and q.status.status IN (:status)) ", 
 				QueryEntity.class );
 		
 		query.setParameter("userId", user);
-		query.setParameter("status", status);
+		query.setParameter("status", statuses);
 		List<QueryEntity> result = query.getResultList();
 		return result;
 	}

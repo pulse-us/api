@@ -2,6 +2,8 @@ package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.QueryEntity;
 import gov.ca.emsa.pulse.broker.entity.QueryLocationMapEntity;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +13,7 @@ public class QueryDTO {
 
 	private Long id;
 	private String userId;
-	private String status;
+	private QueryStatus status;
 	private String terms;
 	private Date lastReadDate;
 	private List<QueryLocationMapDTO> locationStatuses;
@@ -26,7 +28,9 @@ public class QueryDTO {
 		if(entity != null) {
 			this.id = entity.getId();
 			this.userId = entity.getUserId();
-			this.status = entity.getStatus();
+			if(entity.getStatus() != null) {
+				this.status = entity.getStatus().getStatus();
+			}
 			this.terms = entity.getTerms();
 			this.lastReadDate = entity.getLastReadDate();
 			
@@ -54,11 +58,11 @@ public class QueryDTO {
 		this.userId = userId;
 	}
 
-	public String getStatus() {
+	public QueryStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(QueryStatus status) {
 		this.status = status;
 	}
 

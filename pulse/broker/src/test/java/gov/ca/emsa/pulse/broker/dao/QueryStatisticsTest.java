@@ -430,7 +430,7 @@ public class QueryStatisticsTest extends TestCase {
 		location2 = locationDao.create(location2);
 		
 		QueryDTO toInsert = new QueryDTO();
-		toInsert.setStatus(QueryStatus.COMPLETE.name());
+		toInsert.setStatus(QueryStatus.Complete);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();

@@ -75,7 +75,7 @@ public class PatientManagerTest extends TestCase {
 		location2 = locationDao.create(location2);
 		
 		QueryDTO toInsert = new QueryDTO();
-		toInsert.setStatus(QueryStatus.ACTIVE.name());
+		toInsert.setStatus(QueryStatus.Active);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		
@@ -150,6 +150,25 @@ public class PatientManagerTest extends TestCase {
 
 		//TODO: why is this coming back empty?? It works when the service is called
 		//assertEquals(1, selected.getOrgMaps().size());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testCreatePatientWithoutFriendlyName() throws SQLException  {		
+		PatientDTO toCreate = new PatientDTO();
+		toCreate.setAcf(acf);
+		toCreate.setFullName("Jon Snow");
+		toCreate.setSsn("111223344");
+		toCreate.setGender("Male");
+		
+		PatientDTO created = patientManager.create(toCreate);
+		assertNotNull(created);
+		assertNotNull(created.getId());
+		assertTrue(created.getId().longValue() > 0);
+		assertNotNull(created.getAcf());
+		assertNotNull(created.getAcf().getId());
+		assertEquals(created.getAcf().getId().longValue(), acf.getId().longValue());
 	}
 	
 	@Test

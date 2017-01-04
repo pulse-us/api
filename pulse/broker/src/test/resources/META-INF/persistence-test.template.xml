@@ -38,6 +38,7 @@
     <class>gov.ca.emsa.pulse.broker.entity.QueryEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.QueryLocationMapEntity</class>
     <class>gov.ca.emsa.pulse.broker.entity.QueryLocationStatusEntity</class>
+    <class>gov.ca.emsa.pulse.broker.entity.QueryStatusEntity</class>
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
       <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>

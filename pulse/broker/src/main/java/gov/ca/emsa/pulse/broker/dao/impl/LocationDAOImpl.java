@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.ca.emsa.pulse.broker.dao.LocationAddressLineDAO;
 import gov.ca.emsa.pulse.broker.dao.LocationDAO;
+import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationEndpointMimeTypeDTO;
@@ -200,6 +201,21 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 		return dtos;
 	}
 
+	@Override 
+	public List<LocationDTO> findAllWithEndpointType(List<EndpointTypeEnum> types) {
+		List<String> typeNames = new ArrayList<String>(types.size());
+		for(EndpointTypeEnum type : types) {
+			typeNames.add(type.getName());
+		}
+		List<LocationEntity> entities = getByEndpointTypes(typeNames);
+		List<LocationDTO> dtos = new ArrayList<>();
+		for (LocationEntity entity : entities) {
+			LocationDTO dto = new LocationDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
 	@Override
 	public List<LocationDTO> findByName(String name) {
 		List<LocationEntity> entities = getByName(name);
@@ -337,6 +353,19 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 			return result.get(0);
 		}
 		return null;
+	}
+	
+	private List<LocationEntity> getByEndpointTypes(List<String> typeNames) {
+		Query query = entityManager.createQuery("SELECT DISTINCT loc "
+				+ "FROM LocationEntity loc "
+				+ "JOIN FETCH loc.locationStatus "
+				+ "LEFT OUTER JOIN FETCH loc.lines " 
+				+ "LEFT OUTER JOIN FETCH loc.endpoints endpoints "
+				+ "LEFT OUTER JOIN FETCH endpoints.mimeTypes "
+				+ "WHERE endpoints.endpointType.name IN (:typeNames)", LocationEntity.class);
+		query.setParameter("typeNames", typeNames);
+		
+		return query.getResultList();
 	}
 	
 	@Override

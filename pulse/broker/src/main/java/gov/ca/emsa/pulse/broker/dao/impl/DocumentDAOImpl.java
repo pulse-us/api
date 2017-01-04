@@ -1,8 +1,11 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
 import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
+import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
+import gov.ca.emsa.pulse.broker.entity.QueryLocationStatusEntity;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,16 +15,19 @@ import javax.persistence.Query;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	private static final Logger logger = LogManager.getLogger(DocumentDAOImpl.class);
+	@Autowired QueryStatusDAO statusDao;
 	
 	@Override
 	public DocumentDTO create(DocumentDTO dto) {
 		DocumentEntity doc = new DocumentEntity();
+		doc.setStatus(null);
 		doc.setName(dto.getName());
 		doc.setFormat(dto.getFormat());
 		doc.setClassName(dto.getClassName());
@@ -44,7 +50,12 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	@Override
 	@Transactional
 	public DocumentDTO update(DocumentDTO dto) {
-		DocumentEntity doc = this.getEntityById(dto.getId());		
+		DocumentEntity doc = this.getEntityById(dto.getId());	
+
+		QueryLocationStatusEntity newStatus = 
+				statusDao.getQueryLocationStatusByName(dto.getStatus().name());
+		doc.setStatusId(newStatus == null ? null : newStatus.getId());
+		
 		doc.setName(dto.getName());
 		doc.setFormat(dto.getFormat());
 		doc.setConfidentiality(dto.getConfidentiality());
@@ -106,7 +117,8 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	}
 	
 	private List<DocumentEntity> findAllEntities() {
-		Query query = entityManager.createQuery("from DocumentEntity");
+		Query query = entityManager.createQuery("SELECT doc from DocumentEntity doc "
+				+ "LEFT JOIN FETCH doc.status ");
 		return query.getResultList();
 	}
 	
@@ -115,6 +127,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		
 		Query query = entityManager.createQuery( "SELECT doc from DocumentEntity doc "
 				+ "LEFT JOIN FETCH doc.patientLocationMap "
+				+ "LEFT JOIN FETCH doc.status "
 				+ "where doc.id = :entityid) ", 
 				DocumentEntity.class );
 		
@@ -129,8 +142,9 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	
 	private List<DocumentEntity> getEntityByPatientId(Long patientId) {		
 		Query query = entityManager.createQuery( "SELECT doc "
-				+ "from DocumentEntity doc, PatientLocationMapEntity patientLocationMap "
-				+ "where doc.patientLocationMapId = patientLocationMap.id "
+				+ "FROM DocumentEntity doc, PatientLocationMapEntity patientLocationMap "
+				+ "LEFT JOIN FETCH doc.status "
+				+ "WHERE doc.patientLocationMapId = patientLocationMap.id "
 				+ "and patientLocationMap.patientId = :patientId", 
 				DocumentEntity.class );
 		

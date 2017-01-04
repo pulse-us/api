@@ -294,6 +294,7 @@ public class DtoToDomainConverter {
 	public static Document convert(DocumentDTO dtoObj) {
 		Document result = new Document();
 		result.setId(dtoObj.getId()+"");
+		result.setStatus(dtoObj.getStatus());
 		result.setName(dtoObj.getName());
 		result.setFormat(dtoObj.getFormat());
 		result.setCached(dtoObj.getContents() != null && dtoObj.getContents().length > 0);

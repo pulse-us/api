@@ -20,6 +20,13 @@ locationDirectoryUrl=https://localhost:9080/mock/Location
 endpointDirectoryUrl=https://localhost:9080/mock/Endpoint
 #endpointDirectoryUrl=https://cten-staging.ca-hie.net:8443/fhir/Endpoint
 
+#default timeout to connect to external organizations 
+#"ping time" (should typically be a smaller number than request timeout)
+defaultConnectTimeoutSeconds=10
+
+#default timeout for all requests to external organizations
+defaultRequestTimeoutSeconds=60
+
 #refresh the list of organizations from directory services
 directoryRefreshSeconds=20
 

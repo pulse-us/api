@@ -1,11 +1,14 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
+import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
 
 public class DocumentDTO {
 	private long id;
 	private byte[] contents;
 	private Long patientLocationMapId;
+	private Long statusId;
+	private QueryLocationStatus status;
 	
 	//metadata
 	private String format;
@@ -26,6 +29,10 @@ public class DocumentDTO {
 	
 	public DocumentDTO(DocumentEntity entity) {
 		this.id = entity.getId();
+		this.statusId = entity.getStatusId();
+		if(entity.getStatus() != null) {
+			this.status = entity.getStatus().getStatus();
+		}
 		this.name = entity.getName();
 		this.format = entity.getFormat();
 		this.className = entity.getClassName();
@@ -141,5 +148,21 @@ public class DocumentDTO {
 
 	public void setDocumentUniqueId(String documentUniqueId) {
 		this.documentUniqueId = documentUniqueId;
+	}
+
+	public Long getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Long statusId) {
+		this.statusId = statusId;
+	}
+
+	public QueryLocationStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueryLocationStatus status) {
+		this.status = status;
 	}
 }
