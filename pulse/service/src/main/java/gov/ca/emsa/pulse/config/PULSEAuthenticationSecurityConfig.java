@@ -41,9 +41,9 @@ public class PULSEAuthenticationSecurityConfig extends WebSecurityConfigurerAdap
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
-			.authorizeRequests()
-			.antMatchers("/**")
-			.hasRole("USER")
+		.requiresChannel()
+		.antMatchers("/**")
+		.requiresSecure()
 		.and()
 			.addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
 			.headers();

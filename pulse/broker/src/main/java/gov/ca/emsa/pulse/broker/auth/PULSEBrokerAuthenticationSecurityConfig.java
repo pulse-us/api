@@ -30,10 +30,9 @@ public class PULSEBrokerAuthenticationSecurityConfig extends WebSecurityConfigur
 		http
 		//user has been authenticated through the public service before they come here
 		//so we can allow everyone
-			.authorizeRequests()
-			.antMatchers("/**")
-			.permitAll()
-			//.hasRole("USER")
+		.authorizeRequests()
+		.antMatchers("/**")
+		.permitAll()
 		.and()
 			.addFilterBefore(new HttpRequestUserFilter(), UsernamePasswordAuthenticationFilter.class)
 			.headers();
