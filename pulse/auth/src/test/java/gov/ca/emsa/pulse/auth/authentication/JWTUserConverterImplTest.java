@@ -42,17 +42,21 @@ public class JWTUserConverterImplTest {
         jwtAuthorities.put("Authorities", new ArrayList<String>());
         jwtAuthorities.get("Authorities").add("ROLE_USER");
         jwtAuthorities.put("Identity", new ArrayList<String>());
-        jwtAuthorities.get("Identity").add("First name");
-        jwtAuthorities.get("Identity").add("Last name");
-        jwtAuthorities.get("Identity").add("Email");
+        jwtAuthorities.get("Identity").add("user_id");
+        jwtAuthorities.get("Identity").add("username");
+        jwtAuthorities.get("Identity").add("auth_source");
+        jwtAuthorities.get("Identity").add("full_name");
+        jwtAuthorities.get("Identity").add("organization");
+        jwtAuthorities.get("Identity").add("purpose_for_use");
+        jwtAuthorities.get("Identity").add("role");
 
 		String jwt = jwtAuthor.createJWT(userId, jwtAuthorities);
 		User user = converter.getAuthenticatedUser(jwt);
 
         assertNotNull(user);
 
-		assertEquals(user.getFirstName(), "First name");
-		assertEquals(user.getLastName(), "Last name");
+		assertEquals(user.getuser_id(), "user_id");
+		assertEquals(user.getfull_name(), "full_name");
 		//assertEquals(user.getSubjectName(), testUser.getSubjectName());
 	}
 
