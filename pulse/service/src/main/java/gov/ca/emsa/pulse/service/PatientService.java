@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.service;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
+import gov.ca.emsa.pulse.auth.user.UserRetrievalException;
+import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
@@ -7,6 +9,7 @@ import gov.ca.emsa.pulse.Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Matcher;
@@ -98,6 +101,30 @@ public class PatientService {
 		}
 		
 		return patientList;
+	}
+	
+	@ApiOperation(value = "Edit a patient's information")
+	@RequestMapping(value = "/patients/{patientId}/edit", method = RequestMethod.POST)
+	public Patient update(@PathVariable("patientId") Long patientId, 
+			@RequestBody(required=true) Patient toUpdate)throws JsonProcessingException, UserRetrievalException, SQLException {
+
+		RestTemplate query = new RestTemplate();
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+		ObjectMapper mapper = new ObjectMapper();
+
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		Patient returnPatient = null;
+		if(jwtUser == null){
+			logger.error("Could not find a logged in user. ");
+			throw new UserRetrievalException("Could not find a logged in user. ");
+		} else {
+			headers.add("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Patient> request = new HttpEntity<Patient>(toUpdate, headers);
+			returnPatient = query.postForObject(brokerUrl + "/patients/" + patientId + "/edit", request, Patient.class);
+			logger.info("Request sent to broker from services REST.");
+		}
+
+		return returnPatient;
 	}
 	
 	@ApiOperation(value="Delete the specified patient and all associated documents.")
