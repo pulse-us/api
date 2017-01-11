@@ -15,9 +15,16 @@ public class JWTAuthenticatedUser implements User {
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private String subjectName;
-	private String firstName;
-	private String lastName;
-    private String email;
+
+    // Provided by SAML assertion
+    private String user_id;
+    private String username;
+    private String auth_source;
+    private String full_name;
+    private String organization;
+    private String purpose_for_use;
+    private String role;
+
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private AlternateCareFacility acf;
     private HashMap<String,String> details = new HashMap<String,String>();
@@ -39,28 +46,60 @@ public class JWTAuthenticatedUser implements User {
 		this.subjectName = subject;
 	}
 
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-    public String getEmail() {
-        return email;
+    public String getuser_id() {
+        return user_id;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setuser_id(String user_id) {
+        this.user_id = user_id;
+    }
+
+    public String getusername () {
+        return username;
+    }
+
+    public void setusername(String username) {
+        this.username = username;
+    }
+
+    public String getauth_source () {
+        return auth_source;
+    }
+
+    public void setauth_source(String auth_source) {
+        this.auth_source = auth_source;
+    }
+
+    public String getfull_name () {
+        return full_name;
+    }
+
+    public void setfull_name(String full_name) {
+        this.full_name = full_name;
+    }
+
+    public String getorganization () {
+        return organization;
+    }
+
+    public void setorganization(String organization) {
+        this.organization = organization;
+    }
+
+    public String getpurpose_for_use () {
+        return purpose_for_use;
+    }
+
+    public void setpurpose_for_use(String purpose_for_use) {
+        this.purpose_for_use = purpose_for_use;
+    }
+
+    public String getrole () {
+        return role;
+    }
+
+    public void setrole(String role) {
+        this.role = role;
     }
 
 	public Set<GrantedPermission> getPermissions() {
@@ -154,6 +193,13 @@ public class JWTAuthenticatedUser implements User {
 		return subjectName;
 	}
 
+	public void setFirstName(String firstName) {};
+	public String getFirstName() { return "N/A"; };
+	public void setLastName(String lastName) {};
+	public String getLastName() { return "N/A"; };
+    public void setEmail(String email) {};
+    public String getEmail() { return "N/A"; }
+
 	public Long getId() {
 		return id;
 	}
@@ -169,14 +215,18 @@ public class JWTAuthenticatedUser implements User {
 	public void setAcf(AlternateCareFacility acf) {
 		this.acf = acf;
 	}
-	
+
     @Override
     public String toString() {
         String ret = "{User: " +
             "[subjectName: " + subjectName + "]" +
-            "[firstName: " + firstName + "]" +
-            "[lastName: " + lastName + "]" +
-            "[email: " + email + "]" +
+            "[user_id: " + user_id + "]" +
+            "[username: " + username + "]" +
+            "[auth_source: " + auth_source + "]" +
+            "[full_name: " + full_name + "]" +
+            "[organization: " + organization + "]" +
+            "[purpose_for_use: " + purpose_for_use + "]" +
+            "[role: " + role + "]" +
             "[jwt: " + details.get("jwt") + "]";
         return ret;
     }
