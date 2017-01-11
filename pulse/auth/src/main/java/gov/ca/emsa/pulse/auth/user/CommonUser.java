@@ -67,7 +67,8 @@ public class CommonUser implements User{
     public void setuser_id(String user_id) {
         this.user_id = user_id;
     }
-    public String getusername () {
+    @Override
+    public String getUsername () {
         return username;
     }
     public void setusername(String username) {
@@ -160,17 +161,10 @@ public class CommonUser implements User{
 	@Override
 	public void addPermission(GrantedPermission permission) {
 		// TODO Auto-generated method stub
-		
 	}
 	@Override
 	public void removePermission(String permissionValue) {
 		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public String getUsername() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	@Override
 	public Collection<GrantedPermission> getAuthorities() {
