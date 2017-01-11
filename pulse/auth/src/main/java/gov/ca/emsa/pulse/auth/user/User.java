@@ -24,7 +24,6 @@ public interface User extends UserDetails , Authentication {
 
     public String getuser_id();
     public void setuser_id(String user_id);
-    public String getusername ();
     public void setusername(String username);
     public String getauth_source ();
     public void setauth_source(String auth_source);

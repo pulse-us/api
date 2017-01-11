@@ -54,7 +54,8 @@ public class JWTAuthenticatedUser implements User {
         this.user_id = user_id;
     }
 
-    public String getusername () {
+    @Override
+    public String getUsername () {
         return username;
     }
 
@@ -185,11 +186,6 @@ public class JWTAuthenticatedUser implements User {
 
 	@Override
 	public String getName() {
-		return subjectName;
-	}
-
-	@Override
-	public String getUsername() {
 		return subjectName;
 	}
 
