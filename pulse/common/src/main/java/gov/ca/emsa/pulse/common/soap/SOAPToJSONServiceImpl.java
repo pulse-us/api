@@ -13,6 +13,7 @@ import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.PatientSearchAddress;
 import gov.ca.emsa.pulse.common.domain.PatientSearchName;
+import gov.ca.emsa.pulse.cten.IheStatus;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
@@ -382,5 +383,20 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 
 	public List<DocumentResponse> convertToDocumentSetResponse(RetrieveDocumentSetResponseType response) {
 		return response.getDocumentResponse();
+	}
+	
+	public IheStatus getErrorStatus(Object response) {
+		IheStatus result = IheStatus.Success;
+		if(response instanceof AdhocQueryResponse) {
+			AdhocQueryResponse queryResponse = (AdhocQueryResponse) response;
+			String namespacedStatus = queryResponse.getStatus();
+			int lastColonIndex = namespacedStatus.lastIndexOf(':');
+			if(lastColonIndex < 0) {
+				lastColonIndex = 0;
+			}
+			String status = namespacedStatus.substring(lastColonIndex+1);
+			result = IheStatus.valueOf(status);
+		}
+		return result;
 	}
 }

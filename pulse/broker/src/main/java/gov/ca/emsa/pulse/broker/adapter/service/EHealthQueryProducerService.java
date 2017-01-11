@@ -17,9 +17,10 @@ import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
 import org.opensaml.common.SAMLException;
 
 public interface EHealthQueryProducerService {
-	public PRPAIN201306UV02 unMarshallPatientDiscoveryResponseObject(String xml) throws SOAPException, SAMLException;
-	public AdhocQueryResponse unMarshallDocumentQueryResponseObject(String xml) throws SAMLException, SOAPException;
-	public RetrieveDocumentSetResponseType unMarshallDocumentSetRetrieveResponseObject(String xml) throws SAMLException;
+	public AdhocQueryResponse unmarshallErrorQueryResponse(String xml);
+	public PRPAIN201306UV02 unMarshallPatientDiscoveryResponseObject(String xml) throws SOAPException, SAMLException, JAXBException;
+	public AdhocQueryResponse unMarshallDocumentQueryResponseObject(String xml) throws SAMLException, SOAPException, JAXBException;
+	public RetrieveDocumentSetResponseType unMarshallDocumentSetRetrieveResponseObject(String xml) throws SAMLException, JAXBException;
 	public String marshallPatientDiscoveryRequest(SAMLInput samlInput, PRPAIN201305UV02 response) throws JAXBException;
 	public String createSOAPFault();
 	public String marshallDocumentQueryRequest(SAMLInput samlInput, AdhocQueryRequest request) throws JAXBException;

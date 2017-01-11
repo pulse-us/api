@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.manager.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,6 +24,7 @@ import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.cten.IheStatus;
 
 @Component
 public class PatientQueryService implements Runnable {
@@ -43,7 +45,7 @@ public class PatientQueryService implements Runnable {
 	public void run() {
 		boolean queryError = false;
 		//query this organization directly for patient matches
-		List<PatientRecordDTO> searchResults = null;
+		Map<IheStatus, List<PatientRecordDTO>> searchResults = null;
 		LocationEndpointDTO endpointToQuery = null;
 		
 		LocationDTO location = locationManager.getById(queryLocationMap.getLocationId());
@@ -78,8 +80,9 @@ public class PatientQueryService implements Runnable {
 			}
 			//store the patients returned so we can retrieve them later when all orgs have finished querying
 			if(searchResults != null && searchResults.size() > 0) {
-				logger.info("Found " + searchResults.size() + " results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
-				for(PatientRecordDTO patient : searchResults) {
+				List<PatientRecordDTO> patientResults = searchResults.get(IheStatus.Success);
+				logger.info("Found " + patientResults.size() + " results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+				for(PatientRecordDTO patient : patientResults) {
 					patient.setQueryLocationId(queryLocationMap.getId());
 						
 					//save the search results

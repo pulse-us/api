@@ -2,19 +2,20 @@ package gov.ca.emsa.pulse.broker.adapter;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
-import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.cten.IheStatus;
 
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
 
 public interface Adapter {
-	public List<PatientRecordDTO> queryPatients(CommonUser user, LocationEndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) throws Exception;
-	public List<DocumentDTO> queryDocuments(CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO patientLocationMap, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException;
+	public Map<IheStatus, List<PatientRecordDTO>> queryPatients(CommonUser user, LocationEndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) throws Exception;
+	public  Map<IheStatus, List<DocumentDTO>> queryDocuments(CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO patientLocationMap, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException;
 	public void retrieveDocumentsContents(CommonUser user, LocationEndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput, PatientLocationMapDTO patientLocationMap) throws UnknownHostException, UnsupportedEncodingException;
 }
