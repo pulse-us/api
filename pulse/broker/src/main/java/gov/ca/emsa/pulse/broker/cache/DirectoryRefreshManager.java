@@ -68,6 +68,7 @@ public class DirectoryRefreshManager extends TimerTask {
 			getLocationsAndEndpoints();
 		} catch(Exception ex) {
 			logger.error("Error updating location cache", ex);
+			ex.printStackTrace();
 		}
 	}
 
