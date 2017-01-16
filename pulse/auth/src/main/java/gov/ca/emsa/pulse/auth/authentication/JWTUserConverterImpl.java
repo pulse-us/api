@@ -40,7 +40,6 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 		if (validatedClaims == null){
 			throw new JWTValidationException("Invalid authentication token.");
 		} else {
-
 			/*
 			 * Handle the standard claim types. These won't be lists of Strings,
 			 * which we'll be expecting from the claims we are creating ourselves
@@ -74,17 +73,24 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 				user.addPermission(claim);
 			}
 
-			String firstName = identityInfo.get(0);
-			String lastName = identityInfo.get(1);
-			String email = identityInfo.get(2);
+            String user_id = identityInfo.get(0);
+            String username = identityInfo.get(1);
+            String auth_source = identityInfo.get(2);
+            String full_name = identityInfo.get(3);
+            String organization = identityInfo.get(4);
+            String purpose_for_use = identityInfo.get(5);
+            String role = identityInfo.get(6);
 
-			user.setFirstName(firstName);
-			user.setLastName(lastName);
-            user.setEmail(email);
-            user.setJwt(jwt);
-            
-            if (identityInfo.size() > 3) {
-            	String acfObjStr = identityInfo.get(3);
+            user.setuser_id(user_id);
+            user.setusername(username);
+            user.setauth_source(auth_source);
+            user.setfull_name(full_name);
+            user.setorganization(organization);
+            user.setpurpose_for_use(purpose_for_use);
+            user.setrole(role);
+
+            if (identityInfo.size() > 7) {
+                String acfObjStr = identityInfo.get(7);
             	try {
 	            	ObjectReader reader = new ObjectMapper().reader().forType(AlternateCareFacility.class);
 	            	AlternateCareFacility acf = reader.readValue(acfObjStr);

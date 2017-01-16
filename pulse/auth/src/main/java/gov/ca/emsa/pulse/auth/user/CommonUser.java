@@ -10,17 +10,27 @@ import java.util.Set;
 public class CommonUser implements User{
 
 	private static final long serialVersionUID = -4255948572251487878L;
-	
+
 	private Long id;
 	private String subjectName;
 	private String firstName;
 	private String lastName;
     private String email;
+
+    // SAML components
+    private String user_id;
+    private String username;
+    private String auth_source;
+    private String full_name;
+    private String organization;
+    private String purpose_for_use;
+    private String role;
+
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private boolean authenticated = true;
     private String jwt;
     private AlternateCareFacility acf;
-    
+
 	public Long getId() {
 		return id;
 	}
@@ -51,6 +61,49 @@ public class CommonUser implements User{
 	public void setEmail(String email) {
 		this.email = email;
 	}
+    public String getuser_id() {
+        return user_id;
+    }
+    public void setuser_id(String user_id) {
+        this.user_id = user_id;
+    }
+    @Override
+    public String getUsername () {
+        return username;
+    }
+    public void setusername(String username) {
+        this.username = username;
+    }
+    public String getauth_source () {
+        return auth_source;
+    }
+    public void setauth_source(String auth_source) {
+        this.auth_source = auth_source;
+    }
+    public String getfull_name () {
+        return full_name;
+    }
+    public void setfull_name(String full_name) {
+        this.full_name = full_name;
+    }
+    public String getorganization () {
+        return organization;
+    }
+    public void setorganization(String organization) {
+        this.organization = organization;
+    }
+    public String getpurpose_for_use () {
+        return purpose_for_use;
+    }
+    public void setpurpose_for_use(String purpose_for_use) {
+        this.purpose_for_use = purpose_for_use;
+    }
+    public String getrole () {
+        return role;
+    }
+    public void setrole(String role) {
+        this.role = role;
+    }
 	public Set<GrantedPermission> getPermissions() {
 		return permissions;
 	}
@@ -108,17 +161,10 @@ public class CommonUser implements User{
 	@Override
 	public void addPermission(GrantedPermission permission) {
 		// TODO Auto-generated method stub
-		
 	}
 	@Override
 	public void removePermission(String permissionValue) {
 		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public String getUsername() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	@Override
 	public Collection<GrantedPermission> getAuthorities() {

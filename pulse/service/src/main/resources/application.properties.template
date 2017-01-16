@@ -4,7 +4,7 @@ basePath=/rest
 debug=true
 
 brokerUrl=https://localhost:8090
-samlServiceUrl=http://localhost:8080
+samlServiceUrl=https://localhost:8080
 
 keyLocation=C:\\JSONPulseRsaJoseJWebKeyTest.txt
 jwtAllowedClockSkew=30
@@ -23,3 +23,8 @@ endpoints.health.sensitive=false
 #interval for polling broker about /search results
 delaySeconds=1
 timeout=10
+
+server.ssl.key-store: src/main/resources/keystore.p12
+server.ssl.key-store-password: <insert password>
+server.ssl.keyStoreType: PKCS12
+server.ssl.keyAlias: tomcat
