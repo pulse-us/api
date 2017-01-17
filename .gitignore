@@ -270,3 +270,5 @@ gradle-app.setting
 application-test.properties
 persistence-test.xml
 /pulse/service/src/main/resources/application.properties
+/pulse/broker/src/main/resources/keystore.p12
+/pulse/service/src/main/resources/keystore.p12
