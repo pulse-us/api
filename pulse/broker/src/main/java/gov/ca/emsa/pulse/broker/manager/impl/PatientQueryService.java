@@ -81,13 +81,19 @@ public class PatientQueryService implements Runnable {
 			//store the patients returned so we can retrieve them later when all orgs have finished querying
 			if(searchResults != null && searchResults.size() > 0) {
 				List<PatientRecordDTO> patientResults = searchResults.get(IheStatus.Success);
-				logger.info("Found " + patientResults.size() + " results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
-				for(PatientRecordDTO patient : patientResults) {
-					patient.setQueryLocationId(queryLocationMap.getId());
-						
-					//save the search results
-					queryManager.addPatientRecord(patient);
-					logger.info("Added patient record to the orgStatus " + queryLocationMap.getId());
+				if(patientResults != null && patientResults.size() > 0) {
+					logger.info("Found " + patientResults.size() + " results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+					if(patientResults != null) {
+						for(PatientRecordDTO patient : patientResults) {
+							patient.setQueryLocationId(queryLocationMap.getId());
+								
+							//save the search results
+							queryManager.addPatientRecord(patient);
+							logger.info("Added patient record to the orgStatus " + queryLocationMap.getId());
+						}
+					}
+				} else {
+					queryError = true;
 				}
 			} else {
 				logger.info("Found 0 results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");

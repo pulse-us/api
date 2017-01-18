@@ -139,17 +139,18 @@ public class EHealthAdapter implements Adapter {
 					}
 					records.add(record);
 				}
-			} catch(SAMLException | SOAPException | JAXBException ex) {
+			} catch(Exception ex) {
 				logger.error("Exception unmarshalling patient discovery response", ex);
 				resultStatus = IheStatus.Failure;
 			}
 			
 			if(resultStatus != IheStatus.Success) {
-				logger.error("Trying to unmarshal response as an AdHocQueryRequest object to look for errors.");
+				logger.info("Trying to unmarshal response as an AdHocQueryRequest object to look for errors.");
 				try {
 					AdhocQueryResponse resultObj = queryProducer.unmarshallErrorQueryResponse(searchResults);
 					resultStatus = soapConverterService.getErrorStatus(resultObj);
-					logger.error("Got error back from " + endpoint.getUrl() + ". Status: " + resultStatus.name());
+					records = new ArrayList<PatientRecordDTO>();
+					logger.info("Got error back from " + endpoint.getUrl() + ". Status: " + resultStatus.name());
 					auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
 				} catch(Exception ex) {
 					logger.error("Exception unmarshalling patient discovery response as error", ex);
