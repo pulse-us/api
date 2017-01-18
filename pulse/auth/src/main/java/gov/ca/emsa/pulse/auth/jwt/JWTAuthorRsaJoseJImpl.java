@@ -24,7 +24,7 @@ public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
 	@Qualifier("RsaJose4JWebKey")
 	JSONWebKey jwk;
 
-	Logger logger = LogManager.getLogger(JWTAuthorRsaJoseJImpl.class.getName());
+	Logger LOG = LogManager.getLogger(JWTAuthorRsaJoseJImpl.class.getName());
 
 	@Override
 	public String createJWT(String subject, Map<String, List<String> > claims) {
@@ -32,18 +32,16 @@ public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
 	    JwtClaims claimsObj = new JwtClaims();
 	    claimsObj.setIssuer(env.getProperty("jwtIssuer"));  // who creates the token and signs it
 	    claimsObj.setAudience(env.getProperty("jwtAudience")); // to whom the token is intended to be sent
-	    claimsObj.setExpirationTimeMinutesInTheFuture(
-	    		Integer.parseInt(env.getProperty("jwtExpirationTimeMinutesInTheFuture"))); // time when the token will expire (from now)
+	    claimsObj.setExpirationTimeMinutesInTheFuture(Integer.parseInt(env.getProperty("jwtExpirationTimeMinutesInTheFuture"))); // time when the token will expire (from now)
 	    claimsObj.setGeneratedJwtId(); // a unique identifier for the token
 	    claimsObj.setIssuedAtToNow();  // when the token was issued/created (now)
-	    claimsObj.setNotBeforeMinutesInThePast(Integer.parseInt(
-	    		env.getProperty("jwtNotBeforeMinutesInThePast"))); // time before which the token is not yet valid (minutes ago)
+	    claimsObj.setNotBeforeMinutesInThePast(Integer.parseInt(env.getProperty("jwtNotBeforeMinutesInThePast"))); // time before which the token is not yet valid (minutes ago)
 	    claimsObj.setSubject(subject); // the subject/principal is whom the token is about
-
 
 	    for (Map.Entry<String, List<String> > claim : claims.entrySet())
 	    {
 	    	claimsObj.setStringListClaim(claim.getKey(), claim.getValue());
+            LOG.info("JWT with subject [" + subject + "] has claim [" + claim.getKey() + "] with value [" + claim.getValue() + "]");
 	    }
 
 	    // A JWT is a JWS and/or a JWE with JSON claims as the payload.
@@ -73,7 +71,7 @@ public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
 		try {
 			jwt = jws.getCompactSerialization();
 		} catch (JoseException e) {
-			logger.error("Token creation error", e);
+			LOG.error("Token creation error", e);
 		}
 
 	    return jwt;
