@@ -16,6 +16,7 @@ import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
+import gov.ca.emsa.pulse.broker.dto.DocumentQueryResults;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
@@ -46,7 +47,7 @@ public class DocumentQueryService implements Runnable {
 	public void run() {
 		//query this organization directly for 
 		boolean querySuccess = true;
-		Map<IheStatus, List<DocumentDTO>> searchResults = null;
+		DocumentQueryResults searchResults = null;
 		LocationEndpointDTO endpointToQuery = null;
 		if(location.getEndpoints() != null) {
 			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
@@ -75,15 +76,21 @@ public class DocumentQueryService implements Runnable {
 			}
 			
 			//store the returned document info
-			if(searchResults != null && searchResults.size() > 0) {
-				List<DocumentDTO> docs = searchResults.get(IheStatus.Success);
+			if(searchResults != null && searchResults.getStatus() == IheStatus.Success) {
+				List<DocumentDTO> docs = searchResults.getResults();
 				if(docs != null && docs.size() > 0) {
 					for(DocumentDTO doc : docs) {
 						doc.setPatientLocationMapId(patientLocationMap.getId());
 						//save document
 						docManager.create(doc);
 					}
-				} 
+				} else {
+					logger.info("Got 0 document results from query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+				}
+			} else if(searchResults != null && searchResults.getStatus() == IheStatus.Failure) {
+				querySuccess = false;
+			} else {
+				logger.error("Got a null response back from query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 			}
 			logger.info("Completed query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 		}

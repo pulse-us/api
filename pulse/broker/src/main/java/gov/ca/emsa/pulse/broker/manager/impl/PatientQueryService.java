@@ -17,6 +17,7 @@ import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordResults;
 import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
@@ -45,7 +46,7 @@ public class PatientQueryService implements Runnable {
 	public void run() {
 		boolean queryError = false;
 		//query this organization directly for patient matches
-		Map<IheStatus, List<PatientRecordDTO>> searchResults = null;
+		PatientRecordResults searchResults = null;
 		LocationEndpointDTO endpointToQuery = null;
 		
 		LocationDTO location = locationManager.getById(queryLocationMap.getLocationId());
@@ -79,8 +80,8 @@ public class PatientQueryService implements Runnable {
 				}
 			}
 			//store the patients returned so we can retrieve them later when all orgs have finished querying
-			if(searchResults != null && searchResults.size() > 0) {
-				List<PatientRecordDTO> patientResults = searchResults.get(IheStatus.Success);
+			if(searchResults != null && searchResults.getStatus() == IheStatus.Success) {
+				List<PatientRecordDTO> patientResults = searchResults.getResults();
 				if(patientResults != null && patientResults.size() > 0) {
 					logger.info("Found " + patientResults.size() + " results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 					if(patientResults != null) {
@@ -93,10 +94,13 @@ public class PatientQueryService implements Runnable {
 						}
 					}
 				} else {
-					queryError = true;
+					logger.info("Found 0 results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 				}
+			} else if(searchResults != null && searchResults.getStatus() == IheStatus.Failure) { 
+				queryError = true;
 			} else {
-				logger.info("Found 0 results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+				logger.info("Search results were null, cannot determine status from : '" + endpointToQuery.getExternalId() + "'");
+				queryError = true;
 			}
 			logger.info("Completed query to endpoint with external id '" + 
 					endpointToQuery.getExternalId());

@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.cten;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +22,8 @@ import gov.ca.emsa.pulse.cten.domain.LocationResource;
 import gov.ca.emsa.pulse.cten.domain.LocationWrapper;
 
 public class CtenToPulseConverter {
+	private static String lastUpdatedDateFormat="yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+	
 	public static List<Location> convertLocations(LocationWrapper ctenLocs) {
 		if(ctenLocs == null || ctenLocs.getEntry() == null || ctenLocs.getEntry().size() == 0) {
 			return new ArrayList<Location>();
@@ -41,8 +45,10 @@ public class CtenToPulseConverter {
 		result.setExternalId(ctenResource.getId());
 		if(ctenResource.getAddress() != null) {
 			Address locAddr = new Address();
-			if(!StringUtils.isEmpty(ctenResource.getAddress().getLine())) {
-				locAddr.getLines().add(ctenResource.getAddress().getLine());
+			if(ctenResource.getAddress().getLine() != null) {
+				for(String line : ctenResource.getAddress().getLine()) {
+					locAddr.getLines().add(line);
+				}
 			}
 			locAddr.setCity(ctenResource.getAddress().getCity());
 			locAddr.setState(ctenResource.getAddress().getState());
@@ -51,8 +57,13 @@ public class CtenToPulseConverter {
 			result.setAddress(locAddr);
 		}
 		result.setDescription(ctenResource.getDescription());
-		if(ctenResource.getMeta().getLastUpdated() != null) {
-			result.setExternalLastUpdateDate(new Date(ctenResource.getMeta().getLastUpdated()));
+		if(!StringUtils.isEmpty(ctenResource.getMeta().getLastUpdated())) {
+			SimpleDateFormat formatter = new SimpleDateFormat(lastUpdatedDateFormat);
+			try {
+				result.setExternalLastUpdateDate(formatter.parse(ctenResource.getMeta().getLastUpdated()));		
+			} catch(ParseException ex) {
+				System.err.println("Parse exception parsing " + ctenResource.getMeta().getLastUpdated() + " with format " + lastUpdatedDateFormat);;
+			}
 		}
 		result.setName(ctenResource.getName());
 		if(ctenResource.getManagingOrganization() != null) {
@@ -73,9 +84,9 @@ public class CtenToPulseConverter {
 		if(ctenResource.getEndpoint() != null && ctenResource.getEndpoint().size() > 0) {
 			for(EndpointMetadata ctenEndpointMeta : ctenResource.getEndpoint()) {
 				//expecting a string of this format "Endpoint/19"
-				int lastSlash = ctenEndpointMeta.getUrl().indexOf("/");
+				int lastSlash = ctenEndpointMeta.getReference().indexOf("/");
 				if(lastSlash >= 0) {
-					String endpointCtenId = ctenEndpointMeta.getUrl().substring(lastSlash+1);
+					String endpointCtenId = ctenEndpointMeta.getReference().substring(lastSlash+1);
 					Endpoint endpoint = new Endpoint();
 					endpoint.setExternalId(endpointCtenId);
 					result.getEndpoints().add(endpoint);
@@ -113,8 +124,13 @@ public class CtenToPulseConverter {
 		resultType.setName(ctenResource.getName());
 		result.setEndpointType(resultType);
 		result.setExternalId(ctenResource.getId());
-		if(ctenResource.getMeta() != null && ctenResource.getMeta().getLastUpdated() != null) {
-			result.setExternalLastUpdateDate(new Date(ctenResource.getMeta().getLastUpdated()));
+		if(!StringUtils.isEmpty(ctenResource.getMeta().getLastUpdated())) {
+			SimpleDateFormat formatter = new SimpleDateFormat(lastUpdatedDateFormat);
+			try {
+				result.setExternalLastUpdateDate(formatter.parse(ctenResource.getMeta().getLastUpdated()));		
+			} catch(ParseException ex) {
+				System.err.println("Parse exception parsing " + ctenResource.getMeta().getLastUpdated() + " with format " + lastUpdatedDateFormat);;
+			}
 		}
 		if(ctenResource.getPayloadMimeType() != null && ctenResource.getPayloadMimeType().size() > 0) {
 			for(String mimeType : ctenResource.getPayloadMimeType()) {

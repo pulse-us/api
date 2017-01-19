@@ -49,12 +49,14 @@ import gov.ca.emsa.pulse.broker.dto.AuditRequestDestinationDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditRequestSourceDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditSourceDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
+import gov.ca.emsa.pulse.broker.dto.DocumentQueryResults;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientRecordResults;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Document;
@@ -101,7 +103,7 @@ public class EHealthAdapter implements Adapter {
 	}
 	
 	@Override
-	public Map<IheStatus, List<PatientRecordDTO>> queryPatients(CommonUser user, LocationEndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) throws Exception {
+	public PatientRecordResults queryPatients(CommonUser user, LocationEndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) throws Exception {
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch);
 		String requestBodyXml = null;
 		try {
@@ -122,12 +124,11 @@ public class EHealthAdapter implements Adapter {
 			throw ex;
 		}
 		
-		IheStatus resultStatus = IheStatus.Success;
-		List<PatientRecordDTO> records = null;
+		PatientRecordResults results = new PatientRecordResults();
+		results.setStatus(IheStatus.Success);
 		if(!StringUtils.isEmpty(searchResults)) {
 			try {
 				PRPAIN201306UV02 resultObj = queryProducer.unMarshallPatientDiscoveryResponseObject(searchResults);
-				records = new ArrayList<PatientRecordDTO>();
 				auditManager.createAuditEventIG("SUCCESS", user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
 
 				List<PatientRecord> patientResults = soapConverterService.convertToPatientRecords(resultObj);
@@ -137,20 +138,19 @@ public class EHealthAdapter implements Adapter {
 						NameTypeDTO nameType = nameTypeDao.getByCode("L");
 						record.getPatientRecordName().get(j).setNameType(nameType);
 					}
-					records.add(record);
+					results.getResults().add(record);
 				}
 			} catch(Exception ex) {
 				logger.error("Exception unmarshalling patient discovery response", ex);
-				resultStatus = IheStatus.Failure;
+				results.setStatus(IheStatus.Failure);
 			}
 			
-			if(resultStatus != IheStatus.Success) {
+			if(results.getStatus() != IheStatus.Success) {
 				logger.info("Trying to unmarshal response as an AdHocQueryRequest object to look for errors.");
 				try {
 					AdhocQueryResponse resultObj = queryProducer.unmarshallErrorQueryResponse(searchResults);
-					resultStatus = soapConverterService.getErrorStatus(resultObj);
-					records = new ArrayList<PatientRecordDTO>();
-					logger.info("Got error back from " + endpoint.getUrl() + ". Status: " + resultStatus.name());
+					results.setStatus(soapConverterService.getErrorStatus(resultObj));
+					logger.info("Got error back from " + endpoint.getUrl() + ". Status: " + results.getStatus().name());
 					auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
 				} catch(Exception ex) {
 					logger.error("Exception unmarshalling patient discovery response as error", ex);
@@ -158,13 +158,11 @@ public class EHealthAdapter implements Adapter {
 			}
 		}
 
-		Map<IheStatus, List<PatientRecordDTO>> result = new HashMap<IheStatus, List<PatientRecordDTO>>();
-		result.put(resultStatus, records);
-		return result;
+		return results;
 	}
 
 	@Override
-	public Map<IheStatus, List<DocumentDTO>> queryDocuments(CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO toSearch, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException {
+	public DocumentQueryResults queryDocuments(CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO toSearch, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException {
 		Patient patientToSearch = new Patient();
 		toSearch.setExternalPatientRecordId(toSearch.getExternalPatientRecordId());
 		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientToSearch);
@@ -191,38 +189,36 @@ public class EHealthAdapter implements Adapter {
 			throw ex;
 		}
 		
-		IheStatus resultStatus = IheStatus.Success;
-		List<DocumentDTO> records = null;
+		DocumentQueryResults results = new DocumentQueryResults();
+		results.setStatus(IheStatus.Success);
 		if(!StringUtils.isEmpty(searchResults)) {
 			try {
 				AdhocQueryResponse resultObj = queryProducer.unMarshallDocumentQueryResponseObject(searchResults);
-				records = new ArrayList<DocumentDTO>();
 				List<Document> documentResults = soapConverterService.convertToDocumentQueryResponse(resultObj);
 				for(int i = 0; i < documentResults.size(); i++) {
 					DocumentDTO record = DomainToDtoConverter.convert(documentResults.get(i));
 					auditManager.createAuditEventDCXGatewayQuery("SUCCESS", user, endpoint.getUrl(),record.getRepositoryUniqueId(), record.getDocumentUniqueId(), patientId);
-					records.add(record);
+					results.getResults().add(record);
 				}
-			} catch(SAMLException | SOAPException | JAXBException ex) {
+			} catch(Exception ex) {
 				logger.error("Exception unmarshalling document discovery response", ex);
-				resultStatus = IheStatus.Failure;
+				results.setStatus(IheStatus.Failure);
 			}
 			
-			if(resultStatus != IheStatus.Success) {
+			if(results.getStatus() != IheStatus.Success) {
 				logger.error("Trying to unmarshal response as an AdHocQueryRequest object to look for errors.");
 				try {
 					AdhocQueryResponse resultObj = queryProducer.unmarshallErrorQueryResponse(searchResults);
-					resultStatus = soapConverterService.getErrorStatus(resultObj);
-					logger.error("Got error back from " + endpoint.getUrl() + ". Status: " + resultStatus.name());
+					results.setStatus(soapConverterService.getErrorStatus(resultObj));
+					logger.error("Got error back from " + endpoint.getUrl() + ". Status: " + results.getStatus().name());
 					auditManager.createAuditEventDCXGatewayQuery("FAILURE", user, endpoint.getUrl(),"", "", patientId);
 				} catch(Exception ex) {
 					logger.error("Exception unmarshalling documents discovery response as error", ex);
 				}
 			}
 		}
-		Map<IheStatus, List<DocumentDTO>> result = new HashMap<IheStatus, List<DocumentDTO>>();
-		result.put(resultStatus, records);
-		return result;
+
+		return results;
 	}
 
 	/**
@@ -234,7 +230,8 @@ public class EHealthAdapter implements Adapter {
 	 * @throws UnknownHostException 
 	 */
 	@Override
-	public void retrieveDocumentsContents(CommonUser user, LocationEndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput, PatientLocationMapDTO patientMap) throws UnknownHostException, UnsupportedEncodingException {
+	public void retrieveDocumentsContents(CommonUser user, LocationEndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput, PatientLocationMapDTO patientMap) 
+			throws UnknownHostException, UnsupportedEncodingException, IheErrorException {
 		List<Document> docsToSearch = new ArrayList<Document>();
 		for(DocumentDTO docDto : documents) {
 			Document doc = DtoToDomainConverter.convert(docDto);
@@ -301,7 +298,7 @@ public class EHealthAdapter implements Adapter {
 						}
 					}
 				}
-			} catch(SAMLException | JAXBException ex) {
+			} catch(Exception ex) {
 				logger.error("Exception unmarshalling document retrieve response", ex);
 				resultStatus = IheStatus.Failure;
 			}
@@ -315,8 +312,10 @@ public class EHealthAdapter implements Adapter {
 					for(Document doc : docsToSearch){
 						auditManager.createAuditEventDCXGatewayRetrieve("FAILURE", user, endpoint.getUrl(), doc.getIdentifier().getRepositoryUniqueId(), doc.getIdentifier().getDocumentUniqueId(), doc.getIdentifier().getHomeCommunityId(), patientMap.getExternalPatientRecordId());
 					}
+					throw new IheErrorException("Got error code: " + resultStatus.name());
 				} catch(Exception ex) {
 					logger.error("Exception unmarshalling document set response as error", ex);
+					throw ex;
 				}
 			}
 		}
