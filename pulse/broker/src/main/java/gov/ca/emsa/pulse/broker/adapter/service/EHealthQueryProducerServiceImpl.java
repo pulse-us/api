@@ -297,7 +297,38 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return unmarshaller;
 	}
 
-	public PRPAIN201306UV02 unMarshallPatientDiscoveryResponseObject(String xml) throws SOAPException, SAMLException{
+	public AdhocQueryResponse unmarshallErrorQueryResponse(String xml) {
+		MessageFactory factory = null;
+		try {
+			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+		} catch (SOAPException e1) {
+			logger.error(e1);
+		}
+		SOAPMessage soapMessage = null;
+		try {
+			soapMessage = factory.createMessage(new MimeHeaders(), new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+		} catch (IOException | SOAPException e) {
+			logger.error(e);
+		}
+		SaajSoapMessage saajSoap = new SaajSoapMessage(soapMessage);
+		Source responseSource = saajSoap.getSoapBody().getPayloadSource();
+		
+		JAXBContext jc = createJAXBContext(AdhocQueryResponse.class);
+		Unmarshaller unmarshaller = createUnmarshaller(jc);
+		JAXBElement<?> responseObj = null;
+		try {
+			responseObj = (JAXBElement<?>) unmarshaller.unmarshal(responseSource, AdhocQueryResponse.class);
+		} catch(Exception ex) {
+			logger.error("Could not unmarshal response as AdHocQueryResponse error message.", ex);
+		}	
+		if(responseObj == null) {
+			return null;
+		}
+		return (AdhocQueryResponse) responseObj.getValue();
+	}
+	
+	public PRPAIN201306UV02 unMarshallPatientDiscoveryResponseObject(String xml) 
+			throws SOAPException, SAMLException, JAXBException {
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -313,23 +344,26 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		SaajSoapMessage saajSoap = new SaajSoapMessage(soapMessage);
 		Source requestSource = saajSoap.getSoapBody().getPayloadSource();
 
-		// Create a JAXB context
+		//first try to unmarshal as the object
 		JAXBContext jc = createJAXBContext(PRPAIN201306UV02.class);
-
-		// Create JAXB unmarshaller
 		Unmarshaller unmarshaller = createUnmarshaller(jc);
-
 		JAXBElement<?> requestObj = null;
+		
 		try {
 			requestObj = (JAXBElement<?>) unmarshaller.unmarshal(requestSource, PRPAIN201306UV02.class);
 		} catch (JAXBException e) {
-			logger.error(e);
+			logger.error("Could not unmarshal response as PRPAIN201306UV02", e);
+			throw e;
 		}
 
+		if(requestObj == null) {
+			return null;
+		}
 		return (PRPAIN201306UV02) requestObj.getValue();
 	}
 
-	public AdhocQueryResponse unMarshallDocumentQueryResponseObject(String xml) throws SAMLException,SOAPException 
+	public AdhocQueryResponse unMarshallDocumentQueryResponseObject(String xml) 
+			throws SAMLException,SOAPException, JAXBException 
 	{
 		MessageFactory factory = null;
 		try {
@@ -347,13 +381,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		Source requestSource = saajSoap.getSoapBody().getPayloadSource();
 
 		// Create a JAXB context
-		JAXBContext jc = null;
-		try {
-			jc = JAXBContext.newInstance(AdhocQueryResponse.class);
-		}
-		catch (Exception ex) {
-			logger.error(ex);
-		}
+		JAXBContext jc = createJAXBContext(AdhocQueryResponse.class);
 
 		// Create JAXB unmarshaller
 		Unmarshaller unmarshaller = null;
@@ -368,11 +396,17 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 			requestObj = (JAXBElement<?>) unmarshaller.unmarshal(requestSource, AdhocQueryResponse.class);
 		} catch (JAXBException e) {
 			logger.error(e);
+			throw e;
+		}
+		
+		if(requestObj == null) {
+			return null;
 		}
 		return (AdhocQueryResponse) requestObj.getValue();
 	}
 
-	public RetrieveDocumentSetResponseType unMarshallDocumentSetRetrieveResponseObject(String xml) throws SAMLException{
+	public RetrieveDocumentSetResponseType unMarshallDocumentSetRetrieveResponseObject(String xml) 
+			throws SAMLException, JAXBException {
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -389,13 +423,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		Source requestSource = saajSoap.getSoapBody().getPayloadSource();
 
 		// Create a JAXB context
-		JAXBContext jc = null;
-		try {
-			jc = JAXBContext.newInstance(RetrieveDocumentSetResponseType.class);
-		}
-		catch (Exception ex) {
-			logger.error(ex);
-		}
+		JAXBContext jc = createJAXBContext(RetrieveDocumentSetResponseType.class);
 
 		// Create JAXB unmarshaller
 		Unmarshaller unmarshaller = null;
@@ -410,8 +438,12 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 			requestObj = (JAXBElement<?>) unmarshaller.unmarshal(requestSource, RetrieveDocumentSetResponseType.class);
 		} catch (JAXBException e) {
 			logger.error(e);
+			throw e;
 		}
 
+		if(requestObj == null) {
+			return null;
+		}
 		return (RetrieveDocumentSetResponseType) requestObj.getValue();
 	}
 

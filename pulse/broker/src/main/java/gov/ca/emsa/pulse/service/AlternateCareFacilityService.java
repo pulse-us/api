@@ -103,11 +103,6 @@ public class AlternateCareFacilityService {
 			}
 		}
 		
-		
-		
-		
-		
-		
 		if(acfToUpdate.getId() == null) {
 			throw new InvalidArgumentsException("An ACF id is required in the body of the update request.");
 		}

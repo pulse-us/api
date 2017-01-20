@@ -17,6 +17,7 @@ import gov.ca.emsa.pulse.common.domain.PatientSearchAddress;
 import gov.ca.emsa.pulse.common.domain.PatientSearchName;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
+import gov.ca.emsa.pulse.cten.IheStatus;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 
 import java.io.IOException;
@@ -420,7 +421,7 @@ public class JSONToSoapTest {
 	}
 	
 	@Test
-	public void testParsePatientDiscoveryResponse() throws SAMLException, SOAPException, IOException {
+	public void testParsePatientDiscoveryResponse() throws SAMLException, SOAPException, JAXBException, IOException {
 		Resource pdFile = resourceLoader.getResource("classpath:NHINPatientDiscoveryResponse.xml");
 		String pdResponseStr = Resources.toString(pdFile.getURL(), Charsets.UTF_8);
 		PRPAIN201306UV02 resultObj = ehealthService.unMarshallPatientDiscoveryResponseObject(pdResponseStr);
@@ -469,7 +470,7 @@ public class JSONToSoapTest {
 	}
 	
 	@Test
-	public void testParseDocumentQueryResponse() throws SAMLException, SOAPException, IOException {
+	public void testParseDocumentQueryResponse() throws SAMLException, SOAPException, JAXBException, IOException {
 		Resource dqFile = resourceLoader.getResource("classpath:NHINQueryForDocumentsResponse.xml");
 		String dqResponseStr = Resources.toString(dqFile.getURL(), Charsets.UTF_8);
 		AdhocQueryResponse resultObj = ehealthService.unMarshallDocumentQueryResponseObject(dqResponseStr);
@@ -516,5 +517,20 @@ public class JSONToSoapTest {
 		String requestXml = ehealthService.marshallDocumentSetRequest(input, request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
+	}
+	
+	@Test
+	public void testParseErrorResponse() throws SAMLException, SOAPException, JAXBException, IOException {
+		Resource errFile = resourceLoader.getResource("classpath:NHINErrorResponse.xml");
+		String errResponseStr = Resources.toString(errFile.getURL(), Charsets.UTF_8);
+		AdhocQueryResponse resultObj = ehealthService.unmarshallErrorQueryResponse(errResponseStr);
+		assertNotNull(resultObj);
+		String namespacedStatus = resultObj.getStatus();
+		int lastColonIndex = namespacedStatus.lastIndexOf(':');
+		if(lastColonIndex < 0) {
+			lastColonIndex = 0;
+		}
+		String status = namespacedStatus.substring(lastColonIndex+1);
+		assertEquals(IheStatus.Failure.name(), status);
 	}
 }
