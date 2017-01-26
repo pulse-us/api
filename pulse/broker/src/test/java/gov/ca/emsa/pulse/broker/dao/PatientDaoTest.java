@@ -81,7 +81,7 @@ public class PatientDaoTest extends TestCase {
 		nameTypeDTO.setCode("L");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("M");
-		toCreate.setDateOfBirth("19930502");
+		toCreate.setDateOfBirth(1482969600000L);
 		
 		PatientDTO created = patientDao.create(toCreate);
 		assertNotNull(created);
@@ -118,7 +118,7 @@ public class PatientDaoTest extends TestCase {
 		nameTypeDTO.setCode("L");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("M");
-		toCreate.setDateOfBirth("19930502");
+		toCreate.setDateOfBirth(1482969600000L);
 		
 		PatientDTO created = patientDao.create(toCreate);
 		assertNotNull(created);
@@ -153,7 +153,7 @@ public class PatientDaoTest extends TestCase {
 		nameTypeDTO.setCode("L");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("M");
-		toCreate.setDateOfBirth("19930502");
+		toCreate.setDateOfBirth(1482969600000L);
 		
 		PatientDTO created = patientDao.create(toCreate);
 		assertNotNull(created);
@@ -186,7 +186,7 @@ public class PatientDaoTest extends TestCase {
 		nameTypeDTO.setCode("L");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
-		toCreate.setDateOfBirth("19930502");
+		toCreate.setDateOfBirth(1482969600000L);
 		
 		PatientDTO created = patientDao.create(toCreate);
 		assertNotNull(created);
@@ -218,7 +218,7 @@ public class PatientDaoTest extends TestCase {
 		toCreate.setFriendlyName("Bri");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
-		toCreate.setDateOfBirth("19930502");
+		toCreate.setDateOfBirth(1482969600000L);
 		
 		PatientDTO created = patientDao.create(toCreate);
 		assertNotNull(created);
@@ -247,7 +247,7 @@ public class PatientDaoTest extends TestCase {
 		toCreate.setFriendlyName("Bri");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
-		toCreate.setDateOfBirth("19930502");
+		toCreate.setDateOfBirth(1482969600000L);
 		
 		PatientDTO created = patientDao.create(toCreate);
 		created.setFullName("Katy Ekey");
@@ -267,7 +267,7 @@ public class PatientDaoTest extends TestCase {
 		toCreate.setFriendlyName("Bri");
 		toCreate.setSsn("111223344");
 		toCreate.setGender("Male");
-		toCreate.setDateOfBirth("19930502");
+		toCreate.setDateOfBirth(1482969600000L);
 		
 		PatientDTO created = patientDao.create(toCreate);
 		patientDao.delete(created.getId());
