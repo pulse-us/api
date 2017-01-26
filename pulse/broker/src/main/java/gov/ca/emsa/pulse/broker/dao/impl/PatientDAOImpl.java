@@ -12,9 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.ca.emsa.pulse.broker.cache.CacheCleanupException;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientRecordNameDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
@@ -33,7 +31,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		PatientEntity patient = new PatientEntity();
 		patient.setFullName(dto.getFullName());
 		patient.setFriendlyName(dto.getFriendlyName());
-		patient.setDateOfBirth(dto.getDateOfBirth());
+		patient.setDateOfBirth(dto.getDateOfBirth() != null ? new java.sql.Date(dto.getDateOfBirth()) : null);
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		if(dto.getAcf() != null) {
@@ -68,7 +66,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		PatientEntity patient = this.getEntityById(dto.getId());
 		patient.setFriendlyName(dto.getFriendlyName());
 		patient.setFullName(dto.getFullName());
-		patient.setDateOfBirth(dto.getDateOfBirth());
+		patient.setDateOfBirth(dto.getDateOfBirth() != null ? new java.sql.Date(dto.getDateOfBirth()) : null);
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		if(dto.getAcf() != null) {
