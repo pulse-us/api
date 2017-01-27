@@ -2,7 +2,6 @@ package gov.ca.emsa.pulse.service;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.audit.AuditEvent;
-import gov.ca.emsa.pulse.broker.domain.DocumentAudit;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditEventDTO;
@@ -62,9 +61,6 @@ public class PatientService {
 	@Autowired private DocumentManager docManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private AuditEventManager auditManager;
-	private static final String PATIENT_DISCHARGE = "PD";
-	private static final String DOCUMENT_VIEW = "DV";
-
 	public PatientService() {
 	}
 
@@ -124,7 +120,6 @@ public class PatientService {
 		String result = "";
 		if(cacheOnly == null || cacheOnly.booleanValue() == false) {
 			result = docManager.getDocumentById(user, input, documentId);
-			auditManager.createPulseAuditEvent(DOCUMENT_VIEW, documentId);
 		} else {
 			docManager.getDocumentById(user, input, documentId);
 		}
@@ -147,6 +142,5 @@ public class PatientService {
 	public void deletePatient(@PathVariable(value="patientId") Long patientId) 
 	 throws SQLException, JsonProcessingException {
 		patientManager.delete(patientId);
-		auditManager.createPulseAuditEvent(PATIENT_DISCHARGE,patientId);
 	}
 }

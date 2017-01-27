@@ -107,7 +107,6 @@ public class QueryService {
 		patientToCreate.setAcf(acfDto);
 
 		PatientDTO patient = patientManager.create(patientToCreate);
-		auditManager.createPulseAuditEvent(PATIENT_CREATION, patient.getId());
 
 		//create patient location mappings based on the patientrecords we are using
 		for(Long patientRecordId : request.getPatientRecordIds()) {
