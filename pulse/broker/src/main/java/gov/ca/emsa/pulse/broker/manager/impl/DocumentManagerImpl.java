@@ -163,6 +163,13 @@ public class DocumentManagerImpl implements DocumentManager {
 		return docContents;
 	}
 	
+	@Override
+	public DocumentDTO getDocumentObjById(Long documentId) throws SQLException {		
+		DocumentDTO doc = docDao.getById(documentId);
+		
+		return doc;
+	}
+	
 	@Lookup
 	public DocumentQueryService getDocumentQueryService(){
 		//spring will override this method

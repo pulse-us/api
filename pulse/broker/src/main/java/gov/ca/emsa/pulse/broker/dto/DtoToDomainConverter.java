@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.ca.emsa.pulse.broker.domain.DocumentAudit;
 import gov.ca.emsa.pulse.common.domain.Address;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
@@ -311,6 +312,25 @@ public class DtoToDomainConverter {
 		docId.setHomeCommunityId(dtoObj.getHomeCommunityId());
 		docId.setRepositoryUniqueId(dtoObj.getRepositoryUniqueId());
 		result.setIdentifier(docId);
+		return result;
+	}
+	
+	public static DocumentAudit convertToAuditDoc(DocumentDTO dtoObj) {
+		DocumentAudit result = new DocumentAudit();
+		result.setName(dtoObj.getName());
+		result.setFormat(dtoObj.getFormat());
+
+		result.setClassName(dtoObj.getClassName());
+		result.setConfidentiality(dtoObj.getConfidentiality());
+		result.setCreationTime(dtoObj.getCreationTime());
+		result.setDescription(dtoObj.getDescription());
+		result.setSize(dtoObj.getSize());
+
+		DocumentIdentifier docId = new DocumentIdentifier();
+		docId.setDocumentUniqueId(dtoObj.getDocumentUniqueId());
+		docId.setHomeCommunityId(dtoObj.getHomeCommunityId());
+		docId.setRepositoryUniqueId(dtoObj.getRepositoryUniqueId());
+		result.setDocumentIdentifier(docId);
 		return result;
 	}
 }

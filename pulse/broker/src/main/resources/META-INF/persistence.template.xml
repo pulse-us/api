@@ -38,6 +38,8 @@
 		<class>gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.ParticipantObjectTypeCodeEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.ParticipantObjectTypeCodeRoleEntity</class>
+		<class>gov.ca.emsa.pulse.broker.entity.PulseEventActionCodeEntity</class>
+		<class>gov.ca.emsa.pulse.broker.entity.PulseEventActionEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.QueryEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.QueryLocationMapEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.QueryLocationStatusEntity</class>
