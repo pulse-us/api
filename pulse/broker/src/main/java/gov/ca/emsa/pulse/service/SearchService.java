@@ -56,10 +56,9 @@ public class SearchService {
 		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
 
 		SAMLInput input = new SAMLInput();
-		input.setStrIssuer("https://idp.dhv.gov");
-		input.setStrNameID("UserBrianLindsey");
+		input.setStrIssuer(user.getSubjectName());
 		input.setStrNameQualifier("My Website");
-		input.setSessionId("abcdedf1234567");
+		input.setSessionId(user.getSubjectName());
 
 		HashMap<String, String> customAttributes = new HashMap<String,String>();
 		customAttributes.put("RequesterFirstName", user.getFirstName());
