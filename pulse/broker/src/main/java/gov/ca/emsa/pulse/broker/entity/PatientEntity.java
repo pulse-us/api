@@ -34,7 +34,7 @@ public class PatientEntity {
 	private String friendlyName;
 	
 	@Column(name = "dob")
-	private java.sql.Date dateOfBirth;
+	private String dateOfBirth;
 	
 	@Column(name = "ssn")
 	private String ssn;
@@ -72,11 +72,11 @@ public class PatientEntity {
 		this.id = id;
 	}
 
-	public java.sql.Date getDateOfBirth() {
+	public String getDateOfBirth() {
 		return dateOfBirth;
 	}
 
-	public void setDateOfBirth(java.sql.Date dateOfBirth) {
+	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 

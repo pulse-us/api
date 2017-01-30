@@ -31,7 +31,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		PatientEntity patient = new PatientEntity();
 		patient.setFullName(dto.getFullName());
 		patient.setFriendlyName(dto.getFriendlyName());
-		patient.setDateOfBirth(dto.getDateOfBirth() != null ? new java.sql.Date(dto.getDateOfBirth()) : null);
+		patient.setDateOfBirth(dto.getDateOfBirth());
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		if(dto.getAcf() != null) {
@@ -66,7 +66,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 		PatientEntity patient = this.getEntityById(dto.getId());
 		patient.setFriendlyName(dto.getFriendlyName());
 		patient.setFullName(dto.getFullName());
-		patient.setDateOfBirth(dto.getDateOfBirth() != null ? new java.sql.Date(dto.getDateOfBirth()) : null);
+		patient.setDateOfBirth(dto.getDateOfBirth());
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
 		if(dto.getAcf() != null) {

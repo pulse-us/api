@@ -9,7 +9,7 @@ public class Patient {
 	private String locationPatientId;
 	private String fullName;
 	private String friendlyName;
-	private Long dateOfBirth;
+	private String dateOfBirth;
 	private String gender;
 	private String phoneNumber;
 	private String ssn;
@@ -36,10 +36,10 @@ public class Patient {
 		this.locationPatientId = locationPatientId;
 	}
 
-	public Long getDateOfBirth() {
+	public String getDateOfBirth() {
 		return dateOfBirth;
 	}
-	public void setDateOfBirth(Long dateOfBirth) {
+	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 	public String getGender() {
