@@ -48,6 +48,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Api(value = "patients")
 @RestController
 @RequestMapping("/patients")
@@ -58,7 +61,6 @@ public class PatientService {
 	@Autowired private DocumentManager docManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private AuditEventManager auditManager;
-
 	public PatientService() {
 	}
 
@@ -97,13 +99,13 @@ public class PatientService {
 	public @ResponseBody String getDocumentContents(@PathVariable("patientId") Long patientId,
 			@PathVariable("documentId") Long documentId,
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) 
-		throws SQLException {
+		throws SQLException, JsonProcessingException {
 		
 		CommonUser user = UserUtil.getCurrentUser();
 		//auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getSubjectName());
 		SAMLInput input = new SAMLInput();
-		input.setStrIssuer("https://idp.dhv.gov");
-		input.setStrNameID(user.getFirstName());
+		input.setStrIssuer(user.getSubjectName());
+		input.setStrNameID(user.getSubjectName());
 		input.setStrNameQualifier("My Website");
 		input.setSessionId("abcdedf1234567");
 
@@ -138,7 +140,7 @@ public class PatientService {
 	@ApiOperation(value = "Delete a patient")
 	@RequestMapping(value="/{patientId}/delete", method = RequestMethod.POST)
 	public void deletePatient(@PathVariable(value="patientId") Long patientId) 
-	 throws SQLException {
+	 throws SQLException, JsonProcessingException {
 		patientManager.delete(patientId);
 	}
 }

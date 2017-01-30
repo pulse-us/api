@@ -8,6 +8,7 @@ import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
+import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
@@ -33,6 +34,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 @Api(value = "queryStatus")
 @RestController
 @RequestMapping("/queries")
@@ -42,6 +45,8 @@ public class QueryService {
 	@Autowired PatientManager patientManager;
 	@Autowired DocumentManager docManager;
 	@Autowired AlternateCareFacilityManager acfManager;
+	@Autowired AuditEventManager auditManager;
+	private static final String PATIENT_CREATION = "PC";
 
 	@ApiOperation(value = "Get all queries for the logged-in user")
 	@RequestMapping(value="", method = RequestMethod.GET)
@@ -81,7 +86,7 @@ public class QueryService {
 	@ApiOperation(value="Create a Patient from multiple PatientRecords")
 	@RequestMapping(value="/{queryId}/stage", method = RequestMethod.POST)
     public Patient stagePatientFromResults(@PathVariable(value="queryId") Long queryId,
-    		@RequestBody CreatePatientRequest request) throws InvalidArgumentsException, SQLException {
+    		@RequestBody CreatePatientRequest request) throws InvalidArgumentsException, SQLException, JsonProcessingException {
 		CommonUser user = UserUtil.getCurrentUser();
 		if(request.getPatient() == null ||
 				request.getPatientRecordIds() == null ||
@@ -109,7 +114,7 @@ public class QueryService {
 
 			//kick off document list retrieval service
 			SAMLInput input = new SAMLInput();
-			input.setStrIssuer("https://idp.dhv.gov");
+			input.setStrIssuer(user.getSubjectName());
 			input.setStrNameID("UserBrianLindsey");
 			input.setStrNameQualifier("My Website");
 			input.setSessionId("abcdedf1234567");
