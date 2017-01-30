@@ -104,8 +104,8 @@ public class PatientService {
 		CommonUser user = UserUtil.getCurrentUser();
 		//auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getSubjectName());
 		SAMLInput input = new SAMLInput();
-		input.setStrIssuer(user.getFirstName());
-		input.setStrNameID(user.getFirstName());
+		input.setStrIssuer(user.getSubjectName());
+		input.setStrNameID(user.getSubjectName());
 		input.setStrNameQualifier("My Website");
 		input.setSessionId("abcdedf1234567");
 

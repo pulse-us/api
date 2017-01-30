@@ -114,7 +114,7 @@ public class QueryService {
 
 			//kick off document list retrieval service
 			SAMLInput input = new SAMLInput();
-			input.setStrIssuer(user.getFirstName());
+			input.setStrIssuer(user.getSubjectName());
 			input.setStrNameID("UserBrianLindsey");
 			input.setStrNameQualifier("My Website");
 			input.setSessionId("abcdedf1234567");
