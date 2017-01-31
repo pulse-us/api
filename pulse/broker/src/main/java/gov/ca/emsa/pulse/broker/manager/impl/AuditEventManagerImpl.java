@@ -6,6 +6,9 @@ import gov.ca.emsa.pulse.broker.dao.EventActionCodeDAO;
 import gov.ca.emsa.pulse.broker.dao.NetworkAccessPointTypeCodeDAO;
 import gov.ca.emsa.pulse.broker.dao.ParticipantObjectTypeCodeDAO;
 import gov.ca.emsa.pulse.broker.dao.ParticipantObjectTypeCodeRoleDAO;
+import gov.ca.emsa.pulse.broker.dao.PulseEventActionCodeDAO;
+import gov.ca.emsa.pulse.broker.dao.PulseEventActionDAO;
+import gov.ca.emsa.pulse.broker.domain.DocumentAudit;
 import gov.ca.emsa.pulse.broker.dto.AuditDocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditEventDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditHumanRequestorDTO;
@@ -14,7 +17,14 @@ import gov.ca.emsa.pulse.broker.dto.AuditQueryParametersDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditRequestDestinationDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditRequestSourceDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditSourceDTO;
+import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
+import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
+import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PulseEventActionDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
+import gov.ca.emsa.pulse.broker.manager.DocumentManager;
+import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.service.AuditUtil;
 import gov.ca.emsa.pulse.service.UserUtil;
 
@@ -22,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,15 +41,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Service
 public class AuditEventManagerImpl implements AuditEventManager{
 
 	
 	@Autowired private AuditEventDAO auditEventDao;
 	@Autowired private EventActionCodeDAO eventActionCodeDao;
+	@Autowired private PulseEventActionCodeDAO pulseEventActionCodeDao;
+	@Autowired private PulseEventActionDAO pulseEventActionDao;
 	@Autowired private NetworkAccessPointTypeCodeDAO networkAccessPointTypeCodeDao;
 	@Autowired private ParticipantObjectTypeCodeDAO participantObjectTypeCodeDao;
 	@Autowired private ParticipantObjectTypeCodeRoleDAO participantObjectTypeCodeRoleDao;
+	@Autowired private PatientManager patientManager;
+	@Autowired private DocumentManager documentManager;
+	private ObjectMapper mapper = new ObjectMapper();
 
 	// Initiating gateway audit event
 	@Override
@@ -255,4 +274,25 @@ public class AuditEventManagerImpl implements AuditEventManager{
 		auditEventDTO.setAuditDocument(auditDocumentDTO);
 		addAuditEventEntry(auditEventDTO);
 	}
+	
+	@Transactional
+	public void createPulseAuditEvent(String actionCode, Long id) throws JsonProcessingException, SQLException {
+		CommonUser user = UserUtil.getCurrentUser();
+		PulseEventActionDTO pulseEventActionDTO = new PulseEventActionDTO();
+		if(actionCode.equals("PD") || actionCode.equals("PC")){
+			PatientDTO patient = patientManager.getPatientById(id);
+			Patient object = DtoToDomainConverter.convert(patient);
+			String jsonInString = mapper.writeValueAsString(object);
+			pulseEventActionDTO.setActionJson(jsonInString);
+		}else{
+			DocumentDTO docDto = documentManager.getDocumentObjById(id);
+			DocumentAudit object = DtoToDomainConverter.convertToAuditDoc(docDto);
+			String jsonInString = mapper.writeValueAsString(object);
+			pulseEventActionDTO.setActionJson(jsonInString);
+		}
+		pulseEventActionDTO.setUsername(user.getSubjectName());
+		pulseEventActionDTO.setPulseEventActionCodeId(1L);
+		pulseEventActionDao.create(pulseEventActionDTO);
+	}
+
 }

@@ -15,4 +15,5 @@ public interface DocumentManager {
 	public void queryForDocumentContents(CommonUser user, SAMLInput samlInput, LocationDTO org, List<DocumentDTO> docsFromOrg, PatientLocationMapDTO dto);
 	public List<DocumentDTO> getDocumentsForPatient(Long patientId);
 	public String getDocumentById(CommonUser user, SAMLInput samlInput, Long documentId) throws SQLException;
+	DocumentDTO getDocumentObjById(Long documentId) throws SQLException;
 }
