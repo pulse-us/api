@@ -1,6 +1,5 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
-import gov.ca.emsa.pulse.broker.dao.EventActionCodeDAO;
 import gov.ca.emsa.pulse.broker.dao.PulseEventActionCodeDAO;
 import gov.ca.emsa.pulse.broker.dto.PulseEventActionCodeDTO;
 import gov.ca.emsa.pulse.broker.entity.PulseEventActionCodeEntity;
@@ -82,11 +81,11 @@ public class PulseEventActionCodeDAOImpl extends BaseDAOImpl implements PulseEve
 	
 	private PulseEventActionCodeEntity getEntityByCode(String code) {
 		PulseEventActionCodeEntity entity = null;
-
+		entityManager.clear();
 		Query query = entityManager.createQuery( "SELECT distinct eventAction from PulseEventActionCodeEntity eventAction "
 				+ "where eventAction.code = :entityid) ", 
 				PulseEventActionCodeEntity.class );
-
+		
 		query.setParameter("entityid", code);
 		List<PulseEventActionCodeEntity> patients = query.getResultList();
 		if(patients.size() != 0) {

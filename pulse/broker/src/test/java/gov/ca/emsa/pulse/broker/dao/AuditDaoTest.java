@@ -13,6 +13,8 @@ import gov.ca.emsa.pulse.broker.dto.AuditQueryParametersDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditRequestDestinationDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditRequestSourceDTO;
 import gov.ca.emsa.pulse.broker.dto.AuditSourceDTO;
+import gov.ca.emsa.pulse.broker.dto.PulseEventActionCodeDTO;
+import gov.ca.emsa.pulse.broker.dto.PulseEventActionDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.service.UserUtil;
 
@@ -51,6 +53,77 @@ public class AuditDaoTest {
 	@Autowired private NetworkAccessPointTypeCodeDAO networkAccessPointTypeCodeDao;
 	@Autowired private ParticipantObjectTypeCodeDAO participantObjectTypeCodeDao;
 	@Autowired private ParticipantObjectTypeCodeRoleDAO participantObjectTypeCodeRoleDao;
+	@Autowired private PulseEventActionCodeDAO pulseEventActionCodeDao;
+	@Autowired private PulseEventActionDAO pulseEventActionDao;
+	private static String PATIENT_CREATION_ACTION_JSON = "{'id':2,'locationPatientId':null,'fullName':'Brian Lindsey','friendlyName':null,'dateOfBirth':1483246800000,'gender':'M','phoneNumber':null,'ssn':null,'lastRead':1485787441786,'acf':{'id':1,'name':'Alameda-01','phoneNumber':null,'address':null,'lastRead':1485787441792},'locationMaps':[]}";
+	private static String DOCUMENT_VIEW_ACTION_JSON = "{'documentIdentifier':{'homeCommunityId':'urn:oid:2.16.840.1.113883.3.166','repositoryUniqueId':'2.16.840.1.113883.3.166.3.1','documentUniqueId':'129.6.58.92.146'},'format':'HL7 CCD Document','name':'Hospital Admission','className':'ALLERGY NOTE','confidentiality':'High','description':null,'size':'35400','creationTime':'20080515'}";
+	private static String PATIENT_DISCHARGE_ACTION_JSON = "{'id':2,'locationPatientId':null,'fullName':'Brian Lindsey','friendlyName':null,'dateOfBirth':1483246800000,'gender':'M','phoneNumber':null,'ssn':null,'lastRead':1485787441786,'acf':{'id':1,'name':'Alameda-01','phoneNumber':null,'address':null,'lastRead':1485787441792},'locationMaps':[]}";
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testPulseActionEventPC() throws UnknownHostException {
+		
+		PulseEventActionDTO pulseEventActionDTO = new PulseEventActionDTO();
+		pulseEventActionDTO.setPulseEventActionCodeId(pulseEventActionCodeDao.getByCode("PC").getId());
+		pulseEventActionDTO.setActionJson(PATIENT_CREATION_ACTION_JSON);
+		pulseEventActionDTO.setActionTStamp(new Date());
+		pulseEventActionDTO.setUsername("blindsey");
+		pulseEventActionDTO.setLastModifiedDate(new Date());
+		
+		PulseEventActionDTO insertedAuditEvent = pulseEventActionDao.create(pulseEventActionDTO);
+		
+		assertNotNull(insertedAuditEvent);
+		assertEquals(pulseEventActionDTO.getPulseEventActionCodeId(), insertedAuditEvent.getPulseEventActionCodeId());
+		assertEquals(pulseEventActionDTO.getActionJson(), insertedAuditEvent.getActionJson());
+		assertEquals(pulseEventActionDTO.getActionTStamp(), insertedAuditEvent.getActionTStamp());
+		assertEquals(pulseEventActionDTO.getUsername(), insertedAuditEvent.getUsername());
+		assertEquals(pulseEventActionDTO.getLastModifiedDate(), insertedAuditEvent.getLastModifiedDate());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testPulseActionEventPD() throws UnknownHostException {
+		
+		PulseEventActionDTO pulseEventActionDTO = new PulseEventActionDTO();
+		pulseEventActionDTO.setPulseEventActionCodeId(pulseEventActionCodeDao.getByCode("PD").getId());
+		pulseEventActionDTO.setActionJson(PATIENT_DISCHARGE_ACTION_JSON);
+		pulseEventActionDTO.setActionTStamp(new Date());
+		pulseEventActionDTO.setUsername("blindsey");
+		pulseEventActionDTO.setLastModifiedDate(new Date());
+		
+		PulseEventActionDTO insertedAuditEvent = pulseEventActionDao.create(pulseEventActionDTO);
+		
+		assertNotNull(insertedAuditEvent);
+		assertEquals(pulseEventActionDTO.getPulseEventActionCodeId(), insertedAuditEvent.getPulseEventActionCodeId());
+		assertEquals(pulseEventActionDTO.getActionJson(), insertedAuditEvent.getActionJson());
+		assertEquals(pulseEventActionDTO.getActionTStamp(), insertedAuditEvent.getActionTStamp());
+		assertEquals(pulseEventActionDTO.getUsername(), insertedAuditEvent.getUsername());
+		assertEquals(pulseEventActionDTO.getLastModifiedDate(), insertedAuditEvent.getLastModifiedDate());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testPulseActionEventDV() throws UnknownHostException {
+		
+		PulseEventActionDTO pulseEventActionDTO = new PulseEventActionDTO();
+		pulseEventActionDTO.setPulseEventActionCodeId(pulseEventActionCodeDao.getByCode("DV").getId());
+		pulseEventActionDTO.setActionJson(DOCUMENT_VIEW_ACTION_JSON);
+		pulseEventActionDTO.setActionTStamp(new Date());
+		pulseEventActionDTO.setUsername("blindsey");
+		pulseEventActionDTO.setLastModifiedDate(new Date());
+		
+		PulseEventActionDTO insertedAuditEvent = pulseEventActionDao.create(pulseEventActionDTO);
+		
+		assertNotNull(insertedAuditEvent);
+		assertEquals(pulseEventActionDTO.getPulseEventActionCodeId(), insertedAuditEvent.getPulseEventActionCodeId());
+		assertEquals(pulseEventActionDTO.getActionJson(), insertedAuditEvent.getActionJson());
+		assertEquals(pulseEventActionDTO.getActionTStamp(), insertedAuditEvent.getActionTStamp());
+		assertEquals(pulseEventActionDTO.getUsername(), insertedAuditEvent.getUsername());
+		assertEquals(pulseEventActionDTO.getLastModifiedDate(), insertedAuditEvent.getLastModifiedDate());
+	}
 	
 	@Test
 	@Transactional

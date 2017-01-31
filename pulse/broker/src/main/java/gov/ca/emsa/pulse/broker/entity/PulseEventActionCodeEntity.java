@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="event_action_code")
+@Table(name="pulse_event_action_code")
 public class PulseEventActionCodeEntity {
 	
 	@Id 
