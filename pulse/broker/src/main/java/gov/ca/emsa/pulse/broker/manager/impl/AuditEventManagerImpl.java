@@ -291,7 +291,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 			pulseEventActionDTO.setActionJson(jsonInString);
 		}
 		pulseEventActionDTO.setUsername(user.getSubjectName());
-		pulseEventActionDTO.setPulseEventActionCodeId(1L);
+		pulseEventActionDTO.setPulseEventActionCodeId(pulseEventActionDao.getByCode(actionCode).getId());
 		pulseEventActionDao.create(pulseEventActionDTO);
 	}
 
