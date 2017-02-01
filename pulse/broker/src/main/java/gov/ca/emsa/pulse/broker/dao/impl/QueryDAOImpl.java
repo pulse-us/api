@@ -110,9 +110,13 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		logger.info("Update query location " + newQueryLocationMap.getId() + " with status " + newQueryLocationMap.getStatus());
 		QueryLocationMapEntity existingQueryLocationMap = this.getQueryStatusById(newQueryLocationMap.getId());
 		existingQueryLocationMap.setEndDate(newQueryLocationMap.getEndDate());
-		if(existingQueryLocationMap.getStatus() != null && 
-				existingQueryLocationMap.getStatus().getStatus() != QueryLocationStatus.Cancelled) {
-			//don't change the status if it was previously cancelled.
+		if((newQueryLocationMap.getStatus() != null && 
+			newQueryLocationMap.getStatus() == QueryLocationStatus.Closed) 
+			||
+			(existingQueryLocationMap.getStatus() != null && 
+			existingQueryLocationMap.getStatus().getStatus() != QueryLocationStatus.Cancelled)) {
+			//always change the status if we are moving to Closed.
+			//aside from that, don't change the status if it's currently Cancelled.
 			QueryLocationStatusEntity newStatus = 
 					statusDao.getQueryLocationStatusByName(newQueryLocationMap.getStatus().name());
 			existingQueryLocationMap.setStatusId(newStatus == null ? null : newStatus.getId());
