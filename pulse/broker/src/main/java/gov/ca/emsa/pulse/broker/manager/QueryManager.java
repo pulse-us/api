@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.manager;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,6 +25,7 @@ public interface QueryManager extends CachedDataManager {
 
 	public PatientRecordDTO getPatientRecordById(Long patientRecordId);
 	public QueryDTO queryForPatientRecords(SAMLInput samlMessage, PatientSearch toSearch, QueryDTO query, CommonUser user) throws JsonProcessingException;
+	public QueryDTO requeryForPatientRecords(Long queryId, Long locationId, CommonUser user) throws JsonProcessingException, IOException;
 	public PatientRecordDTO addPatientRecord(PatientRecordDTO record);
 	public void removePatientRecord(Long prId);
 	public QueryDTO updateQueryStatusFromLocations(Long queryId);

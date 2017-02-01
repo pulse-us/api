@@ -1,11 +1,13 @@
 package gov.ca.emsa.pulse.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,7 +36,6 @@ import io.swagger.annotations.ApiOperation;
 
 @Api(value = "search")
 @RestController
-@RequestMapping("/search")
 public class SearchService {
 
 	private static final Logger logger = LogManager.getLogger(SearchService.class);
@@ -48,7 +49,7 @@ public class SearchService {
 
 	@ApiOperation(value="Query all locations for patients. This runs asynchronously and returns a query object"
 			+ "which can later be used to get the results.")
-	@RequestMapping(method = RequestMethod.POST,
+	@RequestMapping(path="/search", method = RequestMethod.POST,
 		produces="application/json; charset=utf-8",consumes="application/json")
     public @ResponseBody Query searchPatients(@RequestBody(required=true) PatientSearch toSearch) throws JsonProcessingException {
 
@@ -96,4 +97,18 @@ public class SearchService {
 		}
 		return null;
     }
+	
+	@ApiOperation(value="Re-query a location from an existing query. "
+			+ "This runs asynchronously and returns a query object which can later be used to get the results.")
+	@RequestMapping(path="/requery/{queryId}/location/{locationId}", method = RequestMethod.POST,
+		produces="application/json; charset=utf-8")
+    public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
+    		@PathVariable("locationId") Long locationId) throws JsonProcessingException, IOException {
+
+		CommonUser user = UserUtil.getCurrentUser();
+		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
+		
+        QueryDTO initiatedQuery = searchManager.requeryForPatientRecords(queryId, locationId, user);
+        return DtoToDomainConverter.convert(initiatedQuery);
+   }
 }

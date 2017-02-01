@@ -20,10 +20,12 @@ import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import gov.ca.emsa.pulse.service.UserUtil;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -193,6 +195,57 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		return query;
 	}
 
+	@Override
+	@Transactional
+	public QueryDTO requeryForPatientRecords(Long queryId, Long locationId, CommonUser user)
+			throws JsonProcessingException, IOException {
+
+		QueryDTO query = queryDao.getById(queryId);
+		for(QueryLocationMapDTO locationMap: query.getLocationStatuses()) {
+			if(locationMap.getLocationId().longValue() == locationId.longValue()) {
+				locationMap.setStatus(QueryLocationStatus.Closed);
+				queryDao.updateQueryLocationMap(locationMap);
+			}
+		}
+		
+		query.setStatus(QueryStatus.Active);
+		queryDao.update(query);
+		
+		QueryLocationMapDTO locationToRequery = new QueryLocationMapDTO();
+		locationToRequery.setLocationId(locationId);
+		locationToRequery.setQueryId(query.getId());
+		locationToRequery.setStatus(QueryLocationStatus.Active);
+		locationToRequery = createOrUpdateQueryLocation(locationToRequery);
+		query.getLocationStatuses().add(locationToRequery);
+		
+		PatientSearch toSearch = JSONUtils.fromJSON(query.getTerms(), PatientSearch.class);
+		
+		SAMLInput input = new SAMLInput();
+		input.setStrIssuer(user.getSubjectName());
+		input.setStrNameQualifier("My Website");
+		input.setSessionId(user.getSubjectName());
+		HashMap<String, String> customAttributes = new HashMap<String,String>();
+		customAttributes.put("RequesterFirstName", user.getFirstName());
+		customAttributes.put("RequestReason", "Patient is bleeding.");
+		customAttributes.put("PatientGivenName", toSearch.getPatientNames().get(0).getGivenName().get(0));
+		customAttributes.put("PatientDOB", toSearch.getDob());
+		customAttributes.put("PatientGender", toSearch.getGender());
+		customAttributes.put("PatientHomeZip", toSearch.getZip());
+		customAttributes.put("PatientSSN", toSearch.getSsn());
+		input.setAttributes(customAttributes);
+
+		List<EndpointTypeEnum> relevantEndpointTypes = new ArrayList<EndpointTypeEnum>();
+		relevantEndpointTypes.add(EndpointTypeEnum.PATIENT_DISCOVERY);
+
+		PatientQueryService service = getPatientQueryService();
+		service.setSamlInput(input);
+		service.setToSearch(toSearch);
+		service.setQueryLocation(locationToRequery);
+		service.setUser(user);
+		pool.execute(service);
+		return query;
+	}
+	
 	@Override
 	@Transactional
 	public PatientRecordDTO getPatientRecordById(Long patientRecordId) {

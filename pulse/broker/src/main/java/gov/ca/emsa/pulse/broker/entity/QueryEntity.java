@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Where;
+
 @Entity
 @Table(name="query")
 public class QueryEntity {
@@ -50,6 +52,7 @@ public class QueryEntity {
 	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "queryId"  )
 	@Column( name = "query_id", nullable = false  )
+ 	@Where(clause="query_location_status_id != 5")
 	private Set<QueryLocationMapEntity> locationStatuses = new HashSet<QueryLocationMapEntity>();
 	
 	public Long getId() {
