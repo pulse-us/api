@@ -53,7 +53,7 @@ public class PatientManagerImpl implements PatientManager {
 		
 		if(toCreate.getAcf() != null) {
 			toCreate.getAcf().setLastReadDate(new Date());
-			acfManager.update(toCreate.getAcf());
+			acfManager.updateLastModifiedDate(toCreate.getAcf().getId());
 		}
 		return result;
 	}

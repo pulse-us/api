@@ -10,5 +10,6 @@ public interface AlternateCareFacilityManager extends CachedDataManager {
 	public AlternateCareFacilityDTO getById(Long id);
 	public AlternateCareFacilityDTO getByName(String name);
 	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO toCreate) throws SQLException;
-	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO toUpdate) throws SQLException;
+	public AlternateCareFacilityDTO updateLastModifiedDate(Long acfId) throws SQLException;
+	public AlternateCareFacilityDTO updateAcfDetails(AlternateCareFacilityDTO toUpdate) throws SQLException;
 }

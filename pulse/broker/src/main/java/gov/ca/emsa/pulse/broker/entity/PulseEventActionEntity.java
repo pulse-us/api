@@ -6,12 +6,16 @@ import gov.ca.emsa.pulse.broker.dto.NetworkAccessPointTypeCodeDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(name="pulse_event_action")
@@ -33,6 +37,11 @@ public class PulseEventActionEntity {
 	
 	@Column(name="pulse_event_action_code_id")
 	private Long pulseEventActionCodeId;
+	
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@Fetch(FetchMode.JOIN)
+	@JoinColumn(name = "pulse_event_action_code_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private PulseEventActionCodeEntity code;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -94,6 +103,14 @@ public class PulseEventActionEntity {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public PulseEventActionCodeEntity getCode() {
+		return code;
+	}
+
+	public void setCode(PulseEventActionCodeEntity code) {
+		this.code = code;
 	}
 	
 	

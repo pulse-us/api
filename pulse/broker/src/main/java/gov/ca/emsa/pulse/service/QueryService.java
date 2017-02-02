@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.service;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
+import gov.ca.emsa.pulse.broker.domain.AuditType;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
@@ -46,7 +47,6 @@ public class QueryService {
 	@Autowired DocumentManager docManager;
 	@Autowired AlternateCareFacilityManager acfManager;
 	@Autowired AuditEventManager auditManager;
-	private static final String PATIENT_CREATION = "PC";
 
 	@ApiOperation(value = "Get all queries for the logged-in user")
 	@RequestMapping(value="", method = RequestMethod.GET)
@@ -107,7 +107,7 @@ public class QueryService {
 		patientToCreate.setAcf(acfDto);
 
 		PatientDTO patient = patientManager.create(patientToCreate);
-		auditManager.createPulseAuditEvent(PATIENT_CREATION, patient.getId());
+		auditManager.createPulseAuditEvent(AuditType.PC, patient.getId());
 
 		//create patient location mappings based on the patientrecords we are using
 		for(Long patientRecordId : request.getPatientRecordIds()) {
