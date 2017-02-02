@@ -61,6 +61,8 @@ public class PatientService {
 	@Autowired private DocumentManager docManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private AuditEventManager auditManager;
+	private static final String PATIENT_DISCHARGE = "PD";		
+	private static final String DOCUMENT_VIEW = "DV";
 	public PatientService() {
 	}
 
@@ -120,6 +122,7 @@ public class PatientService {
 		String result = "";
 		if(cacheOnly == null || cacheOnly.booleanValue() == false) {
 			result = docManager.getDocumentById(user, input, documentId);
+			auditManager.createPulseAuditEvent(DOCUMENT_VIEW, documentId);
 		} else {
 			docManager.getDocumentById(user, input, documentId);
 		}
@@ -142,5 +145,6 @@ public class PatientService {
 	public void deletePatient(@PathVariable(value="patientId") Long patientId) 
 	 throws SQLException, JsonProcessingException {
 		patientManager.delete(patientId);
+		auditManager.createPulseAuditEvent(PATIENT_DISCHARGE,patientId);
 	}
 }
