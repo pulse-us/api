@@ -60,7 +60,8 @@ public class SwaggerConfig implements EnvironmentAware {
     			regex("/documents.*"),
     			regex("/patients.*"),
     			regex("/queries.*"),
-    			regex("/search.*")
+    			regex("/search.*"),
+    			regex("/requery.*")
     			);
     }
 
