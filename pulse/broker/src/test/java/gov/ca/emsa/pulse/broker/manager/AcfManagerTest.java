@@ -145,7 +145,7 @@ public class AcfManagerTest {
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
 		dto.setPhoneNumber(updatedPhoneNumber);
-		dto = acfManager.update(dto);
+		dto = acfManager.updateAcfDetails(dto);
 		Assert.assertEquals(updatedPhoneNumber, dto.getPhoneNumber());
 		
 		dto = acfManager.getById(dto.getId());
@@ -182,7 +182,7 @@ public class AcfManagerTest {
 		addressLine2.setLine(streetLine2);
 		dto.getLines().add(addressLine2);
 		
-		dto = acfManager.update(dto);
+		dto = acfManager.updateAcfDetails(dto);
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
@@ -231,7 +231,7 @@ public class AcfManagerTest {
 		Assert.assertEquals(streetLine2, dto.getLines().get(1).getLine());
 		
 		dto.getLines().remove(1);
-		dto = acfManager.update(dto);
+		dto = acfManager.updateAcfDetails(dto);
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
@@ -280,7 +280,7 @@ public class AcfManagerTest {
 		
 		String updatedAddressLine1 = "Updated address line.";
 		dto.getLines().get(0).setLine(updatedAddressLine1);
-		dto = acfManager.update(dto);
+		dto = acfManager.updateAcfDetails(dto);
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);

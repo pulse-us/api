@@ -106,7 +106,7 @@ public class AlternateCareFacilityService {
 		if(acfToUpdate.getId() == null) {
 			throw new InvalidArgumentsException("An ACF id is required in the body of the update request.");
 		}
-		AlternateCareFacilityDTO updated = acfManager.update(acfToUpdate);
+		AlternateCareFacilityDTO updated = acfManager.updateAcfDetails(acfToUpdate);
 		return DtoToDomainConverter.convert(updated);
 	}
 }

@@ -37,7 +37,7 @@ public class AcfLastAccessFilter extends GenericFilterBean {
 					//was made using it and this request... so have to check for null
 					acf.setLastReadDate(new Date());
 					try {
-						acfManager.update(acf);
+						acfManager.updateLastModifiedDate(acf.getId());
 					} catch(SQLException ex) {
 						throw new ServletException(ex.getMessage());
 					}

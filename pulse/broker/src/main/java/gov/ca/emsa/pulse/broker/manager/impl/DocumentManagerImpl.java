@@ -147,7 +147,7 @@ public class DocumentManagerImpl implements DocumentManager {
 		patientManager.update(patient);
 		if(patient.getAcf() != null) {
 			patient.getAcf().setLastReadDate(new Date());
-			acfManager.update(patient.getAcf());
+			acfManager.updateLastModifiedDate(patient.getAcf().getId());
 		}
 		
 		

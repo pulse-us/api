@@ -56,38 +56,14 @@ public class PulseEventActionDAOImpl extends BaseDAOImpl implements PulseEventAc
 		}
 		return dto;
 	}
-	
-	@Override
-	public PulseEventActionDTO getByCode(String code) {
-		PulseEventActionDTO dto = null;
-		PulseEventActionEntity pe = this.getEntityByCode(code);
-
-		if (pe != null){
-			dto = new PulseEventActionDTO(pe); 
-		}
-		return dto;
-	}
-	
-	private PulseEventActionEntity getEntityByCode(String code) {
-		PulseEventActionEntity entity = null;
-
-		Query query = entityManager.createQuery( "SELECT distinct eventAction from PulseEventActionEntity eventAction "
-				+ "where eventAction.code = :entityid) ", 
-				PulseEventActionEntity.class );
-
-		query.setParameter("entityid", code);
-		List<PulseEventActionEntity> patients = query.getResultList();
-		if(patients.size() != 0) {
-			entity = patients.get(0);
-		}
-		return entity;
-	}
 
 	private PulseEventActionEntity getEntityById(Long id) {
 		PulseEventActionEntity entity = null;
 
-		Query query = entityManager.createQuery( "SELECT distinct eventAction from PulseEventActionEntity eventAction "
-				+ "where eventAction.id = :entityid) ", 
+		Query query = entityManager.createQuery( "SELECT distinct eventAction "
+				+ "FROM PulseEventActionEntity eventAction "
+				+ "JOIN FETCH PulseEventActionCodeEntity actionCode "
+				+ "WHERE eventAction.id = :entityid) ", 
 				PulseEventActionEntity.class );
 
 		query.setParameter("entityid", id);
