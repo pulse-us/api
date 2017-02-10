@@ -147,7 +147,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 			logger.warn("Could not add audit record for cancelleing request to locaiton " +locationId + " for query " + queryId + ": " + ex.getMessage(), ex);
 		}
 
-		return updateQueryStatusFromLocations(queryId);
+		return getById(queryId);
 	}
 	
 	@Override

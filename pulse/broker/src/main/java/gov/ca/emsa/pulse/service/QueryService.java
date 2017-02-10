@@ -73,6 +73,7 @@ public class QueryService {
 	public Query cancelLocationQuery(@PathVariable(value="queryId") Long queryId,
 			@PathVariable(value="locationId") Long locId) {
 		queryManager.cancelQueryToLocation(queryId, locId);
+		queryManager.updateQueryStatusFromLocations(queryId);
 		QueryDTO queryWithCancelledLocation = queryManager.getById(queryId);
 		return DtoToDomainConverter.convert(queryWithCancelledLocation);
 	}
