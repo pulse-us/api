@@ -69,10 +69,10 @@ public class QueryService {
     }
 
 	@ApiOperation(value = "Cancel part of a query that's going to a specific location")
-	@RequestMapping(value = "/{queryId}/{locationId}/cancel", method = RequestMethod.POST)
+	@RequestMapping(value = "/{queryId}/locationMap/{locationMapId}/cancel", method = RequestMethod.POST)
 	public Query cancelLocationQuery(@PathVariable(value="queryId") Long queryId,
-			@PathVariable(value="locationId") Long locId) {
-		queryManager.cancelQueryToLocation(queryId, locId);
+			@PathVariable(value="locationMapId") Long locationMapId) {
+		queryManager.cancelQueryToLocation(locationMapId);
 		queryManager.updateQueryStatusFromLocations(queryId);
 		QueryDTO queryWithCancelledLocation = queryManager.getById(queryId);
 		return DtoToDomainConverter.convert(queryWithCancelledLocation);

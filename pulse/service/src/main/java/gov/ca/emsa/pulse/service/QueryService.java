@@ -107,9 +107,9 @@ public class QueryService {
 	}
 	
 	@ApiOperation(value = "Cancel part of a patient discovery query that's going to a specific location")
-	@RequestMapping(value = "/{queryId}/{locationId}/cancel", method = RequestMethod.POST)
+	@RequestMapping(value = "/{queryId}/locationMap/{locationMapId}/cancel", method = RequestMethod.POST)
 	public Query cancelPatientDiscoveryRequestToLocation(@PathVariable(value="queryId") Long queryId,
-			@PathVariable(value="locationId") Long locId) throws JsonProcessingException {
+			@PathVariable(value="locationMapId") Long locationMapId) throws JsonProcessingException {
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
@@ -121,7 +121,7 @@ public class QueryService {
 		}else{
 			headers.add("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<Query> entity = new HttpEntity<Query>(headers);
-			response = query.exchange(brokerUrl + "/queries/" + queryId + "/" + locId + "/cancel", HttpMethod.POST, entity, Query.class);
+			response = query.exchange(brokerUrl + "/queries/" + queryId + "/locationMap/" + locationMapId + "/cancel", HttpMethod.POST, entity, Query.class);
 			logger.info("Request sent to broker from services REST.");
 		}
 		

@@ -151,19 +151,19 @@ public class PatientRecordManagerTest extends TestCase {
 	@Rollback(true)
 	public void testCancelPatientDiscoveryQueryToOrganization() {	
 		System.out.println("query id " + query.getId());
-		queryManager.cancelQueryToLocation(query.getId(), location1.getId());
+		queryManager.cancelQueryToLocation(queryLocation1.getId());
 		QueryDTO updatedQuery = queryManager.getById(query.getId());
 		
 		assertNotNull(updatedQuery);
 		assertEquals(query.getId(), updatedQuery.getId());
 		assertEquals(2, updatedQuery.getLocationStatuses().size());
 		boolean queryHadOrg = false;
-		for(QueryLocationMapDTO orgStatus : updatedQuery.getLocationStatuses()) {
-			assertNotNull(orgStatus.getLocationId());
-			if(orgStatus.getLocationId().longValue() == location1.getId().longValue()) {
+		for(QueryLocationMapDTO queryLocationMap : updatedQuery.getLocationStatuses()) {
+			assertNotNull(queryLocationMap.getId());
+			if(queryLocationMap.getId().longValue() == queryLocation1.getId().longValue()) {
 				queryHadOrg = true;
 				
-				assertEquals(QueryLocationStatus.Cancelled, orgStatus.getStatus());
+				assertEquals(QueryLocationStatus.Cancelled, queryLocationMap.getStatus());
 			}
 		}
 		assertTrue(queryHadOrg);
