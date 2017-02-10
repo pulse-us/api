@@ -143,7 +143,7 @@ public class PatientService {
 	@RequestMapping(value="/{patientId}/delete", method = RequestMethod.POST)
 	public void deletePatient(@PathVariable(value="patientId") Long patientId) 
 	 throws SQLException, JsonProcessingException {
-		patientManager.delete(patientId);
 		auditManager.createPulseAuditEvent(AuditType.PD, patientId);
+		patientManager.delete(patientId);
 	}
 }

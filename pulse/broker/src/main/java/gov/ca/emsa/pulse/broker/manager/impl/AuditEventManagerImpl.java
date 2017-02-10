@@ -290,6 +290,11 @@ public class AuditEventManagerImpl implements AuditEventManager{
 		String jsonInString = null;
 		switch(actionCode) {
 		case PD:
+			PatientDTO patientDis = patientManager.getPatientById(id);
+			patientDis.setLocationMaps(new ArrayList());
+			Patient patientDisAuditObj = DtoToDomainConverter.convert(patientDis);
+			jsonInString = mapper.writeValueAsString(patientDisAuditObj);
+			break;
 		case PC:
 			PatientDTO patient = patientManager.getPatientById(id);
 			Patient patientAuditObj = DtoToDomainConverter.convert(patient);
@@ -309,6 +314,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 			logger.error("No handler available for action code " + actionCode);
 			break;
 		}
+		
 		pulseEventActionDTO.setActionJson(jsonInString);
 		pulseEventActionDTO.setUsername(user.getSubjectName());
 		pulseEventActionDTO.setPulseEventActionCodeId(pulseEventActionCodeDao.getByCode(actionCode.name()).getId());
