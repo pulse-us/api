@@ -151,7 +151,7 @@ public class PatientRecordManagerTest extends TestCase {
 	@Rollback(true)
 	public void testCancelPatientDiscoveryQueryToOrganization() {	
 		System.out.println("query id " + query.getId());
-		queryManager.cancelQueryToLocation(query.getId(), location1.getId());
+		queryManager.cancelQueryToLocation(queryLocation1.getId());
 		QueryDTO updatedQuery = queryManager.getById(query.getId());
 		
 		assertNotNull(updatedQuery);

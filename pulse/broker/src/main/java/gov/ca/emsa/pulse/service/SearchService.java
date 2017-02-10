@@ -100,15 +100,15 @@ public class SearchService {
 	
 	@ApiOperation(value="Re-query a location from an existing query. "
 			+ "This runs asynchronously and returns a query object which can later be used to get the results.")
-	@RequestMapping(path="/requery/{queryId}/location/{locationId}", method = RequestMethod.POST,
+	@RequestMapping(path="/requery/query/{queryId}/locationMap/{queryLocationMapId}", method = RequestMethod.POST,
 		produces="application/json; charset=utf-8")
     public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
-    		@PathVariable("locationId") Long locationId) throws JsonProcessingException, IOException {
+    		@PathVariable("queryLocationMapId") Long queryLocationMapId) throws JsonProcessingException, IOException {
 
 		CommonUser user = UserUtil.getCurrentUser();
 		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
 		
-        QueryDTO initiatedQuery = searchManager.requeryForPatientRecords(queryId, locationId, user);
+        QueryDTO initiatedQuery = searchManager.requeryForPatientRecords(queryLocationMapId, user);
         return DtoToDomainConverter.convert(initiatedQuery);
    }
 }
