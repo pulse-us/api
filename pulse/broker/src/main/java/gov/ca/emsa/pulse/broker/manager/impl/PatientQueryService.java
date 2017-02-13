@@ -106,6 +106,7 @@ public class PatientQueryService implements Runnable {
 					endpointToQuery.getExternalId());
 		}
 		
+		System.out.println(queryManager);
 		//this has to be synchronized on a object that will be the same across all threads.
 		//we tried synchronizing on the query id but that is a Long that, while it would have 
 		//the same value, occupies a different address in memory (not the same object) across
