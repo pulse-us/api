@@ -107,7 +107,7 @@ public class AlternateCareFacilityService {
 		} else {
 			headers.set("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<AlternateCareFacility> entity = new HttpEntity<AlternateCareFacility>(headers);
-			response = query.exchange(brokerUrl + "/acfs" + id, HttpMethod.GET, entity, AlternateCareFacility.class);
+			response = query.exchange(brokerUrl + "/acfs/" + id, HttpMethod.GET, entity, AlternateCareFacility.class);
 			logger.info("Request sent to broker from services REST.");
 		}
 		return response.getBody();
