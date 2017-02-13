@@ -97,7 +97,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public QueryDTO updateQueryStatusFromLocations(Long queryId) {
+	public synchronized QueryDTO updateQueryStatusFromLocations(Long queryId) {
 		QueryDTO query = getById(queryId);
 		//if the query has not already been closed/deleted, update the status
 		if(query.getStatus() != QueryStatus.Closed) {
@@ -115,7 +115,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	
 	@Override
 	@Transactional
-	public QueryDTO cancelQueryToLocation(Long queryLocationMapId) {
+	public synchronized QueryDTO cancelQueryToLocation(Long queryLocationMapId) {
 		QueryLocationMapDTO queryLocationMapToCancel = queryDao.getQueryLocationById(queryLocationMapId);
 		if(queryLocationMapToCancel == null) {
 			logger.error("Could not find query location map " + queryLocationMapId);
@@ -199,16 +199,21 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public synchronized QueryDTO requeryForPatientRecords(Long queryLocationMapId, CommonUser user)
 			throws JsonProcessingException, IOException {
-
 		QueryLocationMapDTO locationMap = queryDao.getQueryLocationById(queryLocationMapId);
 		if(locationMap == null) {
 			return null;
 		}
 		
+		QueryDTO query = queryDao.getById(locationMap.getQueryId());
+		
+		//if the location is already closed, do not continue
+		if(locationMap.getStatus() != null && locationMap.getStatus() == QueryLocationStatus.Closed) {
+			return query;
+		}
+		
+		//otherwise set the location to closed, query to active, and run a new query
 		locationMap.setStatus(QueryLocationStatus.Closed);
 		queryDao.updateQueryLocationMap(locationMap);
-			
-		QueryDTO query = queryDao.getById(locationMap.getQueryId());
 		query.setStatus(QueryStatus.Active);
 		queryDao.update(query);
 			
@@ -237,7 +242,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 		List<EndpointTypeEnum> relevantEndpointTypes = new ArrayList<EndpointTypeEnum>();
 		relevantEndpointTypes.add(EndpointTypeEnum.PATIENT_DISCOVERY);
-
+		
 		PatientQueryService service = getPatientQueryService();
 		service.setSamlInput(input);
 		service.setToSearch(toSearch);

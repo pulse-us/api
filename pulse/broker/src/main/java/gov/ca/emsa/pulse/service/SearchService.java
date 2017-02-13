@@ -102,7 +102,7 @@ public class SearchService {
 			+ "This runs asynchronously and returns a query object which can later be used to get the results.")
 	@RequestMapping(path="/requery/query/{queryId}/locationMap/{queryLocationMapId}", method = RequestMethod.POST,
 		produces="application/json; charset=utf-8")
-    public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
+    public synchronized @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
     		@PathVariable("queryLocationMapId") Long queryLocationMapId) throws JsonProcessingException, IOException {
 
 		CommonUser user = UserUtil.getCurrentUser();
