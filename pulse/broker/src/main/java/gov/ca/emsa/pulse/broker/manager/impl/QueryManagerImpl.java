@@ -197,27 +197,28 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public QueryDTO requeryForPatientRecords(Long queryLocationMapId, CommonUser user)
+	public synchronized QueryDTO requeryForPatientRecords(Long queryLocationMapId, CommonUser user)
 			throws JsonProcessingException, IOException {
 
 		QueryLocationMapDTO locationMap = queryDao.getQueryLocationById(queryLocationMapId);
 		if(locationMap == null) {
 			return null;
 		}
+		
 		locationMap.setStatus(QueryLocationStatus.Closed);
 		queryDao.updateQueryLocationMap(locationMap);
-		
+			
 		QueryDTO query = queryDao.getById(locationMap.getQueryId());
 		query.setStatus(QueryStatus.Active);
 		queryDao.update(query);
-		
+			
 		QueryLocationMapDTO locationToRequery = new QueryLocationMapDTO();
 		locationToRequery.setLocationId(locationMap.getLocationId());
 		locationToRequery.setQueryId(query.getId());
 		locationToRequery.setStatus(QueryLocationStatus.Active);
 		locationToRequery = createOrUpdateQueryLocation(locationToRequery);
 		query.getLocationStatuses().add(locationToRequery);
-		
+			
 		PatientSearch toSearch = JSONUtils.fromJSON(query.getTerms(), PatientSearch.class);
 		
 		SAMLInput input = new SAMLInput();

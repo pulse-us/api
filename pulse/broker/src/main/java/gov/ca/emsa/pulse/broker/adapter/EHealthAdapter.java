@@ -117,7 +117,7 @@ public class EHealthAdapter implements Adapter {
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
 		String searchResults = null;
 		try {
-			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
+			logger.info("Querying " + endpoint.getUrl() + " with timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
 		} catch(Exception ex) {
 			auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);

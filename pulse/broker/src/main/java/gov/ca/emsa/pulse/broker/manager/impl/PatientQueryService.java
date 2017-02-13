@@ -106,7 +106,12 @@ public class PatientQueryService implements Runnable {
 					endpointToQuery.getExternalId());
 		}
 		
-		synchronized(queryLocationMap.getQueryId()) {
+		//this has to be synchronized on a object that will be the same across all threads.
+		//we tried synchronizing on the query id but that is a Long that, while it would have 
+		//the same value, occupies a different address in memory (not the same object) across
+		//difference instances of a Query or QueryLocation. queryManager works well because
+		//it's initialized by Spring and is a singleton.
+		synchronized(queryManager) {
 			queryLocationMap.setStatus(queryError ? QueryLocationStatus.Failed : QueryLocationStatus.Successful);
 			queryLocationMap.setEndDate(new Date());
 			queryManager.createOrUpdateQueryLocation(queryLocationMap);
