@@ -56,6 +56,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	public QueryManagerImpl() {
 		pool = Executors.newFixedThreadPool(100);
+		logger.info("Creating a new QueryManagerImpl! " + this);
 	}
 
 	@Override
@@ -175,7 +176,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	}
 
 	@Override
-	public QueryDTO queryForPatientRecords(SAMLInput samlInput, PatientSearch toSearch, QueryDTO query, CommonUser user)
+	public void queryForPatientRecords(SAMLInput samlInput, PatientSearch toSearch, QueryDTO query, CommonUser user)
 			throws JsonProcessingException {
 
 		List<EndpointTypeEnum> relevantEndpointTypes = new ArrayList<EndpointTypeEnum>();
@@ -192,23 +193,22 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 				pool.execute(service);
 			}
 		}
-		return query;
 	}
 
 	@Override
 	@Transactional
-	public synchronized QueryDTO requeryForPatientRecords(Long queryLocationMapId, CommonUser user)
+	public void requeryForPatientRecords(Long queryLocationMapId, CommonUser user)
 			throws JsonProcessingException, IOException {
 		QueryLocationMapDTO locationMap = queryDao.getQueryLocationById(queryLocationMapId);
 		if(locationMap == null) {
-			return null;
+			return;
 		}
 		
 		QueryDTO query = queryDao.getById(locationMap.getQueryId());
 		
 		//if the location is already closed, do not continue
 		if(locationMap.getStatus() != null && locationMap.getStatus() == QueryLocationStatus.Closed) {
-			return query;
+			return;
 		}
 		
 		//otherwise set the location to closed, query to active, and run a new query
@@ -249,7 +249,6 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		service.setQueryLocation(locationToRequery);
 		service.setUser(user);
 		pool.execute(service);
-		return query;
 	}
 	
 	@Override

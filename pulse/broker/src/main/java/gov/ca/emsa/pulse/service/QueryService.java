@@ -53,35 +53,43 @@ public class QueryService {
 	public List<Query> getQueries() {
 		CommonUser user = UserUtil.getCurrentUser();
 
-		List<QueryDTO> queries = queryManager.getOpenQueriesForUser(user.getSubjectName());
-		List<Query> results = new ArrayList<Query>();
-		for(QueryDTO query : queries) {
-			results.add(DtoToDomainConverter.convert(query));
+		synchronized(queryManager) {
+			List<QueryDTO> queries = queryManager.getOpenQueriesForUser(user.getSubjectName());
+			List<Query> results = new ArrayList<Query>();
+			for(QueryDTO query : queries) {
+				results.add(DtoToDomainConverter.convert(query));
+			}
+			return results;
 		}
-		return results;
 	}
 
 	@ApiOperation(value="Get the status of a query")
 	@RequestMapping(value="/{queryId}", method = RequestMethod.GET)
     public Query getQueryStatus(@PathVariable(value="queryId") Long queryId) {
-       QueryDTO initiatedQuery = queryManager.getById(queryId);
-       return DtoToDomainConverter.convert(initiatedQuery);
+		synchronized(queryManager) {
+	       QueryDTO initiatedQuery = queryManager.getById(queryId);
+	       return DtoToDomainConverter.convert(initiatedQuery);
+		}
     }
 
 	@ApiOperation(value = "Cancel part of a query that's going to a specific location")
 	@RequestMapping(value = "/{queryId}/locationMap/{locationMapId}/cancel", method = RequestMethod.POST)
 	public Query cancelLocationQuery(@PathVariable(value="queryId") Long queryId,
 			@PathVariable(value="locationMapId") Long locationMapId) {
-		queryManager.cancelQueryToLocation(locationMapId);
-		queryManager.updateQueryStatusFromLocations(queryId);
-		QueryDTO queryWithCancelledLocation = queryManager.getById(queryId);
-		return DtoToDomainConverter.convert(queryWithCancelledLocation);
+		synchronized (queryManager) {
+			queryManager.cancelQueryToLocation(locationMapId);
+			queryManager.updateQueryStatusFromLocations(queryId);
+			QueryDTO queryWithCancelledLocation = queryManager.getById(queryId);
+			return DtoToDomainConverter.convert(queryWithCancelledLocation);
+		}
 	}
 	
 	@ApiOperation(value = "Delete a query")
 	@RequestMapping(value="/{queryId}/delete", method = RequestMethod.POST)
 	public void deleteQuery(@PathVariable(value="queryId") Long queryId) {
-		queryManager.close(queryId);
+		synchronized(queryManager) {
+			queryManager.close(queryId);
+		}
 	}
 	
 	@ApiOperation(value="Create a Patient from multiple PatientRecords")
@@ -110,28 +118,30 @@ public class QueryService {
 		PatientDTO patient = patientManager.create(patientToCreate);
 		auditManager.createPulseAuditEvent(AuditType.PC, patient.getId());
 
-		//create patient location mappings based on the patientrecords we are using
-		for(Long patientRecordId : request.getPatientRecordIds()) {
-			PatientLocationMapDTO patLocMapDto = patientManager.createPatientLocationMapFromPatientRecord(patient, patientRecordId);
-
-			//kick off document list retrieval service
-			SAMLInput input = new SAMLInput();
-			input.setStrIssuer(user.getSubjectName());
-			input.setStrNameID("UserBrianLindsey");
-			input.setStrNameQualifier("My Website");
-			input.setSessionId("abcdedf1234567");
-			HashMap<String, String> customAttributes = new HashMap<String,String>();
-			customAttributes.put("RequesterFirstName", user.getFirstName());
-			customAttributes.put("RequestReason", "Get patient documents");
-			customAttributes.put("PatientRecordId", patLocMapDto.getExternalPatientRecordId());
-			input.setAttributes(customAttributes);
-
-			patient.getLocationMaps().add(patLocMapDto);
-			docManager.queryForDocuments(user, input, patLocMapDto);
+		synchronized(queryManager) {
+			//create patient location mappings based on the patientrecords we are using
+			for(Long patientRecordId : request.getPatientRecordIds()) {
+				PatientLocationMapDTO patLocMapDto = patientManager.createPatientLocationMapFromPatientRecord(patient, patientRecordId);
+	
+				//kick off document list retrieval service
+				SAMLInput input = new SAMLInput();
+				input.setStrIssuer(user.getSubjectName());
+				input.setStrNameID("UserBrianLindsey");
+				input.setStrNameQualifier("My Website");
+				input.setSessionId("abcdedf1234567");
+				HashMap<String, String> customAttributes = new HashMap<String,String>();
+				customAttributes.put("RequesterFirstName", user.getFirstName());
+				customAttributes.put("RequestReason", "Get patient documents");
+				customAttributes.put("PatientRecordId", patLocMapDto.getExternalPatientRecordId());
+				input.setAttributes(customAttributes);
+	
+				patient.getLocationMaps().add(patLocMapDto);
+				docManager.queryForDocuments(user, input, patLocMapDto);
+			}
+	
+			//delete query (all associated items should cascade)
+			queryManager.close(queryId);
 		}
-
-		//delete query (all associated items should cascade)
-		queryManager.close(queryId);
 		return DtoToDomainConverter.convert(patient);
     }
 }
