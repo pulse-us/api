@@ -39,7 +39,7 @@ import io.swagger.annotations.ApiOperation;
 public class SearchService {
 
 	private static final Logger logger = LogManager.getLogger(SearchService.class);
-	@Autowired private QueryManager searchManager;
+	@Autowired private QueryManager queryManager;
 	@Autowired private LocationManager locationManager;
 	public static String dobFormat = "yyyy-MM-dd";
 	@Autowired private AuditEventManager auditManager;
@@ -73,42 +73,49 @@ public class SearchService {
 		input.setAttributes(customAttributes);
 
 		String queryTermsJson = JSONUtils.toJSON(toSearch);
+		QueryDTO initiatedQuery = null;
 
-		List<LocationDTO> locationsToQuery = locationManager.getAll();
-		if(locationsToQuery != null && locationsToQuery.size() > 0) {
-			QueryDTO query = new QueryDTO();
-			query.setUserId(user.getSubjectName());
-			query.setTerms(queryTermsJson);
-			query.setStatus(QueryStatus.Active);
-			query = searchManager.createQuery(query);
+		synchronized(queryManager) {
+			List<LocationDTO> locationsToQuery = locationManager.getAll();
+			if(locationsToQuery != null && locationsToQuery.size() > 0) {
+				QueryDTO query = new QueryDTO();
+				query.setUserId(user.getSubjectName());
+				query.setTerms(queryTermsJson);
+				query.setStatus(QueryStatus.Active);
+				query = queryManager.createQuery(query);
+		
+				//get the list of locations		
+				for(LocationDTO location : locationsToQuery) {
+					QueryLocationMapDTO queryLocMap = new QueryLocationMapDTO();
+					queryLocMap.setLocationId(location.getId());
+					queryLocMap.setQueryId(query.getId());
+					queryLocMap.setStatus(QueryLocationStatus.Active);
+					queryLocMap = queryManager.createOrUpdateQueryLocation(queryLocMap);
+					query.getLocationStatuses().add(queryLocMap);
+				}
 	
-			//get the list of locations		
-			for(LocationDTO location : locationsToQuery) {
-				QueryLocationMapDTO queryLocMap = new QueryLocationMapDTO();
-				queryLocMap.setLocationId(location.getId());
-				queryLocMap.setQueryId(query.getId());
-				queryLocMap.setStatus(QueryLocationStatus.Active);
-				queryLocMap = searchManager.createOrUpdateQueryLocation(queryLocMap);
-				query.getLocationStatuses().add(queryLocMap);
-			}
-	
-	        QueryDTO initiatedQuery = searchManager.queryForPatientRecords(input, toSearch, query, user);
+	        	queryManager.queryForPatientRecords(input, toSearch, query, user);
+	        	initiatedQuery = queryManager.getById(query.getId());  
+	        }
 	        return DtoToDomainConverter.convert(initiatedQuery);
 		}
-		return null;
     }
 	
 	@ApiOperation(value="Re-query a location from an existing query. "
 			+ "This runs asynchronously and returns a query object which can later be used to get the results.")
 	@RequestMapping(path="/requery/query/{queryId}/locationMap/{queryLocationMapId}", method = RequestMethod.POST,
 		produces="application/json; charset=utf-8")
-    public synchronized @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
+    public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
     		@PathVariable("queryLocationMapId") Long queryLocationMapId) throws JsonProcessingException, IOException {
 
 		CommonUser user = UserUtil.getCurrentUser();
 		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
 		
-        QueryDTO initiatedQuery = searchManager.requeryForPatientRecords(queryLocationMapId, user);
+        QueryDTO initiatedQuery = null;
+        synchronized(queryManager) {
+        	queryManager.requeryForPatientRecords(queryLocationMapId, user);
+        	initiatedQuery = queryManager.getById(queryId);  
+        }
         return DtoToDomainConverter.convert(initiatedQuery);
    }
 }
