@@ -78,7 +78,7 @@ public class OrganizationManagerTest extends TestCase {
 		status.setName("Active");
 		endpoint.setEndpointStatus(status);
 		EndpointType type = new EndpointType();
-		type.setName("Patient Discovery");
+		type.setCode("ihe-xcpd");
 		endpoint.setEndpointType(type);
 		endpoint.setExternalId("1");
 		endpoint.setExternalLastUpdateDate(new Date());

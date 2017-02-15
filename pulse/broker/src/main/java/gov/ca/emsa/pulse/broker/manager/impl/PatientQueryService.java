@@ -56,13 +56,13 @@ public class PatientQueryService implements Runnable {
 		} else if(location.getEndpoints() != null) {
 			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
 				if(endpoint.getEndpointType() != null && 
-					endpoint.getEndpointType().getName().equalsIgnoreCase(EndpointTypeEnum.PATIENT_DISCOVERY.getName()) && 
+					endpoint.getEndpointType().getCode().equalsIgnoreCase(EndpointTypeEnum.PATIENT_DISCOVERY.getName()) && 
 					endpoint.getEndpointStatus() != null && 
 					endpoint.getEndpointStatus().getName().equalsIgnoreCase(EndpointStatusEnum.ACTIVE.getName())) {
 					endpointToQuery = endpoint;
 				}
 			}
-		}
+		} 
 		
 		if(endpointToQuery == null) {
 			logger.error("The location " + location.getName() + " does not have an active patient discovery endpoint.");

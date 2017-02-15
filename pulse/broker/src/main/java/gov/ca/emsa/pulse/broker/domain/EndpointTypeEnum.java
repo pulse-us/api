@@ -1,9 +1,9 @@
 package gov.ca.emsa.pulse.broker.domain;
 
 public enum EndpointTypeEnum {
-	PATIENT_DISCOVERY("Patient Discovery"),
-	DOCUMENT_DISCOVERY("Query for Documents"),
-	DOCUMENT_RETRIEVE("Retrieve Documents");
+	PATIENT_DISCOVERY("ihe-xcpd"),
+	DOCUMENT_DISCOVERY("ihe-xca"),
+	DOCUMENT_RETRIEVE("ihe-xca");
 	
 	private String dbName;
 	private EndpointTypeEnum(String dbName) {

@@ -21,6 +21,9 @@ public class EndpointTypeEntity {
 	@Column(name = "name")
 	private String name;
 	
+	@Column(name = "code")
+	private String code;
+	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
@@ -57,5 +60,13 @@ public class EndpointTypeEntity {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 }

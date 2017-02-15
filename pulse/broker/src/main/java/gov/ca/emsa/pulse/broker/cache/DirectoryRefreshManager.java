@@ -7,7 +7,6 @@ import gov.ca.emsa.pulse.cten.CtenToPulseConverter;
 import gov.ca.emsa.pulse.cten.domain.EndpointWrapper;
 import gov.ca.emsa.pulse.cten.domain.LocationWrapper;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.TimerTask;
 
@@ -32,7 +31,7 @@ public class DirectoryRefreshManager extends TimerTask {
 		logger.debug("Found " + locations.size() + " locations from " + locationDirectoryUrl);;
 		
 		//query the endpoints
-		logger.info("Queyring the endpoints from " + endpointDirectoryUrl);
+		logger.info("Querying the endpoints from " + endpointDirectoryUrl);
 		restTemplate = new RestTemplate();
 		EndpointWrapper remoteEndpoints = restTemplate.getForObject(endpointDirectoryUrl, EndpointWrapper.class);
 		//convert to our internal endpoint object
@@ -46,14 +45,15 @@ public class DirectoryRefreshManager extends TimerTask {
 				Endpoint endpointMeta = location.getEndpoints().get(locEndpointIdx);
 				String endpointExternalId = endpointMeta.getExternalId();
 				for(Endpoint endpoint : endpoints) {
+					Endpoint toInsert = endpoint;
 					//look for the endpoint with the same externalId but
 					//make sure to ignore any that are "test" URLs
 					if(endpoint.getExternalId().equalsIgnoreCase(endpointExternalId)) {
 						if(endpoint.getUrl().contains("test")) {
-							location.getEndpoints().set(locEndpointIdx, null);
-						} else {
-							location.getEndpoints().set(locEndpointIdx, endpoint);
+							toInsert = null;
 						}
+						
+						location.getEndpoints().set(locEndpointIdx, toInsert);
 					}
 				}
 			}
