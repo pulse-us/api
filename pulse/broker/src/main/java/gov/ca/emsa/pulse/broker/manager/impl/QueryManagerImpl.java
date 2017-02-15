@@ -92,7 +92,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public QueryDTO updateQuery(QueryDTO toUpdate) {
+	public synchronized QueryDTO updateQuery(QueryDTO toUpdate) {
 		return queryDao.update(toUpdate);
 	}
 
@@ -176,6 +176,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	}
 
 	@Override
+	@Transactional
 	public void queryForPatientRecords(SAMLInput samlInput, PatientSearch toSearch, QueryDTO query, CommonUser user)
 			throws JsonProcessingException {
 
@@ -192,6 +193,15 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 				service.setUser(user);
 				pool.execute(service);
 			}
+		} else {
+			for(QueryLocationMapDTO queryLoc : query.getLocationStatuses()) {
+				queryLoc.setStatus( QueryLocationStatus.Failed);
+				queryLoc.setEndDate(new Date());
+				createOrUpdateQueryLocation(queryLoc);
+			}
+			query.setStatus(QueryStatus.Complete);
+			query.setLastReadDate(new Date());
+			queryDao.update(query);
 		}
 	}
 

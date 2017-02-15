@@ -279,11 +279,11 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 		return result;
 	}
 	
-	private EndpointTypeEntity getEndpointTypeByName(String name) {
+	private EndpointTypeEntity getEndpointTypeByCode(String code) {
 		EndpointTypeEntity result = null;
-		Query query = entityManager.createQuery("from EndpointTypeEntity where UPPER(name) = :name",
+		Query query = entityManager.createQuery("from EndpointTypeEntity where UPPER(code) = :code",
 				EndpointTypeEntity.class);
-		query.setParameter("name", name.toUpperCase());
+		query.setParameter("code", code.toUpperCase());
 		List<EndpointTypeEntity> results = query.getResultList();
 		if(results == null || results.size() == 0) {
 			return null;
@@ -362,7 +362,7 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 				+ "LEFT OUTER JOIN FETCH loc.lines " 
 				+ "LEFT OUTER JOIN FETCH loc.endpoints endpoints "
 				+ "LEFT OUTER JOIN FETCH endpoints.mimeTypes "
-				+ "WHERE endpoints.endpointType.name IN (:typeNames)", LocationEntity.class);
+				+ "WHERE endpoints.endpointType.code IN (:typeNames)", LocationEntity.class);
 		query.setParameter("typeNames", typeNames);
 		
 		return query.getResultList();
@@ -397,12 +397,12 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 		if(endpointDto.getEndpointType() != null) {
 			if(endpointDto.getEndpointType().getId() != null) {
 				endpointEntity.setEndpointTypeId(endpointDto.getEndpointType().getId());
-			} else if(!StringUtils.isEmpty(endpointDto.getEndpointType().getName())) {
-				EndpointTypeEntity typeEntity = getEndpointTypeByName(endpointDto.getEndpointType().getName());
+			} else if(!StringUtils.isEmpty(endpointDto.getEndpointType().getCode())) {
+				EndpointTypeEntity typeEntity = getEndpointTypeByCode(endpointDto.getEndpointType().getCode());
 				if(typeEntity != null) {
 					endpointEntity.setEndpointTypeId(typeEntity.getId());
 				} else {
-					logger.error("Could not find endpoint type with name " + endpointDto.getEndpointType().getName());
+					logger.error("Could not find endpoint type with code " + endpointDto.getEndpointType().getCode());
 				}
 			}
 		}

@@ -102,6 +102,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryLocationStatusEntity status = statusDao.getQueryLocationStatusByName(QueryLocationStatus.Active.name());
 		toInsert.setStatusId(status == null ? null : status.getId());
 		entityManager.persist(toInsert);
+		entityManager.flush();
 		return new QueryLocationMapDTO(toInsert);
 	}
 	

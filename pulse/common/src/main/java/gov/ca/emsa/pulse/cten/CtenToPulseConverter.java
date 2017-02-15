@@ -121,7 +121,8 @@ public class CtenToPulseConverter {
 		resultStatus.setName(ctenResource.getStatus());
 		result.setEndpointStatus(resultStatus);
 		EndpointType resultType = new EndpointType();
-		resultType.setName(ctenResource.getName());
+		resultType.setName(ctenResource.getConnectionType().getDisplay());
+		resultType.setCode(ctenResource.getConnectionType().getCode());
 		result.setEndpointType(resultType);
 		result.setExternalId(ctenResource.getId());
 		if(!StringUtils.isEmpty(ctenResource.getMeta().getLastUpdated())) {

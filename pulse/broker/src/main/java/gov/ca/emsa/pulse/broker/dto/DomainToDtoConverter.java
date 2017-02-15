@@ -216,6 +216,7 @@ public class DomainToDtoConverter {
 			EndpointTypeDTO type = new EndpointTypeDTO();
 			type.setId(domain.getEndpointType().getId());
 			type.setName(domain.getEndpointType().getName());
+			type.setCode(domain.getEndpointType().getCode());
 			result.setEndpointType(type);
 		}
 		result.setExternalId(domain.getExternalId());

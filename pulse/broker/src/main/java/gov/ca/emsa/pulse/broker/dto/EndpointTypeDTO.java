@@ -8,6 +8,7 @@ public class EndpointTypeDTO {
 	
 	private Long id;
 	private String name;
+	private String code;
 	private Date creationDate;
 	private Date lastModifiedDate;
 	
@@ -16,6 +17,7 @@ public class EndpointTypeDTO {
 	public EndpointTypeDTO(EndpointTypeEntity status){
 		this.id = status.getId();
 		this.name = status.getName();
+		this.code = status.getCode();
 		this.creationDate = status.getCreationDate();
 		this.lastModifiedDate = status.getLastModifiedDate();
 	}
@@ -50,5 +52,13 @@ public class EndpointTypeDTO {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 }
