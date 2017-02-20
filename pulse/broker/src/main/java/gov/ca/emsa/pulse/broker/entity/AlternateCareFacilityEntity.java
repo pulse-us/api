@@ -2,9 +2,7 @@ package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,7 +22,10 @@ public class AlternateCareFacilityEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 
-	@Column(name="name")
+	@Column(name="identifier")
+	private String identifier;
+	
+	@Column(name = "name")
 	private String name;
 	
 	@Column(name = "phone_number")
@@ -76,12 +77,12 @@ public class AlternateCareFacilityEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public String getName() {
-		return name;
+	public String getIdentifier() {
+		return identifier;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 
 	public Date getLastReadDate() {
@@ -130,5 +131,13 @@ public class AlternateCareFacilityEntity {
 
 	public void setZipcode(String zipcode) {
 		this.zipcode = zipcode;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

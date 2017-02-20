@@ -1,5 +1,5 @@
 package gov.ca.emsa.pulse.broker.dto;
-import java.util.ArrayList;
+
 import java.util.Date;
 
 import org.springframework.util.StringUtils;
@@ -10,6 +10,7 @@ import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
 public class AlternateCareFacilityDTO extends AddressableDTO {
 
 	private Long id;
+	private String identifier;
 	private String name;
 	private String phoneNumber;
 	private Date lastReadDate;
@@ -27,6 +28,7 @@ public class AlternateCareFacilityDTO extends AddressableDTO {
 		}
 		
 		this.id = entity.getId();
+		this.identifier = entity.getIdentifier();
 		this.name = entity.getName();
 		this.phoneNumber = entity.getPhoneNumber();
 		this.lastReadDate = entity.getLastReadDate();
@@ -62,12 +64,12 @@ public class AlternateCareFacilityDTO extends AddressableDTO {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getIdentifier() {
+		return identifier;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 
 	public Date getLastReadDate() {
@@ -100,5 +102,13 @@ public class AlternateCareFacilityDTO extends AddressableDTO {
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

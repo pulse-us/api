@@ -80,7 +80,7 @@ public class DocumentManagerImpl implements DocumentManager {
 		if(location.getEndpoints() != null) {
 			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
 				if(endpoint.getEndpointType() != null && 
-						endpoint.getEndpointType().getName().equalsIgnoreCase(EndpointTypeEnum.DOCUMENT_RETRIEVE.getName()) && 
+						endpoint.getEndpointType().getCode().equalsIgnoreCase(EndpointTypeEnum.DOCUMENT_RETRIEVE.getCode()) && 
 						endpoint.getEndpointStatus() != null && 
 						endpoint.getEndpointStatus().getName().equalsIgnoreCase(EndpointStatusEnum.ACTIVE.getName())) {
 						endpointToQuery = endpoint;

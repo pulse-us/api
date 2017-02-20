@@ -42,8 +42,8 @@ public class AcfLastAccessFilter extends GenericFilterBean {
 						throw new ServletException(ex.getMessage());
 					}
 				} else {
-					logger.error("ACF with ID " + user.getAcf().getId() + " and name " + user.getAcf().getName() + " does not exist!");
-					throw new ServletException("ACF " + user.getAcf().getName() + " does not exist!");
+					logger.error("ACF with ID " + user.getAcf().getId() + " and identifier " + user.getAcf().getIdentifier() + " does not exist!");
+					throw new ServletException("ACF " + user.getAcf().getIdentifier() + " does not exist!");
 				}
 			}
 		} else {

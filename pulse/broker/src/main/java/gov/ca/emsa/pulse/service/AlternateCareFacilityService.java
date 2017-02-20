@@ -69,7 +69,7 @@ public class AlternateCareFacilityService {
 		CommonUser user = UserUtil.getCurrentUser();
 		//auditManager.addAuditEntry(QueryType.CREATE_ACF, "/create", user.getSubjectName());
 		AlternateCareFacilityDTO dto = DomainToDtoConverter.convert(toCreate);
-		if(StringUtils.isEmpty(dto.getName())) {
+		if(StringUtils.isEmpty(dto.getIdentifier())) {
 			throw new InvalidArgumentsException("ACF name is required.");
 		}
 		AlternateCareFacilityDTO created = acfManager.create(dto);
@@ -89,16 +89,16 @@ public class AlternateCareFacilityService {
 			throw new InvalidArgumentsException("No ACF was found in the User header.");
 		}
 		if(!user.getAcf().getId().equals(toUpdate.getId())) {
-			throw new PermissionDeniedException("User " + user.getSubjectName() + " does not have permission to edit ACF " + toUpdate.getName());
+			throw new PermissionDeniedException("User " + user.getSubjectName() + " does not have permission to edit ACF " + toUpdate.getIdentifier());
 		}
 
 		AlternateCareFacilityDTO acfToUpdate = DomainToDtoConverter.convert(toUpdate);
 		//if writes aren't allowed check if the name is different
 		if(acfWritesAllowed != null && acfWritesAllowed.booleanValue() == false) {
 			AlternateCareFacilityDTO existingAcf = acfManager.getById(acfId);
-			if(existingAcf.getName() == null || 
-				acfToUpdate.getName() == null || 
-				!existingAcf.getName().equals(acfToUpdate.getName())) {
+			if(existingAcf.getIdentifier() == null || 
+				acfToUpdate.getIdentifier() == null || 
+				!existingAcf.getIdentifier().equals(acfToUpdate.getIdentifier())) {
 				throw new AcfChangesNotAllowedException("Alternate Care Facility names cannot be changed.");
 			}
 		}

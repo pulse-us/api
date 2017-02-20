@@ -29,18 +29,18 @@ public class AcfManagerTest {
 	@Transactional
 	@Rollback(true)
 	public void createAcfNoAddress() throws SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfManager.create(dto);
 		
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertNull(dto.getCity());
 		Assert.assertNull(dto.getState());
@@ -48,7 +48,7 @@ public class AcfManagerTest {
 		Assert.assertTrue(dto.getLines() == null || dto.getLines().size() == 0);
 		
 		dto = acfManager.getById(dto.getId());
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());	
 		Assert.assertNull(dto.getCity());
 		Assert.assertNull(dto.getState());
@@ -60,16 +60,16 @@ public class AcfManagerTest {
 	@Transactional
 	@Rollback(true)
 	public void createDuplicateAcf() throws SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfManager.create(dto);
 		
 		AlternateCareFacilityDTO dup = new AlternateCareFacilityDTO();
-		dup.setName(name);
+		dup.setIdentifier(identifier);
 		dup = acfManager.create(dup);
 		
 		Assert.assertEquals(dto.getId(), dup.getId());
@@ -79,7 +79,7 @@ public class AcfManagerTest {
 	@Transactional
 	@Rollback(true)
 	public void createAcfWithAddress() throws SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -87,7 +87,7 @@ public class AcfManagerTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -102,7 +102,7 @@ public class AcfManagerTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -115,7 +115,7 @@ public class AcfManagerTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -128,20 +128,55 @@ public class AcfManagerTest {
 	@Test
 	@Transactional
 	@Rollback(true)
+	public void updateAcfName() throws SQLException  {
+		String identifier = "ACF 1";
+		String phoneNumber = "4105551000";
+		
+		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
+		dto.setIdentifier(identifier);
+		dto.setPhoneNumber(phoneNumber);
+		dto = acfManager.create(dto);
+		Long acfId = dto.getId();
+		
+		Assert.assertNotNull(dto);
+		Assert.assertNotNull(acfId);
+		Assert.assertTrue(acfId.longValue() > 0);
+		Assert.assertEquals(identifier, dto.getIdentifier());
+		Assert.assertNull(dto.getName());
+		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
+		
+		String name = "M&T Bank Stadium";
+		dto.setName(name);
+		dto = acfManager.updateAcfDetails(dto);
+		Assert.assertEquals(name, dto.getName());
+		
+		dto = acfManager.getById(dto.getId());
+		Assert.assertEquals(name, dto.getName());
+		
+		List<AlternateCareFacilityDTO> nameMatches = acfManager.getByName(name);
+		Assert.assertNotNull(nameMatches);
+		Assert.assertEquals(1, nameMatches.size());
+		Assert.assertNotNull(nameMatches.get(0));
+		Assert.assertEquals(acfId.longValue(), nameMatches.get(0).getId().longValue());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void updateAcfPhoneNumber() throws SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		String updatedPhoneNumber = "3015551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfManager.create(dto);
 		
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
 		dto.setPhoneNumber(updatedPhoneNumber);
@@ -156,7 +191,7 @@ public class AcfManagerTest {
 	@Transactional
 	@Rollback(true)
 	public void updateAcfAddStreetLineToAddress() throws SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
 		String streetLine2 = "APT 2B";
@@ -165,7 +200,7 @@ public class AcfManagerTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -186,7 +221,7 @@ public class AcfManagerTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -201,7 +236,7 @@ public class AcfManagerTest {
 	@Transactional
 	@Rollback(true)
 	public void updateAcfRemoveStreetLineFromAddress() throws SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
 		String streetLine2 = "APT 2B";
@@ -210,7 +245,7 @@ public class AcfManagerTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -235,7 +270,7 @@ public class AcfManagerTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -249,7 +284,7 @@ public class AcfManagerTest {
 	@Transactional
 	@Rollback(true)
 	public void updateAcfChangeStreetLineInAddress() throws SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
 		String streetLine2 = "APT 2B";
@@ -258,7 +293,7 @@ public class AcfManagerTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -284,7 +319,7 @@ public class AcfManagerTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -298,10 +333,10 @@ public class AcfManagerTest {
 	@Transactional
 	@Rollback(true)
 	public void testCleanupOldAcfs() throws CacheCleanupException, SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		
-		String name2 = "ACF 2";
+		String identifier2 = "ACF 2";
 		String streetLine1 = "1000 Hilltop Circle";
 		String streetLine2 = "ABT 5";
 		String city = "Baltimore";
@@ -309,12 +344,12 @@ public class AcfManagerTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto1 = new AlternateCareFacilityDTO();
-		dto1.setName(name);
+		dto1.setIdentifier(identifier);
 		dto1.setPhoneNumber(phoneNumber);
 		dto1 = acfManager.create(dto1);
 		
 		AlternateCareFacilityDTO dto2 = new AlternateCareFacilityDTO();
-		dto2.setName(name2);
+		dto2.setIdentifier(identifier2);
 		dto2.setCity(city);
 		dto2.setState(state);
 		dto2.setZipcode(zip);

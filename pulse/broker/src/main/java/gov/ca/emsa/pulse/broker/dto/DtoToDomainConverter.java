@@ -88,6 +88,7 @@ public class DtoToDomainConverter {
 	public static AlternateCareFacility convert(AlternateCareFacilityDTO acfDto){
 		AlternateCareFacility acf = new AlternateCareFacility();
 		acf.setId(acfDto.getId());
+		acf.setIdentifier(acfDto.getIdentifier());
 		acf.setName(acfDto.getName());
 		acf.setPhoneNumber(acfDto.getPhoneNumber());
 		acf.setLastRead(acfDto.getLastReadDate());
@@ -267,6 +268,7 @@ public class DtoToDomainConverter {
 			EndpointType type = new EndpointType();
 			type.setId(dto.getEndpointType().getId());
 			type.setName(dto.getEndpointType().getName());
+			type.setCode(dto.getEndpointType().getCode());
 			result.setEndpointType(type);
 		}
 		result.setExternalId(dto.getExternalId());

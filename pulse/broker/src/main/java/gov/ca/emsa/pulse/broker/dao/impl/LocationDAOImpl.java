@@ -205,7 +205,7 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 	public List<LocationDTO> findAllWithEndpointType(List<EndpointTypeEnum> types) {
 		List<String> typeNames = new ArrayList<String>(types.size());
 		for(EndpointTypeEnum type : types) {
-			typeNames.add(type.getName());
+			typeNames.add(type.getCode());
 		}
 		List<LocationEntity> entities = getByEndpointTypes(typeNames);
 		List<LocationDTO> dtos = new ArrayList<>();

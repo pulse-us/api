@@ -131,7 +131,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		LocationDTO location = locationDao.findById(locationId);
 		if(location != null) {
 			for(LocationEndpointDTO ept : location.getEndpoints()) {
-				if(ept.getEndpointType().getName().equals(EndpointTypeEnum.PATIENT_DISCOVERY)) {
+				if(ept.getEndpointType().getCode().equals(EndpointTypeEnum.PATIENT_DISCOVERY.getCode())) {
 					endpointUrl = ept.getUrl();
 				}
 			}
