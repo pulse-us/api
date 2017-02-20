@@ -2,9 +2,7 @@ package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,6 +24,9 @@ public class AlternateCareFacilityEntity {
 
 	@Column(name="name")
 	private String name;
+	
+	@Column(name = "friendly_name")
+	private String friendlyName;
 	
 	@Column(name = "phone_number")
 	private String phoneNumber;
@@ -130,5 +131,13 @@ public class AlternateCareFacilityEntity {
 
 	public void setZipcode(String zipcode) {
 		this.zipcode = zipcode;
+	}
+
+	public String getFriendlyName() {
+		return friendlyName;
+	}
+
+	public void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
 	}
 }

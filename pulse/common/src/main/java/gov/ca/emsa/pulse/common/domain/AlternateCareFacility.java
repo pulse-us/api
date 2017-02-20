@@ -5,6 +5,7 @@ import java.util.Date;
 public class AlternateCareFacility {
 	private Long id;
 	private String name;
+	private String friendlyName;
 	private String phoneNumber;
 	private Address address;
 	private Date lastRead;
@@ -42,5 +43,13 @@ public class AlternateCareFacility {
 
 	public Date getLastRead() {
 		return lastRead;
+	}
+
+	public String getFriendlyName() {
+		return friendlyName;
+	}
+
+	public void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
 	}
 }

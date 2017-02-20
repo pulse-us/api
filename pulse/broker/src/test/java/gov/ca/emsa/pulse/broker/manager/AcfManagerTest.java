@@ -128,6 +128,34 @@ public class AcfManagerTest {
 	@Test
 	@Transactional
 	@Rollback(true)
+	public void updateAcfFriendlyName() throws SQLException  {
+		String name = "ACF 1";
+		String phoneNumber = "4105551000";
+		
+		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
+		dto.setName(name);
+		dto.setPhoneNumber(phoneNumber);
+		dto = acfManager.create(dto);
+		
+		Assert.assertNotNull(dto);
+		Assert.assertNotNull(dto.getId());
+		Assert.assertTrue(dto.getId().longValue() > 0);
+		Assert.assertEquals(name, dto.getName());
+		Assert.assertNull(dto.getFriendlyName());
+		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
+		
+		String friendlyName = "M&T Bank Stadium";
+		dto.setFriendlyName(friendlyName);
+		dto = acfManager.updateAcfDetails(dto);
+		Assert.assertEquals(friendlyName, dto.getFriendlyName());
+		
+		dto = acfManager.getById(dto.getId());
+		Assert.assertEquals(friendlyName, dto.getFriendlyName());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void updateAcfPhoneNumber() throws SQLException  {
 		String name = "ACF 1";
 		String phoneNumber = "4105551000";

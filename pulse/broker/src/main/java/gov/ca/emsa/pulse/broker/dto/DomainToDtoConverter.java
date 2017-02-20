@@ -142,6 +142,7 @@ public class DomainToDtoConverter {
 		AlternateCareFacilityDTO result = new AlternateCareFacilityDTO();
 		result.setId(domainObj.getId());
 		result.setName(domainObj.getName());
+		result.setFriendlyName(domainObj.getFriendlyName());
 		result.setPhoneNumber(domainObj.getPhoneNumber());
 		if(domainObj.getAddress() != null) {
 			if(domainObj.getAddress().getLines() != null) {

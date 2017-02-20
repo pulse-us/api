@@ -41,6 +41,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		
 		AlternateCareFacilityEntity toInsert = new AlternateCareFacilityEntity();
 		toInsert.setName(dto.getName());
+		toInsert.setFriendlyName(dto.getFriendlyName());
 		toInsert.setPhoneNumber(dto.getPhoneNumber());
 		toInsert.setLastReadDate(new Date());
 		toInsert.setCity(dto.getCity());
@@ -67,6 +68,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO dto) throws SQLException {
 		AlternateCareFacilityEntity toUpdate = this.getEntityById(dto.getId());
 		toUpdate.setName(dto.getName());
+		toUpdate.setFriendlyName(dto.getFriendlyName());
 		toUpdate.setPhoneNumber(dto.getPhoneNumber());
 		toUpdate.setLastReadDate(dto.getLastReadDate());
 		toUpdate.setCity(dto.getCity());
@@ -182,7 +184,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		Query query = entityManager.createQuery( "SELECT DISTINCT a "
 				+ "FROM AlternateCareFacilityEntity a "
 				+ "LEFT OUTER JOIN FETCH a.lines lines "
-				+ "where (a.name LIKE :name) "
+				+ "where (a.name LIKE :name) OR (a.friendlyName LIKE :name)"
 				+ "ORDER BY lines.order", AlternateCareFacilityEntity.class );
 		query.setParameter("name", name);
 		return query.getResultList();
