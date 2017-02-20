@@ -27,22 +27,22 @@ public class AcfDaoTest {
 	@Transactional
 	@Rollback(true)
 	public void createAcfWithoutAddress() throws SQLException {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setIdentifier(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfDao.create(dto);
 		
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
 		dto = acfDao.getById(dto.getId());
-		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 	}
 	
@@ -50,7 +50,7 @@ public class AcfDaoTest {
 	@Transactional
 	@Rollback(true)
 	public void createAcfWithAddressLines() throws SQLException {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -58,7 +58,7 @@ public class AcfDaoTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setIdentifier(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -73,7 +73,7 @@ public class AcfDaoTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -86,7 +86,7 @@ public class AcfDaoTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -100,7 +100,7 @@ public class AcfDaoTest {
 	@Transactional
 	@Rollback(true)
 	public void updateAcfAddStreetLineToAddress() throws SQLException {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
 		String streetLine2 = "APT 2B";
@@ -109,7 +109,7 @@ public class AcfDaoTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setIdentifier(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -130,7 +130,7 @@ public class AcfDaoTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -145,7 +145,7 @@ public class AcfDaoTest {
 	@Transactional
 	@Rollback(true)
 	public void updateAcfRemoveStreetLineFromAddress() throws SQLException {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
 		String streetLine2 = "APT 2B";
@@ -154,7 +154,7 @@ public class AcfDaoTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setIdentifier(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -179,7 +179,7 @@ public class AcfDaoTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -193,7 +193,7 @@ public class AcfDaoTest {
 	@Transactional
 	@Rollback(true)
 	public void updateAcfChangeStreetLineInAddress() throws SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
 		String streetLine2 = "APT 2B";
@@ -202,7 +202,7 @@ public class AcfDaoTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setIdentifier(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -228,7 +228,7 @@ public class AcfDaoTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -242,19 +242,19 @@ public class AcfDaoTest {
 	@Transactional
 	@Rollback(true)
 	public void updateAcfName() throws SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String updatedName = "ACF 1.1";
 		String phoneNumber = "4105551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setIdentifier(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfDao.create(dto);
 		
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
 		dto.setIdentifier(updatedName);
@@ -269,21 +269,21 @@ public class AcfDaoTest {
 	@Transactional
 	@Rollback(true)
 	public void updateAcfUpdateAddressValues() throws SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		String city = "Baltimore";
 		String state = "MD";
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setIdentifier(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfDao.create(dto);
 		
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
 		dto.setCity(city);
@@ -291,14 +291,14 @@ public class AcfDaoTest {
 		dto.setZipcode(zip);
 		dto = acfDao.update(dto);
 		
-		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
 		
 		dto = acfDao.getById(dto.getId());
-		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -309,18 +309,18 @@ public class AcfDaoTest {
 	@Transactional
 	@Rollback(true)
 	public void deleteAcfNoAddress()throws SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setIdentifier(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfDao.create(dto);
 		
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertEquals(identifier, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
 		acfDao.delete(dto.getId());
@@ -332,7 +332,7 @@ public class AcfDaoTest {
 	@Transactional
 	@Rollback(true)
 	public void deleteAcfWithAddress() throws SQLException {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		String streetLine1 = "1000 Hilltop Circle";
 		String city = "Baltimore";
@@ -340,7 +340,7 @@ public class AcfDaoTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setIdentifier(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
