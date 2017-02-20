@@ -56,7 +56,7 @@ public class PatientQueryService implements Runnable {
 		} else if(location.getEndpoints() != null) {
 			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
 				if(endpoint.getEndpointType() != null && 
-					endpoint.getEndpointType().getCode().equalsIgnoreCase(EndpointTypeEnum.PATIENT_DISCOVERY.getName()) && 
+					endpoint.getEndpointType().getCode().equalsIgnoreCase(EndpointTypeEnum.PATIENT_DISCOVERY.getCode()) && 
 					endpoint.getEndpointStatus() != null && 
 					endpoint.getEndpointStatus().getName().equalsIgnoreCase(EndpointStatusEnum.ACTIVE.getName())) {
 					endpointToQuery = endpoint;

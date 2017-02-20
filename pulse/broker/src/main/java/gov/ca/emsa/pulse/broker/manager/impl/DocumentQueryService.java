@@ -52,7 +52,7 @@ public class DocumentQueryService implements Runnable {
 		if(location.getEndpoints() != null) {
 			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
 				if(endpoint.getEndpointType() != null && 
-						endpoint.getEndpointType().getName().equalsIgnoreCase(EndpointTypeEnum.DOCUMENT_DISCOVERY.getName()) && 
+						endpoint.getEndpointType().getCode().equalsIgnoreCase(EndpointTypeEnum.DOCUMENT_DISCOVERY.getCode()) && 
 						endpoint.getEndpointStatus() != null && 
 						endpoint.getEndpointStatus().getName().equalsIgnoreCase(EndpointStatusEnum.ACTIVE.getName())) {
 						endpointToQuery = endpoint;

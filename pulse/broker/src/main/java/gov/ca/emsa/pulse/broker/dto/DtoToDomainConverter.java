@@ -267,6 +267,7 @@ public class DtoToDomainConverter {
 			EndpointType type = new EndpointType();
 			type.setId(dto.getEndpointType().getId());
 			type.setName(dto.getEndpointType().getName());
+			type.setCode(dto.getEndpointType().getCode());
 			result.setEndpointType(type);
 		}
 		result.setExternalId(dto.getExternalId());

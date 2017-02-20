@@ -5,12 +5,12 @@ public enum EndpointTypeEnum {
 	DOCUMENT_DISCOVERY("ihe-xca"),
 	DOCUMENT_RETRIEVE("ihe-xca");
 	
-	private String dbName;
-	private EndpointTypeEnum(String dbName) {
-		this.dbName = dbName;
+	private String code;
+	private EndpointTypeEnum(String code) {
+		this.code = code;
 	}
 	
-	public String getName() {
-		return this.dbName;
+	public String getCode() {
+		return this.code;
 	}
 }
