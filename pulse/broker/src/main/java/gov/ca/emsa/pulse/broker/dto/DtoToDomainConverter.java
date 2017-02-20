@@ -88,8 +88,8 @@ public class DtoToDomainConverter {
 	public static AlternateCareFacility convert(AlternateCareFacilityDTO acfDto){
 		AlternateCareFacility acf = new AlternateCareFacility();
 		acf.setId(acfDto.getId());
+		acf.setIdentifier(acfDto.getIdentifier());
 		acf.setName(acfDto.getName());
-		acf.setFriendlyName(acfDto.getFriendlyName());
 		acf.setPhoneNumber(acfDto.getPhoneNumber());
 		acf.setLastRead(acfDto.getLastReadDate());
 		

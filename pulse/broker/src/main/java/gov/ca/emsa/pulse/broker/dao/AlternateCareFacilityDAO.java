@@ -14,6 +14,7 @@ public interface AlternateCareFacilityDAO {
 	public void delete(Long id) throws SQLException;
 	public List<AlternateCareFacilityDTO> findAll();	
 	public AlternateCareFacilityDTO getById(Long id);
+	public List<AlternateCareFacilityDTO> getByIdentifier(String name);
 	public List<AlternateCareFacilityDTO> getByName(String name);
 	public void deleteItemsOlderThan(Date oldestItem) throws SQLException;
 }

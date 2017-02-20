@@ -4,8 +4,8 @@ import java.util.Date;
 
 public class AlternateCareFacility {
 	private Long id;
+	private String identifier;
 	private String name;
-	private String friendlyName;
 	private String phoneNumber;
 	private Address address;
 	private Date lastRead;
@@ -18,11 +18,11 @@ public class AlternateCareFacility {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getName() {
-		return name;
+	public String getIdentifier() {
+		return identifier;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 	public Address getAddress() {
 		return address;
@@ -45,11 +45,11 @@ public class AlternateCareFacility {
 		return lastRead;
 	}
 
-	public String getFriendlyName() {
-		return friendlyName;
+	public String getName() {
+		return name;
 	}
 
-	public void setFriendlyName(String friendlyName) {
-		this.friendlyName = friendlyName;
+	public void setName(String name) {
+		this.name = name;
 	}
 }

@@ -10,8 +10,8 @@ import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
 public class AlternateCareFacilityDTO extends AddressableDTO {
 
 	private Long id;
+	private String identifier;
 	private String name;
-	private String friendlyName;
 	private String phoneNumber;
 	private Date lastReadDate;
 	private Date creationDate;
@@ -28,8 +28,8 @@ public class AlternateCareFacilityDTO extends AddressableDTO {
 		}
 		
 		this.id = entity.getId();
+		this.identifier = entity.getIdentifier();
 		this.name = entity.getName();
-		this.friendlyName = entity.getFriendlyName();
 		this.phoneNumber = entity.getPhoneNumber();
 		this.lastReadDate = entity.getLastReadDate();
 		this.creationDate = entity.getCreationDate();
@@ -64,12 +64,12 @@ public class AlternateCareFacilityDTO extends AddressableDTO {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getIdentifier() {
+		return identifier;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 
 	public Date getLastReadDate() {
@@ -104,11 +104,11 @@ public class AlternateCareFacilityDTO extends AddressableDTO {
 		this.phoneNumber = phoneNumber;
 	}
 
-	public String getFriendlyName() {
-		return friendlyName;
+	public String getName() {
+		return name;
 	}
 
-	public void setFriendlyName(String friendlyName) {
-		this.friendlyName = friendlyName;
+	public void setName(String name) {
+		this.name = name;
 	}
 }

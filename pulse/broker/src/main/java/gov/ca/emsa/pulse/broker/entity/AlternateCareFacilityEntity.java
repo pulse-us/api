@@ -22,11 +22,11 @@ public class AlternateCareFacilityEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 
-	@Column(name="name")
-	private String name;
+	@Column(name="identifier")
+	private String identifier;
 	
-	@Column(name = "friendly_name")
-	private String friendlyName;
+	@Column(name = "name")
+	private String name;
 	
 	@Column(name = "phone_number")
 	private String phoneNumber;
@@ -77,12 +77,12 @@ public class AlternateCareFacilityEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public String getName() {
-		return name;
+	public String getIdentifier() {
+		return identifier;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 
 	public Date getLastReadDate() {
@@ -133,11 +133,11 @@ public class AlternateCareFacilityEntity {
 		this.zipcode = zipcode;
 	}
 
-	public String getFriendlyName() {
-		return friendlyName;
+	public String getName() {
+		return name;
 	}
 
-	public void setFriendlyName(String friendlyName) {
-		this.friendlyName = friendlyName;
+	public void setName(String name) {
+		this.name = name;
 	}
 }

@@ -10,7 +10,6 @@ import javax.persistence.Query;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -31,17 +30,17 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	@Override
 	public AlternateCareFacilityDTO create(AlternateCareFacilityDTO dto) 
 			throws SQLException, EntityExistsException {
-		List<AlternateCareFacilityEntity> duplicates = getEntityByName(dto.getName()); 
+		List<AlternateCareFacilityEntity> duplicates = getEntityByIdentifier(dto.getIdentifier()); 
 		//we restrict ACFs to have unique names, so first check
 		//to see if there is already one with this name. if so throw an exception
 		if(duplicates != null && duplicates.size() > 0) {
-			logger.info("Attempt to create a duplicate ACF named " + dto.getName());
-			throw new EntityExistsException("An ACF named " + dto.getName() + " already exists.");
+			logger.info("Attempt to create a duplicate ACF named " + dto.getIdentifier());
+			throw new EntityExistsException("An ACF named " + dto.getIdentifier() + " already exists.");
 		}
 		
 		AlternateCareFacilityEntity toInsert = new AlternateCareFacilityEntity();
+		toInsert.setIdentifier(dto.getIdentifier());
 		toInsert.setName(dto.getName());
-		toInsert.setFriendlyName(dto.getFriendlyName());
 		toInsert.setPhoneNumber(dto.getPhoneNumber());
 		toInsert.setLastReadDate(new Date());
 		toInsert.setCity(dto.getCity());
@@ -67,8 +66,8 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	@Override
 	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO dto) throws SQLException {
 		AlternateCareFacilityEntity toUpdate = this.getEntityById(dto.getId());
+		toUpdate.setIdentifier(dto.getIdentifier());
 		toUpdate.setName(dto.getName());
-		toUpdate.setFriendlyName(dto.getFriendlyName());
 		toUpdate.setPhoneNumber(dto.getPhoneNumber());
 		toUpdate.setLastReadDate(dto.getLastReadDate());
 		toUpdate.setCity(dto.getCity());
@@ -126,6 +125,17 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	}
 
 	@Override
+	public List<AlternateCareFacilityDTO> getByIdentifier(String identifier) {
+		List<AlternateCareFacilityEntity> results = this.getEntityByIdentifier(identifier);
+		List<AlternateCareFacilityDTO> dtos = new ArrayList<AlternateCareFacilityDTO>();
+		for(AlternateCareFacilityEntity entity : results) {
+			AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	@Override
 	public List<AlternateCareFacilityDTO> getByName(String name) {
 		List<AlternateCareFacilityEntity> results = this.getEntityByName(name);
 		List<AlternateCareFacilityDTO> dtos = new ArrayList<AlternateCareFacilityDTO>();
@@ -147,7 +157,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		if(oldAcfs != null && oldAcfs.size() > 0) {
 			for(AlternateCareFacilityEntity oldAcf : oldAcfs) {
 				entityManager.remove(oldAcf);
-				logger.info("Deleted ACF with ID " + oldAcf.getId() + " and name " + oldAcf.getName() + " during ACF cleanup.");
+				logger.info("Deleted ACF with ID " + oldAcf.getId() + " and name " + oldAcf.getIdentifier() + " during ACF cleanup.");
 			}
 		} else {
 			logger.info("Deleted 0 ACFs from the cache.");
@@ -180,11 +190,21 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		return entity;
 	}
 	
+	private List<AlternateCareFacilityEntity> getEntityByIdentifier(String identifier) {
+		Query query = entityManager.createQuery( "SELECT DISTINCT a "
+				+ "FROM AlternateCareFacilityEntity a "
+				+ "LEFT OUTER JOIN FETCH a.lines lines "
+				+ "where (a.identifier LIKE :identifier)"
+				+ "ORDER BY lines.order", AlternateCareFacilityEntity.class );
+		query.setParameter("identifier", identifier);
+		return query.getResultList();
+	}
+	
 	private List<AlternateCareFacilityEntity> getEntityByName(String name) {
 		Query query = entityManager.createQuery( "SELECT DISTINCT a "
 				+ "FROM AlternateCareFacilityEntity a "
 				+ "LEFT OUTER JOIN FETCH a.lines lines "
-				+ "where (a.name LIKE :name) OR (a.friendlyName LIKE :name)"
+				+ "where (a.name LIKE :name)"
 				+ "ORDER BY lines.order", AlternateCareFacilityEntity.class );
 		query.setParameter("name", name);
 		return query.getResultList();

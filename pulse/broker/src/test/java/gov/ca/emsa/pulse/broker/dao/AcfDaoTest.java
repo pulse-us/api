@@ -31,18 +31,18 @@ public class AcfDaoTest {
 		String phoneNumber = "4105551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfDao.create(dto);
 		
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
 		dto = acfDao.getById(dto.getId());
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 	}
 	
@@ -58,7 +58,7 @@ public class AcfDaoTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -73,7 +73,7 @@ public class AcfDaoTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -86,7 +86,7 @@ public class AcfDaoTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -109,7 +109,7 @@ public class AcfDaoTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -130,7 +130,7 @@ public class AcfDaoTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -154,7 +154,7 @@ public class AcfDaoTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -179,7 +179,7 @@ public class AcfDaoTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -202,7 +202,7 @@ public class AcfDaoTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -228,7 +228,7 @@ public class AcfDaoTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -247,22 +247,22 @@ public class AcfDaoTest {
 		String phoneNumber = "4105551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfDao.create(dto);
 		
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
-		dto.setName(updatedName);
+		dto.setIdentifier(updatedName);
 		dto = acfDao.update(dto);
-		Assert.assertEquals(updatedName, dto.getName());
+		Assert.assertEquals(updatedName, dto.getIdentifier());
 		
 		dto = acfDao.getById(dto.getId());
-		Assert.assertEquals(updatedName, dto.getName());
+		Assert.assertEquals(updatedName, dto.getIdentifier());
 	}
 	
 	@Test
@@ -276,14 +276,14 @@ public class AcfDaoTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfDao.create(dto);
 		
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
 		dto.setCity(city);
@@ -291,14 +291,14 @@ public class AcfDaoTest {
 		dto.setZipcode(zip);
 		dto = acfDao.update(dto);
 		
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
 		Assert.assertEquals(zip, dto.getZipcode());
 		
 		dto = acfDao.getById(dto.getId());
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -313,14 +313,14 @@ public class AcfDaoTest {
 		String phoneNumber = "4105551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfDao.create(dto);
 		
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
 		acfDao.delete(dto.getId());
@@ -340,7 +340,7 @@ public class AcfDaoTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);

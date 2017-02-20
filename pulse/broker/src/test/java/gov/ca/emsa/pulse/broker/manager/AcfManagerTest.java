@@ -33,14 +33,14 @@ public class AcfManagerTest {
 		String phoneNumber = "4105551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfManager.create(dto);
 		
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertNull(dto.getCity());
 		Assert.assertNull(dto.getState());
@@ -48,7 +48,7 @@ public class AcfManagerTest {
 		Assert.assertTrue(dto.getLines() == null || dto.getLines().size() == 0);
 		
 		dto = acfManager.getById(dto.getId());
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());	
 		Assert.assertNull(dto.getCity());
 		Assert.assertNull(dto.getState());
@@ -60,16 +60,16 @@ public class AcfManagerTest {
 	@Transactional
 	@Rollback(true)
 	public void createDuplicateAcf() throws SQLException  {
-		String name = "ACF 1";
+		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(identifier);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfManager.create(dto);
 		
 		AlternateCareFacilityDTO dup = new AlternateCareFacilityDTO();
-		dup.setName(name);
+		dup.setIdentifier(identifier);
 		dup = acfManager.create(dup);
 		
 		Assert.assertEquals(dto.getId(), dup.getId());
@@ -87,7 +87,7 @@ public class AcfManagerTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -102,7 +102,7 @@ public class AcfManagerTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -115,7 +115,7 @@ public class AcfManagerTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -133,7 +133,7 @@ public class AcfManagerTest {
 		String phoneNumber = "4105551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfManager.create(dto);
 		Long acfId = dto.getId();
@@ -141,21 +141,23 @@ public class AcfManagerTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(acfId);
 		Assert.assertTrue(acfId.longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
-		Assert.assertNull(dto.getFriendlyName());
+		Assert.assertEquals(name, dto.getIdentifier());
+		Assert.assertNull(dto.getName());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
 		String friendlyName = "M&T Bank Stadium";
-		dto.setFriendlyName(friendlyName);
+		dto.setName(friendlyName);
 		dto = acfManager.updateAcfDetails(dto);
-		Assert.assertEquals(friendlyName, dto.getFriendlyName());
+		Assert.assertEquals(friendlyName, dto.getName());
 		
 		dto = acfManager.getById(dto.getId());
-		Assert.assertEquals(friendlyName, dto.getFriendlyName());
+		Assert.assertEquals(friendlyName, dto.getName());
 		
-		dto = acfManager.getByName(friendlyName);
-		Assert.assertNotNull(dto);
-		Assert.assertEquals(acfId.longValue(), dto.getId().longValue());
+		List<AlternateCareFacilityDTO> nameMatches = acfManager.getByName(friendlyName);
+		Assert.assertNotNull(nameMatches);
+		Assert.assertEquals(1, nameMatches.size());
+		Assert.assertNotNull(nameMatches.get(0));
+		Assert.assertEquals(acfId.longValue(), nameMatches.get(0).getId().longValue());
 	}
 	
 	@Test
@@ -167,14 +169,14 @@ public class AcfManagerTest {
 		String updatedPhoneNumber = "3015551000";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfManager.create(dto);
 		
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
 		dto.setPhoneNumber(updatedPhoneNumber);
@@ -198,7 +200,7 @@ public class AcfManagerTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -219,7 +221,7 @@ public class AcfManagerTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -243,7 +245,7 @@ public class AcfManagerTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -268,7 +270,7 @@ public class AcfManagerTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -291,7 +293,7 @@ public class AcfManagerTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto = new AlternateCareFacilityDTO();
-		dto.setName(name);
+		dto.setIdentifier(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto.setCity(city);
 		dto.setState(state);
@@ -317,7 +319,7 @@ public class AcfManagerTest {
 		Assert.assertNotNull(dto);
 		Assert.assertNotNull(dto.getId());
 		Assert.assertTrue(dto.getId().longValue() > 0);
-		Assert.assertEquals(name, dto.getName());
+		Assert.assertEquals(name, dto.getIdentifier());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		Assert.assertEquals(city, dto.getCity());
 		Assert.assertEquals(state, dto.getState());
@@ -342,12 +344,12 @@ public class AcfManagerTest {
 		String zip = "21227";
 		
 		AlternateCareFacilityDTO dto1 = new AlternateCareFacilityDTO();
-		dto1.setName(name);
+		dto1.setIdentifier(name);
 		dto1.setPhoneNumber(phoneNumber);
 		dto1 = acfManager.create(dto1);
 		
 		AlternateCareFacilityDTO dto2 = new AlternateCareFacilityDTO();
-		dto2.setName(name2);
+		dto2.setIdentifier(name2);
 		dto2.setCity(city);
 		dto2.setState(state);
 		dto2.setZipcode(zip);

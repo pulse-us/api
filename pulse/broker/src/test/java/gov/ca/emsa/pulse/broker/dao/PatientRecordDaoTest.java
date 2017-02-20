@@ -49,7 +49,7 @@ public class PatientRecordDaoTest extends TestCase {
 	@Before
 	public void setup() throws SQLException  {
 		acf = new AlternateCareFacilityDTO();
-		acf.setName("ACF1");
+		acf.setIdentifier("ACF1");
 		acf = acfDao.create(acf);
 		assertNotNull(acf);
 		assertNotNull(acf.getId());

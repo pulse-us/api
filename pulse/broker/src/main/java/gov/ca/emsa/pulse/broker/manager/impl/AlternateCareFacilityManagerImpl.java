@@ -10,7 +10,6 @@ import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.locks.AbstractQueuedLongSynchronizer;
 
 import javax.persistence.EntityExistsException;
 
@@ -45,7 +44,7 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 		try {
 			result = acfDao.create(toCreate);
 		} catch(EntityExistsException ex) {
-			result = getByName(toCreate.getName());
+			result = getByIdentifier(toCreate.getIdentifier());
 		}
 		
 		return result;
@@ -83,14 +82,20 @@ public class AlternateCareFacilityManagerImpl implements AlternateCareFacilityMa
 	}
 
 	@Override
-	public AlternateCareFacilityDTO getByName(String name) {
-		List<AlternateCareFacilityDTO> matches = acfDao.getByName(name);
+	public AlternateCareFacilityDTO getByIdentifier(String identifier) {
+		List<AlternateCareFacilityDTO> matches = acfDao.getByIdentifier(identifier);
 		
 		AlternateCareFacilityDTO result = null;
 		if(matches != null && matches.size() > 0) {
 			result = matches.get(0);
 		}
 		return result;
+	}
+	
+	@Override
+	public List<AlternateCareFacilityDTO> getByName(String name) {
+		List<AlternateCareFacilityDTO> matches = acfDao.getByName(name);
+		return matches;
 	}
 	
 	@Override
