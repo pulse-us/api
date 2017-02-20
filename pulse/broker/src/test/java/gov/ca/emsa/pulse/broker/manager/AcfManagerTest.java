@@ -136,10 +136,11 @@ public class AcfManagerTest {
 		dto.setName(name);
 		dto.setPhoneNumber(phoneNumber);
 		dto = acfManager.create(dto);
+		Long acfId = dto.getId();
 		
 		Assert.assertNotNull(dto);
-		Assert.assertNotNull(dto.getId());
-		Assert.assertTrue(dto.getId().longValue() > 0);
+		Assert.assertNotNull(acfId);
+		Assert.assertTrue(acfId.longValue() > 0);
 		Assert.assertEquals(name, dto.getName());
 		Assert.assertNull(dto.getFriendlyName());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
@@ -151,6 +152,10 @@ public class AcfManagerTest {
 		
 		dto = acfManager.getById(dto.getId());
 		Assert.assertEquals(friendlyName, dto.getFriendlyName());
+		
+		dto = acfManager.getByName(friendlyName);
+		Assert.assertNotNull(dto);
+		Assert.assertEquals(acfId.longValue(), dto.getId().longValue());
 	}
 	
 	@Test
