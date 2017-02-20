@@ -128,7 +128,7 @@ public class AcfManagerTest {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateAcfFriendlyName() throws SQLException  {
+	public void updateAcfName() throws SQLException  {
 		String identifier = "ACF 1";
 		String phoneNumber = "4105551000";
 		
@@ -145,15 +145,15 @@ public class AcfManagerTest {
 		Assert.assertNull(dto.getName());
 		Assert.assertEquals(phoneNumber, dto.getPhoneNumber());
 		
-		String friendlyName = "M&T Bank Stadium";
-		dto.setName(friendlyName);
+		String name = "M&T Bank Stadium";
+		dto.setName(name);
 		dto = acfManager.updateAcfDetails(dto);
-		Assert.assertEquals(friendlyName, dto.getName());
+		Assert.assertEquals(name, dto.getName());
 		
 		dto = acfManager.getById(dto.getId());
-		Assert.assertEquals(friendlyName, dto.getName());
+		Assert.assertEquals(name, dto.getName());
 		
-		List<AlternateCareFacilityDTO> nameMatches = acfManager.getByName(friendlyName);
+		List<AlternateCareFacilityDTO> nameMatches = acfManager.getByName(name);
 		Assert.assertNotNull(nameMatches);
 		Assert.assertEquals(1, nameMatches.size());
 		Assert.assertNotNull(nameMatches.get(0));
