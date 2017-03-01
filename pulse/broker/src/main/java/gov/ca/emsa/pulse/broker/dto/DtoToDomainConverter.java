@@ -46,6 +46,7 @@ public class DtoToDomainConverter {
 		result.setDateOfBirth(dtoObj.getDateOfBirth());
 		result.setSsn(dtoObj.getSsn());
 		result.setLastRead(dtoObj.getLastReadDate());
+		result.setCreationDate(dtoObj.getCreationDate());
 		if(dtoObj.getAcf() != null) {
 			AlternateCareFacility acf = convert(dtoObj.getAcf());
 			result.setAcf(acf);
