@@ -17,6 +17,7 @@ public class PatientDTO {
 	private Date lastReadDate;
 	private AlternateCareFacilityDTO acf;
 	private List<PatientLocationMapDTO> locationMaps;
+	private Date creationDate;
 	
 	public PatientDTO() {
 		locationMaps = new ArrayList<PatientLocationMapDTO>();
@@ -31,6 +32,7 @@ public class PatientDTO {
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
 		this.lastReadDate = entity.getLastReadDate();
+		this.creationDate = entity.getCreationDate();
 		if(entity.getAcf() != null) {
 			this.acf = new AlternateCareFacilityDTO(entity.getAcf());
 		}
@@ -106,6 +108,14 @@ public class PatientDTO {
 
 	public void setFriendlyName(String friendlyName) {
 		this.friendlyName = friendlyName;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 	
 }

@@ -36,7 +36,7 @@ public class DomainToDtoConverter {
 		result.setGender(domainObj.getGender());
 		result.setDateOfBirth(domainObj.getDateOfBirth());
 		result.setSsn(domainObj.getSsn());
-
+		result.setCreationDate(domainObj.getCreationDate());
 		if(domainObj.getAcf() != null) {
 			AlternateCareFacilityDTO acf = convert(domainObj.getAcf());
 			result.setAcf(acf);

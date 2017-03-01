@@ -16,6 +16,7 @@ public class Patient {
 	private Date lastRead;
 	private AlternateCareFacility acf;
 	private List<PatientLocationMap> locationMaps;
+	private Date creationDate;
 	
 	public Patient() {
 		this.locationMaps = new ArrayList<PatientLocationMap>();
@@ -97,6 +98,14 @@ public class Patient {
 
 	public void setFriendlyName(String friendlyName) {
 		this.friendlyName = friendlyName;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 
 }
