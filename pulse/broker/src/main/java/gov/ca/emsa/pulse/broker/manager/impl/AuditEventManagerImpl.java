@@ -71,34 +71,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 	@Override
 	@Transactional
 	public AuditEventDTO addAuditEventEntry(AuditEventDTO ae) {
-		AuditEventDTO auditEventDTO = new AuditEventDTO();
-		auditEventDTO.setEventId(ae.getEventId());
-		auditEventDTO.setEventActionCodeId(ae.getEventActionCodeId());
-		auditEventDTO.setEventDateTime(ae.getEventDateTime());
-		auditEventDTO.setEventOutcomeIndicator(ae.getEventOutcomeIndicator());
-		auditEventDTO.setEventTypeCode(ae.getEventTypeCode());
-		if(ae.getAuditQueryParameters() != null){
-			auditEventDTO.setAuditQueryParameters(ae.getAuditQueryParameters());
-		}
-		if(ae.getAuditRequestDestination() != null){
-			auditEventDTO.setAuditRequestDestination(ae.getAuditRequestDestination());
-		}
-		if(ae.getAuditRequestSource() != null){
-			auditEventDTO.setAuditRequestSource(ae.getAuditRequestSource());
-		}
-		if(ae.getAuditSource() != null){
-			auditEventDTO.setAuditSource(ae.getAuditSource());
-		}
-		if(ae.getAuditHumanRequestors() != null){
-			auditEventDTO.setAuditHumanRequestors(ae.getAuditHumanRequestors());
-		}
-		if(ae.getAuditDocument() != null){
-			auditEventDTO.setAuditDocument(ae.getAuditDocument());
-		}
-		if(ae.getAuditPatient() != null){
-			auditEventDTO.setAuditPatient(ae.getAuditPatient());
-		}
-		AuditEventDTO insertedAuditEventDTO = auditEventDao.createAuditEvent(auditEventDTO);
+		AuditEventDTO insertedAuditEventDTO = auditEventDao.createAuditEvent(ae);
 		return insertedAuditEventDTO;
 	}
 
@@ -118,12 +91,12 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				"EV(110153, DCM, \"Source\")",
 				networkAccessPointTypeCodeDao.getByCode("2").getId(),
 				InetAddress.getLocalHost().toString());
-		ArrayList<AuditHumanRequestorDTO> auditHumanRequestorDTO = AuditUtil.createAuditHumanRequestor(user.getFirstName()
-				+ " " + user.getLastName(), // the identity of the human that initiated the transaction
-				null, // optional
-				null, // optional
+		ArrayList<AuditHumanRequestorDTO> auditHumanRequestorDTO = AuditUtil.createAuditHumanRequestor(
+				user.getSubjectName(),// optional
+				user.getUsername(), // optional
+				user.getfull_name(), // optional
 				true, // optional
-				null, // optional
+				user.getrole(), // optional
 				null, // optional
 				null);// optional
 		AuditRequestDestinationDTO auditRequestDestinationDTO = AuditUtil.createAuditRequestDestination(endpointUrl,
@@ -169,12 +142,12 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				"EV(110153, DCM, \"Source\")",
 				networkAccessPointTypeCodeDao.getByCode("2").getId(),
 				InetAddress.getLocalHost().toString());
-		ArrayList<AuditHumanRequestorDTO> auditHumanRequestorDTO = AuditUtil.createAuditHumanRequestor(user.getFirstName()
-				+ " " + user.getLastName(), // optional
-				null, // optional
-				null, // optional
+		ArrayList<AuditHumanRequestorDTO> auditHumanRequestorDTO = AuditUtil.createAuditHumanRequestor(
+				user.getSubjectName(),// optional
+				user.getUsername(), // optional
+				user.getfull_name(), // optional
 				true, // optional
-				null, // optional
+				user.getrole(), // optional
 				null, // optional
 				null);// optional
 		AuditRequestDestinationDTO auditRequestDestinationDTO = AuditUtil.createAuditRequestDestination(endpointUrl,
@@ -231,12 +204,12 @@ public class AuditEventManagerImpl implements AuditEventManager{
 				"EV(110153, DCM, \"Source\")",
 				networkAccessPointTypeCodeDao.getByCode("2").getId(),
 				InetAddress.getLocalHost().toString());
-		ArrayList<AuditHumanRequestorDTO> auditHumanRequestorDTO = AuditUtil.createAuditHumanRequestor(user.getFirstName()
-				+ " " + user.getLastName(), // optional
-				null, // optional
-				null, // optional
+		ArrayList<AuditHumanRequestorDTO> auditHumanRequestorDTO = AuditUtil.createAuditHumanRequestor(
+				user.getSubjectName(),// optional
+				user.getUsername(), // optional
+				user.getfull_name(), // optional
 				true, // optional
-				null, // optional
+				user.getrole(), // optional
 				null, // optional
 				null);// optional
 		AuditRequestDestinationDTO auditRequestDestinationDTO = AuditUtil.createAuditRequestDestination(endpointUrl,

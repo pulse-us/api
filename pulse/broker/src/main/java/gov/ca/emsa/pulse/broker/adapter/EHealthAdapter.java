@@ -151,8 +151,9 @@ public class EHealthAdapter implements Adapter {
 					AdhocQueryResponse resultObj = queryProducer.unmarshallErrorQueryResponse(searchResults);
 					results.setStatus(soapConverterService.getErrorStatus(resultObj));
 					logger.info("Got error back from " + endpoint.getUrl() + ". Status: " + results.getStatus().name());
-					auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
+					auditManager.createAuditEventIG("FAILURE", user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
 				} catch(Exception ex) {
+					auditManager.createAuditEventIG("FAILURE", user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
 					logger.error("Exception unmarshalling patient discovery response as error", ex);
 				}
 			}
