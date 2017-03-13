@@ -12,13 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDiscoveryQueryStatisticsDAO;
-import gov.ca.emsa.pulse.broker.dao.impl.LocationDAOImpl;
-import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.entity.PatientDiscoveryRequestStatisticsEntity;
 import gov.ca.emsa.pulse.broker.manager.LocationManager;
-import gov.ca.emsa.pulse.common.domain.EndpointType;
 import gov.ca.emsa.pulse.common.domain.Location;
 import gov.ca.emsa.pulse.common.domain.LocationStatus;
 import gov.ca.emsa.pulse.common.domain.stats.LocationStatistics;
@@ -83,12 +80,6 @@ public class LocationManagerImpl implements LocationManager {
 	@Transactional(readOnly = true)
 	public List<LocationDTO> getAll() {
 		List<LocationDTO> results = locationDao.findAll();
-		return results;
-	}
-	
-	@Override
-	public List<LocationDTO> getAllWithEndpointType(List<EndpointTypeEnum> types) {
-		List<LocationDTO> results = locationDao.findAllWithEndpointType(types);
 		return results;
 	}
 

@@ -195,7 +195,7 @@ public class DomainToDtoConverter {
 		if(domain.getEndpoints() != null) {
 			for(Endpoint endpoint : domain.getEndpoints()) {
 				if(endpoint != null) {
-					LocationEndpointDTO endpointDto = convert(endpoint);
+					EndpointDTO endpointDto = convert(endpoint);
 					result.getEndpoints().add(endpointDto);
 				}
 			}
@@ -203,8 +203,8 @@ public class DomainToDtoConverter {
 		return result;
 	}
 
-	public static LocationEndpointDTO convert(Endpoint domain) {
-		LocationEndpointDTO result = new LocationEndpointDTO();
+	public static EndpointDTO convert(Endpoint domain) {
+		EndpointDTO result = new EndpointDTO();
 		result.setId(domain.getId());
 		result.setAdapter(domain.getAdapter());
 		if(domain.getEndpointStatus() != null) {
@@ -237,8 +237,8 @@ public class DomainToDtoConverter {
 		return result;
 	}
 	
-	public static LocationEndpointMimeTypeDTO convert(EndpointMimeType domain) {
-		LocationEndpointMimeTypeDTO result = new LocationEndpointMimeTypeDTO();
+	public static EndpointMimeTypeDTO convert(EndpointMimeType domain) {
+		EndpointMimeTypeDTO result = new EndpointMimeTypeDTO();
 		result.setId(domain.getId());
 		result.setMimeType(domain.getMimeType());
 		return result;

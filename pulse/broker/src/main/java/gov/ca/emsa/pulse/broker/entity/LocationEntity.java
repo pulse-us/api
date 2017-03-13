@@ -1,9 +1,7 @@
 package gov.ca.emsa.pulse.broker.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -76,10 +74,6 @@ public class LocationEntity {
 	
 	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
-	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "locationId"  )
-	@Column( name = "location_id", nullable = false  )
-	private Set<LocationEndpointEntity> endpoints = new LinkedHashSet<LocationEndpointEntity>();
 	
 	public Long getId() {
 		return id;
@@ -199,14 +193,6 @@ public class LocationEntity {
 
 	public void setLines(Set<LocationAddressLineEntity> lines) {
 		this.lines = lines;
-	}
-
-	public Set<LocationEndpointEntity> getEndpoints() {
-		return endpoints;
-	}
-
-	public void setEndpoints(Set<LocationEndpointEntity> endpoints) {
-		this.endpoints = endpoints;
 	}
 
 	public boolean hasRequiredFields() {

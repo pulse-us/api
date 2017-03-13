@@ -18,7 +18,7 @@ import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentQueryResults;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
-import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
@@ -48,9 +48,9 @@ public class DocumentQueryService implements Runnable {
 		//query this organization directly for 
 		boolean querySuccess = true;
 		DocumentQueryResults searchResults = null;
-		LocationEndpointDTO endpointToQuery = null;
+		EndpointDTO endpointToQuery = null;
 		if(location.getEndpoints() != null) {
-			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
+			for(EndpointDTO endpoint : location.getEndpoints()) {
 				if(endpoint.getEndpointType() != null && 
 						endpoint.getEndpointType().getCode().equalsIgnoreCase(EndpointTypeEnum.DOCUMENT_DISCOVERY.getCode()) && 
 						endpoint.getEndpointStatus() != null && 

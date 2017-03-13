@@ -9,7 +9,7 @@ import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
-import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
@@ -76,9 +76,9 @@ public class DocumentManagerImpl implements DocumentManager {
 	@Transactional
 	public void queryForDocumentContents(CommonUser user, SAMLInput samlInput, LocationDTO location, List<DocumentDTO> docsFromLocation, PatientLocationMapDTO dto) {
 		boolean querySuccess = true;
-		LocationEndpointDTO endpointToQuery = null;
+		EndpointDTO endpointToQuery = null;
 		if(location.getEndpoints() != null) {
-			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
+			for(EndpointDTO endpoint : location.getEndpoints()) {
 				if(endpoint.getEndpointType() != null && 
 						endpoint.getEndpointType().getCode().equalsIgnoreCase(EndpointTypeEnum.DOCUMENT_RETRIEVE.getCode()) && 
 						endpoint.getEndpointStatus() != null && 

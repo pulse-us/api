@@ -15,7 +15,7 @@ import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
-import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordResults;
 import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
@@ -47,14 +47,14 @@ public class PatientQueryService implements Runnable {
 		boolean queryError = false;
 		//query this organization directly for patient matches
 		PatientRecordResults searchResults = null;
-		LocationEndpointDTO endpointToQuery = null;
+		EndpointDTO endpointToQuery = null;
 		
 		LocationDTO location = locationManager.getById(queryLocationMap.getLocationId());
 		if(location == null) {
 			logger.error("Could not find location with id " + queryLocationMap.getLocationId());
 			queryError = true;
 		} else if(location.getEndpoints() != null) {
-			for(LocationEndpointDTO endpoint : location.getEndpoints()) {
+			for(EndpointDTO endpoint : location.getEndpoints()) {
 				if(endpoint.getEndpointType() != null && 
 					endpoint.getEndpointType().getCode().equalsIgnoreCase(EndpointTypeEnum.PATIENT_DISCOVERY.getCode()) && 
 					endpoint.getEndpointStatus() != null && 

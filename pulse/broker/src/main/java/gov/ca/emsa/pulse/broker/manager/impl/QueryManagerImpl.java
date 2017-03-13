@@ -7,7 +7,7 @@ import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
-import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
@@ -130,7 +130,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		Long queryId = queryLocationMapToCancel.getQueryId();
 		LocationDTO location = locationDao.findById(locationId);
 		if(location != null) {
-			for(LocationEndpointDTO ept : location.getEndpoints()) {
+			for(EndpointDTO ept : location.getEndpoints()) {
 				if(ept.getEndpointType().getCode().equals(EndpointTypeEnum.PATIENT_DISCOVERY.getCode())) {
 					endpointUrl = ept.getUrl();
 				}
@@ -182,8 +182,12 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 		List<EndpointTypeEnum> relevantEndpointTypes = new ArrayList<EndpointTypeEnum>();
 		relevantEndpointTypes.add(EndpointTypeEnum.PATIENT_DISCOVERY);
+		//
+		//TODO: do something different here 
+		
 		//get the list of locations
-		List<LocationDTO> locationsToQuery = locationManager.getAllWithEndpointType(relevantEndpointTypes);
+		List<LocationDTO> locationsToQuery = new ArrayList<LocationDTO>();
+		//locationManager.getAllWithEndpointType(relevantEndpointTypes);
 		if(locationsToQuery != null && locationsToQuery.size() > 0) {
 			for(QueryLocationMapDTO queryLoc : query.getLocationStatuses()) {
 				PatientQueryService service = getPatientQueryService();

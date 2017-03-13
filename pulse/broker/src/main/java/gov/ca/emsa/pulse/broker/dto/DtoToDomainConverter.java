@@ -247,7 +247,7 @@ public class DtoToDomainConverter {
 		result.setCreationDate(dto.getCreationDate());
 		
 		if(dto.getEndpoints() != null) {
-			for(LocationEndpointDTO endpointDto : dto.getEndpoints()) {
+			for(EndpointDTO endpointDto : dto.getEndpoints()) {
 				Endpoint endpoint = convert(endpointDto);
 				result.getEndpoints().add(endpoint);
 			}
@@ -255,7 +255,7 @@ public class DtoToDomainConverter {
 		return result;
 	}
 
-	public static Endpoint convert(LocationEndpointDTO dto) {
+	public static Endpoint convert(EndpointDTO dto) {
 		Endpoint result = new Endpoint();
 		result.setId(dto.getId());
 		result.setAdapter(dto.getAdapter());
@@ -274,7 +274,7 @@ public class DtoToDomainConverter {
 		}
 		result.setExternalId(dto.getExternalId());
 		if(dto.getMimeTypes() != null && dto.getMimeTypes().size() > 0) {
-			for(LocationEndpointMimeTypeDTO dtoMimeType : dto.getMimeTypes()) {
+			for(EndpointMimeTypeDTO dtoMimeType : dto.getMimeTypes()) {
 				result.getMimeTypes().add(convert(dtoMimeType));
 			}
 		}
@@ -288,7 +288,7 @@ public class DtoToDomainConverter {
 		return result;
 	}
 	
-	public static EndpointMimeType convert(LocationEndpointMimeTypeDTO dtoObj) {
+	public static EndpointMimeType convert(EndpointMimeTypeDTO dtoObj) {
 		EndpointMimeType result = new EndpointMimeType();
 		result.setId(dtoObj.getId());
 		result.setMimeType(dtoObj.getMimeType());

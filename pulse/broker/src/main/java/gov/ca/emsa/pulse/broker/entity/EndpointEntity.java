@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,17 +20,13 @@ import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
 
 @Entity
-@Table(name="location_endpoint")
-public class LocationEndpointEntity {
+@Table(name="endpoint")
+public class EndpointEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false )
 	private Long id;
-	
-	@Basic( optional = false )
-	@Column( name = "location_id", nullable = false )
-	private Long locationId;
 	
 	@Basic( optional = false )
 	@Column( name = "external_id", nullable = false )
@@ -55,10 +52,6 @@ public class LocationEndpointEntity {
 	@Column(name = "payload_type")
 	private String payloadType;
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "endpointId"  )
-	@Column( name = "location_endpoint_id", nullable = false  )
-	private Set<LocationEndpointMimeTypeEntity> mimeTypes = new LinkedHashSet<LocationEndpointMimeTypeEntity>();
-	
 	@Column(name = "public_key")
 	private String publicKey;
 	
@@ -67,6 +60,10 @@ public class LocationEndpointEntity {
 	
 	@Column(name = "endpoint_last_updated")
 	private Date externalLastUpdateDate;
+	
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "endpointId", cascade = {CascadeType.PERSIST, CascadeType.MERGE}  )
+	@Column( name = "endpoint_id", nullable = false)
+	private Set<EndpointMimeTypeEntity> mimeTypes = new LinkedHashSet<EndpointMimeTypeEntity>();
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -104,14 +101,6 @@ public class LocationEndpointEntity {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
-	}
-
-	public Long getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(Long locationId) {
-		this.locationId = locationId;
 	}
 
 	public Long getEndpointTypeId() {
@@ -188,15 +177,14 @@ public class LocationEndpointEntity {
 	
 	public boolean hasRequiredFields() {
 		return !StringUtils.isEmpty(this.getExternalId()) && 
-				this.getEndpointTypeId() != null && this.getEndpointStatusId() != null && 
-				this.getLocationId() != null && !StringUtils.isEmpty(this.getAdapter());
+				this.getEndpointTypeId() != null && this.getEndpointStatusId() != null;
 	}
 
-	public Set<LocationEndpointMimeTypeEntity> getMimeTypes() {
+	public Set<EndpointMimeTypeEntity> getMimeTypes() {
 		return mimeTypes;
 	}
 
-	public void setMimeTypes(Set<LocationEndpointMimeTypeEntity> mimeTypes) {
+	public void setMimeTypes(Set<EndpointMimeTypeEntity> mimeTypes) {
 		this.mimeTypes = mimeTypes;
 	}
 }

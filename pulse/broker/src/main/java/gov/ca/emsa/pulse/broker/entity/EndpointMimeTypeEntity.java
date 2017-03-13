@@ -13,8 +13,8 @@ import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
 
 @Entity
-@Table(name="location_endpoint_mime_type")
-public class LocationEndpointMimeTypeEntity {
+@Table(name="endpoint_mime_type")
+public class EndpointMimeTypeEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class LocationEndpointMimeTypeEntity {
 	private Long id;
 	
 	@Basic( optional = false )
-	@Column( name = "location_endpoint_id", nullable = false )
+	@Column( name = "endpoint_id", nullable = false )
 	private Long endpointId;
 	
 	@Basic( optional = false )

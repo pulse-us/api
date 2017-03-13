@@ -2,7 +2,7 @@ package gov.ca.emsa.pulse.broker.manager;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
-import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.common.domain.Endpoint;
 import gov.ca.emsa.pulse.common.domain.EndpointMimeType;
 import gov.ca.emsa.pulse.common.domain.EndpointStatus;
@@ -101,7 +101,7 @@ public class OrganizationManagerTest extends TestCase {
 			if(loc.getEndpoints() != null && loc.getEndpoints().size() == 1) {
 				foundEndpoint = true;
 				
-				LocationEndpointDTO locEndpoint = loc.getEndpoints().get(0);
+				EndpointDTO locEndpoint = loc.getEndpoints().get(0);
 				assertNotNull(locEndpoint);
 				assertEquals(1, locEndpoint.getMimeTypes().size());
 				assertEquals("application/xml", locEndpoint.getMimeTypes().get(0).getMimeType());

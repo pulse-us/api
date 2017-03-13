@@ -1,8 +1,6 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.LocationAddressLineEntity;
-import gov.ca.emsa.pulse.broker.entity.LocationEndpointEntity;
-import gov.ca.emsa.pulse.broker.entity.LocationEndpointMimeTypeEntity;
 import gov.ca.emsa.pulse.broker.entity.LocationEntity;
 
 import java.util.ArrayList;
@@ -22,11 +20,11 @@ public class LocationDTO extends AddressableDTO {
 	private Date creationDate;
 	private Date lastModifiedDate;
 	
-	private List<LocationEndpointDTO> endpoints;
+	private List<EndpointDTO> endpoints;
 	
 	public LocationDTO(){
 		super();
-		this.endpoints = new ArrayList<LocationEndpointDTO>();
+		this.endpoints = new ArrayList<EndpointDTO>();
 	}
 	
 	public LocationDTO(LocationEntity entity){
@@ -60,13 +58,6 @@ public class LocationDTO extends AddressableDTO {
 		this.externalLastUpdateDate = entity.getExternalLastUpdatedDate();
 		this.creationDate = entity.getCreationDate();
 		this.lastModifiedDate = entity.getLastModifiedDate();
-		
-		if(entity.getEndpoints() != null) {
-			for(LocationEndpointEntity endpointEntity : entity.getEndpoints()) {
-				LocationEndpointDTO endpointDto = new LocationEndpointDTO(endpointEntity);
-				this.endpoints.add(endpointDto);
-			}
-		}
 	}
 	
 	public Long getId() {
@@ -149,11 +140,11 @@ public class LocationDTO extends AddressableDTO {
 		this.externalLastUpdateDate = externalLastUpdateDate;
 	}
 
-	public List<LocationEndpointDTO> getEndpoints() {
+	public List<EndpointDTO> getEndpoints() {
 		return endpoints;
 	}
 
-	public void setEndpoints(List<LocationEndpointDTO> endpoints) {
+	public void setEndpoints(List<EndpointDTO> endpoints) {
 		this.endpoints = endpoints;
 	}
 }
