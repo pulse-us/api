@@ -264,7 +264,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 		switch(actionCode) {
 		case PD:
 			PatientDTO patientDis = patientManager.getPatientById(id);
-			patientDis.setLocationMaps(new ArrayList());
+			patientDis.setEndpointMaps(new ArrayList());
 			Patient patientDisAuditObj = DtoToDomainConverter.convert(patientDis);
 			jsonInString = mapper.writeValueAsString(patientDisAuditObj);
 			break;

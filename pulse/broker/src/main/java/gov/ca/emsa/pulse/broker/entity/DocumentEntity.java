@@ -23,8 +23,8 @@ public class DocumentEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="patient_location_map_id")
-	private Long patientLocationMapId;
+	@Column(name="patient_endpoint_map_id")
+	private Long patientEndpointMapId;
 	
 	//metadata
 	@Column(name="name")
@@ -62,8 +62,8 @@ public class DocumentEntity {
 	private byte[] contents;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "patient_location_map_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private PatientLocationMapEntity patientLocationMap;
+	@JoinColumn(name = "patient_endpoint_map_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private PatientEndpointMapEntity patientEndpointMap;
 	
 	@Column(name = "status_id")
 	private Long statusId;
@@ -71,7 +71,7 @@ public class DocumentEntity {
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "status_id", unique=true, nullable = false, insertable=false, updatable= false)
-	private QueryLocationStatusEntity status;
+	private QueryEndpointStatusEntity status;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -138,20 +138,20 @@ public class DocumentEntity {
 		this.contents = contents;
 	}
 
-	public Long getPatientLocationMapId() {
-		return patientLocationMapId;
+	public Long getPatientEndpointMapId() {
+		return patientEndpointMapId;
 	}
 
-	public void setPatientLocationMapId(Long patientLocationMapId) {
-		this.patientLocationMapId = patientLocationMapId;
+	public void setPatientEndpointMapId(Long patientEndpointMapId) {
+		this.patientEndpointMapId = patientEndpointMapId;
 	}
 
-	public PatientLocationMapEntity getPatientLocationMap() {
-		return patientLocationMap;
+	public PatientEndpointMapEntity getPatientEndpointMap() {
+		return patientEndpointMap;
 	}
 
-	public void setPatientLocationMap(PatientLocationMapEntity patientLocationMap) {
-		this.patientLocationMap = patientLocationMap;
+	public void setPatientEndpointMap(PatientEndpointMapEntity patientEndpointMap) {
+		this.patientEndpointMap = patientEndpointMap;
 	}
 
 	public String getClassName() {
@@ -226,11 +226,11 @@ public class DocumentEntity {
 		this.statusId = statusId;
 	}
 
-	public QueryLocationStatusEntity getStatus() {
+	public QueryEndpointStatusEntity getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryLocationStatusEntity status) {
+	public void setStatus(QueryEndpointStatusEntity status) {
 		this.status = status;
 	}
 }

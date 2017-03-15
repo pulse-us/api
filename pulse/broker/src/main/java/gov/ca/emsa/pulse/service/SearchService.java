@@ -21,7 +21,7 @@ import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
@@ -29,7 +29,7 @@ import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
-import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -86,12 +86,12 @@ public class SearchService {
 		
 				//get the list of locations		
 				for(LocationDTO location : locationsToQuery) {
-					QueryLocationMapDTO queryLocMap = new QueryLocationMapDTO();
-					queryLocMap.setLocationId(location.getId());
+					QueryEndpointMapDTO queryLocMap = new QueryEndpointMapDTO();
+					queryLocMap.setEndpointId(location.getId());
 					queryLocMap.setQueryId(query.getId());
-					queryLocMap.setStatus(QueryLocationStatus.Active);
+					queryLocMap.setStatus(QueryEndpointStatus.Active);
 					queryLocMap = queryManager.createOrUpdateQueryLocation(queryLocMap);
-					query.getLocationStatuses().add(queryLocMap);
+					query.getEndpointStatuses().add(queryLocMap);
 				}
 	
 	        	queryManager.queryForPatientRecords(input, toSearch, query, user);

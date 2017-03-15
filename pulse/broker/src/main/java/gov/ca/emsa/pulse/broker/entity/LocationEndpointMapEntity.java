@@ -13,8 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.apache.commons.lang.StringUtils;
-
 @Entity
 @Table(name="location_endpoint_map")
 public class LocationEndpointMapEntity {

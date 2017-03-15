@@ -12,7 +12,7 @@ import gov.ca.emsa.pulse.common.domain.PatientGender;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import gov.ca.emsa.pulse.common.domain.QueryLocationMap;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointMap;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
@@ -287,7 +287,7 @@ public class ServiceApplicationTests {
 		patientSearch.getPatientNames().get(0).setFamilyName("Doe");
 		pss.searchForPatientWithTerms(mockRestTemplate, patientSearch);
 
-		Future<List<QueryLocationMap>> future = executor.submit(pss);
+		Future<List<QueryEndpointMap>> future = executor.submit(pss);
 
 		//assertNotNull(future.get());
 		//assertEquals(future.get().get(0).getResults().get(0).getPatientName().getFamilyName(),"Doe");
@@ -347,11 +347,11 @@ public class ServiceApplicationTests {
 		List<Document> documents = new ArrayList<Document>();
 		doc1.setId("1");
 		doc1.setName("Document1");
-		doc1.setLocationMapId(new Long(1));
+		doc1.setEndpointMapId(new Long(1));
 		doc1.setPatient(new Patient());
 		doc2.setId("2");
 		doc2.setName("Document2");
-		doc2.setLocationMapId(new Long(2));
+		doc2.setEndpointMapId(new Long(2));
 		doc2.setPatient(new Patient());
 		documents.add(doc1);
 		documents.add(doc2);

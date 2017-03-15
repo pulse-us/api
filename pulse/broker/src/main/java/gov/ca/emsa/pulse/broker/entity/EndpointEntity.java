@@ -65,6 +65,10 @@ public class EndpointEntity {
 	@Column( name = "endpoint_id", nullable = false)
 	private Set<EndpointMimeTypeEntity> mimeTypes = new LinkedHashSet<EndpointMimeTypeEntity>();
 	
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "endpointId" )
+	@Column( name = "endpoint_id", nullable = false)
+	private Set<LocationEndpointMapEntity> locationEndpointMaps = new LinkedHashSet<LocationEndpointMapEntity>();
+	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
@@ -186,5 +190,13 @@ public class EndpointEntity {
 
 	public void setMimeTypes(Set<EndpointMimeTypeEntity> mimeTypes) {
 		this.mimeTypes = mimeTypes;
+	}
+
+	public Set<LocationEndpointMapEntity> getLocationEndpointMaps() {
+		return locationEndpointMaps;
+	}
+
+	public void setLocationEndpointMaps(Set<LocationEndpointMapEntity> locationEndpointMaps) {
+		this.locationEndpointMaps = locationEndpointMaps;
 	}
 }

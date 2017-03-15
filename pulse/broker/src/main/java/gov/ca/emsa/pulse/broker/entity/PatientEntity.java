@@ -62,7 +62,7 @@ public class PatientEntity {
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientId"  )
 	@Fetch(FetchMode.JOIN)
 	@Column( name = "patient_id", nullable = false  )
-	private Set<PatientLocationMapEntity> locationMaps = new HashSet<PatientLocationMapEntity>();
+	private Set<PatientEndpointMapEntity> endpointMaps = new HashSet<PatientEndpointMapEntity>();
 	
 	public Long getId() {
 		return id;
@@ -136,12 +136,12 @@ public class PatientEntity {
 		this.lastReadDate = lastReadDate;
 	}
 
-	public Set<PatientLocationMapEntity> getLocationMaps() {
-		return locationMaps;
+	public Set<PatientEndpointMapEntity> getEndpointMaps() {
+		return endpointMaps;
 	}
 
-	public void setLocationMaps(Set<PatientLocationMapEntity> locationMaps) {
-		this.locationMaps = locationMaps;
+	public void setEndpointMaps(Set<PatientEndpointMapEntity> endpointMaps) {
+		this.endpointMaps = endpointMaps;
 	}
 
 	public String getFullName() {

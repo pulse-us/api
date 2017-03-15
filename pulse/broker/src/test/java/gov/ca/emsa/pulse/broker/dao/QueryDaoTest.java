@@ -4,7 +4,7 @@ import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationStatusDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
@@ -58,28 +58,28 @@ public class QueryDaoTest extends TestCase {
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		
-		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();
-		orgQuery1.setLocationId(location1.getId());
-		orgQuery1.setStatus(QueryLocationStatus.Active);
-		toInsert.getLocationStatuses().add(orgQuery1);
+		QueryEndpointMapDTO orgQuery1 = new QueryEndpointMapDTO();
+		orgQuery1.setEndpointId(location1.getId());
+		orgQuery1.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointStatuses().add(orgQuery1);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
 		assertNotNull(inserted);
 		assertNotNull(inserted.getId());
 		assertTrue(inserted.getId().longValue() > 0);
-		assertNotNull(inserted.getLocationStatuses());
-		assertEquals(1, inserted.getLocationStatuses().size());
-		orgQuery1 = inserted.getLocationStatuses().get(0);
-		assertNotNull(inserted.getLocationStatuses().get(0).getId());
-		assertTrue(inserted.getLocationStatuses().get(0).getId().longValue() > 0);
+		assertNotNull(inserted.getEndpointStatuses());
+		assertEquals(1, inserted.getEndpointStatuses().size());
+		orgQuery1 = inserted.getEndpointStatuses().get(0);
+		assertNotNull(inserted.getEndpointStatuses().get(0).getId());
+		assertTrue(inserted.getEndpointStatuses().get(0).getId().longValue() > 0);
 		
 		QueryDTO selected = queryDao.getById(inserted.getId());
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getLocationStatuses());
-		assertEquals(1, selected.getLocationStatuses().size());
-		orgQuery1 = selected.getLocationStatuses().get(0);
+		assertNotNull(selected.getEndpointStatuses());
+		assertEquals(1, selected.getEndpointStatuses().size());
+		orgQuery1 = selected.getEndpointStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
 	}
@@ -94,25 +94,25 @@ public class QueryDaoTest extends TestCase {
 		toInsert.setStatus(QueryStatus.Active);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
-		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();
-		orgQuery1.setLocationId(location1.getId());
-		orgQuery1.setStatus(QueryLocationStatus.Active);
-		toInsert.getLocationStatuses().add(orgQuery1);
-		QueryLocationMapDTO orgQuery2 = new QueryLocationMapDTO();
-		orgQuery2.setLocationId(location2.getId());
-		orgQuery2.setStatus(QueryLocationStatus.Active);
-		toInsert.getLocationStatuses().add(orgQuery2);
+		QueryEndpointMapDTO orgQuery1 = new QueryEndpointMapDTO();
+		orgQuery1.setEndpointId(location1.getId());
+		orgQuery1.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointStatuses().add(orgQuery1);
+		QueryEndpointMapDTO orgQuery2 = new QueryEndpointMapDTO();
+		orgQuery2.setEndpointId(location2.getId());
+		orgQuery2.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointStatuses().add(orgQuery2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
 		assertNotNull(inserted);
 		assertNotNull(inserted.getId());
 		assertTrue(inserted.getId().longValue() > 0);
-		assertNotNull(inserted.getLocationStatuses());
-		assertEquals(2, inserted.getLocationStatuses().size());
-		orgQuery1 = inserted.getLocationStatuses().get(0);
+		assertNotNull(inserted.getEndpointStatuses());
+		assertEquals(2, inserted.getEndpointStatuses().size());
+		orgQuery1 = inserted.getEndpointStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		orgQuery2 = inserted.getLocationStatuses().get(1);
+		orgQuery2 = inserted.getEndpointStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 
@@ -120,12 +120,12 @@ public class QueryDaoTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getLocationStatuses());
-		assertEquals(2, selected.getLocationStatuses().size());
-		orgQuery1 = selected.getLocationStatuses().get(0);
+		assertNotNull(selected.getEndpointStatuses());
+		assertEquals(2, selected.getEndpointStatuses().size());
+		orgQuery1 = selected.getEndpointStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		orgQuery2 = selected.getLocationStatuses().get(0);
+		orgQuery2 = selected.getEndpointStatuses().get(0);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 	}
@@ -140,25 +140,25 @@ public class QueryDaoTest extends TestCase {
 		toInsert.setStatus(QueryStatus.Active);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
-		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();
-		orgQuery1.setLocationId(location1.getId());
-		orgQuery1.setStatus(QueryLocationStatus.Active);
-		toInsert.getLocationStatuses().add(orgQuery1);
-		QueryLocationMapDTO orgQuery2 = new QueryLocationMapDTO();
-		orgQuery2.setLocationId(location2.getId());
-		orgQuery2.setStatus(QueryLocationStatus.Active);
-		toInsert.getLocationStatuses().add(orgQuery2);
+		QueryEndpointMapDTO orgQuery1 = new QueryEndpointMapDTO();
+		orgQuery1.setEndpointId(location1.getId());
+		orgQuery1.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointStatuses().add(orgQuery1);
+		QueryEndpointMapDTO orgQuery2 = new QueryEndpointMapDTO();
+		orgQuery2.setEndpointId(location2.getId());
+		orgQuery2.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointStatuses().add(orgQuery2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
 		assertNotNull(inserted);
 		assertNotNull(inserted.getId());
 		assertTrue(inserted.getId().longValue() > 0);
-		assertNotNull(inserted.getLocationStatuses());
-		assertEquals(2, inserted.getLocationStatuses().size());
-		orgQuery1 = inserted.getLocationStatuses().get(0);
+		assertNotNull(inserted.getEndpointStatuses());
+		assertEquals(2, inserted.getEndpointStatuses().size());
+		orgQuery1 = inserted.getEndpointStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		orgQuery2 = inserted.getLocationStatuses().get(0);
+		orgQuery2 = inserted.getEndpointStatuses().get(0);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 		
@@ -177,14 +177,14 @@ public class QueryDaoTest extends TestCase {
 		toInsert.setStatus(QueryStatus.Active);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
-		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();
-		orgQuery1.setLocationId(location1.getId());
-		orgQuery1.setStatus(QueryLocationStatus.Active);
-		toInsert.getLocationStatuses().add(orgQuery1);
-		QueryLocationMapDTO orgQuery2 = new QueryLocationMapDTO();
-		orgQuery2.setLocationId(location2.getId());
-		orgQuery2.setStatus(QueryLocationStatus.Active);
-		toInsert.getLocationStatuses().add(orgQuery2);
+		QueryEndpointMapDTO orgQuery1 = new QueryEndpointMapDTO();
+		orgQuery1.setEndpointId(location1.getId());
+		orgQuery1.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointStatuses().add(orgQuery1);
+		QueryEndpointMapDTO orgQuery2 = new QueryEndpointMapDTO();
+		orgQuery2.setEndpointId(location2.getId());
+		orgQuery2.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointStatuses().add(orgQuery2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
 		assertNotNull(inserted);
@@ -214,7 +214,7 @@ public class QueryDaoTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertEquals(0, selected.getLocationStatuses().size());
+		assertEquals(0, selected.getEndpointStatuses().size());
 		
 		selected.setStatus(QueryStatus.Complete);
 		selected = queryDao.update(selected);
@@ -237,7 +237,7 @@ public class QueryDaoTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertEquals(0, selected.getLocationStatuses().size());
+		assertEquals(0, selected.getEndpointStatuses().size());
 		
 		queryDao.close(selected.getId());
 		

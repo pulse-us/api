@@ -6,7 +6,7 @@ import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
@@ -73,11 +73,11 @@ public class QueryService {
     }
 
 	@ApiOperation(value = "Cancel part of a query that's going to a specific location")
-	@RequestMapping(value = "/{queryId}/locationMap/{locationMapId}/cancel", method = RequestMethod.POST)
+	@RequestMapping(value = "/{queryId}/endpoint/{endpointId}/cancel", method = RequestMethod.POST)
 	public Query cancelLocationQuery(@PathVariable(value="queryId") Long queryId,
-			@PathVariable(value="locationMapId") Long locationMapId) {
+			@PathVariable(value="endpointId") Long endpointId) {
 		synchronized (queryManager) {
-			queryManager.cancelQueryToLocation(locationMapId);
+			queryManager.cancelQueryToEndpoint(queryId, endpointId);
 			queryManager.updateQueryStatusFromLocations(queryId);
 			QueryDTO queryWithCancelledLocation = queryManager.getById(queryId);
 			return DtoToDomainConverter.convert(queryWithCancelledLocation);
@@ -119,9 +119,9 @@ public class QueryService {
 		auditManager.createPulseAuditEvent(AuditType.PC, patient.getId());
 
 		synchronized(queryManager) {
-			//create patient location mappings based on the patientrecords we are using
+			//create patient-endpoint mappings for doc discovery based on the patientrecords we are using
 			for(Long patientRecordId : request.getPatientRecordIds()) {
-				PatientLocationMapDTO patLocMapDto = patientManager.createPatientLocationMapFromPatientRecord(patient, patientRecordId);
+				PatientEndpointMapDTO patientEndpointMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient, patientRecordId);
 	
 				//kick off document list retrieval service
 				SAMLInput input = new SAMLInput();
@@ -132,11 +132,11 @@ public class QueryService {
 				HashMap<String, String> customAttributes = new HashMap<String,String>();
 				customAttributes.put("RequesterFirstName", user.getFirstName());
 				customAttributes.put("RequestReason", "Get patient documents");
-				customAttributes.put("PatientRecordId", patLocMapDto.getExternalPatientRecordId());
+				customAttributes.put("PatientRecordId", patientEndpointMapDto.getExternalPatientRecordId());
 				input.setAttributes(customAttributes);
 	
-				patient.getLocationMaps().add(patLocMapDto);
-				docManager.queryForDocuments(user, input, patLocMapDto);
+				patient.getEndpointMaps().add(patientEndpointMapDto);
+				docManager.queryForDocuments(user, input, patientEndpointMapDto);
 			}
 	
 			//delete query (all associated items should cascade)

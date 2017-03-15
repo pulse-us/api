@@ -3,7 +3,6 @@ package gov.ca.emsa.pulse.broker.manager.impl;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -13,28 +12,24 @@ import org.springframework.stereotype.Component;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
-import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
-import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentQueryResults;
-import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
-import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
-import gov.ca.emsa.pulse.common.domain.QueryStatus;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 import gov.ca.emsa.pulse.cten.IheStatus;
 
 @Component
 public class DocumentQueryService implements Runnable {
 	private static final Logger logger = LogManager.getLogger(DocumentQueryService.class);
 
-	private PatientLocationMapDTO patientLocationMap;
-	private LocationDTO location;
+	private PatientEndpointMapDTO patientEndpointMap;
+	private EndpointDTO endpoint;
 	@Autowired private QueryManager queryManager;
 	@Autowired private PatientManager patientManager;
 	@Autowired private DocumentManager docManager;
@@ -48,27 +43,15 @@ public class DocumentQueryService implements Runnable {
 		//query this organization directly for 
 		boolean querySuccess = true;
 		DocumentQueryResults searchResults = null;
-		EndpointDTO endpointToQuery = null;
-		if(location.getEndpoints() != null) {
-			for(EndpointDTO endpoint : location.getEndpoints()) {
-				if(endpoint.getEndpointType() != null && 
-						endpoint.getEndpointType().getCode().equalsIgnoreCase(EndpointTypeEnum.DOCUMENT_DISCOVERY.getCode()) && 
-						endpoint.getEndpointStatus() != null && 
-						endpoint.getEndpointStatus().getName().equalsIgnoreCase(EndpointStatusEnum.ACTIVE.getName())) {
-						endpointToQuery = endpoint;
-					}
-			}
-		}
-		
-		if(endpointToQuery == null) {
-			logger.error("The location " + location.getName() + " does not have an active document discovery endpoint.");
+		if(endpoint == null) {
+			logger.error("There is no active document discovery endpoint to query for documents.");
 			querySuccess = false;
 		} else {
-			Adapter adapter = adapterFactory.getAdapter(endpointToQuery);
+			Adapter adapter = adapterFactory.getAdapter(endpoint);
 			if(adapter != null) {
-				logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+				logger.info("Starting query to endpoint with external id '" + endpoint.getExternalId() + "'");
 				try {
-					searchResults = adapter.queryDocuments(user, endpointToQuery, patientLocationMap, samlInput);
+					searchResults = adapter.queryDocuments(user, endpoint, patientEndpointMap, samlInput);
 				} catch(Exception ex) {
 					logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 					querySuccess = false;
@@ -80,59 +63,53 @@ public class DocumentQueryService implements Runnable {
 				List<DocumentDTO> docs = searchResults.getResults();
 				if(docs != null && docs.size() > 0) {
 					for(DocumentDTO doc : docs) {
-						doc.setPatientLocationMapId(patientLocationMap.getId());
+						doc.setPatientEndpointMapId(patientEndpointMap.getId());
 						//save document
 						docManager.create(doc);
 					}
 				} else {
-					logger.info("Got 0 document results from query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+					logger.info("Got 0 document results from query to endpoint with external id '" + endpoint.getExternalId() + "'");
 				}
 			} else if(searchResults != null && searchResults.getStatus() == IheStatus.Failure) {
 				querySuccess = false;
 			} else {
-				logger.error("Got a null response back from query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+				logger.error("Got a null response back from query to endpoint with external id '" + endpoint.getExternalId() + "'");
 			}
-			logger.info("Completed query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+			logger.info("Completed query to endpoint with external id '" + endpoint.getExternalId() + "'");
 		}
 		
-		patientLocationMap.setDocumentsQueryEnd(new Date());
+		patientEndpointMap.setDocumentsQueryEnd(new Date());
 		if(querySuccess) {
-			patientLocationMap.setDocumentsQueryStatus(QueryLocationStatus.Successful);
+			patientEndpointMap.setDocumentsQueryStatus(QueryEndpointStatus.Successful);
 		} else {
-			patientLocationMap.setDocumentsQueryStatus(QueryLocationStatus.Failed);
+			patientEndpointMap.setDocumentsQueryStatus(QueryEndpointStatus.Failed);
 		}
-		//update patient loc map
+		//update mapping of our staged patient to the endpoint just queried
 		try {
-			patientManager.updatePatientLocationMap(patientLocationMap);
+			patientManager.updatePatientEndpointMap(patientEndpointMap);
 		} catch(SQLException ex) {
-			logger.error("Could not update patient location map with "
-					+ "[id: " + patientLocationMap.getId() + ", "
-					+ "orgPatientRecordId: " + patientLocationMap.getExternalPatientRecordId() + ", " 
-					+ "orgId: " + patientLocationMap.getLocationId() + ", " 
-					+ "patientId: " + patientLocationMap.getPatientId() + "]");
+			logger.error("Could not update patient endpoint map with "
+					+ "[id: " + patientEndpointMap.getId() + ", "
+					+ "externalPatientRecordId: " + patientEndpointMap.getExternalPatientRecordId() + ", " 
+					+ "endpointId: " + patientEndpointMap.getEndpointId() + ", " 
+					+ "patientId: " + patientEndpointMap.getPatientId() + "]");
 		}
 	}
-	
-	
 
 	public CommonUser getUser() {
 		return user;
 	}
 
-
-
 	public void setUser(CommonUser user) {
 		this.user = user;
 	}
 
-
-
-	public LocationDTO getLocation() {
-		return location;
+	public EndpointDTO getEndpoint() {
+		return endpoint;
 	}
 
-	public void setLocation(LocationDTO location) {
-		this.location = location;
+	public void setEndpoint(EndpointDTO endpoint) {
+		this.endpoint = endpoint;
 	}
 
 	public QueryManager getQueryManager() {
@@ -159,12 +136,12 @@ public class DocumentQueryService implements Runnable {
 		this.adapterFactory = adapterFactory;
 	}
 
-	public PatientLocationMapDTO getPatientLocationMap() {
-		return patientLocationMap;
+	public PatientEndpointMapDTO getPatientLocationMap() {
+		return patientEndpointMap;
 	}
 
-	public void setPatientLocationMap(PatientLocationMapDTO patientLocationMap) {
-		this.patientLocationMap = patientLocationMap;
+	public void setPatientLocationMap(PatientEndpointMapDTO patientLocationMap) {
+		this.patientEndpointMap = patientLocationMap;
 	}
 
 	public PatientDTO getToSearch() {

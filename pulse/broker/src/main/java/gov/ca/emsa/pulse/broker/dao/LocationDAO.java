@@ -15,4 +15,5 @@ public interface LocationDAO {
 	public LocationDTO findById(Long id);
 	public LocationDTO findByExternalId(String externalId);
 	public List<LocationDTO> findByName(String name);
+	public List<LocationDTO> findByEndpoint(Long endpointId) ;
 }

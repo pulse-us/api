@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 
@@ -20,8 +20,8 @@ public interface QueryManager extends CachedDataManager {
 	public QueryDTO updateQuery(QueryDTO toUpdate);
 	public QueryDTO createQuery(QueryDTO toCreate);
 	public void close(Long queryId);
-	public QueryDTO cancelQueryToLocation(Long queryLocationMapId);
-	public QueryLocationMapDTO createOrUpdateQueryLocation(QueryLocationMapDTO toUpdate);
+	public QueryDTO cancelQueryToEndpoint(Long queryId, Long endpointId);
+	public QueryEndpointMapDTO createOrUpdateQueryLocation(QueryEndpointMapDTO toUpdate);
 
 	public PatientRecordDTO getPatientRecordById(Long patientRecordId);
 	public void queryForPatientRecords(SAMLInput samlMessage, PatientSearch toSearch, QueryDTO query, CommonUser user) throws JsonProcessingException;

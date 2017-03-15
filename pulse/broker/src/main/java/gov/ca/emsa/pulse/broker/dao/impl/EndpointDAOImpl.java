@@ -107,6 +107,27 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 		return new EndpointDTO(result);
 	}
 	
+	@Override
+	public EndpointDTO findByLocationIdAndType(Long locationId, EndpointTypeEnum type) {
+		Query query = entityManager.createQuery("SELECT DISTINCT endpoint "
+				+ "FROM EndpointEntity endpoint "
+				+ "JOIN FETCH endpoint.endpointStatus "
+				+ "JOIN FETCH endpoint.endpointType "
+				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes "
+				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
+				+ "LEFT OUTER JOIN FETCH locMaps.location loc "
+				+ "WHERE endpoint.endpointType.code = :typeName "
+				+ "AND loc.id = :locationId", EndpointEntity.class);
+		query.setParameter("type", type.name());
+		query.setParameter("locationId", locationId);
+		
+		List<EndpointEntity> endpoints = query.getResultList();
+		if(endpoints != null && endpoints.size() > 0) {
+			return new EndpointDTO(endpoints.get(0));
+		}
+		return null;
+	}
+	
 	private EndpointStatusEntity getEndpointStatusByName(String name) {
 		EndpointStatusEntity result = null;
 		Query query = entityManager.createQuery("from EndpointStatusEntity where UPPER(name) = :name",
@@ -155,6 +176,8 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				+ "JOIN FETCH endpoint.endpointStatus "
 				+ "JOIN FETCH endpoint.endpointType "
 				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes "
+				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
+				+ "LEFT OUTER JOIN FETCH locMaps.location"
 				+ "WHERE endpoint.id = :id", EndpointEntity.class);
 		query.setParameter("id", id);
 		
@@ -171,6 +194,8 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				+ "JOIN FETCH endpoint.endpointStatus "
 				+ "JOIN FETCH endpoint.endpointType "
 				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes "
+				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
+				+ "LEFT OUTER JOIN FETCH locMaps.location "
 				+ "WHERE loc.externalId = :externalId", EndpointEntity.class);
 		query.setParameter("externalId", externalId);
 		
@@ -187,6 +212,8 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				+ "JOIN FETCH endpoint.endpointStatus "
 				+ "JOIN FETCH endpoint.endpointType "
 				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes "
+				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
+				+ "LEFT OUTER JOIN FETCH locMaps.location "
 				+ "WHERE endpoint.endpointType.code IN (:typeNames)", EndpointEntity.class);
 		query.setParameter("typeNames", typeNames);
 		
@@ -199,6 +226,8 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				+ "FROM EndpointEntity endpoint "
 				+ "JOIN FETCH endpoint.endpointStatus "
 				+ "JOIN FETCH endpoint.endpointType "
+				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
+				+ "LEFT OUTER JOIN FETCH locMaps.location "
 				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes ", EndpointEntity.class);
 		return query.getResultList();
 	}

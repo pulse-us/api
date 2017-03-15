@@ -4,7 +4,7 @@ import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationStatusDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.entity.PatientDiscoveryRequestStatisticsEntity;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
@@ -22,7 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
@@ -48,12 +48,12 @@ public class QueryStatisticsTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getLocationStatuses());
-		assertEquals(2, selected.getLocationStatuses().size());
-		QueryLocationMapDTO orgQuery1 = selected.getLocationStatuses().get(0);
+		assertNotNull(selected.getEndpointStatuses());
+		assertEquals(2, selected.getEndpointStatuses().size());
+		QueryEndpointMapDTO orgQuery1 = selected.getEndpointStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		QueryLocationMapDTO orgQuery2 = selected.getLocationStatuses().get(1);
+		QueryEndpointMapDTO orgQuery2 = selected.getEndpointStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 		assertTrue(orgQuery1.getId().longValue() != orgQuery2.getId().longValue());
@@ -62,15 +62,15 @@ public class QueryStatisticsTest extends TestCase {
 		endCal.setTime(orgQuery1.getStartDate());
 		endCal.add(Calendar.HOUR, 1);
 		orgQuery1.setEndDate(endCal.getTime());
-		orgQuery1.setStatus(QueryLocationStatus.Successful);
-		queryDao.updateQueryLocationMap(orgQuery1);
+		orgQuery1.setStatus(QueryEndpointStatus.Successful);
+		queryDao.updateQueryEndpointMap(orgQuery1);
 				
 		endCal = Calendar.getInstance();
 		endCal.setTime(orgQuery2.getStartDate());
 		endCal.add(Calendar.HOUR, 2);
 		orgQuery2.setEndDate(endCal.getTime());
-		orgQuery2.setStatus(QueryLocationStatus.Successful);
-		queryDao.updateQueryLocationMap(orgQuery2);
+		orgQuery2.setStatus(QueryEndpointStatus.Successful);
+		queryDao.updateQueryEndpointMap(orgQuery2);
 				
 		//get the stats		
 		List<PatientDiscoveryRequestStatisticsEntity> results = statDao.getStatistics(null, null);
@@ -117,12 +117,12 @@ public class QueryStatisticsTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getLocationStatuses());
-		assertEquals(2, selected.getLocationStatuses().size());
-		QueryLocationMapDTO orgQuery1 = selected.getLocationStatuses().get(0);
+		assertNotNull(selected.getEndpointStatuses());
+		assertEquals(2, selected.getEndpointStatuses().size());
+		QueryEndpointMapDTO orgQuery1 = selected.getEndpointStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		QueryLocationMapDTO orgQuery2 = selected.getLocationStatuses().get(1);
+		QueryEndpointMapDTO orgQuery2 = selected.getEndpointStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 		assertTrue(orgQuery1.getId().longValue() != orgQuery2.getId().longValue());
@@ -131,15 +131,15 @@ public class QueryStatisticsTest extends TestCase {
 		endCal.setTime(orgQuery1.getStartDate());
 		endCal.add(Calendar.HOUR, 1);
 		orgQuery1.setEndDate(endCal.getTime());
-		orgQuery1.setStatus(QueryLocationStatus.Successful);
-		queryDao.updateQueryLocationMap(orgQuery1);
+		orgQuery1.setStatus(QueryEndpointStatus.Successful);
+		queryDao.updateQueryEndpointMap(orgQuery1);
 				
 		endCal = Calendar.getInstance();
 		endCal.setTime(orgQuery2.getStartDate());
 		endCal.add(Calendar.HOUR, 2);
 		orgQuery2.setEndDate(endCal.getTime());
-		orgQuery2.setStatus(QueryLocationStatus.Successful);
-		queryDao.updateQueryLocationMap(orgQuery2);
+		orgQuery2.setStatus(QueryEndpointStatus.Successful);
+		queryDao.updateQueryEndpointMap(orgQuery2);
 				
 		//get the stats	
 		//set the start filter to be 5 seconds before the earliest of the two queries
@@ -195,12 +195,12 @@ public class QueryStatisticsTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getLocationStatuses());
-		assertEquals(2, selected.getLocationStatuses().size());
-		QueryLocationMapDTO orgQuery1 = selected.getLocationStatuses().get(0);
+		assertNotNull(selected.getEndpointStatuses());
+		assertEquals(2, selected.getEndpointStatuses().size());
+		QueryEndpointMapDTO orgQuery1 = selected.getEndpointStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		QueryLocationMapDTO orgQuery2 = selected.getLocationStatuses().get(1);
+		QueryEndpointMapDTO orgQuery2 = selected.getEndpointStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 		assertTrue(orgQuery1.getId().longValue() != orgQuery2.getId().longValue());
@@ -209,15 +209,15 @@ public class QueryStatisticsTest extends TestCase {
 		endCal.setTime(orgQuery1.getStartDate());
 		endCal.add(Calendar.HOUR, 1);
 		orgQuery1.setEndDate(endCal.getTime());
-		orgQuery1.setStatus(QueryLocationStatus.Successful);
-		queryDao.updateQueryLocationMap(orgQuery1);
+		orgQuery1.setStatus(QueryEndpointStatus.Successful);
+		queryDao.updateQueryEndpointMap(orgQuery1);
 				
 		endCal = Calendar.getInstance();
 		endCal.setTime(orgQuery2.getStartDate());
 		endCal.add(Calendar.HOUR, 2);
 		orgQuery2.setEndDate(endCal.getTime());
-		orgQuery2.setStatus(QueryLocationStatus.Successful);
-		queryDao.updateQueryLocationMap(orgQuery2);
+		orgQuery2.setStatus(QueryEndpointStatus.Successful);
+		queryDao.updateQueryEndpointMap(orgQuery2);
 				
 		//get the stats	
 		
@@ -268,12 +268,12 @@ public class QueryStatisticsTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getLocationStatuses());
-		assertEquals(2, selected.getLocationStatuses().size());
-		QueryLocationMapDTO orgQuery1 = selected.getLocationStatuses().get(0);
+		assertNotNull(selected.getEndpointStatuses());
+		assertEquals(2, selected.getEndpointStatuses().size());
+		QueryEndpointMapDTO orgQuery1 = selected.getEndpointStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		QueryLocationMapDTO orgQuery2 = selected.getLocationStatuses().get(1);
+		QueryEndpointMapDTO orgQuery2 = selected.getEndpointStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 		assertTrue(orgQuery1.getId().longValue() != orgQuery2.getId().longValue());
@@ -282,15 +282,15 @@ public class QueryStatisticsTest extends TestCase {
 		endCal.setTime(orgQuery1.getStartDate());
 		endCal.add(Calendar.HOUR, 1);
 		orgQuery1.setEndDate(endCal.getTime());
-		orgQuery1.setStatus(QueryLocationStatus.Successful);
-		queryDao.updateQueryLocationMap(orgQuery1);
+		orgQuery1.setStatus(QueryEndpointStatus.Successful);
+		queryDao.updateQueryEndpointMap(orgQuery1);
 				
 		endCal = Calendar.getInstance();
 		endCal.setTime(orgQuery2.getStartDate());
 		endCal.add(Calendar.HOUR, 2);
 		orgQuery2.setEndDate(endCal.getTime());
-		orgQuery2.setStatus(QueryLocationStatus.Successful);
-		queryDao.updateQueryLocationMap(orgQuery2);
+		orgQuery2.setStatus(QueryEndpointStatus.Successful);
+		queryDao.updateQueryEndpointMap(orgQuery2);
 				
 		//get the stats	
 		
@@ -341,12 +341,12 @@ public class QueryStatisticsTest extends TestCase {
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
-		assertNotNull(selected.getLocationStatuses());
-		assertEquals(2, selected.getLocationStatuses().size());
-		QueryLocationMapDTO orgQuery1 = selected.getLocationStatuses().get(0);
+		assertNotNull(selected.getEndpointStatuses());
+		assertEquals(2, selected.getEndpointStatuses().size());
+		QueryEndpointMapDTO orgQuery1 = selected.getEndpointStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		QueryLocationMapDTO orgQuery2 = selected.getLocationStatuses().get(1);
+		QueryEndpointMapDTO orgQuery2 = selected.getEndpointStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 		assertTrue(orgQuery1.getId().longValue() != orgQuery2.getId().longValue());
@@ -355,15 +355,15 @@ public class QueryStatisticsTest extends TestCase {
 		endCal.setTime(orgQuery1.getStartDate());
 		endCal.add(Calendar.HOUR, 1);
 		orgQuery1.setEndDate(endCal.getTime());
-		orgQuery1.setStatus(QueryLocationStatus.Successful);
-		queryDao.updateQueryLocationMap(orgQuery1);
+		orgQuery1.setStatus(QueryEndpointStatus.Successful);
+		queryDao.updateQueryEndpointMap(orgQuery1);
 				
 		endCal = Calendar.getInstance();
 		endCal.setTime(orgQuery2.getStartDate());
 		endCal.add(Calendar.HOUR, 2);
 		orgQuery2.setEndDate(endCal.getTime());
-		orgQuery2.setStatus(QueryLocationStatus.Successful);
-		queryDao.updateQueryLocationMap(orgQuery2);
+		orgQuery2.setStatus(QueryEndpointStatus.Successful);
+		queryDao.updateQueryEndpointMap(orgQuery2);
 				
 		//get the stats	
 		//set the start filter to be 5 seconds after the latest of the two queries
@@ -433,29 +433,29 @@ public class QueryStatisticsTest extends TestCase {
 		toInsert.setStatus(QueryStatus.Complete);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
-		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();
-		orgQuery1.setLocationId(location1.getId());
-		orgQuery1.setStatus(QueryLocationStatus.Active);
+		QueryEndpointMapDTO orgQuery1 = new QueryEndpointMapDTO();
+		orgQuery1.setEndpointId(location1.getId());
+		orgQuery1.setStatus(QueryEndpointStatus.Active);
 		Calendar startCal = Calendar.getInstance();
 		orgQuery1.setStartDate(startCal.getTime());
-		toInsert.getLocationStatuses().add(orgQuery1);
-		QueryLocationMapDTO orgQuery2 = new QueryLocationMapDTO();
-		orgQuery2.setLocationId(location2.getId());
-		orgQuery2.setStatus(QueryLocationStatus.Active);
+		toInsert.getEndpointStatuses().add(orgQuery1);
+		QueryEndpointMapDTO orgQuery2 = new QueryEndpointMapDTO();
+		orgQuery2.setEndpointId(location2.getId());
+		orgQuery2.setStatus(QueryEndpointStatus.Active);
 		startCal = Calendar.getInstance();
 		orgQuery2.setStartDate(startCal.getTime());
-		toInsert.getLocationStatuses().add(orgQuery2);
+		toInsert.getEndpointStatuses().add(orgQuery2);
 		
 		query = queryDao.create(toInsert);
 		assertNotNull(query);
 		assertNotNull(query.getId());
 		assertTrue(query.getId().longValue() > 0);
-		assertNotNull(query.getLocationStatuses());
-		assertEquals(2, query.getLocationStatuses().size());
-		orgQuery1 = query.getLocationStatuses().get(0);
+		assertNotNull(query.getEndpointStatuses());
+		assertEquals(2, query.getEndpointStatuses().size());
+		orgQuery1 = query.getEndpointStatuses().get(0);
 		assertNotNull(orgQuery1.getId());
 		assertTrue(orgQuery1.getId().longValue() > 0);
-		orgQuery2 = query.getLocationStatuses().get(1);
+		orgQuery2 = query.getEndpointStatuses().get(1);
 		assertNotNull(orgQuery2.getId());
 		assertTrue(orgQuery2.getId().longValue() > 0);
 	}

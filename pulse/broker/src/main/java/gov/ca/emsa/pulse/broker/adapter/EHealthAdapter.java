@@ -54,7 +54,7 @@ import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordResults;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
@@ -163,7 +163,7 @@ public class EHealthAdapter implements Adapter {
 	}
 
 	@Override
-	public DocumentQueryResults queryDocuments(CommonUser user, EndpointDTO endpoint, PatientLocationMapDTO toSearch, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException {
+	public DocumentQueryResults queryDocuments(CommonUser user, EndpointDTO endpoint, PatientEndpointMapDTO toSearch, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException {
 		Patient patientToSearch = new Patient();
 		toSearch.setExternalPatientRecordId(toSearch.getExternalPatientRecordId());
 		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientToSearch);
@@ -231,7 +231,7 @@ public class EHealthAdapter implements Adapter {
 	 * @throws UnknownHostException 
 	 */
 	@Override
-	public void retrieveDocumentsContents(CommonUser user, EndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput, PatientLocationMapDTO patientMap) 
+	public void retrieveDocumentsContents(CommonUser user, EndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput, PatientEndpointMapDTO patientMap) 
 			throws UnknownHostException, UnsupportedEncodingException, IheErrorException {
 		List<Document> docsToSearch = new ArrayList<Document>();
 		for(DocumentDTO docDto : documents) {

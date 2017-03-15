@@ -8,6 +8,7 @@ import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.manager.impl.DocumentQueryService;
+import gov.ca.emsa.pulse.broker.manager.impl.DocumentRetrievalService;
 import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 
 import java.util.Timer;
@@ -186,5 +187,11 @@ public class BrokerApplication {
     @Scope(scopeName=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public DocumentQueryService documentQueryService() {
 		return new DocumentQueryService();
+	}
+	
+	@Bean
+    @Scope(scopeName=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	public DocumentRetrievalService documentRetrievalService() {
+		return new DocumentRetrievalService();
 	}
 }

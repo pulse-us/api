@@ -9,7 +9,7 @@ import gov.ca.emsa.pulse.broker.dto.GivenNameDTO;
 import gov.ca.emsa.pulse.broker.dto.NameAssemblyDTO;
 import gov.ca.emsa.pulse.broker.dto.NameRepresentationDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordAddressDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordNameDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
@@ -18,7 +18,7 @@ import gov.ca.emsa.pulse.broker.entity.NameAssemblyEntity;
 import gov.ca.emsa.pulse.broker.entity.NameRepresentationEntity;
 import gov.ca.emsa.pulse.broker.entity.NameTypeEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientGenderEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientLocationMapEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientEndpointMapEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
@@ -56,8 +56,8 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setPatientGender(patientGenderEntity);
 		patient.setPatientGenderId(patientGenderEntity.getId());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setLocationPatientRecordId(dto.getLocationPatientRecordId());
-		patient.setQueryLocationId(dto.getQueryLocationId());
+		patient.setEndpointPatientRecordId(dto.getEndpointPatientRecordId());
+		patient.setQueryEndpointId(dto.getQueryEndpointId());
 		
 		entityManager.persist(patient);
 		entityManager.flush();
@@ -138,8 +138,8 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setPatientGender(patientGenderEntity);
 		patient.setPatientGenderId(patientGenderEntity.getId());
 		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setLocationPatientRecordId(dto.getLocationPatientRecordId());
-		patient.setQueryLocationId(dto.getQueryLocationId());
+		patient.setEndpointPatientRecordId(dto.getEndpointPatientRecordId());
+		patient.setQueryEndpointId(dto.getQueryEndpointId());
 
 		patient = entityManager.merge(patient);
 		entityManager.flush();

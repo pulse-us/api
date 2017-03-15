@@ -4,8 +4,8 @@ import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
-import gov.ca.emsa.pulse.broker.entity.QueryLocationStatusEntity;
-import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.broker.entity.QueryEndpointStatusEntity;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,7 +40,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		doc.setSize(dto.getSize());
 		doc.setContents(dto.getContents());
 		doc.setLastReadDate(new Date());
-		doc.setPatientLocationMapId(dto.getPatientLocationMapId());
+		doc.setPatientEndpointMapId(dto.getPatientEndpointMapId());
 		
 		entityManager.persist(doc);
 		entityManager.flush();
@@ -52,8 +52,8 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	public DocumentDTO update(DocumentDTO dto) {
 		DocumentEntity doc = this.getEntityById(dto.getId());	
 
-		QueryLocationStatusEntity newStatus = 
-				statusDao.getQueryLocationStatusByName(dto.getStatus().name());
+		QueryEndpointStatusEntity newStatus = 
+				statusDao.getQueryEndpointStatusByName(dto.getStatus().name());
 		doc.setStatusId(newStatus == null ? null : newStatus.getId());
 		
 		doc.setName(dto.getName());
@@ -67,7 +67,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		doc.setSize(dto.getSize());
 		doc.setContents(dto.getContents());
 		doc.setLastReadDate(new Date());
-		doc.setPatientLocationMapId(dto.getPatientLocationMapId());
+		doc.setPatientEndpointMapId(dto.getPatientEndpointMapId());
 		
 		doc = entityManager.merge(doc);
 		entityManager.flush();

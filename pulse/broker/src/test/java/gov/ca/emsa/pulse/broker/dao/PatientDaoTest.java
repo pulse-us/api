@@ -98,7 +98,7 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected.getAcf());
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
-		assertEquals(0, selected.getLocationMaps().size());
+		assertEquals(0, selected.getEndpointMaps().size());
 		assertEquals(toCreate.getFullName(), selected.getFullName());
 	}
 	
@@ -135,7 +135,7 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected.getAcf());
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
-		assertEquals(0, selected.getLocationMaps().size());
+		assertEquals(0, selected.getEndpointMaps().size());
 		assertEquals(toCreate.getFullName(), selected.getFullName());
 	}
 	
@@ -170,7 +170,7 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected.getAcf());
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
-		assertEquals(0, selected.getLocationMaps().size());
+		assertEquals(0, selected.getEndpointMaps().size());
 	}
 	
 	@Test
@@ -203,7 +203,7 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected.getAcf());
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
-		assertEquals(0, selected.getLocationMaps().size());
+		assertEquals(0, selected.getEndpointMaps().size());
 	}
 	
 	//TODO: the org maps aren't coming back from the create or select 
@@ -230,7 +230,7 @@ public class PatientDaoTest extends TestCase {
 		
 		PatientDTO selected = patientDao.getById(created.getId());
 		assertNotNull(selected);
-		assertNotNull(selected.getLocationMaps());
+		assertNotNull(selected.getEndpointMaps());
 		//TODO: this is not working but should be
 		//assertTrue(selected.getOrgMaps().size() == 1);
 		//assertEquals(orgMap.getId().longValue(), selected.getOrgMaps().get(0).getId().longValue());

@@ -11,11 +11,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
 @Entity
-@Table(name="query_location_status")
-public class QueryLocationStatusEntity {
+@Table(name="query_endpoint_status")
+public class QueryEndpointStatusEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class QueryLocationStatusEntity {
 	
 	@Column(name="status")
 	@Enumerated(EnumType.STRING)
-	private QueryLocationStatus status;
+	private QueryEndpointStatus status;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -56,11 +56,11 @@ public class QueryLocationStatusEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public QueryLocationStatus getStatus() {
+	public QueryEndpointStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryLocationStatus status) {
+	public void setStatus(QueryEndpointStatus status) {
 		this.status = status;
 	}
 }

@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
-import gov.ca.emsa.pulse.broker.entity.QueryLocationStatusEntity;
+import gov.ca.emsa.pulse.broker.entity.QueryEndpointStatusEntity;
 import gov.ca.emsa.pulse.broker.entity.QueryStatusEntity;
 
 @Repository
@@ -31,13 +31,13 @@ public class QueryStatusDAOImpl extends BaseDAOImpl implements QueryStatusDAO {
 		return result;
 	}
 	
-	public QueryLocationStatusEntity getQueryLocationStatusByName(String name) {
+	public QueryEndpointStatusEntity getQueryEndpointStatusByName(String name) {
 		Query statusQuery = entityManager.createQuery("from QueryLocationStatusEntity "
 				+ "WHERE status = '" + name + "'",
-				QueryLocationStatusEntity.class);
-		List<QueryLocationStatusEntity> results = statusQuery.getResultList();
+				QueryEndpointStatusEntity.class);
+		List<QueryEndpointStatusEntity> results = statusQuery.getResultList();
 		
-		QueryLocationStatusEntity result = null;
+		QueryEndpointStatusEntity result = null;
 		if(results == null || results.size() == 0) {
 			logger.error("Could not find queryLocationStatus '" + name + "'");
 		} else {

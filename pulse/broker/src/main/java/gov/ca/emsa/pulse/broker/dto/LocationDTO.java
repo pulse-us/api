@@ -3,9 +3,7 @@ package gov.ca.emsa.pulse.broker.dto;
 import gov.ca.emsa.pulse.broker.entity.LocationAddressLineEntity;
 import gov.ca.emsa.pulse.broker.entity.LocationEntity;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class LocationDTO extends AddressableDTO {
 	
@@ -19,12 +17,9 @@ public class LocationDTO extends AddressableDTO {
 	private Date externalLastUpdateDate;
 	private Date creationDate;
 	private Date lastModifiedDate;
-	
-	private List<EndpointDTO> endpoints;
-	
+		
 	public LocationDTO(){
 		super();
-		this.endpoints = new ArrayList<EndpointDTO>();
 	}
 	
 	public LocationDTO(LocationEntity entity){
@@ -138,13 +133,5 @@ public class LocationDTO extends AddressableDTO {
 
 	public void setExternalLastUpdateDate(Date externalLastUpdateDate) {
 		this.externalLastUpdateDate = externalLastUpdateDate;
-	}
-
-	public List<EndpointDTO> getEndpoints() {
-		return endpoints;
-	}
-
-	public void setEndpoints(List<EndpointDTO> endpoints) {
-		this.endpoints = endpoints;
 	}
 }

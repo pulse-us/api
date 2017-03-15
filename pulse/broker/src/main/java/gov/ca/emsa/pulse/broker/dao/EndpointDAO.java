@@ -16,4 +16,5 @@ public interface EndpointDAO {
 	public void delete(EndpointDTO endpointDto);
 	public EndpointDTO findById(Long id);
 	public EndpointDTO findByExternalId(String externalId);
+	public EndpointDTO findByLocationIdAndType(Long locationId, EndpointTypeEnum type);
 }

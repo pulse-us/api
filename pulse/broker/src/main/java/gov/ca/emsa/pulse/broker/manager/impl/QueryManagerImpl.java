@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.manager.impl;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.EHealthAdapter;
+import gov.ca.emsa.pulse.broker.dao.EndpointDAO;
 import gov.ca.emsa.pulse.broker.dao.LocationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
@@ -10,9 +11,8 @@ import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
-import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
 @Service
 public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
@@ -48,8 +48,8 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Autowired QueryDAO queryDao;
 	@Autowired LocationDAO locationDao;
+	@Autowired EndpointDAO endpointDao;
 	@Autowired PatientRecordDAO patientRecordDao;
-	@Autowired private LocationManager locationManager;
 	@Autowired AuditEventManager auditManager;
 	private ApplicationContext context;
 	private final ExecutorService pool;
@@ -116,36 +116,30 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	
 	@Override
 	@Transactional
-	public synchronized QueryDTO cancelQueryToLocation(Long queryLocationMapId) {
-		QueryLocationMapDTO queryLocationMapToCancel = queryDao.getQueryLocationById(queryLocationMapId);
-		if(queryLocationMapToCancel == null) {
-			logger.error("Could not find query location map " + queryLocationMapId);
+	public synchronized QueryDTO cancelQueryToEndpoint(Long queryId, Long endpointId) {
+		QueryEndpointMapDTO queryEndpointMapToCancel = queryDao.getQueryEndpointByQueryAndEndpoint(queryId, endpointId);
+		if(queryEndpointMapToCancel == null) {
+			logger.error("Could not find query id " + queryId + " mapped to " + endpointId);
 			return null;
 		}
-		queryLocationMapToCancel.setStatus(QueryLocationStatus.Cancelled);
-		queryDao.updateQueryLocationMap(queryLocationMapToCancel);
+		queryEndpointMapToCancel.setStatus(QueryEndpointStatus.Cancelled);
+		queryDao.updateQueryEndpointMap(queryEndpointMapToCancel);
 		
 		String endpointUrl = null;
-		Long locationId = queryLocationMapToCancel.getLocationId();
-		Long queryId = queryLocationMapToCancel.getQueryId();
-		LocationDTO location = locationDao.findById(locationId);
-		if(location != null) {
-			for(EndpointDTO ept : location.getEndpoints()) {
-				if(ept.getEndpointType().getCode().equals(EndpointTypeEnum.PATIENT_DISCOVERY.getCode())) {
-					endpointUrl = ept.getUrl();
-				}
-			}
+		EndpointDTO endpoint = endpointDao.findById(endpointId);
+		if(endpoint != null) {
+			endpointUrl = endpoint.getUrl();
 		}
 		//if we later allow other types to be cancelled this won't work.
 		//Also, what if there were multiple PD endpoints for a given location? we wouldn't know which one was being cancelled.
 		try {
 			auditManager.createAuditEventIG("CANCELLED" , UserUtil.getCurrentUser(), endpointUrl, "", EHealthAdapter.HOME_COMMUNITY_ID);
 		} catch(UnsupportedEncodingException ex) {
-			logger.warn("Could not add audit record for cancelling request to location " + locationId + " for query " + queryId + ": " + ex.getMessage(), ex);
+			logger.warn("Could not add audit record for cancelling request to endpoint " + endpointUrl + " for query " + queryId + ": " + ex.getMessage(), ex);
 		} catch(UnknownHostException ex) {
-			logger.warn("Could not add audit record for cancelling request to location " + locationId + " for query " + queryId + ": " + ex.getMessage(), ex);
+			logger.warn("Could not add audit record for cancelling request to endpoint " + endpointUrl + " for query " + queryId + ": " + ex.getMessage(), ex);
 		} catch(Exception ex) {
-			logger.warn("Could not add audit record for cancelleing request to locaiton " +locationId + " for query " + queryId + ": " + ex.getMessage(), ex);
+			logger.warn("Could not add audit record for cancelleing request to endpoint " +endpointUrl + " for query " + queryId + ": " + ex.getMessage(), ex);
 		}
 
 		return getById(queryId);
@@ -159,12 +153,12 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public QueryLocationMapDTO createOrUpdateQueryLocation(QueryLocationMapDTO toUpdate) {
-		QueryLocationMapDTO updated = null;
+	public QueryEndpointMapDTO createOrUpdateQueryLocation(QueryEndpointMapDTO toUpdate) {
+		QueryEndpointMapDTO updated = null;
 		if(toUpdate.getId() == null) {
-			updated = queryDao.createQueryLocationMap(toUpdate);
+			updated = queryDao.createQueryEndpointMap(toUpdate);
 		} else {
-			updated = queryDao.updateQueryLocationMap(toUpdate);
+			updated = queryDao.updateQueryEndpointMap(toUpdate);
 		}
 		return updated;
 	}
@@ -189,7 +183,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		List<LocationDTO> locationsToQuery = new ArrayList<LocationDTO>();
 		//locationManager.getAllWithEndpointType(relevantEndpointTypes);
 		if(locationsToQuery != null && locationsToQuery.size() > 0) {
-			for(QueryLocationMapDTO queryLoc : query.getLocationStatuses()) {
+			for(QueryEndpointMapDTO queryLoc : query.getEndpointStatuses()) {
 				PatientQueryService service = getPatientQueryService();
 				service.setSamlInput(samlInput);
 				service.setToSearch(toSearch);
@@ -198,8 +192,8 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 				pool.execute(service);
 			}
 		} else {
-			for(QueryLocationMapDTO queryLoc : query.getLocationStatuses()) {
-				queryLoc.setStatus( QueryLocationStatus.Failed);
+			for(QueryEndpointMapDTO queryLoc : query.getEndpointStatuses()) {
+				queryLoc.setStatus( QueryEndpointStatus.Failed);
 				queryLoc.setEndDate(new Date());
 				createOrUpdateQueryLocation(queryLoc);
 			}
@@ -213,7 +207,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public void requeryForPatientRecords(Long queryLocationMapId, CommonUser user)
 			throws JsonProcessingException, IOException {
-		QueryLocationMapDTO locationMap = queryDao.getQueryLocationById(queryLocationMapId);
+		QueryEndpointMapDTO locationMap = queryDao.getQueryEndpointById(queryLocationMapId);
 		if(locationMap == null) {
 			return;
 		}
@@ -221,22 +215,22 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		QueryDTO query = queryDao.getById(locationMap.getQueryId());
 		
 		//if the location is already closed, do not continue
-		if(locationMap.getStatus() != null && locationMap.getStatus() == QueryLocationStatus.Closed) {
+		if(locationMap.getStatus() != null && locationMap.getStatus() == QueryEndpointStatus.Closed) {
 			return;
 		}
 		
 		//otherwise set the location to closed, query to active, and run a new query
-		locationMap.setStatus(QueryLocationStatus.Closed);
-		queryDao.updateQueryLocationMap(locationMap);
+		locationMap.setStatus(QueryEndpointStatus.Closed);
+		queryDao.updateQueryEndpointMap(locationMap);
 		query.setStatus(QueryStatus.Active);
 		queryDao.update(query);
 			
-		QueryLocationMapDTO locationToRequery = new QueryLocationMapDTO();
-		locationToRequery.setLocationId(locationMap.getLocationId());
+		QueryEndpointMapDTO locationToRequery = new QueryEndpointMapDTO();
+		locationToRequery.setEndpointId(locationMap.getEndpointId());
 		locationToRequery.setQueryId(query.getId());
-		locationToRequery.setStatus(QueryLocationStatus.Active);
+		locationToRequery.setStatus(QueryEndpointStatus.Active);
 		locationToRequery = createOrUpdateQueryLocation(locationToRequery);
-		query.getLocationStatuses().add(locationToRequery);
+		query.getEndpointStatuses().add(locationToRequery);
 			
 		PatientSearch toSearch = JSONUtils.fromJSON(query.getTerms(), PatientSearch.class);
 		
@@ -276,10 +270,10 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public PatientRecordDTO addPatientRecord(PatientRecordDTO record) {
 		PatientRecordDTO result = record;
-		Long queryLocationMapId = record.getQueryLocationId();
-		QueryLocationMapDTO queryLoc = queryDao.getQueryLocationById(queryLocationMapId);
+		Long queryLocationMapId = record.getQueryEndpointId();
+		QueryEndpointMapDTO queryLoc = queryDao.getQueryEndpointById(queryLocationMapId);
 		if(queryLoc != null && queryLoc.getStatus() != null && 
-				queryLoc.getStatus() != QueryLocationStatus.Cancelled) {
+				queryLoc.getStatus() != QueryEndpointStatus.Cancelled) {
 			result = patientRecordDao.create(record);
 		}
 		return result;

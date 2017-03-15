@@ -52,8 +52,8 @@ public class QueryEntity {
 	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "queryId"  )
 	@Column( name = "query_id", nullable = false  )
- 	@Where(clause="query_location_status_id != 5")
-	private Set<QueryLocationMapEntity> locationStatuses = new HashSet<QueryLocationMapEntity>();
+ 	@Where(clause="query_endpoint_status_id != 5")
+	private Set<QueryEndpointMapEntity> endpointStatuses = new HashSet<QueryEndpointMapEntity>();
 	
 	public Long getId() {
 		return id;
@@ -95,12 +95,12 @@ public class QueryEntity {
 		this.terms = terms;
 	}
 
-	public Set<QueryLocationMapEntity> getLocationStatuses() {
-		return locationStatuses;
+	public Set<QueryEndpointMapEntity> getEndpointStatuses() {
+		return endpointStatuses;
 	}
 
-	public void setLocationStatuses(Set<QueryLocationMapEntity> locationStatuses) {
-		this.locationStatuses = locationStatuses;
+	public void setEndpointStatuses(Set<QueryEndpointMapEntity> endpointStatuses) {
+		this.endpointStatuses = endpointStatuses;
 	}
 
 	public Date getLastReadDate() {

@@ -160,6 +160,18 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 	}
 
 	@Override
+	public List<LocationDTO> findByEndpoint(Long endpointId) {
+		List<LocationEntity> entities = getByEndpoint(endpointId);
+
+		List<LocationDTO> dtos = new ArrayList<>();
+		for (LocationEntity entity : entities) {
+			LocationDTO dto = new LocationDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	@Override
 	public LocationDTO findById(Long id) {
 		LocationEntity result = getById(id);
 		if(result == null) {
@@ -216,6 +228,18 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 		return query.getResultList();
 	}
 	
+	private List<LocationEntity> getByEndpoint(Long endpointId) {
+		Query query = entityManager.createQuery("SELECT DISTINCT loc "
+				+ "FROM LocationEntity loc, LocationEndpointMapEntity map "
+				+ "JOIN FETCH loc.locationStatus "
+				+ "LEFT OUTER JOIN FETCH loc.lines " 
+				+ "WHERE map.endpointId = :endpointId "
+				+ "AND map.locationId = loc.id", LocationEntity.class);
+		query.setParameter("endpointId", endpointId);
+		
+		return query.getResultList();
+	}
+	
 	private LocationEntity getByExternalId(String externalId) {
 		Query query = entityManager.createQuery("SELECT DISTINCT loc "
 				+ "FROM LocationEntity loc "
@@ -230,6 +254,7 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 		}
 		return null;
 	}
+	
 	
 	@Override
 	public List<LocationEntity> getAllEntities() {

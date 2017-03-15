@@ -24,9 +24,9 @@ import gov.ca.emsa.pulse.broker.dto.LocationStatusDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.common.domain.LocationStatus;
-import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import junit.framework.TestCase;
 
@@ -79,28 +79,28 @@ public class PatientManagerTest extends TestCase {
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		
-		QueryLocationMapDTO orgQuery1 = new QueryLocationMapDTO();
-		orgQuery1.setLocationId(location1.getId());
-		orgQuery1.setStatus(QueryLocationStatus.Active);
-		toInsert.getLocationStatuses().add(orgQuery1);
+		QueryEndpointMapDTO orgQuery1 = new QueryEndpointMapDTO();
+		orgQuery1.setEndpointId(location1.getId());
+		orgQuery1.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointStatuses().add(orgQuery1);
 		
-		QueryLocationMapDTO orgQuery2 = new QueryLocationMapDTO();
-		orgQuery2.setLocationId(location2.getId());
-		orgQuery2.setStatus(QueryLocationStatus.Active);
-		toInsert.getLocationStatuses().add(orgQuery2);
+		QueryEndpointMapDTO orgQuery2 = new QueryEndpointMapDTO();
+		orgQuery2.setEndpointId(location2.getId());
+		orgQuery2.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointStatuses().add(orgQuery2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
 		assertNotNull(inserted);
 		assertNotNull(inserted.getId());
 		assertTrue(inserted.getId().longValue() > 0);
-		assertNotNull(inserted.getLocationStatuses());
-		assertEquals(2, inserted.getLocationStatuses().size());
-		orgQuery1 = inserted.getLocationStatuses().get(0);
-		assertNotNull(inserted.getLocationStatuses().get(0).getId());
-		assertTrue(inserted.getLocationStatuses().get(0).getId().longValue() > 0);
-		orgQuery2 = inserted.getLocationStatuses().get(1);
-		assertNotNull(inserted.getLocationStatuses().get(1).getId());
-		assertTrue(inserted.getLocationStatuses().get(1).getId().longValue() > 0);
+		assertNotNull(inserted.getEndpointStatuses());
+		assertEquals(2, inserted.getEndpointStatuses().size());
+		orgQuery1 = inserted.getEndpointStatuses().get(0);
+		assertNotNull(inserted.getEndpointStatuses().get(0).getId());
+		assertTrue(inserted.getEndpointStatuses().get(0).getId().longValue() > 0);
+		orgQuery2 = inserted.getEndpointStatuses().get(1);
+		assertNotNull(inserted.getEndpointStatuses().get(1).getId());
+		assertTrue(inserted.getEndpointStatuses().get(1).getId().longValue() > 0);
 		
 //		queryResult1 = new PatientRecordDTO();
 //		queryResult1.setGivenName("John");
@@ -185,7 +185,7 @@ public class PatientManagerTest extends TestCase {
 		List<PatientDTO> patients = patientManager.getPatientsAtAcf(acf.getId());
 		assertNotNull(patients);
 		assertEquals(1, patients.size());
-		assertNotNull(patients.get(0).getLocationMaps());
+		assertNotNull(patients.get(0).getEndpointMaps());
 		//TODO: this should work
 		//assertEquals(1, patients.get(0).getOrgMaps().size());
 	}

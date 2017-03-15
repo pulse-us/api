@@ -5,9 +5,9 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Document {
 	private String id;
 	private Boolean cached;
-	private Long locationMapId;
+	private Long endpointMapId;
 	private Patient patient;
-	private QueryLocationStatus status;
+	private QueryEndpointStatus status;
 	
 	//metadata
 	private String className;
@@ -36,11 +36,11 @@ public class Document {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Long getLocationMapId() {
-		return locationMapId;
+	public Long getEndpointMapId() {
+		return endpointMapId;
 	}
-	public void setLocationMapId(Long locationMapId) {
-		this.locationMapId = locationMapId;
+	public void setEndpointMapId(Long endpointMapId) {
+		this.endpointMapId = endpointMapId;
 	}
 
 	public Patient getPatient() {
@@ -116,11 +116,11 @@ public class Document {
 		this.identifier = identifier;
 	}
 
-	public QueryLocationStatus getStatus() {
+	public QueryEndpointStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryLocationStatus status) {
+	public void setStatus(QueryEndpointStatus status) {
 		this.status = status;
 	}
 	

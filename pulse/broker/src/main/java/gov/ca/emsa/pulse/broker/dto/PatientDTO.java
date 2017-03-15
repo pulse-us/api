@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientLocationMapEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientEndpointMapEntity;
 
 public class PatientDTO {
 	private Long id;
@@ -16,11 +16,11 @@ public class PatientDTO {
 	private String gender;
 	private Date lastReadDate;
 	private AlternateCareFacilityDTO acf;
-	private List<PatientLocationMapDTO> locationMaps;
+	private List<PatientEndpointMapDTO> endpointMaps;
 	private Date creationDate;
 	
 	public PatientDTO() {
-		locationMaps = new ArrayList<PatientLocationMapDTO>();
+		endpointMaps = new ArrayList<PatientEndpointMapDTO>();
 	}
 	
 	public PatientDTO(PatientEntity entity) {
@@ -36,10 +36,10 @@ public class PatientDTO {
 		if(entity.getAcf() != null) {
 			this.acf = new AlternateCareFacilityDTO(entity.getAcf());
 		}
-		if(entity.getLocationMaps() != null && entity.getLocationMaps().size() > 0) {
-			for(PatientLocationMapEntity locationMap : entity.getLocationMaps()) {
-				PatientLocationMapDTO locationMapDto = new PatientLocationMapDTO(locationMap);
-				this.locationMaps.add(locationMapDto);
+		if(entity.getEndpointMaps() != null && entity.getEndpointMaps().size() > 0) {
+			for(PatientEndpointMapEntity endpointMap : entity.getEndpointMaps()) {
+				PatientEndpointMapDTO endpointMapDto = new PatientEndpointMapDTO(endpointMap);
+				this.endpointMaps.add(endpointMapDto);
 			}
 		}
 	}
@@ -86,12 +86,12 @@ public class PatientDTO {
 		this.lastReadDate = lastReadDate;
 	}
 
-	public List<PatientLocationMapDTO> getLocationMaps() {
-		return locationMaps;
+	public List<PatientEndpointMapDTO> getEndpointMaps() {
+		return endpointMaps;
 	}
 
-	public void setLocationMaps(List<PatientLocationMapDTO> locationMaps) {
-		this.locationMaps = locationMaps;
+	public void setEndpointMaps(List<PatientEndpointMapDTO> endpointMaps) {
+		this.endpointMaps = endpointMaps;
 	}
 
 	public String getFullName() {

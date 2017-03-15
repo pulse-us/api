@@ -6,6 +6,7 @@ import java.util.List;
 
 import gov.ca.emsa.pulse.broker.entity.EndpointEntity;
 import gov.ca.emsa.pulse.broker.entity.EndpointMimeTypeEntity;
+import gov.ca.emsa.pulse.broker.entity.LocationEndpointMapEntity;
 
 public class EndpointDTO {
 	
@@ -21,8 +22,10 @@ public class EndpointDTO {
 	private Date externalLastUpdateDate;
 	private Date creationDate;
 	private Date lastModifiedDate;
+	private List<LocationDTO> locations;
 	
 	public EndpointDTO(){
+		locations = new ArrayList<LocationDTO>();
 		mimeTypes = new ArrayList<EndpointMimeTypeDTO>();
 	}
 	
@@ -51,6 +54,15 @@ public class EndpointDTO {
 				this.mimeTypes.add(dtoMimeType);
 			}
 		}
+		
+		if(entity.getLocationEndpointMaps() != null && entity.getLocationEndpointMaps().size() > 0) {
+			for(LocationEndpointMapEntity locMapEntity : entity.getLocationEndpointMaps()) {
+				if(locMapEntity.getLocation() != null) {
+					this.locations.add(new LocationDTO(locMapEntity.getLocation()));
+				}
+			}
+		}
+		
 		this.payloadType = entity.getPayloadType();
 		this.publicKey = entity.getPublicKey();
 		this.url = entity.getUrl();
@@ -73,7 +85,7 @@ public class EndpointDTO {
 
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
-	}
+	} 
 
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
@@ -153,5 +165,13 @@ public class EndpointDTO {
 
 	public void setMimeTypes(List<EndpointMimeTypeDTO> mimeTypes) {
 		this.mimeTypes = mimeTypes;
+	}
+
+	public List<LocationDTO> getLocations() {
+		return locations;
+	}
+
+	public void setLocations(List<LocationDTO> locations) {
+		this.locations = locations;
 	}
 }
