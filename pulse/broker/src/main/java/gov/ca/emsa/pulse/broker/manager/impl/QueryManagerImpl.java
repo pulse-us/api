@@ -174,29 +174,17 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	public void queryForPatientRecords(SAMLInput samlInput, PatientSearch toSearch, QueryDTO query, CommonUser user)
 			throws JsonProcessingException {
 
-		List<EndpointTypeEnum> relevantEndpointTypes = new ArrayList<EndpointTypeEnum>();
-		relevantEndpointTypes.add(EndpointTypeEnum.PATIENT_DISCOVERY);
-		//
-		//TODO: do something different here 
-		
-		//get the list of locations
-		List<LocationDTO> locationsToQuery = new ArrayList<LocationDTO>();
-		//locationManager.getAllWithEndpointType(relevantEndpointTypes);
-		if(locationsToQuery != null && locationsToQuery.size() > 0) {
-			for(QueryEndpointMapDTO queryLoc : query.getEndpointStatuses()) {
+		if(query.getEndpointMaps() != null && query.getEndpointMaps().size() > 0) {
+			for(QueryEndpointMapDTO queryEndpointMap : query.getEndpointMaps()) {
 				PatientQueryService service = getPatientQueryService();
 				service.setSamlInput(samlInput);
 				service.setToSearch(toSearch);
-				service.setQueryLocation(queryLoc);
+				service.setQueryEndpointMap(queryEndpointMap);
+				service.setEndpoint(queryEndpointMap.getEndpoint());
 				service.setUser(user);
 				pool.execute(service);
 			}
 		} else {
-			for(QueryEndpointMapDTO queryLoc : query.getEndpointStatuses()) {
-				queryLoc.setStatus( QueryEndpointStatus.Failed);
-				queryLoc.setEndDate(new Date());
-				createOrUpdateQueryLocation(queryLoc);
-			}
 			query.setStatus(QueryStatus.Complete);
 			query.setLastReadDate(new Date());
 			queryDao.update(query);
@@ -205,32 +193,32 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public void requeryForPatientRecords(Long queryLocationMapId, CommonUser user)
+	public void requeryForPatientRecords(Long queryId, Long endpointId, CommonUser user)
 			throws JsonProcessingException, IOException {
-		QueryEndpointMapDTO locationMap = queryDao.getQueryEndpointById(queryLocationMapId);
-		if(locationMap == null) {
+		QueryEndpointMapDTO queryEndpointMap = queryDao.getQueryEndpointByQueryAndEndpoint(queryId, endpointId);
+		if(queryEndpointMap == null) {
 			return;
 		}
 		
-		QueryDTO query = queryDao.getById(locationMap.getQueryId());
+		QueryDTO query = queryDao.getById(queryEndpointMap.getQueryId());
 		
-		//if the location is already closed, do not continue
-		if(locationMap.getStatus() != null && locationMap.getStatus() == QueryEndpointStatus.Closed) {
+		//if this request already been closed, do not continue
+		if(queryEndpointMap.getStatus() != null && queryEndpointMap.getStatus() == QueryEndpointStatus.Closed) {
 			return;
 		}
 		
-		//otherwise set the location to closed, query to active, and run a new query
-		locationMap.setStatus(QueryEndpointStatus.Closed);
-		queryDao.updateQueryEndpointMap(locationMap);
+		//otherwise set the request to closed, query to active, and run a new query
+		queryEndpointMap.setStatus(QueryEndpointStatus.Closed);
+		queryDao.updateQueryEndpointMap(queryEndpointMap);
 		query.setStatus(QueryStatus.Active);
 		queryDao.update(query);
 			
-		QueryEndpointMapDTO locationToRequery = new QueryEndpointMapDTO();
-		locationToRequery.setEndpointId(locationMap.getEndpointId());
-		locationToRequery.setQueryId(query.getId());
-		locationToRequery.setStatus(QueryEndpointStatus.Active);
-		locationToRequery = createOrUpdateQueryLocation(locationToRequery);
-		query.getEndpointStatuses().add(locationToRequery);
+		QueryEndpointMapDTO endpointMapForRequery = new QueryEndpointMapDTO();
+		endpointMapForRequery.setEndpointId(queryEndpointMap.getEndpointId());
+		endpointMapForRequery.setQueryId(query.getId());
+		endpointMapForRequery.setStatus(QueryEndpointStatus.Active);
+		endpointMapForRequery = createOrUpdateQueryLocation(endpointMapForRequery);
+		query.getEndpointMaps().add(endpointMapForRequery);
 			
 		PatientSearch toSearch = JSONUtils.fromJSON(query.getTerms(), PatientSearch.class);
 		
@@ -254,7 +242,8 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		PatientQueryService service = getPatientQueryService();
 		service.setSamlInput(input);
 		service.setToSearch(toSearch);
-		service.setQueryLocation(locationToRequery);
+		service.setQueryEndpointMap(endpointMapForRequery);
+		service.setEndpoint(endpointMapForRequery.getEndpoint());
 		service.setUser(user);
 		pool.execute(service);
 	}

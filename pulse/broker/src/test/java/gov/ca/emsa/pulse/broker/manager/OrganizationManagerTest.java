@@ -31,6 +31,8 @@ public class OrganizationManagerTest extends TestCase {
 	
 	@Autowired
 	private LocationManager locationManager;
+	
+	@Autowired private EndpointManager endpointManager;
 
 	@Test
 	public void contextLoads() {
@@ -92,22 +94,19 @@ public class OrganizationManagerTest extends TestCase {
 		locations.add(location3);
 		
 		locationManager.updateLocations(locations);
-		List<LocationDTO> locationResults = locationManager.getAll();
-		assertEquals(3, locationResults.size());
 		
-		//make sure one location has an endpoint
-		boolean foundEndpoint = false;
-		for(LocationDTO loc : locationResults) {
-			if(loc.getEndpoints() != null && loc.getEndpoints().size() == 1) {
-				foundEndpoint = true;
-				
-				EndpointDTO locEndpoint = loc.getEndpoints().get(0);
-				assertNotNull(locEndpoint);
-				assertEquals(1, locEndpoint.getMimeTypes().size());
-				assertEquals("application/xml", locEndpoint.getMimeTypes().get(0).getMimeType());
-			}
+		List<LocationDTO> allLocations = locationManager.getAll();
+		assertEquals(3, allLocations.size());
+		
+		List<EndpointDTO> allEndpoints = endpointManager.getAll();
+		assertEquals(1, allEndpoints.size());
+		
+		//make sure each endpoint has at least 1 location
+		for(EndpointDTO foundEndpoint : allEndpoints) {
+			assertNotNull(foundEndpoint.getLocations());
+			assertEquals(1, foundEndpoint.getLocations().size());
+			
 		}
-		assertTrue(foundEndpoint);
 	}
 	
 	@Test

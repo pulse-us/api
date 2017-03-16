@@ -12,13 +12,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(name="location")
@@ -35,10 +33,9 @@ public class LocationEntity {
 	
 	@Column(name="location_status_id")
 	private Long locationStatusId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@Fetch(FetchMode.JOIN)
-	@JoinColumn(name = "location_status_id", unique=true, nullable = true, insertable=false, updatable= false)
+
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "location_status_id", nullable = false, insertable = false, updatable = false)
 	private LocationStatusEntity locationStatus;
 	
 	@Column(name = "parent_organization_name")

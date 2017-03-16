@@ -25,7 +25,7 @@ public interface QueryManager extends CachedDataManager {
 
 	public PatientRecordDTO getPatientRecordById(Long patientRecordId);
 	public void queryForPatientRecords(SAMLInput samlMessage, PatientSearch toSearch, QueryDTO query, CommonUser user) throws JsonProcessingException;
-	public void requeryForPatientRecords(Long queryLocationMapId, CommonUser user) throws JsonProcessingException, IOException;
+	public void requeryForPatientRecords(Long queryId, Long endpointId, CommonUser user) throws JsonProcessingException, IOException;
 	public PatientRecordDTO addPatientRecord(PatientRecordDTO record);
 	public void removePatientRecord(Long prId);
 	public QueryDTO updateQueryStatusFromLocations(Long queryId);

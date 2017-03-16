@@ -82,25 +82,25 @@ public class PatientManagerTest extends TestCase {
 		QueryEndpointMapDTO orgQuery1 = new QueryEndpointMapDTO();
 		orgQuery1.setEndpointId(location1.getId());
 		orgQuery1.setStatus(QueryEndpointStatus.Active);
-		toInsert.getEndpointStatuses().add(orgQuery1);
+		toInsert.getEndpointMaps().add(orgQuery1);
 		
 		QueryEndpointMapDTO orgQuery2 = new QueryEndpointMapDTO();
 		orgQuery2.setEndpointId(location2.getId());
 		orgQuery2.setStatus(QueryEndpointStatus.Active);
-		toInsert.getEndpointStatuses().add(orgQuery2);
+		toInsert.getEndpointMaps().add(orgQuery2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
 		assertNotNull(inserted);
 		assertNotNull(inserted.getId());
 		assertTrue(inserted.getId().longValue() > 0);
-		assertNotNull(inserted.getEndpointStatuses());
-		assertEquals(2, inserted.getEndpointStatuses().size());
-		orgQuery1 = inserted.getEndpointStatuses().get(0);
-		assertNotNull(inserted.getEndpointStatuses().get(0).getId());
-		assertTrue(inserted.getEndpointStatuses().get(0).getId().longValue() > 0);
-		orgQuery2 = inserted.getEndpointStatuses().get(1);
-		assertNotNull(inserted.getEndpointStatuses().get(1).getId());
-		assertTrue(inserted.getEndpointStatuses().get(1).getId().longValue() > 0);
+		assertNotNull(inserted.getEndpointMaps());
+		assertEquals(2, inserted.getEndpointMaps().size());
+		orgQuery1 = inserted.getEndpointMaps().get(0);
+		assertNotNull(inserted.getEndpointMaps().get(0).getId());
+		assertTrue(inserted.getEndpointMaps().get(0).getId().longValue() > 0);
+		orgQuery2 = inserted.getEndpointMaps().get(1);
+		assertNotNull(inserted.getEndpointMaps().get(1).getId());
+		assertTrue(inserted.getEndpointMaps().get(1).getId().longValue() > 0);
 		
 //		queryResult1 = new PatientRecordDTO();
 //		queryResult1.setGivenName("John");

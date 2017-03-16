@@ -41,7 +41,7 @@ public class PatientRecordManagerTest extends TestCase {
 	private AlternateCareFacilityDTO acf;
 	private LocationDTO location1, location2;
 	private QueryDTO query;
-	private QueryEndpointMapDTO queryLocation1, queryLocation2;
+	private QueryEndpointMapDTO queryEndpointMap1, queryEndpointMap2;
 	private PatientGenderDTO patientGenderMale;
 	
 	@Before
@@ -81,28 +81,28 @@ public class PatientRecordManagerTest extends TestCase {
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		
-		queryLocation1 = new QueryEndpointMapDTO();
-		queryLocation1.setEndpointId(location1.getId());
-		queryLocation1.setStatus(QueryEndpointStatus.Active);
-		toInsert.getEndpointStatuses().add(queryLocation1);
+		queryEndpointMap1 = new QueryEndpointMapDTO();
+		queryEndpointMap1.setEndpointId(location1.getId());
+		queryEndpointMap1.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointMaps().add(queryEndpointMap1);
 		
-		queryLocation2 = new QueryEndpointMapDTO();
-		queryLocation2.setEndpointId(location2.getId());
-		queryLocation2.setStatus(QueryEndpointStatus.Active);
-		toInsert.getEndpointStatuses().add(queryLocation2);
+		queryEndpointMap2 = new QueryEndpointMapDTO();
+		queryEndpointMap2.setEndpointId(location2.getId());
+		queryEndpointMap2.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointMaps().add(queryEndpointMap2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
 		assertNotNull(inserted);
 		assertNotNull(inserted.getId());
 		assertTrue(inserted.getId().longValue() > 0);
-		assertNotNull(inserted.getEndpointStatuses());
-		assertEquals(2, inserted.getEndpointStatuses().size());
-		queryLocation1 = inserted.getEndpointStatuses().get(0);
-		assertNotNull(inserted.getEndpointStatuses().get(0).getId());
-		assertTrue(inserted.getEndpointStatuses().get(0).getId().longValue() > 0);
-		queryLocation2 = inserted.getEndpointStatuses().get(1);
-		assertNotNull(inserted.getEndpointStatuses().get(1).getId());
-		assertTrue(inserted.getEndpointStatuses().get(1).getId().longValue() > 0);
+		assertNotNull(inserted.getEndpointMaps());
+		assertEquals(2, inserted.getEndpointMaps().size());
+		queryEndpointMap1 = inserted.getEndpointMaps().get(0);
+		assertNotNull(inserted.getEndpointMaps().get(0).getId());
+		assertTrue(inserted.getEndpointMaps().get(0).getId().longValue() > 0);
+		queryEndpointMap2 = inserted.getEndpointMaps().get(1);
+		assertNotNull(inserted.getEndpointMaps().get(1).getId());
+		assertTrue(inserted.getEndpointMaps().get(1).getId().longValue() > 0);
 		
 		patientGenderMale = new PatientGenderDTO();
 		patientGenderMale = patientGenderDao.getById(2L);
@@ -111,14 +111,14 @@ public class PatientRecordManagerTest extends TestCase {
 		assertNotNull(query);
 		assertNotNull(query.getId());
 		assertTrue(query.getId().longValue() > 0);
-		assertNotNull(query.getEndpointStatuses());
-		assertEquals(2, query.getEndpointStatuses().size());
-		queryLocation1 = query.getEndpointStatuses().get(0);
-		assertNotNull(query.getEndpointStatuses().get(0).getId());
-		assertTrue(query.getEndpointStatuses().get(0).getId().longValue() > 0);
-		queryLocation2 = query.getEndpointStatuses().get(1);
-		assertNotNull(query.getEndpointStatuses().get(1).getId());
-		assertTrue(query.getEndpointStatuses().get(1).getId().longValue() > 0);
+		assertNotNull(query.getEndpointMaps());
+		assertEquals(2, query.getEndpointMaps().size());
+		queryEndpointMap1 = query.getEndpointMaps().get(0);
+		assertNotNull(query.getEndpointMaps().get(0).getId());
+		assertTrue(query.getEndpointMaps().get(0).getId().longValue() > 0);
+		queryEndpointMap2 = query.getEndpointMaps().get(1);
+		assertNotNull(query.getEndpointMaps().get(1).getId());
+		assertTrue(query.getEndpointMaps().get(1).getId().longValue() > 0);
 	}
 	
 	@Test
@@ -130,7 +130,7 @@ public class PatientRecordManagerTest extends TestCase {
 		String date = "20160110";
 		dto.setDateOfBirth(date);
 		dto.setPhoneNumber("443-745-0888");
-		dto.setQueryEndpointId(queryLocation1.getId());
+		dto.setQueryEndpointId(queryEndpointMap1.getId());
 		dto.setSsn("555-55-5555");
 
 		dto.setPatientGender(patientGenderMale);
@@ -151,16 +151,16 @@ public class PatientRecordManagerTest extends TestCase {
 	@Rollback(true)
 	public void testCancelPatientDiscoveryQueryToOrganization() {	
 		System.out.println("query id " + query.getId());
-		queryManager.cancelQueryToLocation(queryLocation1.getId());
+		queryManager.cancelQueryToEndpoint(queryEndpointMap1.getQueryId(),  queryEndpointMap1.getEndpointId());
 		QueryDTO updatedQuery = queryManager.getById(query.getId());
 		
 		assertNotNull(updatedQuery);
 		assertEquals(query.getId(), updatedQuery.getId());
-		assertEquals(2, updatedQuery.getEndpointStatuses().size());
+		assertEquals(2, updatedQuery.getEndpointMaps().size());
 		boolean queryHadOrg = false;
-		for(QueryEndpointMapDTO queryLocationMap : updatedQuery.getEndpointStatuses()) {
+		for(QueryEndpointMapDTO queryLocationMap : updatedQuery.getEndpointMaps()) {
 			assertNotNull(queryLocationMap.getId());
-			if(queryLocationMap.getId().longValue() == queryLocation1.getId().longValue()) {
+			if(queryLocationMap.getId().longValue() == queryEndpointMap1.getId().longValue()) {
 				queryHadOrg = true;
 				
 				assertEquals(QueryEndpointStatus.Cancelled, queryLocationMap.getStatus());

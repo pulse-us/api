@@ -124,7 +124,7 @@ public class DtoToDomainConverter {
 		}
 
 		query.setUserToken(queryDto.getUserId());
-		for(QueryEndpointMapDTO qOrgDto : queryDto.getEndpointStatuses()){
+		for(QueryEndpointMapDTO qOrgDto : queryDto.getEndpointMaps()){
 			QueryEndpointMap qOrg = DtoToDomainConverter.convert(qOrgDto);
 			query.getEndpointStatuses().add(qOrg);
 		}

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.dao.EndpointDAO;
+import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.manager.EndpointManager;
@@ -23,6 +24,11 @@ public class EndpointManagerImpl implements EndpointManager {
 	@Transactional(readOnly = true)
 	public EndpointDTO getById(Long id) {
 		return endpointDao.findById(id);
+	}
+	
+	@Transactional(readOnly = true) 
+	public List<EndpointDTO> getByType(List<EndpointTypeEnum> types) {
+		return endpointDao.findAllOfType(types);
 	}
 	
 	@Transactional

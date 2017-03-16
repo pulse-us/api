@@ -4,6 +4,7 @@ import gov.ca.emsa.pulse.broker.auth.AcfLastAccessFilter;
 import gov.ca.emsa.pulse.broker.cache.CacheCleanupJob;
 import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
+import gov.ca.emsa.pulse.broker.manager.EndpointManager;
 import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
@@ -35,7 +36,8 @@ public class BrokerApplication {
 		SpringApplication.run(BrokerApplication.class, args);
 	}
 	
-	@Autowired private LocationManager organizationManager;
+	@Autowired private LocationManager locationManager;
+	@Autowired private EndpointManager endpointManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private PatientManager patientManager;
 	@Autowired private QueryManager queryManager;
@@ -154,7 +156,8 @@ public class BrokerApplication {
 
 		if(directoryRefresh > 0) {
 			qcTask = new DirectoryRefreshManager();
-			qcTask.setManager(organizationManager);
+			qcTask.setLocationManager(locationManager);
+			qcTask.setEndpointManager(endpointManager);
 			qcTask.setExpirationMillis(directoryRefreshExpirationMillis);
 			qcTask.setLocationDirectoryUrl(locationDirectoryUrl);
 			qcTask.setEndpointDirectoryUrl(endpointDirectoryUrl);

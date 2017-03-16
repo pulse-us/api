@@ -31,6 +31,14 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 			entityManager.persist(endpointEntity);
 			entityManager.flush();
 		}
+		if(endpointEntity.getMimeTypes() != null && endpointEntity.getMimeTypes().size() > 0) {
+			for(EndpointMimeTypeEntity mimeTypeEntity : endpointEntity.getMimeTypes()) {
+				mimeTypeEntity.setEndpointId(endpointEntity.getId());
+				entityManager.persist(mimeTypeEntity);
+				entityManager.flush();
+			}
+		}
+		entityManager.clear();
 		return new EndpointDTO(endpointEntity);
 	}
 
@@ -44,6 +52,21 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 			entityManager.merge(endpointEntity);
 			entityManager.flush();
 		}
+		
+		deleteEndpointMimeTypes(endpointEntity.getId());
+		endpointEntity.getMimeTypes().clear();
+		if(dto.getMimeTypes() != null && dto.getMimeTypes().size() > 0) {
+			for(EndpointMimeTypeDTO mimeTypeDto : dto.getMimeTypes()) {
+				EndpointMimeTypeEntity mtEntity = new EndpointMimeTypeEntity();
+				mtEntity.setMimeType(mimeTypeDto.getMimeType());
+				endpointEntity.getMimeTypes().add(mtEntity);
+				mtEntity.setEndpointId(endpointEntity.getId());
+				entityManager.persist(mtEntity);
+				entityManager.flush();
+			}
+		}
+		
+		entityManager.clear();
 		return new EndpointDTO(endpointEntity);
 	}
 
@@ -59,6 +82,7 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 			entityManager.remove(toDelete);
 			entityManager.flush();
 		}
+		entityManager.clear();
 	}
 
 	@Override
@@ -154,11 +178,23 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 		return result;
 	}
 	
+	private void deleteEndpointMimeTypes(Long endpointId) {
+		Query query = entityManager.createQuery("from EndpointMimeTypeEntity "
+				+ "WHERE endpointId = :endpointId ",
+				EndpointMimeTypeEntity.class);
+		query.setParameter("endpointId", endpointId);
+		List<EndpointMimeTypeEntity> results = query.getResultList();
+		for(EndpointMimeTypeEntity toDelete : results) {
+			entityManager.remove(toDelete);
+		}
+		entityManager.flush();
+	}
+	
 	private EndpointMimeTypeEntity getEndpointMimeType(Long endpointId, String mimeType) {
 		EndpointMimeTypeEntity result = null;
 		Query query = entityManager.createQuery("from EndpointMimeTypeEntity "
 				+ "WHERE endpointId = :endpointId "
-				+ "UPPER(mimeType) = :mimeType ",
+				+ "AND UPPER(mimeType) = :mimeType ",
 				EndpointMimeTypeEntity.class);
 		query.setParameter("endpointId", endpointId);
 		query.setParameter("mimeType", mimeType.toUpperCase());
@@ -177,7 +213,7 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				+ "JOIN FETCH endpoint.endpointType "
 				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes "
 				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
-				+ "LEFT OUTER JOIN FETCH locMaps.location"
+				+ "LEFT OUTER JOIN FETCH locMaps.location "
 				+ "WHERE endpoint.id = :id", EndpointEntity.class);
 		query.setParameter("id", id);
 		
@@ -196,7 +232,7 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes "
 				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
 				+ "LEFT OUTER JOIN FETCH locMaps.location "
-				+ "WHERE loc.externalId = :externalId", EndpointEntity.class);
+				+ "WHERE endpoint.externalId = :externalId", EndpointEntity.class);
 		query.setParameter("externalId", externalId);
 		
 		List<EndpointEntity> result = query.getResultList();
@@ -242,6 +278,7 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				EndpointStatusEntity statusEntity = getEndpointStatusByName(endpointDto.getEndpointStatus().getName());
 				if(statusEntity != null) {
 					endpointEntity.setEndpointStatusId(statusEntity.getId());
+					endpointEntity.setEndpointStatus(statusEntity);
 				} else {
 					logger.error("Could not find endpoint status with name " + endpointDto.getEndpointStatus().getName());
 				}
@@ -254,6 +291,7 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				EndpointTypeEntity typeEntity = getEndpointTypeByCode(endpointDto.getEndpointType().getCode());
 				if(typeEntity != null) {
 					endpointEntity.setEndpointTypeId(typeEntity.getId());
+					endpointEntity.setEndpointType(typeEntity);
 				} else {
 					logger.error("Could not find endpoint type with code " + endpointDto.getEndpointType().getCode());
 				}

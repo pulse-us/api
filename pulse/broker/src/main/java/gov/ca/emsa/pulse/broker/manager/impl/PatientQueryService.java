@@ -2,7 +2,6 @@ package gov.ca.emsa.pulse.broker.manager.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -12,9 +11,6 @@ import org.springframework.stereotype.Component;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
-import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
-import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
-import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordResults;
@@ -33,7 +29,8 @@ public class PatientQueryService implements Runnable {
 
 	private static final Logger logger = LogManager.getLogger(PatientQueryService.class);
 
-	private QueryEndpointMapDTO queryLocationMap;
+	private QueryEndpointMapDTO queryEndpointMap;
+	private EndpointDTO endpoint;
 	@Autowired private QueryManager queryManager;
 	@Autowired private PatientManager patientManager;
 	@Autowired private LocationManager locationManager;
@@ -47,33 +44,17 @@ public class PatientQueryService implements Runnable {
 		boolean queryError = false;
 		//query this organization directly for patient matches
 		PatientRecordResults searchResults = null;
-		EndpointDTO endpointToQuery = null;
 		
-		LocationDTO location = locationManager.getById(queryLocationMap.getEndpointId());
-		if(location == null) {
-			logger.error("Could not find location with id " + queryLocationMap.getEndpointId());
-			queryError = true;
-		} else if(location.getEndpoints() != null) {
-			for(EndpointDTO endpoint : location.getEndpoints()) {
-				if(endpoint.getEndpointType() != null && 
-					endpoint.getEndpointType().getCode().equalsIgnoreCase(EndpointTypeEnum.PATIENT_DISCOVERY.getCode()) && 
-					endpoint.getEndpointStatus() != null && 
-					endpoint.getEndpointStatus().getName().equalsIgnoreCase(EndpointStatusEnum.ACTIVE.getName())) {
-					endpointToQuery = endpoint;
-				}
-			}
-		} 
-		
-		if(endpointToQuery == null) {
-			logger.error("The location " + location.getName() + " does not have an active patient discovery endpoint.");
+		if(endpoint == null) {
+			logger.error("There is no active patient discovery endpoint.");
 			queryError = true;
 		} else {
-			Adapter adapter = adapterFactory.getAdapter(endpointToQuery);
+			Adapter adapter = adapterFactory.getAdapter(endpoint);
 			if(adapter != null) {
-				logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+				logger.info("Starting query to endpoint with external id '" + endpoint.getExternalId() + "'");
 				try {
-					searchResults = adapter.queryPatients(user, endpointToQuery, toSearch, samlInput);
-					logger.info("Successfully queried endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+					searchResults = adapter.queryPatients(user, endpoint, toSearch, samlInput);
+					logger.info("Successfully queried endpoint with external id '" + endpoint.getExternalId() + "'");
 				} catch(Exception ex) {
 					logger.error("Exception thrown in adapter " + adapter.getClass() + ": " + ex.getMessage(), ex);
 					queryError = true;
@@ -83,27 +64,27 @@ public class PatientQueryService implements Runnable {
 			if(searchResults != null && searchResults.getStatus() == IheStatus.Success) {
 				List<PatientRecordDTO> patientResults = searchResults.getResults();
 				if(patientResults != null && patientResults.size() > 0) {
-					logger.info("Found " + patientResults.size() + " results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+					logger.info("Found " + patientResults.size() + " results for endpoint with external id '" + endpoint.getExternalId() + "'");
 					if(patientResults != null) {
 						for(PatientRecordDTO patient : patientResults) {
-							patient.setQueryEndpointId(queryLocationMap.getId());
+							patient.setQueryEndpointId(queryEndpointMap.getId());
 								
 							//save the search results
 							queryManager.addPatientRecord(patient);
-							logger.info("Added patient record to the orgStatus " + queryLocationMap.getId());
+							logger.info("Added patient record to the orgStatus " + queryEndpointMap.getId());
 						}
 					}
 				} else {
-					logger.info("Found 0 results for endpoint with external id '" + endpointToQuery.getExternalId() + "'");
+					logger.info("Found 0 results for endpoint with external id '" + endpoint.getExternalId() + "'");
 				}
 			} else if(searchResults != null && searchResults.getStatus() == IheStatus.Failure) { 
 				queryError = true;
 			} else {
-				logger.info("Search results were null, cannot determine status from : '" + endpointToQuery.getExternalId() + "'");
+				logger.info("Search results were null, cannot determine status from : '" + endpoint.getExternalId() + "'");
 				queryError = true;
 			}
 			logger.info("Completed query to endpoint with external id '" + 
-					endpointToQuery.getExternalId());
+					endpoint.getExternalId());
 		}
 		
 		System.out.println(queryManager);
@@ -113,10 +94,10 @@ public class PatientQueryService implements Runnable {
 		//difference instances of a Query or QueryLocation. queryManager works well because
 		//it's initialized by Spring and is a singleton.
 		synchronized(queryManager) {
-			queryLocationMap.setStatus(queryError ? QueryEndpointStatus.Failed : QueryEndpointStatus.Successful);
-			queryLocationMap.setEndDate(new Date());
-			queryManager.createOrUpdateQueryLocation(queryLocationMap);
-			queryManager.updateQueryStatusFromLocations(queryLocationMap.getQueryId());
+			queryEndpointMap.setStatus(queryError ? QueryEndpointStatus.Failed : QueryEndpointStatus.Successful);
+			queryEndpointMap.setEndDate(new Date());
+			queryManager.createOrUpdateQueryLocation(queryEndpointMap);
+			queryManager.updateQueryStatusFromLocations(queryEndpointMap.getQueryId());
 		}
 	}
 	
@@ -127,15 +108,7 @@ public class PatientQueryService implements Runnable {
 	public void setUser(CommonUser user) {
 		this.user = user;
 	}
-
-	public QueryEndpointMapDTO getQueryLocation() {
-		return queryLocationMap;
-	}
-
-	public void setQueryLocation(QueryEndpointMapDTO queryLocationMap) {
-		this.queryLocationMap = queryLocationMap;
-	}
-
+	
 	public QueryManager getQueryManager() {
 		return queryManager;
 	}
@@ -182,5 +155,21 @@ public class PatientQueryService implements Runnable {
 
 	public void setSamlInput(SAMLInput samlInput) {
 		this.samlInput = samlInput;
+	}
+
+	public QueryEndpointMapDTO getQueryEndpointMap() {
+		return queryEndpointMap;
+	}
+
+	public void setQueryEndpointMap(QueryEndpointMapDTO queryEndpointMap) {
+		this.queryEndpointMap = queryEndpointMap;
+	}
+
+	public EndpointDTO getEndpoint() {
+		return endpoint;
+	}
+
+	public void setEndpoint(EndpointDTO endpoint) {
+		this.endpoint = endpoint;
 	}
 }

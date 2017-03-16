@@ -2,7 +2,6 @@ package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.QueryEntity;
 import gov.ca.emsa.pulse.broker.entity.QueryEndpointMapEntity;
-import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.util.ArrayList;
@@ -16,10 +15,10 @@ public class QueryDTO {
 	private QueryStatus status;
 	private String terms;
 	private Date lastReadDate;
-	private List<QueryEndpointMapDTO> endpointStatuses;
+	private List<QueryEndpointMapDTO> endpointMaps;
 	
 	public QueryDTO(){
-		endpointStatuses = new ArrayList<QueryEndpointMapDTO>();
+		endpointMaps = new ArrayList<QueryEndpointMapDTO>();
 	}
 	
 	public QueryDTO(QueryEntity entity)
@@ -37,7 +36,7 @@ public class QueryDTO {
 			if(entity.getEndpointStatuses() != null && entity.getEndpointStatuses().size() > 0) {
 				for(QueryEndpointMapEntity locationStatus : entity.getEndpointStatuses()) {
 					QueryEndpointMapDTO dto = new QueryEndpointMapDTO(locationStatus);
-					endpointStatuses.add(dto);
+					endpointMaps.add(dto);
 				}
 			}
 		}
@@ -74,12 +73,12 @@ public class QueryDTO {
 		this.terms = terms;
 	}
 
-	public List<QueryEndpointMapDTO> getEndpointStatuses() {
-		return endpointStatuses;
+	public List<QueryEndpointMapDTO> getEndpointMaps() {
+		return endpointMaps;
 	}
 
-	public void setEndpointStatuses(List<QueryEndpointMapDTO> endpointStatuses) {
-		this.endpointStatuses = endpointStatuses;
+	public void setEndpointMaps(List<QueryEndpointMapDTO> endpointMaps) {
+		this.endpointMaps = endpointMaps;
 	}
 
 	public Date getLastReadDate() {

@@ -37,7 +37,9 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 			} else if(!StringUtils.isEmpty(dto.getStatus().getName())) {
 				LocationStatusEntity statusEntity = getLocationStatusByName(dto.getStatus().getName());
 				if(statusEntity != null) {
+					logger.info("Looked up location status with name " + dto.getStatus().getName() + " and got id " + statusEntity.getId());
 					entity.setLocationStatusId(statusEntity.getId());
+					entity.setLocationStatus(statusEntity);
 				} else {
 					logger.error("Could not find location status with name " + dto.getStatus().getName());
 				}
@@ -67,11 +69,13 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 				entity.getLines().add(addrLine);
 			}
 		}
+		
+		entityManager.clear();
 		return new LocationDTO(entity);
 	}
 
 	public LocationDTO update(LocationDTO dto){
-		LocationEntity entity =  getByExternalId(dto.getExternalId());
+		LocationEntity entity =  dto.getId() != null ? getById(dto.getId()) : getByExternalId(dto.getExternalId());
 		if(entity == null) {
 			return create(dto);
 		} 
@@ -85,7 +89,9 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 			} else if(!StringUtils.isEmpty(dto.getStatus().getName())) {
 				LocationStatusEntity statusEntity = getLocationStatusByName(dto.getStatus().getName());
 				if(statusEntity != null) {
+					logger.info("Looked up location status with  name " + dto.getStatus().getName() + " and got id " + statusEntity.getId());
 					entity.setLocationStatusId(statusEntity.getId());
+					entity.setLocationStatus(statusEntity);
 				} else {
 					logger.error("Could not find location status with name " + dto.getStatus().getName());
 				}
@@ -117,6 +123,8 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 				entity.getLines().add(addrLine);
 			}
 		}
+		
+		entityManager.clear();
 		return new LocationDTO(entity);
 	}
 
@@ -132,6 +140,7 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 			entityManager.remove(toDelete);
 			entityManager.flush();
 		}
+		entityManager.clear();
 	}
 
 	@Override
@@ -203,7 +212,7 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 	}
 	
 	private LocationEntity getById(Long id) {
-		Query query = entityManager.createQuery("SELECT DISTINCT loc "
+		Query query = entityManager.createQuery("SELECT loc "
 				+ "FROM LocationEntity loc "
 				+ "JOIN FETCH loc.locationStatus "
 				+ "LEFT OUTER JOIN FETCH loc.lines " 
@@ -259,11 +268,9 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 	@Override
 	public List<LocationEntity> getAllEntities() {
 		Query query = entityManager.createQuery("SELECT DISTINCT loc "
-				+ "FROM LocationEntity loc "
+				+ "FROM LocationEntity loc, LocationEndpointMapEntity map "
 				+ "JOIN FETCH loc.locationStatus "
-				+ "LEFT OUTER JOIN FETCH loc.lines " 
-				+ "LEFT OUTER JOIN FETCH loc.endpoints endpoints "
-				+ "LEFT OUTER JOIN FETCH endpoints.mimeTypes ", LocationEntity.class);
+				+ "LEFT OUTER JOIN FETCH loc.lines ", LocationEntity.class);
 		return query.getResultList();
 	}
 }

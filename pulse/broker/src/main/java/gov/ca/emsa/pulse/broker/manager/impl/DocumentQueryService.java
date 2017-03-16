@@ -136,12 +136,12 @@ public class DocumentQueryService implements Runnable {
 		this.adapterFactory = adapterFactory;
 	}
 
-	public PatientEndpointMapDTO getPatientLocationMap() {
+	public PatientEndpointMapDTO getPatientEndpointMap() {
 		return patientEndpointMap;
 	}
 
-	public void setPatientLocationMap(PatientEndpointMapDTO patientLocationMap) {
-		this.patientEndpointMap = patientLocationMap;
+	public void setPatientEndpointMap(PatientEndpointMapDTO patientEndpointMap) {
+		this.patientEndpointMap = patientEndpointMap;
 	}
 
 	public PatientDTO getToSearch() {

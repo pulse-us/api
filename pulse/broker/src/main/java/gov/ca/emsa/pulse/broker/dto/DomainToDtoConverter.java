@@ -155,7 +155,6 @@ public class DomainToDtoConverter {
 			result.setCity(domainObj.getAddress().getCity());
 			result.setState(domainObj.getAddress().getState());
 			result.setZipcode(domainObj.getAddress().getZipcode());
-			result.setCountry(domainObj.getAddress().getCountry());
 		}
 		return result;
 	}
@@ -176,7 +175,6 @@ public class DomainToDtoConverter {
 			result.setCity(domain.getAddress().getCity());
 			result.setState(domain.getAddress().getState());
 			result.setZipcode(domain.getAddress().getZipcode());
-			result.setCountry(domain.getAddress().getCountry());
 		}
 		if(domain.getStatus() != null) {
 			LocationStatusDTO status = new LocationStatusDTO();

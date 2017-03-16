@@ -42,8 +42,8 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		query.setLastReadDate(new Date());
 		entityManager.persist(query);
 		
-		if(dto.getEndpointStatuses() != null && dto.getEndpointStatuses().size() > 0) {
-			for(QueryEndpointMapDTO queryLocStatus : dto.getEndpointStatuses()) {
+		if(dto.getEndpointMaps() != null && dto.getEndpointMaps().size() > 0) {
+			for(QueryEndpointMapDTO queryLocStatus : dto.getEndpointMaps()) {
 				QueryEndpointMapEntity queryLocMap = new QueryEndpointMapEntity();
 				queryLocMap.setEndpointId(queryLocStatus.getEndpointId());
 				queryLocMap.setQueryId(query.getId());

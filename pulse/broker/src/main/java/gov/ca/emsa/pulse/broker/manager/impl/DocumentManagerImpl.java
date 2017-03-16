@@ -58,7 +58,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	public void queryForDocuments(CommonUser user, SAMLInput samlInput, PatientEndpointMapDTO dto) {
 		DocumentQueryService service = getDocumentQueryService();
 		service.setSamlInput(samlInput);
-		service.setPatientLocationMap(dto);
+		service.setPatientEndpointMap(dto);
 		service.setEndpoint(dto.getEndpoint());
 		service.setUser(user);
 		pool.execute(service);

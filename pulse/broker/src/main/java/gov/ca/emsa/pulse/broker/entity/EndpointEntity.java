@@ -61,7 +61,7 @@ public class EndpointEntity {
 	@Column(name = "endpoint_last_updated")
 	private Date externalLastUpdateDate;
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "endpointId", cascade = {CascadeType.PERSIST, CascadeType.MERGE}  )
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "endpointId")
 	@Column( name = "endpoint_id", nullable = false)
 	private Set<EndpointMimeTypeEntity> mimeTypes = new LinkedHashSet<EndpointMimeTypeEntity>();
 	
