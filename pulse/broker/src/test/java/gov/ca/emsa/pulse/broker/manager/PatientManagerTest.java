@@ -15,10 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
+import gov.ca.emsa.pulse.broker.dao.EndpointDAO;
 import gov.ca.emsa.pulse.broker.dao.LocationDAO;
+import gov.ca.emsa.pulse.broker.dao.LocationEndpointMapDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointStatusDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointTypeDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationStatusDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
@@ -36,11 +41,13 @@ public class PatientManagerTest extends TestCase {
 	@Autowired PatientManager patientManager;
 	@Autowired QueryDAO queryDao;
 	@Autowired LocationDAO locationDao;
+	@Autowired EndpointDAO endpointDao;
+	@Autowired LocationEndpointMapDAO mappingDao;
 	@Autowired AlternateCareFacilityDAO acfDao;
 	@Autowired PatientRecordDAO prDao;
 	private AlternateCareFacilityDTO acf;
 	private LocationDTO location1, location2;
-	private PatientRecordDTO queryResult1, queryResult2;
+	private EndpointDTO endpoint1, endpoint2;
 	
 	@Before
 	public void setup() throws SQLException  {
@@ -50,7 +57,6 @@ public class PatientManagerTest extends TestCase {
 		assertNotNull(acf);
 		assertNotNull(acf.getId());
 		assertTrue(acf.getId().longValue() > 0);
-		
 		LocationStatusDTO locStatus = new LocationStatusDTO();
 		locStatus.setId(1L);
 		
@@ -74,20 +80,46 @@ public class PatientManagerTest extends TestCase {
 		location2.setStatus(locStatus);
 		location2 = locationDao.create(location2);
 		
+		EndpointStatusDTO status = new EndpointStatusDTO();
+		status.setId(1L);
+		EndpointTypeDTO type = new EndpointTypeDTO();
+		type.setId(1L);
+		endpoint1 = new EndpointDTO();
+		endpoint1.setAdapter("eHealth");
+		endpoint1.setEndpointStatus(status);
+		endpoint1.setEndpointType(type);
+		endpoint1.setExternalId("001");
+		endpoint1.setExternalLastUpdateDate(new Date());
+		endpoint1.setUrl("http://test.com"); 
+		endpoint1 = endpointDao.create(endpoint1);
+		
+		endpoint2 = new EndpointDTO();
+		endpoint2.setAdapter("eHealth");
+		endpoint2.setEndpointStatus(status);
+		endpoint2.setEndpointType(type);
+		endpoint2.setExternalId("002");
+		endpoint2.setExternalLastUpdateDate(new Date());
+		endpoint2.setUrl("http://test.com"); 
+		endpoint2 = endpointDao.create(endpoint1);
+		
+		mappingDao.create(location1.getId(), endpoint1.getId());
+		mappingDao.create(location2.getId(), endpoint1.getId());
+		mappingDao.create(location2.getId(), endpoint2.getId());
+		
 		QueryDTO toInsert = new QueryDTO();
 		toInsert.setStatus(QueryStatus.Active);
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		
-		QueryEndpointMapDTO orgQuery1 = new QueryEndpointMapDTO();
-		orgQuery1.setEndpointId(location1.getId());
-		orgQuery1.setStatus(QueryEndpointStatus.Active);
-		toInsert.getEndpointMaps().add(orgQuery1);
+		QueryEndpointMapDTO queryEndpointMap1 = new QueryEndpointMapDTO();
+		queryEndpointMap1.setEndpointId(endpoint1.getId());
+		queryEndpointMap1.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointMaps().add(queryEndpointMap1);
 		
-		QueryEndpointMapDTO orgQuery2 = new QueryEndpointMapDTO();
-		orgQuery2.setEndpointId(location2.getId());
-		orgQuery2.setStatus(QueryEndpointStatus.Active);
-		toInsert.getEndpointMaps().add(orgQuery2);
+		QueryEndpointMapDTO queryEndpointMap2 = new QueryEndpointMapDTO();
+		queryEndpointMap2.setEndpointId(endpoint2.getId());
+		queryEndpointMap2.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointMaps().add(queryEndpointMap2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
 		assertNotNull(inserted);
@@ -95,10 +127,10 @@ public class PatientManagerTest extends TestCase {
 		assertTrue(inserted.getId().longValue() > 0);
 		assertNotNull(inserted.getEndpointMaps());
 		assertEquals(2, inserted.getEndpointMaps().size());
-		orgQuery1 = inserted.getEndpointMaps().get(0);
+		queryEndpointMap1 = inserted.getEndpointMaps().get(0);
 		assertNotNull(inserted.getEndpointMaps().get(0).getId());
 		assertTrue(inserted.getEndpointMaps().get(0).getId().longValue() > 0);
-		orgQuery2 = inserted.getEndpointMaps().get(1);
+		queryEndpointMap2 = inserted.getEndpointMaps().get(1);
 		assertNotNull(inserted.getEndpointMaps().get(1).getId());
 		assertTrue(inserted.getEndpointMaps().get(1).getId().longValue() > 0);
 		

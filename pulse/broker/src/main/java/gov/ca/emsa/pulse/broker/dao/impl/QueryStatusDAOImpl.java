@@ -32,14 +32,14 @@ public class QueryStatusDAOImpl extends BaseDAOImpl implements QueryStatusDAO {
 	}
 	
 	public QueryEndpointStatusEntity getQueryEndpointStatusByName(String name) {
-		Query statusQuery = entityManager.createQuery("from QueryLocationStatusEntity "
+		Query statusQuery = entityManager.createQuery("from QueryEndpointStatusEntity "
 				+ "WHERE status = '" + name + "'",
 				QueryEndpointStatusEntity.class);
 		List<QueryEndpointStatusEntity> results = statusQuery.getResultList();
 		
 		QueryEndpointStatusEntity result = null;
 		if(results == null || results.size() == 0) {
-			logger.error("Could not find queryLocationStatus '" + name + "'");
+			logger.error("Could not find QueryEndpointStatus '" + name + "'");
 		} else {
 			result = results.get(0);
 		}

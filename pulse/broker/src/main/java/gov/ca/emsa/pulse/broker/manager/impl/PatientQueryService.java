@@ -97,7 +97,7 @@ public class PatientQueryService implements Runnable {
 			queryEndpointMap.setStatus(queryError ? QueryEndpointStatus.Failed : QueryEndpointStatus.Successful);
 			queryEndpointMap.setEndDate(new Date());
 			queryManager.createOrUpdateQueryLocation(queryEndpointMap);
-			queryManager.updateQueryStatusFromLocations(queryEndpointMap.getQueryId());
+			queryManager.updateQueryStatusFromEndpoints(queryEndpointMap.getQueryId());
 		}
 	}
 	

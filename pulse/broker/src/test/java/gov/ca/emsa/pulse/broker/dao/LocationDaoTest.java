@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
@@ -154,6 +155,33 @@ public class LocationDaoTest {
 		assertEquals(toUpdate.getId(), updated.getId());
 		LocationDTO queried = locationDao.findById(updated.getId());
 		compareLocations(updated, queried);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void deleteLocation() throws SQLException {
+		LocationDTO toCreate = new LocationDTO();
+		toCreate.setCity("Baltimore");
+		toCreate.setDescription("A test location");
+		toCreate.setExternalId("001");
+		toCreate.setExternalLastUpdateDate(new Date());
+		AddressLineDTO toCreateLine = new AddressLineDTO();
+		toCreateLine.setLine("1000 Hilltop Circle");
+		toCreate.getLines().add(toCreateLine);
+		toCreate.setName("Test Hospital");
+		toCreate.setParentOrgName("TEST ORG");
+		toCreate.setState("MD");
+		LocationStatusDTO status = new LocationStatusDTO();
+		status.setName("Active");
+		toCreate.setStatus(status);
+		toCreate.setType("Hospital");
+		toCreate.setZipcode("21227");
+		
+		LocationDTO created = locationDao.create(toCreate);
+		locationDao.delete(created);
+		LocationDTO queried = locationDao.findById(created.getId());
+		assertNull(queried);
 	}
 	
 	private void compareLocations(LocationDTO first, LocationDTO second) {

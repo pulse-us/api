@@ -68,6 +68,12 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
+	public QueryEndpointMapDTO getQueryEndpointMapById(Long id) {
+		return queryDao.getQueryEndpointById(id);
+	}
+	
+	@Override
+	@Transactional
 	public List<QueryDTO> getAllQueriesForUser(String userKey) {
 		List<QueryDTO> results = queryDao.findAllForUser(userKey);
 		return results;
@@ -98,7 +104,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public synchronized QueryDTO updateQueryStatusFromLocations(Long queryId) {
+	public synchronized QueryDTO updateQueryStatusFromEndpoints(Long queryId) {
 		QueryDTO query = getById(queryId);
 		//if the query has not already been closed/deleted, update the status
 		if(query.getStatus() != QueryStatus.Closed) {
@@ -116,20 +122,22 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	
 	@Override
 	@Transactional
-	public synchronized QueryDTO cancelQueryToEndpoint(Long queryId, Long endpointId) {
-		QueryEndpointMapDTO queryEndpointMapToCancel = queryDao.getQueryEndpointByQueryAndEndpoint(queryId, endpointId);
+	public synchronized QueryDTO cancelQueryToEndpoint(Long queryEndpointMapId) {
+		QueryEndpointMapDTO queryEndpointMapToCancel = queryDao.getQueryEndpointById(queryEndpointMapId);
 		if(queryEndpointMapToCancel == null) {
-			logger.error("Could not find query id " + queryId + " mapped to " + endpointId);
+			logger.error("Could not find query endpoint map with id " + queryEndpointMapId);
 			return null;
 		}
 		queryEndpointMapToCancel.setStatus(QueryEndpointStatus.Cancelled);
 		queryDao.updateQueryEndpointMap(queryEndpointMapToCancel);
 		
 		String endpointUrl = null;
-		EndpointDTO endpoint = endpointDao.findById(endpointId);
+		EndpointDTO endpoint = endpointDao.findById(queryEndpointMapToCancel.getEndpointId());
 		if(endpoint != null) {
 			endpointUrl = endpoint.getUrl();
 		}
+		Long queryId = queryEndpointMapToCancel.getQueryId();
+		
 		//if we later allow other types to be cancelled this won't work.
 		//Also, what if there were multiple PD endpoints for a given location? we wouldn't know which one was being cancelled.
 		try {
@@ -193,9 +201,9 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public void requeryForPatientRecords(Long queryId, Long endpointId, CommonUser user)
+	public void requeryForPatientRecords(Long queryEndpointMapId, CommonUser user) 
 			throws JsonProcessingException, IOException {
-		QueryEndpointMapDTO queryEndpointMap = queryDao.getQueryEndpointByQueryAndEndpoint(queryId, endpointId);
+		QueryEndpointMapDTO queryEndpointMap = queryDao.getQueryEndpointById(queryEndpointMapId);
 		if(queryEndpointMap == null) {
 			return;
 		}
@@ -259,8 +267,8 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public PatientRecordDTO addPatientRecord(PatientRecordDTO record) {
 		PatientRecordDTO result = record;
-		Long queryLocationMapId = record.getQueryEndpointId();
-		QueryEndpointMapDTO queryLoc = queryDao.getQueryEndpointById(queryLocationMapId);
+		Long queryEndpointMapId = record.getQueryEndpointId();
+		QueryEndpointMapDTO queryLoc = queryDao.getQueryEndpointById(queryEndpointMapId);
 		if(queryLoc != null && queryLoc.getStatus() != null && 
 				queryLoc.getStatus() != QueryEndpointStatus.Cancelled) {
 			result = patientRecordDao.create(record);

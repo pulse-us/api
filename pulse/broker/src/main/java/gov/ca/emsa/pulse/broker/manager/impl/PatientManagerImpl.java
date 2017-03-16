@@ -90,7 +90,7 @@ public class PatientManagerImpl implements PatientManager {
 	@Transactional
 	public PatientEndpointMapDTO updatePatientEndpointMap(PatientEndpointMapDTO toUpdate)
 			throws SQLException{
-		return patientDao.updatePatientLocationMap(toUpdate);
+		return patientDao.updatePatientEndpointMap(toUpdate);
 	}
 
 	@Override

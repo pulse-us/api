@@ -14,17 +14,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dao.AlternateCareFacilityDAO;
+import gov.ca.emsa.pulse.broker.dao.EndpointDAO;
 import gov.ca.emsa.pulse.broker.dao.LocationDAO;
+import gov.ca.emsa.pulse.broker.dao.LocationEndpointMapDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientGenderDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientRecordDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointStatusDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointTypeDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationStatusDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientGenderDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
+import gov.ca.emsa.pulse.common.domain.Endpoint;
+import gov.ca.emsa.pulse.common.domain.EndpointStatus;
+import gov.ca.emsa.pulse.common.domain.EndpointType;
 import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import junit.framework.TestCase;
@@ -35,11 +43,14 @@ public class PatientRecordManagerTest extends TestCase {
 	@Autowired QueryManager queryManager;
 	@Autowired QueryDAO queryDao;
 	@Autowired LocationDAO locationDao;
+	@Autowired EndpointDAO endpointDao;
+	@Autowired LocationEndpointMapDAO mappingDao;
 	@Autowired AlternateCareFacilityDAO acfDao;
 	@Autowired PatientRecordDAO prDao;
 	@Autowired PatientGenderDAO patientGenderDao;
 	private AlternateCareFacilityDTO acf;
-	private LocationDTO location1, location2;
+	private LocationDTO location1;
+	private EndpointDTO endpoint1;
 	private QueryDTO query;
 	private QueryEndpointMapDTO queryEndpointMap1, queryEndpointMap2;
 	private PatientGenderDTO patientGenderMale;
@@ -55,7 +66,6 @@ public class PatientRecordManagerTest extends TestCase {
 		
 		LocationStatusDTO locStatus = new LocationStatusDTO();
 		locStatus.setId(1L);
-		
 		location1 = new LocationDTO();
 		location1.setExternalId("1");
 		location1.setName("John's Hopkins Medical Center");
@@ -66,15 +76,20 @@ public class PatientRecordManagerTest extends TestCase {
 		location1.setStatus(locStatus);
 		location1 = locationDao.create(location1);
 		
-		location2 = new LocationDTO();
-		location2.setExternalId("2");
-		location2.setName("University of Maryland Medical Center");
-		location2.setDescription("A hospital");
-		location2.setType("Hospital");
-		location2.setExternalLastUpdateDate(new Date());
-		location2.setParentOrgName("EHealth Parent Org");
-		location2.setStatus(locStatus);
-		location2 = locationDao.create(location2);
+		EndpointStatusDTO status = new EndpointStatusDTO();
+		status.setId(1L);
+		EndpointTypeDTO type = new EndpointTypeDTO();
+		type.setId(1L);
+		endpoint1 = new EndpointDTO();
+		endpoint1.setAdapter("eHealth");
+		endpoint1.setEndpointStatus(status);
+		endpoint1.setEndpointType(type);
+		endpoint1.setExternalId("001");
+		endpoint1.setExternalLastUpdateDate(new Date());
+		endpoint1.setUrl("http://test.com"); 
+		endpoint1 = endpointDao.create(endpoint1);
+		
+		mappingDao.create(location1.getId(), endpoint1.getId());
 		
 		QueryDTO toInsert = new QueryDTO();
 		toInsert.setStatus(QueryStatus.Active);
@@ -82,12 +97,12 @@ public class PatientRecordManagerTest extends TestCase {
 		toInsert.setUserId("kekey");
 		
 		queryEndpointMap1 = new QueryEndpointMapDTO();
-		queryEndpointMap1.setEndpointId(location1.getId());
+		queryEndpointMap1.setEndpointId(endpoint1.getId());
 		queryEndpointMap1.setStatus(QueryEndpointStatus.Active);
 		toInsert.getEndpointMaps().add(queryEndpointMap1);
 		
 		queryEndpointMap2 = new QueryEndpointMapDTO();
-		queryEndpointMap2.setEndpointId(location2.getId());
+		queryEndpointMap2.setEndpointId(endpoint1.getId());
 		queryEndpointMap2.setStatus(QueryEndpointStatus.Active);
 		toInsert.getEndpointMaps().add(queryEndpointMap2);
 		
@@ -125,7 +140,6 @@ public class PatientRecordManagerTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testCreatePatientRecord() {
-		
 		PatientRecordDTO dto = new PatientRecordDTO();
 		String date = "20160110";
 		dto.setDateOfBirth(date);
@@ -150,22 +164,20 @@ public class PatientRecordManagerTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testCancelPatientDiscoveryQueryToOrganization() {	
-		System.out.println("query id " + query.getId());
-		queryManager.cancelQueryToEndpoint(queryEndpointMap1.getQueryId(),  queryEndpointMap1.getEndpointId());
+		queryManager.cancelQueryToEndpoint(queryEndpointMap1.getId());
 		QueryDTO updatedQuery = queryManager.getById(query.getId());
 		
 		assertNotNull(updatedQuery);
 		assertEquals(query.getId(), updatedQuery.getId());
 		assertEquals(2, updatedQuery.getEndpointMaps().size());
-		boolean queryHadOrg = false;
-		for(QueryEndpointMapDTO queryLocationMap : updatedQuery.getEndpointMaps()) {
-			assertNotNull(queryLocationMap.getId());
-			if(queryLocationMap.getId().longValue() == queryEndpointMap1.getId().longValue()) {
-				queryHadOrg = true;
-				
-				assertEquals(QueryEndpointStatus.Cancelled, queryLocationMap.getStatus());
+		boolean queryHadEndpoint = false;
+		for(QueryEndpointMapDTO queryEndpointMap : updatedQuery.getEndpointMaps()) {
+			assertNotNull(queryEndpointMap.getId());
+			if(queryEndpointMap.getId().longValue() == queryEndpointMap1.getId().longValue()) {
+				queryHadEndpoint = true;
+				assertEquals(QueryEndpointStatus.Cancelled, queryEndpointMap.getStatus());
 			}
 		}
-		assertTrue(queryHadOrg);
+		assertTrue(queryHadEndpoint);
 	}
 }

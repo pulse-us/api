@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface LocationManager {
 	public LocationDTO getById(Long id);
+	public LocationDTO getByExternalId(String id);
 	public void updateLocations(List<Location> locations);
 	public List<LocationDTO> getAll();
 	public List<LocationStatistics> getPatientDiscoveryRequestStatistics(Date startDate, Date endDate);

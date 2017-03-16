@@ -33,6 +33,11 @@ public class LocationManagerImpl implements LocationManager {
 		return locationDao.findById(id);
 	}
 	
+	@Transactional(readOnly = true)
+	public LocationDTO getByExternalId(String id) {
+		return locationDao.findByExternalId(id);
+	}
+	
 	@Transactional
 	public void updateLocations(List<Location> newLocations){
 		List<LocationDTO> currentLocations = getAll();

@@ -12,7 +12,7 @@ public interface PatientDAO {
 	public PatientDTO update(PatientDTO dto) throws SQLException;
 	
 	public PatientEndpointMapDTO createPatientEndpointMap(PatientEndpointMapDTO toCreate) throws SQLException;
-	public PatientEndpointMapDTO updatePatientLocationMap(PatientEndpointMapDTO toUpdate) throws SQLException;
+	public PatientEndpointMapDTO updatePatientEndpointMap(PatientEndpointMapDTO toUpdate) throws SQLException;
 	
 	public void delete(Long id) throws SQLException;
 	public PatientDTO getById(Long id);

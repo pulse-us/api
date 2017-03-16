@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
@@ -167,6 +168,36 @@ public class EndpointDaoTest {
 		assertEquals(toUpdate.getId(), updated.getId());
 		EndpointDTO queried = endpointDao.findById(updated.getId());
 		compareEndpoints(updated, queried);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void deleteEndpoint() throws SQLException {
+		EndpointDTO toCreate = new EndpointDTO();
+		toCreate.setAdapter("eHealth");
+		EndpointStatusDTO endpointStatus = new EndpointStatusDTO();
+		endpointStatus.setName("Active");
+		toCreate.setEndpointStatus(endpointStatus);
+		EndpointTypeDTO endpointType = new EndpointTypeDTO();
+		endpointType.setCode("nwhin-xcpd");
+		toCreate.setEndpointType(endpointType);
+		toCreate.setExternalId("001");
+		toCreate.setExternalLastUpdateDate(new Date());
+		EndpointMimeTypeDTO mimeType1 = new EndpointMimeTypeDTO();
+		mimeType1.setMimeType("application/xml");
+		toCreate.getMimeTypes().add(mimeType1);
+		EndpointMimeTypeDTO mimeType2 = new EndpointMimeTypeDTO();
+		mimeType2.setMimeType("text/xml");
+		toCreate.getMimeTypes().add(mimeType2);
+		toCreate.setPayloadType("XML");
+		toCreate.setPublicKey("1236789sdkjfksjhfdkjsdhf889798kjshdfkjshdfi8");
+		toCreate.setUrl("https://localhost:3000/some/url");
+		
+		EndpointDTO created = endpointDao.create(toCreate);
+		endpointDao.delete(created);
+		EndpointDTO queried = endpointDao.findByExternalId(toCreate.getExternalId());
+		assertNull(queried);
 	}
 	
 	private void compareEndpoints(EndpointDTO first, EndpointDTO second) {

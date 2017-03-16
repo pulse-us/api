@@ -81,7 +81,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public PatientEndpointMapDTO updatePatientLocationMap(PatientEndpointMapDTO toUpdate) throws SQLException {
+	public PatientEndpointMapDTO updatePatientEndpointMap(PatientEndpointMapDTO toUpdate) throws SQLException {
 		logger.debug("Looking up patient org map with id " + toUpdate.getId());
 		PatientEndpointMapEntity orgMap = getOrgMapById(toUpdate.getId());
 		if(orgMap == null) {
@@ -128,7 +128,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	public PatientEndpointMapDTO getPatientEndpointMapById(Long id) {
 		PatientEndpointMapEntity entity = null;
 
-		Query query = entityManager.createQuery( "SELECT pat from PatientLocationMapEntity pat "
+		Query query = entityManager.createQuery( "SELECT pat from PatientEndpointMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
 				+ "LEFT OUTER JOIN FETCH pat.location "
 				+ "LEFT OUTER JOIN FETCH pat.status "
@@ -148,7 +148,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.acf "
-				+ "LEFT OUTER JOIN FETCH pat.locationMaps "
+				+ "LEFT OUTER JOIN FETCH pat.endpointMaps "
 				+ "where pat.acfId = :acfId) ", 
 				PatientEntity.class );
 
@@ -188,8 +188,8 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	private PatientEndpointMapEntity getOrgMapById(Long id) {		
-		Query query = entityManager.createQuery( "SELECT distinct pat from PatientLocationMapEntity pat "
-				+ "LEFT OUTER JOIN FETCH pat.location "
+		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEndpointMapEntity pat "
+				+ "LEFT OUTER JOIN FETCH pat.endpoint "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
 				+ "LEFT OUTER JOIN FETCH pat.documents " 
 				+ "LEFT OUTER JOIN FETCH pat.status "

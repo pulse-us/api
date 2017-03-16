@@ -33,6 +33,7 @@ import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointMap;
 import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import io.swagger.annotations.Api;
@@ -109,18 +110,18 @@ public class SearchService {
 	
 	@ApiOperation(value="Re-query a location from an existing query. "
 			+ "This runs asynchronously and returns a query object which can later be used to get the results.")
-	@RequestMapping(path="/requery/query/{queryId}/endpoint/{endpointId}", method = RequestMethod.POST,
+	@RequestMapping(path="/requery/{queryEndpointMapId}", method = RequestMethod.POST,
 		produces="application/json; charset=utf-8")
-    public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
-    		@PathVariable("endpointId") Long endpointId) throws JsonProcessingException, IOException {
+    public @ResponseBody Query requeryPatients(@PathVariable("queryEndpointMapId") Long queryEndpointMapId) throws JsonProcessingException, IOException {
 
 		CommonUser user = UserUtil.getCurrentUser();
 		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
 		
         QueryDTO initiatedQuery = null;
         synchronized(queryManager) {
-        	queryManager.requeryForPatientRecords(queryId, endpointId, user);
-        	initiatedQuery = queryManager.getById(queryId);  
+        	queryManager.requeryForPatientRecords(queryEndpointMapId, user);
+        	QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(queryEndpointMapId);
+        	initiatedQuery = queryManager.getById(dto.getQueryId());  
         }
         return DtoToDomainConverter.convert(initiatedQuery);
    }

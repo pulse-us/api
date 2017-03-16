@@ -268,7 +268,7 @@ public class LocationDAOImpl extends BaseDAOImpl implements LocationDAO {
 	@Override
 	public List<LocationEntity> getAllEntities() {
 		Query query = entityManager.createQuery("SELECT DISTINCT loc "
-				+ "FROM LocationEntity loc, LocationEndpointMapEntity map "
+				+ "FROM LocationEntity loc "
 				+ "JOIN FETCH loc.locationStatus "
 				+ "LEFT OUTER JOIN FETCH loc.lines ", LocationEntity.class);
 		return query.getResultList();

@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.dao.EndpointDAO;
+import gov.ca.emsa.pulse.broker.dao.LocationEndpointMapDAO;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.EndpointManager;
 import gov.ca.emsa.pulse.common.domain.Endpoint;
 
@@ -20,10 +22,16 @@ public class EndpointManagerImpl implements EndpointManager {
 	private static final Logger logger = LogManager.getLogger(EndpointManagerImpl.class);
 
 	@Autowired private EndpointDAO endpointDao;
+	@Autowired private LocationEndpointMapDAO mappingDao;
 	
 	@Transactional(readOnly = true)
 	public EndpointDTO getById(Long id) {
 		return endpointDao.findById(id);
+	}
+	
+	@Transactional(readOnly = true)
+	public EndpointDTO getByExternalId(String id) {
+		return endpointDao.findByExternalId(id);
 	}
 	
 	@Transactional(readOnly = true) 
@@ -79,5 +87,29 @@ public class EndpointManagerImpl implements EndpointManager {
 	public List<EndpointDTO> getAll() {
 		List<EndpointDTO> results = endpointDao.findAll();
 		return results;
+	}
+	
+	@Override
+	@Transactional
+	public void updateEndpointLocationMappings(List<LocationEndpointMapDTO> newMappings) {
+		for(LocationEndpointMapDTO oldMapping : mappingDao.findAll()) {
+			boolean stillExists = false;
+			for(LocationEndpointMapDTO newMapping : newMappings) {
+				if(newMapping.getEndpointId().longValue() == newMapping.getEndpointId().longValue()) {
+					stillExists = true;
+				}
+			}
+			
+			if(!stillExists) {
+				mappingDao.delete(oldMapping.getId());
+			}
+		}
+		
+		//look at the new mappings for anything that should be created
+		for(LocationEndpointMapDTO newMapping : newMappings) {
+			if(!mappingDao.exists(newMapping.getLocationId(), newMapping.getEndpointId())) {
+				mappingDao.create(newMapping.getLocationId(), newMapping.getEndpointId());
+			}
+		}
 	}
 }

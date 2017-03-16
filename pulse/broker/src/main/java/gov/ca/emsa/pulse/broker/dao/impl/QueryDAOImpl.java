@@ -43,35 +43,27 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		entityManager.persist(query);
 		
 		if(dto.getEndpointMaps() != null && dto.getEndpointMaps().size() > 0) {
-			for(QueryEndpointMapDTO queryLocStatus : dto.getEndpointMaps()) {
-				QueryEndpointMapEntity queryLocMap = new QueryEndpointMapEntity();
-				queryLocMap.setEndpointId(queryLocStatus.getEndpointId());
-				queryLocMap.setQueryId(query.getId());
-				queryLocMap.setStartDate(new Date());
+			for(QueryEndpointMapDTO queryEndpointMap : dto.getEndpointMaps()) {
+				QueryEndpointMapEntity queryEndpointToInsert = new QueryEndpointMapEntity();
+				queryEndpointToInsert.setEndpointId(queryEndpointMap.getEndpointId());
+				queryEndpointToInsert.setQueryId(query.getId());
+				queryEndpointToInsert.setStartDate(new Date());
 				QueryEndpointStatusEntity status = statusDao.getQueryEndpointStatusByName(QueryEndpointStatus.Active.name());
-				queryLocMap.setStatusId(status == null ? null : status.getId());
-				queryLocMap.setStatus(status);
-				entityManager.persist(queryLocMap);
-				query.getEndpointStatuses().add(queryLocMap);
+				queryEndpointToInsert.setStatusId(status == null ? null : status.getId());
+				queryEndpointToInsert.setStatus(status);
+				entityManager.persist(queryEndpointToInsert);
+				query.getEndpointStatuses().add(queryEndpointToInsert);
 			}
 		}
 		
 		entityManager.flush();
+		entityManager.clear();
 		return new QueryDTO(query);
 	}
 
 	@Override
 	public QueryEndpointMapDTO getQueryEndpointById(Long queryEndpointId) {
 		QueryEndpointMapEntity entity = findQueryEndpointById(queryEndpointId);
-		if(entity != null) {
-			return new QueryEndpointMapDTO(entity);
-		}
-		return null;
-	}
-	
-	@Override
-	public QueryEndpointMapDTO getQueryEndpointByQueryAndEndpoint(Long queryId, Long endpointId) {
-		QueryEndpointMapEntity entity = findQueryEndpointByQueryAndEndpoint(queryId, endpointId);
 		if(entity != null) {
 			return new QueryEndpointMapDTO(entity);
 		}
@@ -88,6 +80,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		toInsert.setStatusId(status == null ? null : status.getId());
 		entityManager.persist(toInsert);
 		entityManager.flush();
+		entityManager.clear();
 		return new QueryEndpointMapDTO(toInsert);
 	}
 	
@@ -116,6 +109,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		} else {
 			logger.info("Could not find a query endpoint map with ID " + newQueryEndpointMap.getId());
 		}
+		entityManager.clear();
 		return null;
 	}
 	
@@ -138,6 +132,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		} else {
 			logger.warn("Attempted to update query " + dto.getId() + " but it is already marked 'Closed'. Not updating.");
 		}
+		entityManager.clear();
 		return new QueryDTO(query);
 	}
 
@@ -208,11 +203,6 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		}
 	}
 	
-	private List<QueryEntity> findAllEntities() {
-		Query query = entityManager.createQuery("from QueryEntity");
-		return query.getResultList();
-	}
-	
 	private QueryEntity getEntityById(Long id) {
 		//the status entity was being cached and calling clear here
 		//forces it to refresh based on the query we run
@@ -221,8 +211,8 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryEntity entity = null;
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.status "
-				+ "LEFT OUTER JOIN FETCH q.locationStatuses locs "
-				+ "LEFT OUTER JOIN FETCH locs.status status "
+				+ "LEFT OUTER JOIN FETCH q.endpointStatuses statuses "
+				+ "LEFT OUTER JOIN FETCH statuses.status status "
 				+ "where q.id = :entityid) ", 
 				QueryEntity.class );
 		
@@ -239,9 +229,9 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		if(statusEntity == null) {
 			return Boolean.FALSE;
 		}
-		Query query = entityManager.createQuery( "SELECT count(loc) "
-				+ "FROM QueryLocationMapEntity loc " 
-				+ "WHERE loc.queryId = :queryId " 
+		Query query = entityManager.createQuery( "SELECT count(map) "
+				+ "FROM QueryEndpointMapEntity map " 
+				+ "WHERE map.queryId = :queryId " 
 				+ "AND statusId = :statusId", Long.class);
 		
 		query.setParameter("queryId", queryId);
@@ -255,7 +245,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryEndpointMapEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEndpointMapEntity q "
-				+ "LEFT OUTER JOIN FETCH q.location " 
+				+ "LEFT OUTER JOIN FETCH q.endpoint " 
 				+ "LEFT OUTER JOIN FETCH q.results "
 				+ "JOIN FETCH q.status "
 				+ "where q.id = :entityid) ", 
@@ -270,30 +260,10 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return entity;
 	}
 	
-	private QueryEndpointMapEntity findQueryEndpointByQueryAndEndpoint(Long queryId, Long endpointId) {
-		QueryEndpointMapEntity entity = null;
-		
-		Query query = entityManager.createQuery( "SELECT distinct q from QueryEndpointMapEntity q "
-				+ "LEFT OUTER JOIN FETCH q.location " 
-				+ "LEFT OUTER JOIN FETCH q.results "
-				+ "JOIN FETCH q.status "
-				+ "where q.queryId = :queryId and q.endpointId = :endpointId) ", 
-				QueryEndpointMapEntity.class );
-		
-		query.setParameter("queryId", queryId);
-		query.setParameter("endpointId", endpointId);
-		List<QueryEndpointMapEntity> result = query.getResultList();
-		if(result.size() == 1) {
-			entity = result.get(0);
-		}
-		
-		return entity;
-	}
-	
 	private List<QueryEntity> getEntitiesByUser(String user) {
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.status "
-				+ "LEFT OUTER JOIN FETCH q.locationStatuses "
+				+ "LEFT OUTER JOIN FETCH q.endpointStatuses "
 				+ "where q.userId = :userId) ", 
 				QueryEntity.class );
 		
@@ -305,7 +275,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	private List<QueryEntity> getEntitiesByUserAndStatus(String user, List<QueryStatus> statuses) {		
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.status "
-				+ "LEFT OUTER JOIN FETCH q.locationStatuses "
+				+ "LEFT OUTER JOIN FETCH q.endpointStatuses "
 				+ "where q.userId = :userId "
 				+ "and q.status.status IN (:status)) ", 
 				QueryEntity.class );
