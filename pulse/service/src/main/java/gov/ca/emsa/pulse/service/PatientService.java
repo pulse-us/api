@@ -77,27 +77,6 @@ public class PatientService {
 		}
 		return returnQuery;
 	}
-
-	@ApiOperation(value="Re-run a patient search from a specific location.")
-	@RequestMapping(path="/requery/{queryEndpointMapId}", method = RequestMethod.POST)
-	public @ResponseBody Query requeryPatients(@PathVariable("queryEndpointMapId") Long queryEndpointMapId) throws JsonProcessingException {
-		HttpHeaders headers = new HttpHeaders();
-		ObjectMapper mapper = new ObjectMapper();
-
-		HttpEntity<Query> response = null;
-		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
-		if(jwtUser == null){
-			logger.error("Could not find a logged in user. ");
-			throw new AccessDeniedException("Only logged in users can search for patients.");
-		}else{
-			headers.add("User", mapper.writeValueAsString(jwtUser));
-			HttpEntity<Query> entity = new HttpEntity<Query>(headers);
-			RestTemplate query = new RestTemplate();
-			response = query.exchange(brokerUrl + "/requery/" + queryEndpointMapId, HttpMethod.POST, entity, Query.class);
-			logger.info("Request sent to broker from services REST.");
-		}
-		return response.getBody();
-	}
 	    
 	// get all patients from the logged in users ACF
 	@ApiOperation(value="get all patients from the logged in users ACF.")

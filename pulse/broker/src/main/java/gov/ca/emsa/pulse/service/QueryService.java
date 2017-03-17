@@ -8,6 +8,7 @@ import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
@@ -20,6 +21,7 @@ import gov.ca.emsa.pulse.common.domain.Query;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +35,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -72,16 +75,36 @@ public class QueryService {
 		}
     }
 
-	@ApiOperation(value = "Cancel part of a query that's going to a specific location")
-	@RequestMapping(value = "/cancel/{queryEndpointMapId}", method = RequestMethod.POST)
-	public Query cancelQueryToEndpoint(@PathVariable(value="queryEndpointMapId") Long queryEndpointMapId) {
+	@ApiOperation(value = "Cancel part of a query that's going to a specific endpoint")
+	@RequestMapping(value = "/{queryId}/endpoint/{endpointId}/cancel", method = RequestMethod.POST)
+	public Query cancelQueryToEndpoint(@PathVariable(value="queryId") Long queryId, 
+			@PathVariable(value="endpointId") Long endpointId) {
 		synchronized (queryManager) {
-			QueryDTO cancelledQuery = queryManager.cancelQueryToEndpoint(queryEndpointMapId);
+			QueryEndpointMapDTO mapping = queryManager.getQueryEndpointMapByQueryAndEndpoint(queryId, endpointId);
+			QueryDTO cancelledQuery = queryManager.cancelQueryToEndpoint(mapping.getId());
 			queryManager.updateQueryStatusFromEndpoints(cancelledQuery.getId());
 			QueryDTO queryWithCancelledLocation = queryManager.getById(cancelledQuery.getId());
 			return DtoToDomainConverter.convert(queryWithCancelledLocation);
 		}
 	}
+	
+	@ApiOperation(value="Re-query an endpoint from an existing query. "
+			+ "This runs asynchronously and returns a query object which can later be used to get the results.")
+	@RequestMapping(path="/{queryId}/endpoint/{endpointId}/requery", method = RequestMethod.POST,
+		produces="application/json; charset=utf-8")
+    public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
+    		@PathVariable("endpointId") Long endpointId) throws JsonProcessingException, IOException {
+		CommonUser user = UserUtil.getCurrentUser();
+		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
+        QueryDTO initiatedQuery = null;
+        synchronized(queryManager) {
+        	QueryEndpointMapDTO mapping = queryManager.getQueryEndpointMapByQueryAndEndpoint(queryId, endpointId);
+        	queryManager.requeryForPatientRecords(mapping.getId(), user);
+        	QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(mapping.getId());
+        	initiatedQuery = queryManager.getById(dto.getQueryId());  
+        }
+        return DtoToDomainConverter.convert(initiatedQuery);
+   }
 	
 	@ApiOperation(value = "Delete a query")
 	@RequestMapping(value="/{queryId}/delete", method = RequestMethod.POST)
@@ -121,21 +144,22 @@ public class QueryService {
 			//create patient-endpoint mappings for doc discovery based on the patientrecords we are using
 			for(Long patientRecordId : request.getPatientRecordIds()) {
 				PatientEndpointMapDTO patientEndpointMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient, patientRecordId);
-	
-				//kick off document list retrieval service
-				SAMLInput input = new SAMLInput();
-				input.setStrIssuer(user.getSubjectName());
-				input.setStrNameID("UserBrianLindsey");
-				input.setStrNameQualifier("My Website");
-				input.setSessionId("abcdedf1234567");
-				HashMap<String, String> customAttributes = new HashMap<String,String>();
-				customAttributes.put("RequesterFirstName", user.getFirstName());
-				customAttributes.put("RequestReason", "Get patient documents");
-				customAttributes.put("PatientRecordId", patientEndpointMapDto.getExternalPatientRecordId());
-				input.setAttributes(customAttributes);
-	
-				patient.getEndpointMaps().add(patientEndpointMapDto);
-				docManager.queryForDocuments(user, input, patientEndpointMapDto);
+				if(patientEndpointMapDto != null) {
+					//kick off document list retrieval service if there was a suitable endpoint
+					SAMLInput input = new SAMLInput();
+					input.setStrIssuer(user.getSubjectName());
+					input.setStrNameID("UserBrianLindsey");
+					input.setStrNameQualifier("My Website");
+					input.setSessionId("abcdedf1234567");
+					HashMap<String, String> customAttributes = new HashMap<String,String>();
+					customAttributes.put("RequesterFirstName", user.getFirstName());
+					customAttributes.put("RequestReason", "Get patient documents");
+					customAttributes.put("PatientRecordId", patientEndpointMapDto.getExternalPatientRecordId());
+					input.setAttributes(customAttributes);
+		
+					patient.getEndpointMaps().add(patientEndpointMapDto);
+					docManager.queryForDocuments(user, input, patientEndpointMapDto);
+				}
 			}
 	
 			//delete query (all associated items should cascade)

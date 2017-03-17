@@ -78,7 +78,7 @@ public class QueryDaoTest extends TestCase {
 		assertNotNull(inserted.getEndpointMaps().get(0).getId());
 		assertTrue(inserted.getEndpointMaps().get(0).getId().longValue() > 0);
 		
-		QueryDTO selected = queryDao.getById(inserted.getId());
+		QueryDTO selected = queryDao.findById(inserted.getId());
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
@@ -121,7 +121,7 @@ public class QueryDaoTest extends TestCase {
 		assertNotNull(queryEndpointMap2.getId());
 		assertTrue(queryEndpointMap2.getId().longValue() > 0);
 
-		QueryDTO selected = queryDao.getById(inserted.getId());
+		QueryDTO selected = queryDao.findById(inserted.getId());
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
 		assertTrue(selected.getId().longValue() > 0);
@@ -175,6 +175,38 @@ public class QueryDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
+	public void testGetQueryEndpointMaps() {		
+		insertLocationsAndEndpoints();
+
+		QueryDTO toInsert = new QueryDTO();
+		toInsert.setStatus(QueryStatus.Active);
+		toInsert.setTerms("terms");
+		toInsert.setUserId("kekey");
+		QueryEndpointMapDTO queryEndpointMap1 = new QueryEndpointMapDTO();
+		queryEndpointMap1.setEndpointId(endpoint1.getId());
+		queryEndpointMap1.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointMaps().add(queryEndpointMap1);
+		QueryEndpointMapDTO queryEndpointMap2 = new QueryEndpointMapDTO();
+		queryEndpointMap2.setEndpointId(endpoint2.getId());
+		queryEndpointMap2.setStatus(QueryEndpointStatus.Active);
+		toInsert.getEndpointMaps().add(queryEndpointMap2);
+		
+		QueryDTO inserted = queryDao.create(toInsert);
+		QueryEndpointMapDTO endpointMapping = queryDao.findQueryEndpointByQueryAndEndpoint(inserted.getId(), endpoint1.getId());
+		assertNotNull(endpointMapping);
+		assertNotNull(endpointMapping.getId());
+		assertTrue(endpointMapping.getId() > 0);
+		
+		QueryEndpointMapDTO endpointMappingById = queryDao.findQueryEndpointById(endpointMapping.getId());
+		assertNotNull(endpointMappingById);
+		assertNotNull(endpointMappingById.getId());
+		assertTrue(endpointMapping.getId() > 0);
+		assertEquals(endpointMapping.getId().longValue(), endpointMappingById.getId().longValue());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void testGetOpenQueries() {		
 		insertLocationsAndEndpoints();
 
@@ -214,7 +246,7 @@ public class QueryDaoTest extends TestCase {
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		QueryDTO inserted = queryDao.create(toInsert);
-		QueryDTO selected = queryDao.getById(inserted.getId());
+		QueryDTO selected = queryDao.findById(inserted.getId());
 		
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
@@ -237,7 +269,7 @@ public class QueryDaoTest extends TestCase {
 		toInsert.setTerms("terms");
 		toInsert.setUserId("kekey");
 		QueryDTO inserted = queryDao.create(toInsert);
-		QueryDTO selected = queryDao.getById(inserted.getId());
+		QueryDTO selected = queryDao.findById(inserted.getId());
 		
 		assertNotNull(selected);
 		assertNotNull(selected.getId());
@@ -246,7 +278,7 @@ public class QueryDaoTest extends TestCase {
 		
 		queryDao.close(selected.getId());
 		
-		selected = queryDao.getById(selected.getId());
+		selected = queryDao.findById(selected.getId());
 		assertEquals(QueryStatus.Closed.name(), selected.getStatus().name());
 	}
 	

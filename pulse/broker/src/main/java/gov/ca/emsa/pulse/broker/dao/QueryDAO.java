@@ -15,8 +15,9 @@ public interface QueryDAO {
 	public void close(Long id);
 	public List<QueryDTO> findAllForUser(String userToken);	
 	public List<QueryDTO> findAllForUserWithStatus(String userToken, List<QueryStatus> status);	
-	public QueryDTO getById(Long id);
-	public QueryEndpointMapDTO getQueryEndpointById(Long id);
+	public QueryDTO findById(Long id);
+	public QueryEndpointMapDTO findQueryEndpointById(Long id);
+	public QueryEndpointMapDTO findQueryEndpointByQueryAndEndpoint(Long queryId, Long endpointId);
 	public void deleteItemsOlderThan(Date oldestDate);
 	public Boolean hasActiveLocations(Long queryId);
 }

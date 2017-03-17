@@ -1,23 +1,5 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
-import gov.ca.emsa.pulse.auth.user.CommonUser;
-import gov.ca.emsa.pulse.broker.adapter.Adapter;
-import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
-import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
-import gov.ca.emsa.pulse.broker.dao.PatientDAO;
-import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
-import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
-import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
-import gov.ca.emsa.pulse.broker.dto.LocationDTO;
-import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
-import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
-import gov.ca.emsa.pulse.broker.manager.DocumentManager;
-import gov.ca.emsa.pulse.broker.manager.PatientManager;
-import gov.ca.emsa.pulse.broker.saml.SAMLInput;
-import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import gov.ca.emsa.pulse.auth.user.CommonUser;
+import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
+import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
+import gov.ca.emsa.pulse.broker.dao.PatientDAO;
+import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
+import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
+import gov.ca.emsa.pulse.broker.manager.DocumentManager;
+import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 
 @Service
 public class DocumentManagerImpl implements DocumentManager {
@@ -103,7 +98,6 @@ public class DocumentManagerImpl implements DocumentManager {
 			patient.getAcf().setLastReadDate(new Date());
 			acfManager.updateLastModifiedDate(patient.getAcf().getId());
 		}
-		
 		
 		if(cachedDoc.getContents() != null && cachedDoc.getContents().length > 0) {
 			docContents = new String(cachedDoc.getContents());

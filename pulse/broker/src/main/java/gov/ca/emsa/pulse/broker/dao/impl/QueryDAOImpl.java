@@ -62,8 +62,17 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 
 	@Override
-	public QueryEndpointMapDTO getQueryEndpointById(Long queryEndpointId) {
-		QueryEndpointMapEntity entity = findQueryEndpointById(queryEndpointId);
+	public QueryEndpointMapDTO findQueryEndpointById(Long queryEndpointId) {
+		QueryEndpointMapEntity entity = getQueryEndpointById(queryEndpointId);
+		if(entity != null) {
+			return new QueryEndpointMapDTO(entity);
+		}
+		return null;
+	}
+	
+	@Override
+	public QueryEndpointMapDTO findQueryEndpointByQueryAndEndpoint(Long queryId, Long endpointId) {
+		QueryEndpointMapEntity entity = getQueryEndpointByQueryAndEndpoint(queryId, endpointId);
 		if(entity != null) {
 			return new QueryEndpointMapDTO(entity);
 		}
@@ -87,7 +96,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	@Override
 	public QueryEndpointMapDTO updateQueryEndpointMap(QueryEndpointMapDTO newQueryEndpointMap) {
 		logger.info("Update query location " + newQueryEndpointMap.getId() + " with status " + newQueryEndpointMap.getStatus());
-		QueryEndpointMapEntity existingQueryEndpointMap = findQueryEndpointById(newQueryEndpointMap.getId());
+		QueryEndpointMapEntity existingQueryEndpointMap = getQueryEndpointById(newQueryEndpointMap.getId());
 		if(existingQueryEndpointMap != null) {
 			existingQueryEndpointMap.setEndDate(newQueryEndpointMap.getEndDate());
 			if((newQueryEndpointMap.getStatus() != null && 
@@ -172,7 +181,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	@Override
-	public QueryDTO getById(Long id) {
+	public QueryDTO findById(Long id) {
 		
 		QueryDTO dto = null;
 		QueryEntity qe = this.getEntityById(id);
@@ -241,14 +250,13 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return activeCount > 0;
 	}
 	
-	private QueryEndpointMapEntity findQueryEndpointById(Long id) {
+	private QueryEndpointMapEntity getQueryEndpointById(Long id) {
 		QueryEndpointMapEntity entity = null;
-		
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEndpointMapEntity q "
-				+ "LEFT OUTER JOIN FETCH q.endpoint " 
+				+ "JOIN FETCH q.endpoint " 
 				+ "LEFT OUTER JOIN FETCH q.results "
 				+ "JOIN FETCH q.status "
-				+ "where q.id = :entityid) ", 
+				+ "where q.id = :entityid ", 
 				QueryEndpointMapEntity.class );
 		
 		query.setParameter("entityid", id);
@@ -256,7 +264,25 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		if(result.size() == 1) {
 			entity = result.get(0);
 		}
+		return entity;
+	}
+	
+	private QueryEndpointMapEntity getQueryEndpointByQueryAndEndpoint(Long queryId, Long endpointId) {
+		QueryEndpointMapEntity entity = null;
+		Query query = entityManager.createQuery( "SELECT distinct q "
+				+ "FROM QueryEndpointMapEntity q "
+				+ "JOIN FETCH q.endpoint endpoint " 
+				+ "LEFT OUTER JOIN FETCH q.results "
+				+ "JOIN FETCH q.status "
+				+ "where q.queryId = :queryId AND q.endpointId = :endpointId ", 
+				QueryEndpointMapEntity.class );
 		
+		query.setParameter("queryId", queryId);
+		query.setParameter("endpointId", endpointId);
+		List<QueryEndpointMapEntity> result = query.getResultList();
+		if(result.size() == 1) {
+			entity = result.get(0);
+		}
 		return entity;
 	}
 	

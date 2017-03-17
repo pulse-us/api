@@ -110,22 +110,4 @@ public class SearchService {
 	        return DtoToDomainConverter.convert(initiatedQuery);
 		}
     }
-	
-	@ApiOperation(value="Re-query a location from an existing query. "
-			+ "This runs asynchronously and returns a query object which can later be used to get the results.")
-	@RequestMapping(path="/requery/{queryEndpointMapId}", method = RequestMethod.POST,
-		produces="application/json; charset=utf-8")
-    public @ResponseBody Query requeryPatients(@PathVariable("queryEndpointMapId") Long queryEndpointMapId) throws JsonProcessingException, IOException {
-
-		CommonUser user = UserUtil.getCurrentUser();
-		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
-		
-        QueryDTO initiatedQuery = null;
-        synchronized(queryManager) {
-        	queryManager.requeryForPatientRecords(queryEndpointMapId, user);
-        	QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(queryEndpointMapId);
-        	initiatedQuery = queryManager.getById(dto.getQueryId());  
-        }
-        return DtoToDomainConverter.convert(initiatedQuery);
-   }
 }

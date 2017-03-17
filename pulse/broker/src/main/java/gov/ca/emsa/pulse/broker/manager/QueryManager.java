@@ -15,6 +15,7 @@ import gov.ca.emsa.pulse.common.domain.PatientSearch;
 public interface QueryManager extends CachedDataManager {
 	public QueryDTO getById(Long id);
 	public QueryEndpointMapDTO getQueryEndpointMapById(Long id);
+	public QueryEndpointMapDTO getQueryEndpointMapByQueryAndEndpoint(Long queryId, Long endpointId);
 	public List<QueryDTO> getAllQueriesForUser(String userKey);
 	public List<QueryDTO> getOpenQueriesForUser(String userKey);
 	public String getQueryStatus(Long queryId);

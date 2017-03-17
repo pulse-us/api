@@ -62,14 +62,20 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Override
 	@Transactional
 	public QueryDTO getById(Long id) {
-		QueryDTO result = queryDao.getById(id);
+		QueryDTO result = queryDao.findById(id);
 		return result;
 	}
 
 	@Override
 	@Transactional
 	public QueryEndpointMapDTO getQueryEndpointMapById(Long id) {
-		return queryDao.getQueryEndpointById(id);
+		return queryDao.findQueryEndpointById(id);
+	}
+	
+	@Override
+	@Transactional
+	public QueryEndpointMapDTO getQueryEndpointMapByQueryAndEndpoint(Long queryId, Long endpointId) {
+		return queryDao.findQueryEndpointByQueryAndEndpoint(queryId, endpointId);
 	}
 	
 	@Override
@@ -92,7 +98,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Override
 	@Transactional
 	public String getQueryStatus(Long queryId) {
-		QueryDTO query = queryDao.getById(queryId);
+		QueryDTO query = queryDao.findById(queryId);
 		return query.getStatus().name();
 	}
 
@@ -123,7 +129,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Override
 	@Transactional
 	public synchronized QueryDTO cancelQueryToEndpoint(Long queryEndpointMapId) {
-		QueryEndpointMapDTO queryEndpointMapToCancel = queryDao.getQueryEndpointById(queryEndpointMapId);
+		QueryEndpointMapDTO queryEndpointMapToCancel = queryDao.findQueryEndpointById(queryEndpointMapId);
 		if(queryEndpointMapToCancel == null) {
 			logger.error("Could not find query endpoint map with id " + queryEndpointMapId);
 			return null;
@@ -183,7 +189,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 			throws JsonProcessingException {
 
 		//not sure if all the query fields are filled in here... pull it out of the db
-		query = queryDao.getById(query.getId());
+		query = queryDao.findById(query.getId());
 		if(query.getEndpointMaps() != null && query.getEndpointMaps().size() > 0) {
 			for(QueryEndpointMapDTO queryEndpointMap : query.getEndpointMaps()) {
 				PatientQueryService service = getPatientQueryService();
@@ -205,12 +211,12 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	@Transactional
 	public void requeryForPatientRecords(Long queryEndpointMapId, CommonUser user) 
 			throws JsonProcessingException, IOException {
-		QueryEndpointMapDTO queryEndpointMap = queryDao.getQueryEndpointById(queryEndpointMapId);
+		QueryEndpointMapDTO queryEndpointMap = queryDao.findQueryEndpointById(queryEndpointMapId);
 		if(queryEndpointMap == null) {
 			return;
 		}
 		
-		QueryDTO query = queryDao.getById(queryEndpointMap.getQueryId());
+		QueryDTO query = queryDao.findById(queryEndpointMap.getQueryId());
 		
 		//if this request already been closed, do not continue
 		if(queryEndpointMap.getStatus() != null && queryEndpointMap.getStatus() == QueryEndpointStatus.Closed) {
@@ -270,7 +276,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	public PatientRecordDTO addPatientRecord(PatientRecordDTO record) {
 		PatientRecordDTO result = record;
 		Long queryEndpointMapId = record.getQueryEndpointId();
-		QueryEndpointMapDTO queryLoc = queryDao.getQueryEndpointById(queryEndpointMapId);
+		QueryEndpointMapDTO queryLoc = queryDao.findQueryEndpointById(queryEndpointMapId);
 		if(queryLoc != null && queryLoc.getStatus() != null && 
 				queryLoc.getStatus() != QueryEndpointStatus.Cancelled) {
 			result = patientRecordDao.create(record);

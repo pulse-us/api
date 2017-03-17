@@ -17,11 +17,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -106,9 +108,10 @@ public class QueryService {
 		return response.getBody();
 	}
 	
-	@ApiOperation(value = "Cancel part of a patient discovery query that's going to a specific location")
-	@RequestMapping(value = "/cancel/{queryEndpointMapId}", method = RequestMethod.POST)
-	public Query cancelPatientDiscoveryRequestToEndpoint(@PathVariable(value="queryEndpointMapId") Long queryEndpointMapId) throws JsonProcessingException {
+	@ApiOperation(value = "Cancel part of a patient discovery query that's going to a specific endpoint")
+	@RequestMapping(value = "/{queryId}/endpoint/{endpointId}/cancel", method = RequestMethod.POST)
+	public Query cancelPatientDiscoveryRequestToEndpoint(@PathVariable(value="queryId") Long queryId,
+			@PathVariable(value="endpointId") Long endpointId) throws JsonProcessingException {
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
@@ -120,10 +123,32 @@ public class QueryService {
 		}else{
 			headers.add("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<Query> entity = new HttpEntity<Query>(headers);
-			response = query.exchange(brokerUrl + "/queries/cancel/" + queryEndpointMapId, HttpMethod.POST, entity, Query.class);
+			response = query.exchange(brokerUrl + "/queries/" + queryId + "/endpoint/" + endpointId + "/cancel", HttpMethod.POST, entity, Query.class);
 			logger.info("Request sent to broker from services REST.");
 		}
 		
+		return response.getBody();
+	}
+	
+	@ApiOperation(value="Re-run a patient search from a specific endpoint.")
+	@RequestMapping(path="/{queryId}/endpoint/{endpointId}/requery", method = RequestMethod.POST)
+	public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
+			@PathVariable("endpointId") Long endpointId) throws JsonProcessingException {
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
+
+		HttpEntity<Query> response = null;
+		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+		if(jwtUser == null){
+			logger.error("Could not find a logged in user. ");
+			throw new AccessDeniedException("Only logged in users can search for patients.");
+		}else{
+			headers.add("User", mapper.writeValueAsString(jwtUser));
+			HttpEntity<Query> entity = new HttpEntity<Query>(headers);
+			RestTemplate query = new RestTemplate();
+			response = query.exchange(brokerUrl + "/queries/" + queryId + "/endpoint/" + endpointId + "/requery", HttpMethod.POST, entity, Query.class);
+			logger.info("Request sent to broker from services REST.");
+		}
 		return response.getBody();
 	}
 	

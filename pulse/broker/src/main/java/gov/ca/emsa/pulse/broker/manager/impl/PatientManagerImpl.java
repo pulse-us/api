@@ -107,7 +107,7 @@ public class PatientManagerImpl implements PatientManager {
 			patientEndpointMapToCreate.setPatientId(patient.getId());
 			patientEndpointMapToCreate.setExternalPatientRecordId(patientRecord.getEndpointPatientRecordId());
 			//get the endpoint that was queried for the patient discovery
-			QueryEndpointMapDTO queryEndpointMapDto = queryDao.getQueryEndpointById(patientRecord.getQueryEndpointId());
+			QueryEndpointMapDTO queryEndpointMapDto = queryDao.findQueryEndpointById(patientRecord.getQueryEndpointId());
 			Long patientDiscoveryEndpointId = queryEndpointMapDto.getEndpointId();
 			//figure out which location this endpoint came from
 			//we assume that any locations which share this patient discovery endpoint
@@ -123,9 +123,9 @@ public class PatientManagerImpl implements PatientManager {
 			
 			if(documentDiscoveryEndpoint != null) {
 				patientEndpointMapToCreate.setEndpointId(documentDiscoveryEndpoint.getId());	
+				result = patientDao.createPatientEndpointMap(patientEndpointMapToCreate);
+				result.setEndpoint(documentDiscoveryEndpoint);
 			}
-			result = patientDao.createPatientEndpointMap(patientEndpointMapToCreate);
-			result.setEndpoint(documentDiscoveryEndpoint);
 		}
 		return result;
 	}
