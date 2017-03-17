@@ -18,22 +18,19 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
+import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
-import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
-import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.EndpointManager;
-import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
-import gov.ca.emsa.pulse.common.domain.QueryEndpointMap;
 import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import io.swagger.annotations.Api;
@@ -83,7 +80,9 @@ public class SearchService {
 		synchronized(queryManager) {
 			List<EndpointTypeEnum> relevantEndpointTypes = new ArrayList<EndpointTypeEnum>();
 			relevantEndpointTypes.add(EndpointTypeEnum.PATIENT_DISCOVERY);
-			List<EndpointDTO> endpointsToQuery = endpointManager.getByType(relevantEndpointTypes);
+			List<EndpointStatusEnum> relevantEndpointStatuses = new ArrayList<EndpointStatusEnum>();
+			relevantEndpointStatuses.add(EndpointStatusEnum.ACTIVE);
+			List<EndpointDTO> endpointsToQuery = endpointManager.getByStatusAndType(relevantEndpointStatuses, relevantEndpointTypes);
 			if(endpointsToQuery != null && endpointsToQuery.size() > 0) {
 				QueryDTO query = new QueryDTO();
 				query.setUserId(user.getSubjectName());
@@ -93,12 +92,16 @@ public class SearchService {
 		
 				//get the list of endpoints		
 				for(EndpointDTO endpoint : endpointsToQuery) {
-					QueryEndpointMapDTO queryEndpointMap = new QueryEndpointMapDTO();
-					queryEndpointMap.setEndpointId(endpoint.getId());
-					queryEndpointMap.setQueryId(query.getId());
-					queryEndpointMap.setStatus(QueryEndpointStatus.Active);
-					queryEndpointMap = queryManager.createOrUpdateQueryLocation(queryEndpointMap);
-					query.getEndpointMaps().add(queryEndpointMap);
+					//not querying any endpoint that doesn't have 
+					//an associated location
+					if(endpoint.getLocations() != null && endpoint.getLocations().size() > 0) {
+						QueryEndpointMapDTO queryEndpointMap = new QueryEndpointMapDTO();
+						queryEndpointMap.setEndpointId(endpoint.getId());
+						queryEndpointMap.setQueryId(query.getId());
+						queryEndpointMap.setStatus(QueryEndpointStatus.Active);
+						queryEndpointMap = queryManager.createOrUpdateQueryLocation(queryEndpointMap);
+						query.getEndpointMaps().add(queryEndpointMap);
+					}
 				}
 	
 	        	queryManager.queryForPatientRecords(input, toSearch, query, user);

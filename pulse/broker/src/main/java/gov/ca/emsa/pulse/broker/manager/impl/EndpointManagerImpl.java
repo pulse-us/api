@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.ca.emsa.pulse.broker.dao.EndpointDAO;
 import gov.ca.emsa.pulse.broker.dao.LocationEndpointMapDAO;
+import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
@@ -37,6 +38,11 @@ public class EndpointManagerImpl implements EndpointManager {
 	@Transactional(readOnly = true) 
 	public List<EndpointDTO> getByType(List<EndpointTypeEnum> types) {
 		return endpointDao.findAllOfType(types);
+	}
+	
+	@Transactional(readOnly = true) 
+	public List<EndpointDTO> getByStatusAndType(List<EndpointStatusEnum> statuses, List<EndpointTypeEnum> types) {
+		return endpointDao.findAllByStatusAndType(statuses, types);
 	}
 	
 	@Transactional

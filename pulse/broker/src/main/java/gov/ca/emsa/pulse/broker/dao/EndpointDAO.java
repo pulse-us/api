@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.dao;
 
+import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.entity.EndpointEntity;
@@ -13,8 +14,9 @@ public interface EndpointDAO {
 	public List<EndpointEntity> getAllEntities();
 	public List<EndpointDTO> findAll();
 	public List<EndpointDTO> findAllOfType(List<EndpointTypeEnum> types);
+	public List<EndpointDTO> findAllByStatusAndType(List<EndpointStatusEnum> statuses, List<EndpointTypeEnum> types);
 	public void delete(EndpointDTO endpointDto);
 	public EndpointDTO findById(Long id);
 	public EndpointDTO findByExternalId(String externalId);
-	public EndpointDTO findByLocationIdAndType(Long locationId, EndpointTypeEnum type);
+	public EndpointDTO findByLocationIdAndType(Long locationId, EndpointStatusEnum status, EndpointTypeEnum type);
 }

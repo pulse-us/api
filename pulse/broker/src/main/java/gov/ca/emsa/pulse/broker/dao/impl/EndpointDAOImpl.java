@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import gov.ca.emsa.pulse.broker.dao.EndpointDAO;
+import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.EndpointMimeTypeDTO;
@@ -115,6 +116,27 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 		return dtos;
 	}
 
+	@Override 
+	public List<EndpointDTO> findAllByStatusAndType(List<EndpointStatusEnum> statuses, List<EndpointTypeEnum> types) {
+		List<String> typeNames = new ArrayList<String>(types.size());
+		for(EndpointTypeEnum type : types) {
+			typeNames.add(type.getCode().toUpperCase());
+		}
+		
+		List<String> statusNames = new ArrayList<String>(statuses.size());
+		for(EndpointStatusEnum status : statuses) {
+			statusNames.add(status.getName().toUpperCase());
+		}
+		
+		List<EndpointEntity> entities = getByEndpointStatusAndTypes(statusNames, typeNames);
+		List<EndpointDTO> dtos = new ArrayList<EndpointDTO>();
+		for (EndpointEntity entity : entities) {
+			EndpointDTO dto = new EndpointDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
 	@Override
 	public EndpointDTO findById(Long id) {
 		EndpointEntity result = getById(id);
@@ -134,18 +156,20 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 	}
 	
 	@Override
-	public EndpointDTO findByLocationIdAndType(Long locationId, EndpointTypeEnum type) {
+	public EndpointDTO findByLocationIdAndType(Long locationId, EndpointStatusEnum status, EndpointTypeEnum type) {
 		Query query = entityManager.createQuery("SELECT DISTINCT endpoint "
 				+ "FROM EndpointEntity endpoint "
-				+ "JOIN FETCH endpoint.endpointStatus "
+				+ "JOIN FETCH endpoint.endpointStatus endpointStatus "
 				+ "JOIN FETCH endpoint.endpointType "
 				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes "
 				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
 				+ "LEFT OUTER JOIN FETCH locMaps.location loc "
 				+ "WHERE endpoint.endpointType.code = :typeName "
-				+ "AND loc.id = :locationId", EndpointEntity.class);
+				+ "AND loc.id = :locationId "
+				+ "AND UPPER(endpointStatus.name) = :endpointStatusName", EndpointEntity.class);
 		query.setParameter("type", type.name());
 		query.setParameter("locationId", locationId);
+		query.setParameter("endpointStatusName", status.getName().toUpperCase());
 		
 		List<EndpointEntity> endpoints = query.getResultList();
 		if(endpoints != null && endpoints.size() > 0) {
@@ -254,6 +278,22 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				+ "LEFT OUTER JOIN FETCH locMaps.location "
 				+ "WHERE endpoint.endpointType.code IN (:typeNames)", EndpointEntity.class);
 		query.setParameter("typeNames", typeNames);
+		
+		return query.getResultList();
+	}
+	
+	private List<EndpointEntity> getByEndpointStatusAndTypes(List<String> statusNames, List<String> typeNames) {
+		Query query = entityManager.createQuery("SELECT DISTINCT endpoint "
+				+ "FROM EndpointEntity endpoint "
+				+ "JOIN FETCH endpoint.endpointStatus "
+				+ "JOIN FETCH endpoint.endpointType "
+				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes "
+				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
+				+ "LEFT OUTER JOIN FETCH locMaps.location "
+				+ "WHERE UPPER(endpoint.endpointType.code) IN (:typeNames) "
+				+ "AND UPPER(endpoint.endpointStatus.name) IN (:statusNames)", EndpointEntity.class);
+		query.setParameter("typeNames", typeNames);
+		query.setParameter("statusNames", statusNames);
 		
 		return query.getResultList();
 	}

@@ -4,6 +4,7 @@ import gov.ca.emsa.pulse.broker.cache.CacheCleanupException;
 import gov.ca.emsa.pulse.broker.dao.EndpointDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
+import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
@@ -116,7 +117,7 @@ public class PatientManagerImpl implements PatientManager {
 				List<LocationDTO> relatedLocations = patientDiscoveryEndpoint.getLocations();
 				if(relatedLocations != null && relatedLocations.size() > 0) {
 					LocationDTO firstRelatedLocation = relatedLocations.get(0);
-					documentDiscoveryEndpoint = endpointDao.findByLocationIdAndType(firstRelatedLocation.getId(), EndpointTypeEnum.DOCUMENT_DISCOVERY);
+					documentDiscoveryEndpoint = endpointDao.findByLocationIdAndType(firstRelatedLocation.getId(), EndpointStatusEnum.ACTIVE, EndpointTypeEnum.DOCUMENT_DISCOVERY);
 				}
 			}
 			
