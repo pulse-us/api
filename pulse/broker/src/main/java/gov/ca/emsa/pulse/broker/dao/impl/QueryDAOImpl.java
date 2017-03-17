@@ -117,22 +117,21 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	public QueryDTO update(QueryDTO dto) {
 		QueryEntity query = this.getEntityById(dto.getId());
 		if(query.getStatus().getStatus() != QueryStatus.Closed) {
-			logger.info("Set last read date for query " + dto.getId() + " to " + dto.getLastReadDate());
 			query.setLastReadDate(dto.getLastReadDate());
-			logger.info("Set status for query " + dto.getId() + " to " + dto.getStatus());
+			logger.info("Set last read date for query " + dto.getId() + " to " + dto.getLastReadDate());
 			QueryStatusEntity qStatus = statusDao.getQueryStatusByName(dto.getStatus().name());
 			query.setStatus(qStatus);
 			if(qStatus != null) {
 				query.setStatusId(qStatus.getId());
 			}
 			//terms and user wouldn't change
-			//location statuses should be updated separately in a manager
+			//endpoint statuses should be updated separately in a manager
 			entityManager.merge(query);
 			entityManager.flush();
+			logger.info("Set status for query " + dto.getId() + " to " + dto.getStatus());
 		} else {
 			logger.warn("Attempted to update query " + dto.getId() + " but it is already marked 'Closed'. Not updating.");
 		}
-		entityManager.clear();
 		return new QueryDTO(query);
 	}
 
@@ -211,8 +210,9 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryEntity entity = null;
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.status "
-				+ "LEFT OUTER JOIN FETCH q.endpointStatuses statuses "
-				+ "LEFT OUTER JOIN FETCH statuses.status status "
+				+ "LEFT OUTER JOIN FETCH q.endpointStatuses endpointMaps "
+				+ "LEFT OUTER JOIN FETCH endpointMaps.endpoint endpoint "
+				+ "LEFT OUTER JOIN FETCH endpointMaps.status status "
 				+ "where q.id = :entityid) ", 
 				QueryEntity.class );
 		

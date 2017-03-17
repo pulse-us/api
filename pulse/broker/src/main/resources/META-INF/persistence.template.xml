@@ -31,9 +31,9 @@
 		<class>gov.ca.emsa.pulse.broker.entity.NetworkAccessPointTypeCodeEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.ParticipantObjectTypeCodeEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.ParticipantObjectTypeCodeRoleEntity</class>
-		<class>gov.ca.emsa.pulse.broker.entity.PatientDiscoveryRequestStatisticsEntity</class>
-		<class>gov.ca.emsa.pulse.broker.entity.PatientEntity</class>
+		<!--  class>gov.ca.emsa.pulse.broker.entity.PatientDiscoveryRequestStatisticsEntity</class-->
 		<class>gov.ca.emsa.pulse.broker.entity.PatientEndpointMapEntity</class>
+		<class>gov.ca.emsa.pulse.broker.entity.PatientEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.PatientGenderEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.PatientRecordAddressEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.PatientRecordAddressLineEntity</class>

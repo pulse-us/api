@@ -74,7 +74,7 @@ public class QueryService {
 
 	@ApiOperation(value = "Cancel part of a query that's going to a specific location")
 	@RequestMapping(value = "/cancel/{queryEndpointMapId}", method = RequestMethod.POST)
-	public Query cancelLocationQuery(@PathVariable(value="queryEndpointMapId") Long queryEndpointMapId) {
+	public Query cancelQueryToEndpoint(@PathVariable(value="queryEndpointMapId") Long queryEndpointMapId) {
 		synchronized (queryManager) {
 			QueryDTO cancelledQuery = queryManager.cancelQueryToEndpoint(queryEndpointMapId);
 			queryManager.updateQueryStatusFromEndpoints(cancelledQuery.getId());

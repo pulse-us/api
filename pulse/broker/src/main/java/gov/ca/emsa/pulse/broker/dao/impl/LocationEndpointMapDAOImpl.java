@@ -45,7 +45,7 @@ public class LocationEndpointMapDAOImpl extends BaseDAOImpl implements LocationE
 	
 	public List<LocationEndpointMapDTO> findAll() {
 		Query query = entityManager.createQuery("SELECT map " 
-				+ "FROM LocationEndpointMapEntity map", LocationEntity.class);
+				+ "FROM LocationEndpointMapEntity map", LocationEndpointMapEntity.class);
 		List<LocationEndpointMapEntity> results = query.getResultList();
 		
 		List<LocationEndpointMapDTO> dtos = new ArrayList<LocationEndpointMapDTO>();
@@ -76,7 +76,7 @@ public class LocationEndpointMapDAOImpl extends BaseDAOImpl implements LocationE
 		Query query = entityManager.createQuery("SELECT endpoint " 
 				+ "FROM EndpointEntity endpoint "
 				+ "INNER JOIN LocationEndpointMapEntity map " 
-				+ "WHERE map.locationId = :locationId ", LocationEntity.class);
+				+ "WHERE map.locationId = :locationId ", EndpointEntity.class);
 		query.setParameter("locationId", locationId);
 		List<EndpointEntity> results = query.getResultList();
 		
@@ -99,6 +99,7 @@ public class LocationEndpointMapDAOImpl extends BaseDAOImpl implements LocationE
 		List<LocationEndpointMapEntity> results = query.getResultList();
 		if(results != null && results.size() == 1) {
 			entityManager.remove(results.get(0));
+			entityManager.flush();
 		}
 		entityManager.clear();
 	}
@@ -112,6 +113,7 @@ public class LocationEndpointMapDAOImpl extends BaseDAOImpl implements LocationE
 		List<LocationEndpointMapEntity> results = query.getResultList();
 		if(results != null && results.size() == 1) {
 			entityManager.remove(results.get(0));
+			entityManager.flush();
 		}
 		entityManager.clear();
 	}

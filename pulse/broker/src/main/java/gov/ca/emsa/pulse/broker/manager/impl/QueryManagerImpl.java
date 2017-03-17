@@ -182,6 +182,8 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 	public void queryForPatientRecords(SAMLInput samlInput, PatientSearch toSearch, QueryDTO query, CommonUser user)
 			throws JsonProcessingException {
 
+		//not sure if all the query fields are filled in here... pull it out of the db
+		query = queryDao.getById(query.getId());
 		if(query.getEndpointMaps() != null && query.getEndpointMaps().size() > 0) {
 			for(QueryEndpointMapDTO queryEndpointMap : query.getEndpointMaps()) {
 				PatientQueryService service = getPatientQueryService();

@@ -30,16 +30,18 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 		if(endpointEntity.hasRequiredFields()) {
 			entityManager.persist(endpointEntity);
 			entityManager.flush();
-		}
-		if(endpointEntity.getMimeTypes() != null && endpointEntity.getMimeTypes().size() > 0) {
-			for(EndpointMimeTypeEntity mimeTypeEntity : endpointEntity.getMimeTypes()) {
-				mimeTypeEntity.setEndpointId(endpointEntity.getId());
-				entityManager.persist(mimeTypeEntity);
-				entityManager.flush();
+			
+			if(endpointEntity.getMimeTypes() != null && endpointEntity.getMimeTypes().size() > 0) {
+				for(EndpointMimeTypeEntity mimeTypeEntity : endpointEntity.getMimeTypes()) {
+					mimeTypeEntity.setEndpointId(endpointEntity.getId());
+					entityManager.persist(mimeTypeEntity);
+					entityManager.flush();
+				}
 			}
+			entityManager.clear();
+			return new EndpointDTO(endpointEntity);
 		}
-		entityManager.clear();
-		return new EndpointDTO(endpointEntity);
+		return null;
 	}
 
 	public EndpointDTO update(EndpointDTO dto){

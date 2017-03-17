@@ -95,7 +95,8 @@ public class EndpointManagerImpl implements EndpointManager {
 		for(LocationEndpointMapDTO oldMapping : mappingDao.findAll()) {
 			boolean stillExists = false;
 			for(LocationEndpointMapDTO newMapping : newMappings) {
-				if(newMapping.getEndpointId().longValue() == newMapping.getEndpointId().longValue()) {
+				if(oldMapping.getLocationId().longValue() == newMapping.getLocationId().longValue() && 
+					oldMapping.getEndpointId().longValue() == newMapping.getEndpointId().longValue()) {
 					stillExists = true;
 				}
 			}

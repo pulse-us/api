@@ -60,6 +60,62 @@ public class EndpointDaoTest {
 	@Test
 	@Transactional
 	@Rollback(true)
+	public void createEndpointWithUnrecognizedType() throws SQLException {
+		EndpointDTO toCreate = new EndpointDTO();
+		toCreate.setAdapter("eHealth");
+		EndpointStatusDTO endpointStatus = new EndpointStatusDTO();
+		endpointStatus.setName("Active");
+		toCreate.setEndpointStatus(endpointStatus);
+		EndpointTypeDTO endpointType = new EndpointTypeDTO();
+		endpointType.setCode("pcdh");
+		toCreate.setEndpointType(endpointType);
+		toCreate.setExternalId("001");
+		toCreate.setExternalLastUpdateDate(new Date());
+		EndpointMimeTypeDTO mimeType1 = new EndpointMimeTypeDTO();
+		mimeType1.setMimeType("application/xml");
+		toCreate.getMimeTypes().add(mimeType1);
+		EndpointMimeTypeDTO mimeType2 = new EndpointMimeTypeDTO();
+		mimeType2.setMimeType("text/xml");
+		toCreate.getMimeTypes().add(mimeType2);
+		toCreate.setPayloadType("XML");
+		toCreate.setPublicKey("1236789sdkjfksjhfdkjsdhf889798kjshdfkjshdfi8");
+		toCreate.setUrl("https://localhost:3000/some/url");
+		
+		EndpointDTO created = endpointDao.create(toCreate);
+		assertNull(created);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void createEndpointWithUnrecognizedStatus() throws SQLException {
+		EndpointDTO toCreate = new EndpointDTO();
+		toCreate.setAdapter("eHealth");
+		EndpointStatusDTO endpointStatus = new EndpointStatusDTO();
+		endpointStatus.setName("Wonky");
+		toCreate.setEndpointStatus(endpointStatus);
+		EndpointTypeDTO endpointType = new EndpointTypeDTO();
+		endpointType.setCode("nwhin-xcpd");
+		toCreate.setEndpointType(endpointType);
+		toCreate.setExternalId("001");
+		toCreate.setExternalLastUpdateDate(new Date());
+		EndpointMimeTypeDTO mimeType1 = new EndpointMimeTypeDTO();
+		mimeType1.setMimeType("application/xml");
+		toCreate.getMimeTypes().add(mimeType1);
+		EndpointMimeTypeDTO mimeType2 = new EndpointMimeTypeDTO();
+		mimeType2.setMimeType("text/xml");
+		toCreate.getMimeTypes().add(mimeType2);
+		toCreate.setPayloadType("XML");
+		toCreate.setPublicKey("1236789sdkjfksjhfdkjsdhf889798kjshdfkjshdfi8");
+		toCreate.setUrl("https://localhost:3000/some/url");
+		
+		EndpointDTO created = endpointDao.create(toCreate);
+		assertNull(created);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void createAndUpdateEndpointFields() throws SQLException {
 		EndpointDTO toCreate = new EndpointDTO();
 		toCreate.setAdapter("eHealth");

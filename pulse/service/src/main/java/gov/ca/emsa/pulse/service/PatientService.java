@@ -79,9 +79,8 @@ public class PatientService {
 	}
 
 	@ApiOperation(value="Re-run a patient search from a specific location.")
-	@RequestMapping(path="/requery/query/{queryId}/locationMap/{locationMapId}", method = RequestMethod.POST)
-	public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
-	    		@PathVariable("locationMapId") Long locationMapId) throws JsonProcessingException {
+	@RequestMapping(path="/requery/{queryEndpointMapId}", method = RequestMethod.POST)
+	public @ResponseBody Query requeryPatients(@PathVariable("queryEndpointMapId") Long queryEndpointMapId) throws JsonProcessingException {
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -94,7 +93,7 @@ public class PatientService {
 			headers.add("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<Query> entity = new HttpEntity<Query>(headers);
 			RestTemplate query = new RestTemplate();
-			response = query.exchange(brokerUrl + "/requery/query/" + queryId + "/locationMap/" + locationMapId, HttpMethod.POST, entity, Query.class);
+			response = query.exchange(brokerUrl + "/requery/" + queryEndpointMapId, HttpMethod.POST, entity, Query.class);
 			logger.info("Request sent to broker from services REST.");
 		}
 		return response.getBody();

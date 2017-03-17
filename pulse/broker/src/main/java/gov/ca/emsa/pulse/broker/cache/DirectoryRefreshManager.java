@@ -56,10 +56,12 @@ public class DirectoryRefreshManager extends TimerTask {
 				LocationDTO locationToMap = locationManager.getByExternalId(ctenLocation.getExternalId());
 				//find the endpoint with the same external id
 				EndpointDTO endpointToMap = endpointManager.getByExternalId(ctenEndpoint.getExternalId());
-				LocationEndpointMapDTO toMap = new LocationEndpointMapDTO();
-				toMap.setEndpointId(endpointToMap.getId());
-				toMap.setLocationId(locationToMap.getId());
-				locationEndpointMappings.add(toMap);
+				if(locationToMap != null && endpointToMap != null) {
+					LocationEndpointMapDTO toMap = new LocationEndpointMapDTO();
+					toMap.setEndpointId(endpointToMap.getId());
+					toMap.setLocationId(locationToMap.getId());
+					locationEndpointMappings.add(toMap);
+				}
 			}
 		}
 		endpointManager.updateEndpointLocationMappings(locationEndpointMappings);
