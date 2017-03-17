@@ -17,9 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
 import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
+import gov.ca.emsa.pulse.broker.dao.EndpointDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
+import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
+import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
@@ -35,6 +39,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private DocumentDAO docDao;
 	@Autowired private PatientDAO patientDao;
+	@Autowired private EndpointDAO endpointDao;
 	@Autowired private AdapterFactory adapterFactory;
 
 	private final ExecutorService pool;
@@ -102,11 +107,23 @@ public class DocumentManagerImpl implements DocumentManager {
 		if(cachedDoc.getContents() != null && cachedDoc.getContents().length > 0) {
 			docContents = new String(cachedDoc.getContents());
 		} else {
-			List<DocumentDTO> docsToGet = new ArrayList<DocumentDTO>();
-			docsToGet.add(cachedDoc);
-			queryForDocumentContents(user, samlInput, patientEndpointMap.getEndpoint(), docsToGet, patientEndpointMap);
-			byte[] retrievedContents = docsToGet.get(0).getContents();
-			docContents = retrievedContents == null ? "" : new String(retrievedContents);
+			EndpointDTO documentContentsEndpoint = null;
+			EndpointDTO documentDiscoveryEndpoint = endpointDao.findById(patientEndpointMap.getEndpointId());
+			if(documentDiscoveryEndpoint != null) {
+				List<LocationDTO> relatedLocations = documentDiscoveryEndpoint.getLocations();
+				if(relatedLocations != null && relatedLocations.size() > 0) {
+					LocationDTO firstRelatedLocation = relatedLocations.get(0);
+					documentContentsEndpoint = endpointDao.findByLocationIdAndType(firstRelatedLocation.getId(), EndpointStatusEnum.ACTIVE, EndpointTypeEnum.DOCUMENT_RETRIEVE);
+				}
+			}
+			
+			if(documentContentsEndpoint != null) {
+				List<DocumentDTO> docsToGet = new ArrayList<DocumentDTO>();
+				docsToGet.add(cachedDoc);
+				queryForDocumentContents(user, samlInput, patientEndpointMap.getEndpoint(), docsToGet, patientEndpointMap);
+				byte[] retrievedContents = docsToGet.get(0).getContents();
+				docContents = retrievedContents == null ? "" : new String(retrievedContents);
+			}
 		}
 		return docContents;
 	}
