@@ -225,7 +225,7 @@ public class EndpointDaoTest {
 		EndpointDTO queried = endpointDao.findById(updated.getId());
 		compareEndpoints(updated, queried);
 	}
-	
+
 	@Test
 	@Transactional
 	@Rollback(true)

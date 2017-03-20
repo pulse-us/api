@@ -1,6 +1,8 @@
 package gov.ca.emsa.pulse.broker.dao;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
+import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.EndpointStatusDTO;
 import gov.ca.emsa.pulse.broker.dto.EndpointTypeDTO;
@@ -10,6 +12,7 @@ import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,7 +38,7 @@ public class QueryDaoTest extends TestCase {
 	@Autowired EndpointDAO endpointDao;
 	@Autowired LocationEndpointMapDAO mappingDao;
 	private LocationDTO location1, location2;
-	private EndpointDTO endpoint1, endpoint2;
+	private EndpointDTO endpoint1, endpoint2, endpoint3;
 	
 	@Test
 	@Transactional
@@ -138,6 +141,17 @@ public class QueryDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
+	public void findDocumentDiscoveryEndpointFromPatientDiscoveryEndpoint() throws SQLException {
+		insertLocationsAndEndpoints();
+
+		EndpointDTO docDiscoveryEndpoint = endpointDao.findByLocationIdAndType(location1.getId(), EndpointStatusEnum.ACTIVE, EndpointTypeEnum.DOCUMENT_DISCOVERY);
+		assertNotNull(docDiscoveryEndpoint);
+		assertEquals(endpoint3.getId(), docDiscoveryEndpoint.getId());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void testGetAllQueries() {		
 		insertLocationsAndEndpoints();
 
@@ -192,8 +206,10 @@ public class QueryDaoTest extends TestCase {
 		toInsert.getEndpointMaps().add(queryEndpointMap2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
-		QueryEndpointMapDTO endpointMapping = queryDao.findQueryEndpointsByQueryAndEndpoint(inserted.getId(), endpoint1.getId());
-		assertNotNull(endpointMapping);
+		List<QueryEndpointMapDTO> endpointMappings = queryDao.findQueryEndpointsByQueryAndEndpoint(inserted.getId(), endpoint1.getId());
+		assertNotNull(endpointMappings);
+		assertEquals(1, endpointMappings.size());
+		QueryEndpointMapDTO endpointMapping = endpointMappings.get(0);
 		assertNotNull(endpointMapping.getId());
 		assertTrue(endpointMapping.getId() > 0);
 		
@@ -308,12 +324,12 @@ public class QueryDaoTest extends TestCase {
 		
 		EndpointStatusDTO status = new EndpointStatusDTO();
 		status.setId(1L);
-		EndpointTypeDTO type = new EndpointTypeDTO();
-		type.setId(1L);
+		EndpointTypeDTO patientDiscoveryType = new EndpointTypeDTO();
+		patientDiscoveryType.setId(1L);
 		endpoint1 = new EndpointDTO();
 		endpoint1.setAdapter("eHealth");
 		endpoint1.setEndpointStatus(status);
-		endpoint1.setEndpointType(type);
+		endpoint1.setEndpointType(patientDiscoveryType);
 		endpoint1.setExternalId("001");
 		endpoint1.setExternalLastUpdateDate(new Date());
 		endpoint1.setUrl("http://test.com"); 
@@ -322,13 +338,25 @@ public class QueryDaoTest extends TestCase {
 		endpoint2 = new EndpointDTO();
 		endpoint2.setAdapter("eHealth");
 		endpoint2.setEndpointStatus(status);
-		endpoint2.setEndpointType(type);
+		endpoint2.setEndpointType(patientDiscoveryType);
 		endpoint2.setExternalId("002");
 		endpoint2.setExternalLastUpdateDate(new Date());
 		endpoint2.setUrl("http://test.com"); 
-		endpoint2 = endpointDao.create(endpoint1);
+		endpoint2 = endpointDao.create(endpoint2);
+		
+		EndpointTypeDTO documentDiscoveryType = new EndpointTypeDTO();
+		documentDiscoveryType.setId(2L);
+		endpoint3 = new EndpointDTO();
+		endpoint3.setAdapter("eHealth");
+		endpoint3.setEndpointStatus(status);
+		endpoint3.setEndpointType(documentDiscoveryType);
+		endpoint3.setExternalId("003");
+		endpoint3.setExternalLastUpdateDate(new Date());
+		endpoint3.setUrl("http://test.com"); 
+		endpoint3 = endpointDao.create(endpoint3);
 		
 		mappingDao.create(location1.getId(), endpoint1.getId());
+		mappingDao.create(location1.getId(), endpoint3.getId());
 		mappingDao.create(location2.getId(), endpoint1.getId());
 		mappingDao.create(location2.getId(), endpoint2.getId());
 	}

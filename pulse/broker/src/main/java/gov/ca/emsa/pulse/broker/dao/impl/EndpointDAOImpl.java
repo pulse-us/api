@@ -164,10 +164,11 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes "
 				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
 				+ "LEFT OUTER JOIN FETCH locMaps.location loc "
-				+ "WHERE endpoint.endpointType.code = :typeName "
-				+ "AND loc.id = :locationId "
-				+ "AND UPPER(endpointStatus.name) = :endpointStatusName", EndpointEntity.class);
-		query.setParameter("type", type.name());
+				+ "WHERE loc.id = :locationId "
+				+ "AND UPPER(endpoint.endpointType.code) = :typeCode "
+				+ "AND UPPER(endpointStatus.name) = :endpointStatusName"
+				, EndpointEntity.class);
+		query.setParameter("typeCode", type.getCode().toUpperCase());
 		query.setParameter("locationId", locationId);
 		query.setParameter("endpointStatusName", status.getName().toUpperCase());
 		

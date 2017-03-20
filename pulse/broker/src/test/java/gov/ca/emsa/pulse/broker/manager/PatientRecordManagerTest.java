@@ -164,7 +164,7 @@ public class PatientRecordManagerTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testCancelPatientDiscoveryQueryToOrganization() {	
-		queryManager.cancelQueryToEndpoint(queryEndpointMap1.getId());
+		queryManager.cancelQueryToEndpoint(query.getId(), endpoint1.getId());
 		QueryDTO updatedQuery = queryManager.getById(query.getId());
 		
 		assertNotNull(updatedQuery);
