@@ -99,7 +99,7 @@ public class SearchService {
 						queryEndpointMap.setEndpointId(endpoint.getId());
 						queryEndpointMap.setQueryId(query.getId());
 						queryEndpointMap.setStatus(QueryEndpointStatus.Active);
-						queryEndpointMap = queryManager.createOrUpdateQueryLocation(queryEndpointMap);
+						queryEndpointMap = queryManager.createOrUpdateQueryEndpointMap(queryEndpointMap);
 						query.getEndpointMaps().add(queryEndpointMap);
 					}
 				}

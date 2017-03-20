@@ -192,12 +192,12 @@ public class QueryDaoTest extends TestCase {
 		toInsert.getEndpointMaps().add(queryEndpointMap2);
 		
 		QueryDTO inserted = queryDao.create(toInsert);
-		QueryEndpointMapDTO endpointMapping = queryDao.findQueryEndpointByQueryAndEndpoint(inserted.getId(), endpoint1.getId());
+		QueryEndpointMapDTO endpointMapping = queryDao.findQueryEndpointsByQueryAndEndpoint(inserted.getId(), endpoint1.getId());
 		assertNotNull(endpointMapping);
 		assertNotNull(endpointMapping.getId());
 		assertTrue(endpointMapping.getId() > 0);
 		
-		QueryEndpointMapDTO endpointMappingById = queryDao.findQueryEndpointById(endpointMapping.getId());
+		QueryEndpointMapDTO endpointMappingById = queryDao.findQueryEndpointMapById(endpointMapping.getId());
 		assertNotNull(endpointMappingById);
 		assertNotNull(endpointMappingById.getId());
 		assertTrue(endpointMapping.getId() > 0);

@@ -18,6 +18,7 @@ import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.Query;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -78,12 +79,22 @@ public class QueryService {
 	@ApiOperation(value = "Cancel part of a query that's going to a specific endpoint")
 	@RequestMapping(value = "/{queryId}/endpoint/{endpointId}/cancel", method = RequestMethod.POST)
 	public Query cancelQueryToEndpoint(@PathVariable(value="queryId") Long queryId, 
-			@PathVariable(value="endpointId") Long endpointId) {
+			@PathVariable(value="endpointId") Long endpointId) throws InvalidArgumentsException {
 		synchronized (queryManager) {
-			QueryEndpointMapDTO mapping = queryManager.getQueryEndpointMapByQueryAndEndpoint(queryId, endpointId);
-			QueryDTO cancelledQuery = queryManager.cancelQueryToEndpoint(mapping.getId());
-			queryManager.updateQueryStatusFromEndpoints(cancelledQuery.getId());
-			QueryDTO queryWithCancelledLocation = queryManager.getById(cancelledQuery.getId());
+			QueryDTO query = queryManager.getById(queryId);
+        	if(query == null) {
+        		throw new InvalidArgumentsException("No query was found with id " + queryId);
+        	} else if(query.getStatus() == null || query.getStatus() == QueryStatus.Closed) {
+        		throw new InvalidArgumentsException("Query with id " + queryId + " is already marked as Closed and cannot be requeried. Please start over with a new query.");
+        	}
+        	List<QueryEndpointMapDTO> queryEndpointMaps = queryManager.getQueryEndpointMapByQueryAndEndpoint(queryId, endpointId);
+        	if(queryEndpointMaps == null || queryEndpointMaps.size() == 0) {
+        		throw new InvalidArgumentsException("No endpoint with ID " + endpointId + " was found for query with ID " + queryId + " that is not already closed.");
+        	}
+        	
+			queryManager.cancelQueryToEndpoint(queryId, endpointId);
+			queryManager.updateQueryStatusFromEndpoints(queryId);
+			QueryDTO queryWithCancelledLocation = queryManager.getById(queryId);
 			return DtoToDomainConverter.convert(queryWithCancelledLocation);
 		}
 	}
@@ -93,15 +104,27 @@ public class QueryService {
 	@RequestMapping(path="/{queryId}/endpoint/{endpointId}/requery", method = RequestMethod.POST,
 		produces="application/json; charset=utf-8")
     public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
-    		@PathVariable("endpointId") Long endpointId) throws JsonProcessingException, IOException {
+    		@PathVariable("endpointId") Long endpointId) throws JsonProcessingException, InvalidArgumentsException, IOException {
 		CommonUser user = UserUtil.getCurrentUser();
 		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
         QueryDTO initiatedQuery = null;
         synchronized(queryManager) {
-        	QueryEndpointMapDTO mapping = queryManager.getQueryEndpointMapByQueryAndEndpoint(queryId, endpointId);
-        	queryManager.requeryForPatientRecords(mapping.getId(), user);
-        	QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(mapping.getId());
-        	initiatedQuery = queryManager.getById(dto.getQueryId());  
+        	QueryDTO query = queryManager.getById(queryId);
+        	if(query == null) {
+        		throw new InvalidArgumentsException("No query was found with id " + queryId);
+        	} else if(query.getStatus() == null || query.getStatus() == QueryStatus.Closed) {
+        		throw new InvalidArgumentsException("Query with id " + queryId + " is already marked as Closed and cannot be requeried. Please start over with a new query.");
+        	}
+        	List<QueryEndpointMapDTO> queryEndpointMaps = queryManager.getQueryEndpointMapByQueryAndEndpoint(queryId, endpointId);
+        	if(queryEndpointMaps == null || queryEndpointMaps.size() == 0) {
+        		throw new InvalidArgumentsException("No endpoint with ID " + endpointId + " was found for query with ID " + queryId + " that is not already closed.");
+        	}
+        	
+        	Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(queryId, endpointId, user);
+        	if(newQueryEndpointMapId != null) {
+	        	QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(newQueryEndpointMapId);
+	        	initiatedQuery = queryManager.getById(dto.getQueryId());
+        	}
         }
         return DtoToDomainConverter.convert(initiatedQuery);
    }

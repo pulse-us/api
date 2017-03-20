@@ -62,7 +62,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 
 	@Override
-	public QueryEndpointMapDTO findQueryEndpointById(Long queryEndpointId) {
+	public QueryEndpointMapDTO findQueryEndpointMapById(Long queryEndpointId) {
 		QueryEndpointMapEntity entity = getQueryEndpointById(queryEndpointId);
 		if(entity != null) {
 			return new QueryEndpointMapDTO(entity);
@@ -71,12 +71,13 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	@Override
-	public QueryEndpointMapDTO findQueryEndpointByQueryAndEndpoint(Long queryId, Long endpointId) {
-		QueryEndpointMapEntity entity = getQueryEndpointByQueryAndEndpoint(queryId, endpointId);
-		if(entity != null) {
-			return new QueryEndpointMapDTO(entity);
+	public List<QueryEndpointMapDTO> findQueryEndpointsByQueryAndEndpoint(Long queryId, Long endpointId) {
+		List<QueryEndpointMapEntity> entities = getQueryEndpointByQueryAndEndpoint(queryId, endpointId);
+		List<QueryEndpointMapDTO> results = new ArrayList<QueryEndpointMapDTO>(entities.size());
+		for(QueryEndpointMapEntity entity : entities) {
+			results.add(new QueryEndpointMapDTO(entity));
 		}
-		return null;
+		return results;
 	}
 	
 	@Override
@@ -95,7 +96,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	
 	@Override
 	public QueryEndpointMapDTO updateQueryEndpointMap(QueryEndpointMapDTO newQueryEndpointMap) {
-		logger.info("Update query location " + newQueryEndpointMap.getId() + " with status " + newQueryEndpointMap.getStatus());
+		logger.info("Update query endpoint map " + newQueryEndpointMap.getId() + " with status " + newQueryEndpointMap.getStatus());
 		QueryEndpointMapEntity existingQueryEndpointMap = getQueryEndpointById(newQueryEndpointMap.getId());
 		if(existingQueryEndpointMap != null) {
 			existingQueryEndpointMap.setEndDate(newQueryEndpointMap.getEndDate());
@@ -103,8 +104,8 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 				newQueryEndpointMap.getStatus() == QueryEndpointStatus.Closed) 
 				||
 				(existingQueryEndpointMap.getStatus() != null && 
-				(existingQueryEndpointMap.getStatus().getStatus() != QueryEndpointStatus.Cancelled || 
-				existingQueryEndpointMap.getStatus().getStatus() != QueryEndpointStatus.Closed))) {
+				existingQueryEndpointMap.getStatus().getStatus() != QueryEndpointStatus.Cancelled && 
+				existingQueryEndpointMap.getStatus().getStatus() != QueryEndpointStatus.Closed)) {
 				//always change the status if we are moving to Closed.
 				//aside from that, don't change the status if it's currently Cancelled or Closed.
 				QueryEndpointStatusEntity newStatus = 
@@ -267,23 +268,21 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return entity;
 	}
 	
-	private QueryEndpointMapEntity getQueryEndpointByQueryAndEndpoint(Long queryId, Long endpointId) {
+	private List<QueryEndpointMapEntity> getQueryEndpointByQueryAndEndpoint(Long queryId, Long endpointId) {
 		QueryEndpointMapEntity entity = null;
 		Query query = entityManager.createQuery( "SELECT distinct q "
-				+ "FROM QueryEndpointMapEntity q "
+				+ "FROM QueryEndpointMapEntity q, QueryEndpointStatusEntity eStatus "
 				+ "JOIN FETCH q.endpoint endpoint " 
 				+ "LEFT OUTER JOIN FETCH q.results "
 				+ "JOIN FETCH q.status "
-				+ "where q.queryId = :queryId AND q.endpointId = :endpointId ", 
+				+ "WHERE q.queryId = :queryId "
+				+ "AND q.endpointId = :endpointId "
+				+ "AND eStatus.status != '" + QueryEndpointStatus.Closed.name() + "'", 
 				QueryEndpointMapEntity.class );
 		
 		query.setParameter("queryId", queryId);
 		query.setParameter("endpointId", endpointId);
-		List<QueryEndpointMapEntity> result = query.getResultList();
-		if(result.size() == 1) {
-			entity = result.get(0);
-		}
-		return entity;
+		return query.getResultList();
 	}
 	
 	private List<QueryEntity> getEntitiesByUser(String user) {
