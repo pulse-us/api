@@ -130,7 +130,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 
 		Query query = entityManager.createQuery( "SELECT pat from PatientEndpointMapEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.patient "
-				+ "LEFT OUTER JOIN FETCH pat.location "
+				+ "LEFT OUTER JOIN FETCH pat.endpoint "
 				+ "LEFT OUTER JOIN FETCH pat.status "
 				+ "where pat.id = :entityid) ", 
 				PatientEndpointMapEntity.class );
@@ -168,7 +168,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 
 		query.setParameter("cacheDate", oldestDate);
 		int deletedCount = query.executeUpdate();		
-		logger.info("Deleted " + deletedCount + " patients from the cache.");
+		logger.info("Deleted " + deletedCount + " patients from the cache with last read date older than " + oldestDate.toString());
 	}
 
 	private PatientEntity getEntityById(Long id) {

@@ -120,7 +120,7 @@ public class DocumentManagerImpl implements DocumentManager {
 			if(documentContentsEndpoint != null) {
 				List<DocumentDTO> docsToGet = new ArrayList<DocumentDTO>();
 				docsToGet.add(cachedDoc);
-				queryForDocumentContents(user, samlInput, patientEndpointMap.getEndpoint(), docsToGet, patientEndpointMap);
+				queryForDocumentContents(user, samlInput, documentContentsEndpoint, docsToGet, patientEndpointMap);
 				byte[] retrievedContents = docsToGet.get(0).getContents();
 				docContents = retrievedContents == null ? "" : new String(retrievedContents);
 			}

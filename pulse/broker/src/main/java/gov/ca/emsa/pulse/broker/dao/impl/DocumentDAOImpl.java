@@ -126,7 +126,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		DocumentEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT doc from DocumentEntity doc "
-				+ "LEFT JOIN FETCH doc.patientLocationMap "
+				+ "LEFT JOIN FETCH doc.patientEndpointMap "
 				+ "LEFT JOIN FETCH doc.status "
 				+ "where doc.id = :entityid) ", 
 				DocumentEntity.class );
@@ -142,10 +142,10 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	
 	private List<DocumentEntity> getEntityByPatientId(Long patientId) {		
 		Query query = entityManager.createQuery( "SELECT doc "
-				+ "FROM DocumentEntity doc, PatientLocationMapEntity patientLocationMap "
+				+ "FROM DocumentEntity doc, PatientLocationMapEntity patientEndpointMap "
 				+ "LEFT JOIN FETCH doc.status "
-				+ "WHERE doc.patientLocationMapId = patientLocationMap.id "
-				+ "and patientLocationMap.patientId = :patientId", 
+				+ "WHERE doc.patientEndpointMapId = patientEndpointMap.id "
+				+ "and patientEndpointMap.patientId = :patientId", 
 				DocumentEntity.class );
 		
 		query.setParameter("patientId", patientId);
