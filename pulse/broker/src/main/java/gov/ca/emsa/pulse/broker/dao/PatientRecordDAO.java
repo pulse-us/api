@@ -1,7 +1,7 @@
 package gov.ca.emsa.pulse.broker.dao;
 
 
-import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 
 public interface PatientRecordDAO {

@@ -449,7 +449,7 @@ public class JSONToSoapTest {
 	public void testCreateDocumentQueryRequest() throws JAXBException, 
 		SAMLException, SOAPException, JWTValidationException {
 		Patient patient = new Patient();
-		patient.setLocationPatientId("11.5.4.4.6667.110");
+		patient.setExternalPatientId("11.5.4.4.6667.110");
 		
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");

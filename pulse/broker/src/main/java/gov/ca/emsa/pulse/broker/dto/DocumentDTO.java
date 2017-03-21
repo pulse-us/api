@@ -1,14 +1,14 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
-import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
 public class DocumentDTO {
 	private long id;
 	private byte[] contents;
-	private Long patientLocationMapId;
+	private Long patientEndpointMapId;
 	private Long statusId;
-	private QueryLocationStatus status;
+	private QueryEndpointStatus status;
 	
 	//metadata
 	private String format;
@@ -44,7 +44,7 @@ public class DocumentDTO {
 		this.repositoryUniqueId = entity.getRepositoryUniqueId();
 		this.documentUniqueId = entity.getDocumentUniqueId();
 		this.contents = entity.getContents();
-		this.patientLocationMapId = entity.getPatientLocationMapId();
+		this.patientEndpointMapId = entity.getPatientEndpointMapId();
 	}
 	
 	public long getId() {
@@ -78,12 +78,12 @@ public class DocumentDTO {
 		this.contents = contents;
 	}
 
-	public Long getPatientLocationMapId() {
-		return patientLocationMapId;
+	public Long getPatientEndpointMapId() {
+		return patientEndpointMapId;
 	}
 
-	public void setPatientLocationMapId(Long patientLocationMapId) {
-		this.patientLocationMapId = patientLocationMapId;
+	public void setPatientEndpointMapId(Long patientEndpointMapId) {
+		this.patientEndpointMapId = patientEndpointMapId;
 	}
 
 	public String getClassName() {
@@ -158,11 +158,11 @@ public class DocumentDTO {
 		this.statusId = statusId;
 	}
 
-	public QueryLocationStatus getStatus() {
+	public QueryEndpointStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryLocationStatus status) {
+	public void setStatus(QueryEndpointStatus status) {
 		this.status = status;
 	}
 }

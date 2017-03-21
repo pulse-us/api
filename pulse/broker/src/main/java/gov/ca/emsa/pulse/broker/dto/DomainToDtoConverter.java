@@ -50,7 +50,7 @@ public class DomainToDtoConverter {
 		if(domainObj.getId() != null) {
 			result.setId(new Long(domainObj.getId()));
 		}
-		result.setLocationPatientRecordId(domainObj.getLocationPatientRecordId());
+		result.setEndpointPatientRecordId(domainObj.getLocationPatientRecordId());
 		if(domainObj.getPatientRecordName() != null){
 			for(PatientRecordName patientRecordName : domainObj.getPatientRecordName()){
 				PatientRecordNameDTO patientRecordNameDTO = new PatientRecordNameDTO();
@@ -128,7 +128,7 @@ public class DomainToDtoConverter {
 		result.setCreationTime(domainObj.getCreationTime());
 		result.setDescription(domainObj.getDescription());
 		result.setSize(domainObj.getSize());
-		result.setPatientLocationMapId(domainObj.getLocationMapId());
+		result.setPatientEndpointMapId(domainObj.getEndpointMapId());
 
 		if(domainObj.getIdentifier() != null) {
 			result.setDocumentUniqueId(domainObj.getIdentifier().getDocumentUniqueId());
@@ -155,7 +155,6 @@ public class DomainToDtoConverter {
 			result.setCity(domainObj.getAddress().getCity());
 			result.setState(domainObj.getAddress().getState());
 			result.setZipcode(domainObj.getAddress().getZipcode());
-			result.setCountry(domainObj.getAddress().getCountry());
 		}
 		return result;
 	}
@@ -176,7 +175,6 @@ public class DomainToDtoConverter {
 			result.setCity(domain.getAddress().getCity());
 			result.setState(domain.getAddress().getState());
 			result.setZipcode(domain.getAddress().getZipcode());
-			result.setCountry(domain.getAddress().getCountry());
 		}
 		if(domain.getStatus() != null) {
 			LocationStatusDTO status = new LocationStatusDTO();
@@ -191,20 +189,11 @@ public class DomainToDtoConverter {
 		result.setExternalLastUpdateDate(domain.getExternalLastUpdateDate());
 		result.setLastModifiedDate(domain.getLastModifiedDate());
 		result.setCreationDate(domain.getCreationDate());
-		
-		if(domain.getEndpoints() != null) {
-			for(Endpoint endpoint : domain.getEndpoints()) {
-				if(endpoint != null) {
-					LocationEndpointDTO endpointDto = convert(endpoint);
-					result.getEndpoints().add(endpointDto);
-				}
-			}
-		}
 		return result;
 	}
 
-	public static LocationEndpointDTO convert(Endpoint domain) {
-		LocationEndpointDTO result = new LocationEndpointDTO();
+	public static EndpointDTO convert(Endpoint domain) {
+		EndpointDTO result = new EndpointDTO();
 		result.setId(domain.getId());
 		result.setAdapter(domain.getAdapter());
 		if(domain.getEndpointStatus() != null) {
@@ -227,6 +216,11 @@ public class DomainToDtoConverter {
 			}
 		}
 		
+		if(domain.getLocations() != null && domain.getLocations().size() > 0) {
+			for(Location location : domain.getLocations()) {
+				result.getLocations().add(convert(location));
+			}
+		}
 		result.setPayloadType(domain.getPayloadType());
 		result.setPublicKey(domain.getPublicKey());
 		result.setUrl(domain.getUrl());
@@ -237,8 +231,8 @@ public class DomainToDtoConverter {
 		return result;
 	}
 	
-	public static LocationEndpointMimeTypeDTO convert(EndpointMimeType domain) {
-		LocationEndpointMimeTypeDTO result = new LocationEndpointMimeTypeDTO();
+	public static EndpointMimeTypeDTO convert(EndpointMimeType domain) {
+		EndpointMimeTypeDTO result = new EndpointMimeTypeDTO();
 		result.setId(domain.getId());
 		result.setMimeType(domain.getMimeType());
 		return result;

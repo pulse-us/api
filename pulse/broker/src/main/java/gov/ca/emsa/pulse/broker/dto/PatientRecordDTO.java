@@ -12,14 +12,14 @@ import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 
 public class PatientRecordDTO {
 	private Long id;
-	private String locationPatientRecordId;
+	private String endpointPatientRecordId;
 	private List<PatientRecordNameDTO> patientRecordName;
 	private PatientGenderDTO patientGender;
 	private String dateOfBirth;
 	private String ssn;
 	private String phoneNumber;
 	private List<PatientRecordAddressDTO> address;
-	private Long queryLocationId;
+	private Long queryEndpointId;
 	private Date lastModifiedDate;
 	private Long patientGenderId;
 	
@@ -67,7 +67,7 @@ public class PatientRecordDTO {
 		this.patientGender = patientGenderDTO;
 		this.patientGenderId = entity.getPatientGenderId();
 		this.phoneNumber = entity.getPhoneNumber();
-		this.locationPatientRecordId = entity.getLocationPatientRecordId();
+		this.endpointPatientRecordId = entity.getEndpointPatientRecordId();
 		
 		List<PatientRecordAddressDTO> praArr = new ArrayList<PatientRecordAddressDTO>();
 		for(PatientRecordAddressEntity pra : entity.getPatientRecordAddress()){
@@ -88,7 +88,7 @@ public class PatientRecordDTO {
 		}
 		this.address = praArr;
 		
-		this.queryLocationId = entity.getQueryLocationId();
+		this.queryEndpointId = entity.getQueryEndpointId();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 	}
 	
@@ -123,20 +123,20 @@ public class PatientRecordDTO {
 		this.address = address;
 	}
 
-	public String getLocationPatientRecordId() {
-		return locationPatientRecordId;
+	public String getEndpointPatientRecordId() {
+		return endpointPatientRecordId;
 	}
 
-	public void setLocationPatientRecordId(String locationPatientRecordId) {
-		this.locationPatientRecordId = locationPatientRecordId;
+	public void setEndpointPatientRecordId(String endpointPatientRecordId) {
+		this.endpointPatientRecordId = endpointPatientRecordId;
 	}
 
-	public Long getQueryLocationId() {
-		return queryLocationId;
+	public Long getQueryEndpointId() {
+		return queryEndpointId;
 	}
 
-	public void setQueryLocationId(Long queryLocationId) {
-		this.queryLocationId = queryLocationId;
+	public void setQueryEndpointId(Long queryEndpointId) {
+		this.queryEndpointId = queryEndpointId;
 	}
 
 	public List<PatientRecordNameDTO> getPatientRecordName() {

@@ -37,18 +37,18 @@ public class PatientRecordEntity {
 	@JoinColumn(name="patient_gender_id", insertable= false, updatable = false)
 	private PatientGenderEntity patientGender;
 	
-	@Column(name = "location_patient_record_id")
-	private String locationPatientRecordId;
+	@Column(name = "endpoint_patient_record_id")
+	private String endpointPatientRecordId;
 	
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
-	@Column(name = "query_location_map_id")
-	private Long queryLocationId;
+	@Column(name = "query_endpoint_map_id")
+	private Long queryEndpointId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "query_location_map_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private QueryLocationMapEntity queryLocation;
+	@JoinColumn(name = "query_endpoint_map_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private QueryEndpointMapEntity queryEndpoint;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId")
 	@Column( name = "patient_record_id", nullable = false  )
@@ -128,20 +128,20 @@ public class PatientRecordEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public Long getQueryLocationId() {
-		return queryLocationId;
+	public Long getQueryEndpointId() {
+		return queryEndpointId;
 	}
 
-	public void setQueryLocationId(Long queryLocationId) {
-		this.queryLocationId = queryLocationId;
+	public void setQueryEndpointId(Long queryEndpointId) {
+		this.queryEndpointId = queryEndpointId;
 	}
 
-	public QueryLocationMapEntity getQueryLocation() {
-		return queryLocation;
+	public QueryEndpointMapEntity getQueryEndpoint() {
+		return queryEndpoint;
 	}
 
-	public void setQueryLocation(QueryLocationMapEntity queryLocation) {
-		this.queryLocation = queryLocation;
+	public void setQueryEndpoint(QueryEndpointMapEntity queryEndpoint) {
+		this.queryEndpoint = queryEndpoint;
 	}
 	
 	public Set<PatientRecordNameEntity> getPatientRecordName() {
@@ -152,12 +152,12 @@ public class PatientRecordEntity {
 		this.patientRecordName = patientRecordName;
 	}
 
-	public String getLocationPatientRecordId() {
-		return locationPatientRecordId;
+	public String getEndpointPatientRecordId() {
+		return endpointPatientRecordId;
 	}
 
-	public void setLocationPatientRecordId(String locationPatientRecordId) {
-		this.locationPatientRecordId = locationPatientRecordId;
+	public void setEndpointPatientRecordId(String endpointPatientRecordId) {
+		this.endpointPatientRecordId = endpointPatientRecordId;
 	}
 
 	public Set<PatientRecordAddressEntity> getPatientRecordAddress() {

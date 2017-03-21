@@ -4,29 +4,32 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.ca.emsa.pulse.broker.entity.LocationEndpointEntity;
-import gov.ca.emsa.pulse.broker.entity.LocationEndpointMimeTypeEntity;
+import gov.ca.emsa.pulse.broker.entity.EndpointEntity;
+import gov.ca.emsa.pulse.broker.entity.EndpointMimeTypeEntity;
+import gov.ca.emsa.pulse.broker.entity.LocationEndpointMapEntity;
 
-public class LocationEndpointDTO {
+public class EndpointDTO {
 	
 	private Long id;
 	private String externalId;
 	private EndpointTypeDTO endpointType;
 	private EndpointStatusDTO endpointStatus;
 	private String adapter;
-	private List<LocationEndpointMimeTypeDTO> mimeTypes;
+	private List<EndpointMimeTypeDTO> mimeTypes;
 	private String payloadType;
 	private String publicKey;
 	private String url;
 	private Date externalLastUpdateDate;
 	private Date creationDate;
 	private Date lastModifiedDate;
+	private List<LocationDTO> locations;
 	
-	public LocationEndpointDTO(){
-		mimeTypes = new ArrayList<LocationEndpointMimeTypeDTO>();
+	public EndpointDTO(){
+		locations = new ArrayList<LocationDTO>();
+		mimeTypes = new ArrayList<EndpointMimeTypeDTO>();
 	}
 	
-	public LocationEndpointDTO(LocationEndpointEntity entity){
+	public EndpointDTO(EndpointEntity entity){
 		this();
 		
 		this.id = entity.getId();
@@ -46,11 +49,20 @@ public class LocationEndpointDTO {
 		}
 		this.adapter = entity.getAdapter();
 		if(entity.getMimeTypes() != null && entity.getMimeTypes().size() > 0) {
-			for(LocationEndpointMimeTypeEntity entityMimeType : entity.getMimeTypes()) {
-				LocationEndpointMimeTypeDTO dtoMimeType = new LocationEndpointMimeTypeDTO(entityMimeType);
+			for(EndpointMimeTypeEntity entityMimeType : entity.getMimeTypes()) {
+				EndpointMimeTypeDTO dtoMimeType = new EndpointMimeTypeDTO(entityMimeType);
 				this.mimeTypes.add(dtoMimeType);
 			}
 		}
+		
+		if(entity.getLocationEndpointMaps() != null && entity.getLocationEndpointMaps().size() > 0) {
+			for(LocationEndpointMapEntity locMapEntity : entity.getLocationEndpointMaps()) {
+				if(locMapEntity.getLocation() != null) {
+					this.locations.add(new LocationDTO(locMapEntity.getLocation()));
+				}
+			}
+		}
+		
 		this.payloadType = entity.getPayloadType();
 		this.publicKey = entity.getPublicKey();
 		this.url = entity.getUrl();
@@ -73,7 +85,7 @@ public class LocationEndpointDTO {
 
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
-	}
+	} 
 
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
@@ -147,11 +159,19 @@ public class LocationEndpointDTO {
 		this.url = url;
 	}
 
-	public List<LocationEndpointMimeTypeDTO> getMimeTypes() {
+	public List<EndpointMimeTypeDTO> getMimeTypes() {
 		return mimeTypes;
 	}
 
-	public void setMimeTypes(List<LocationEndpointMimeTypeDTO> mimeTypes) {
+	public void setMimeTypes(List<EndpointMimeTypeDTO> mimeTypes) {
 		this.mimeTypes = mimeTypes;
+	}
+
+	public List<LocationDTO> getLocations() {
+		return locations;
+	}
+
+	public void setLocations(List<LocationDTO> locations) {
+		this.locations = locations;
 	}
 }

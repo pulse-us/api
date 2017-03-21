@@ -18,8 +18,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="patient_location_map")
-public class PatientLocationMapEntity {
+@Table(name="patient_endpoint_map")
+public class PatientEndpointMapEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,14 +33,14 @@ public class PatientLocationMapEntity {
 	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private PatientEntity patient;
 	
-	@Column(name = "location_id")
-	private Long locationId;
+	@Column(name = "endpoint_id")
+	private Long endpointId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "location_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private LocationEntity location;
+	@JoinColumn(name = "endpoint_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private EndpointEntity endpoint;
 	
-	@Column(name = "location_patient_record_id")
+	@Column(name = "endpoint_patient_record_id")
 	private String externalPatientRecordId;
 
 	@Column(name = "documents_query_status_id")
@@ -49,7 +49,7 @@ public class PatientLocationMapEntity {
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "documents_query_status_id", unique=true, nullable = false, insertable=false, updatable= false)
-	private QueryLocationStatusEntity status;
+	private QueryEndpointStatusEntity status;
 	
 	@Column(name = "documents_query_start")
 	private Date documentsQueryStart;
@@ -63,8 +63,8 @@ public class PatientLocationMapEntity {
 	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientLocationMapId"  )
-	@Column( name = "patient_location_map_id", nullable = false  )
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientEndpointMapId"  )
+	@Column( name = "patient_endpoint_map_id", nullable = false  )
 	private Set<DocumentEntity> documents = new HashSet<DocumentEntity>();
 	
 	public Long getId() {
@@ -75,20 +75,20 @@ public class PatientLocationMapEntity {
 		this.id = id;
 	}
 
-	public Long getLocationId() {
-		return locationId;
+	public Long getEndpointId() {
+		return endpointId;
 	}
 
-	public void setLocationId(Long locationId) {
-		this.locationId = locationId;
+	public void setEndpointId(Long endpointId) {
+		this.endpointId = endpointId;
 	}
 
-	public LocationEntity getLocation() {
-		return location;
+	public EndpointEntity getEndpoint() {
+		return endpoint;
 	}
 
-	public void setLocation(LocationEntity location) {
-		this.location = location;
+	public void setEndpoint(EndpointEntity endpoint) {
+		this.endpoint = endpoint;
 	}
 
 	public String getExternalPatientRecordId() {
@@ -147,11 +147,11 @@ public class PatientLocationMapEntity {
 		this.documentsQueryStatusId = documentsQueryStatusId;
 	}
 
-	public QueryLocationStatusEntity getStatus() {
+	public QueryEndpointStatusEntity getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryLocationStatusEntity status) {
+	public void setStatus(QueryEndpointStatusEntity status) {
 		this.status = status;
 	}
 	public Long getPatientId() {

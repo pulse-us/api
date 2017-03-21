@@ -2,11 +2,6 @@ package gov.ca.emsa.pulse.broker.manager;
 
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
-import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
-import gov.ca.emsa.pulse.common.domain.Endpoint;
-import gov.ca.emsa.pulse.common.domain.EndpointMimeType;
-import gov.ca.emsa.pulse.common.domain.EndpointStatus;
-import gov.ca.emsa.pulse.common.domain.EndpointType;
 import gov.ca.emsa.pulse.common.domain.Location;
 import gov.ca.emsa.pulse.common.domain.LocationStatus;
 
@@ -27,19 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BrokerApplicationTestConfig.class})
-public class OrganizationManagerTest extends TestCase {
+public class LocationManagerTest extends TestCase {
 	
-	@Autowired
-	private LocationManager locationManager;
+	@Autowired private LocationManager locationManager;
 
-	@Test
-	public void contextLoads() {
-	}
-	
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void createDirectoryCacheTest(){
+	public void createLocationsTest(){
 		LocationStatus locStatus = new LocationStatus();
 		locStatus.setId(1L);
 		
@@ -72,48 +62,18 @@ public class OrganizationManagerTest extends TestCase {
 		location3.setExternalLastUpdateDate(new Date());
 		location3.setParentOrgName("EHealth Parent Org");
 		location3.setStatus(locStatus);
-		Endpoint endpoint = new Endpoint();
-		endpoint.setAdapter("eHealth");
-		EndpointStatus status = new EndpointStatus();
-		status.setName("Active");
-		endpoint.setEndpointStatus(status);
-		EndpointType type = new EndpointType();
-		type.setCode("nwhin-xcpd");
-		endpoint.setEndpointType(type);
-		endpoint.setExternalId("1");
-		endpoint.setExternalLastUpdateDate(new Date());
-		EndpointMimeType mimeType = new EndpointMimeType();
-		mimeType.setMimeType("application/xml");
-		endpoint.getMimeTypes().add(mimeType);
-		endpoint.setPayloadType("HL7 CCDA");
-		endpoint.setPublicKey("lkdskdshsfdiujjksjewjfdsfdsjfdsfdsfds");
-		endpoint.setUrl("http://www.google.com");
-		location3.getEndpoints().add(endpoint);
 		locations.add(location3);
 		
 		locationManager.updateLocations(locations);
-		List<LocationDTO> locationResults = locationManager.getAll();
-		assertEquals(3, locationResults.size());
 		
-		//make sure one location has an endpoint
-		boolean foundEndpoint = false;
-		for(LocationDTO loc : locationResults) {
-			if(loc.getEndpoints() != null && loc.getEndpoints().size() == 1) {
-				foundEndpoint = true;
-				
-				LocationEndpointDTO locEndpoint = loc.getEndpoints().get(0);
-				assertNotNull(locEndpoint);
-				assertEquals(1, locEndpoint.getMimeTypes().size());
-				assertEquals("application/xml", locEndpoint.getMimeTypes().get(0).getMimeType());
-			}
-		}
-		assertTrue(foundEndpoint);
+		List<LocationDTO> allLocations = locationManager.getAll();
+		assertEquals(3, allLocations.size());
 	}
 	
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void removeLocationDirectoryCacheTest(){
+	public void updateLocationsRemoveOneTest(){
 		LocationStatus locStatus = new LocationStatus();
 		locStatus.setId(1L);
 		
@@ -146,23 +106,6 @@ public class OrganizationManagerTest extends TestCase {
 		location3.setExternalLastUpdateDate(new Date());
 		location3.setParentOrgName("EHealth Parent Org");
 		location3.setStatus(locStatus);
-		Endpoint endpoint = new Endpoint();
-		endpoint.setAdapter("eHealth");
-		EndpointStatus status = new EndpointStatus();
-		status.setName("Active");
-		endpoint.setEndpointStatus(status);
-		EndpointType type = new EndpointType();
-		type.setName("Patient Discovery");
-		endpoint.setEndpointType(type);
-		endpoint.setExternalId("1");
-		endpoint.setExternalLastUpdateDate(new Date());
-		EndpointMimeType mimeType = new EndpointMimeType();
-		mimeType.setMimeType("application/xml");
-		endpoint.getMimeTypes().add(mimeType);
-		endpoint.setPayloadType("HL7 CCDA");
-		endpoint.setPublicKey("lkdskdshsfdiujjksjewjfdsfdsjfdsfdsfds");
-		endpoint.setUrl("http://www.google.com");
-		location3.getEndpoints().add(endpoint);
 		locations.add(location3);
 		
 		locationManager.updateLocations(locations);

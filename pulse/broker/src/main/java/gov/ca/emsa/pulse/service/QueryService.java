@@ -6,8 +6,9 @@ import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
@@ -17,9 +18,11 @@ import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.Query;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -72,17 +76,58 @@ public class QueryService {
 		}
     }
 
-	@ApiOperation(value = "Cancel part of a query that's going to a specific location")
-	@RequestMapping(value = "/{queryId}/locationMap/{locationMapId}/cancel", method = RequestMethod.POST)
-	public Query cancelLocationQuery(@PathVariable(value="queryId") Long queryId,
-			@PathVariable(value="locationMapId") Long locationMapId) {
+	@ApiOperation(value = "Cancel part of a query that's going to a specific endpoint")
+	@RequestMapping(value = "/{queryId}/endpoint/{endpointId}/cancel", method = RequestMethod.POST)
+	public Query cancelQueryToEndpoint(@PathVariable(value="queryId") Long queryId, 
+			@PathVariable(value="endpointId") Long endpointId) throws InvalidArgumentsException {
 		synchronized (queryManager) {
-			queryManager.cancelQueryToLocation(locationMapId);
-			queryManager.updateQueryStatusFromLocations(queryId);
+			QueryDTO query = queryManager.getById(queryId);
+        	if(query == null) {
+        		throw new InvalidArgumentsException("No query was found with id " + queryId);
+        	} else if(query.getStatus() == null || query.getStatus() == QueryStatus.Closed) {
+        		throw new InvalidArgumentsException("Query with id " + queryId + " is already marked as Closed and cannot be requeried. Please start over with a new query.");
+        	}
+        	List<QueryEndpointMapDTO> queryEndpointMaps = queryManager.getQueryEndpointMapByQueryAndEndpoint(queryId, endpointId);
+        	if(queryEndpointMaps == null || queryEndpointMaps.size() == 0) {
+        		throw new InvalidArgumentsException("No endpoint with ID " + endpointId + " was found for query with ID " + queryId + " that is not already closed.");
+        	}
+        	
+			queryManager.cancelQueryToEndpoint(queryId, endpointId);
+			queryManager.updateQueryStatusFromEndpoints(queryId);
 			QueryDTO queryWithCancelledLocation = queryManager.getById(queryId);
 			return DtoToDomainConverter.convert(queryWithCancelledLocation);
 		}
 	}
+	
+	@ApiOperation(value="Re-query an endpoint from an existing query. "
+			+ "This runs asynchronously and returns a query object which can later be used to get the results.")
+	@RequestMapping(path="/{queryId}/endpoint/{endpointId}/requery", method = RequestMethod.POST,
+		produces="application/json; charset=utf-8")
+    public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
+    		@PathVariable("endpointId") Long endpointId) throws JsonProcessingException, InvalidArgumentsException, IOException {
+		CommonUser user = UserUtil.getCurrentUser();
+		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
+        QueryDTO initiatedQuery = null;
+        synchronized(queryManager) {
+        	QueryDTO query = queryManager.getById(queryId);
+        	if(query == null) {
+        		throw new InvalidArgumentsException("No query was found with id " + queryId);
+        	} else if(query.getStatus() == null || query.getStatus() == QueryStatus.Closed) {
+        		throw new InvalidArgumentsException("Query with id " + queryId + " is already marked as Closed and cannot be requeried. Please start over with a new query.");
+        	}
+        	List<QueryEndpointMapDTO> queryEndpointMaps = queryManager.getQueryEndpointMapByQueryAndEndpoint(queryId, endpointId);
+        	if(queryEndpointMaps == null || queryEndpointMaps.size() == 0) {
+        		throw new InvalidArgumentsException("No endpoint with ID " + endpointId + " was found for query with ID " + queryId + " that is not already closed.");
+        	}
+        	
+        	Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(queryId, endpointId, user);
+        	if(newQueryEndpointMapId != null) {
+	        	QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(newQueryEndpointMapId);
+	        	initiatedQuery = queryManager.getById(dto.getQueryId());
+        	}
+        }
+        return DtoToDomainConverter.convert(initiatedQuery);
+   }
 	
 	@ApiOperation(value = "Delete a query")
 	@RequestMapping(value="/{queryId}/delete", method = RequestMethod.POST)
@@ -119,24 +164,25 @@ public class QueryService {
 		auditManager.createPulseAuditEvent(AuditType.PC, patient.getId());
 
 		synchronized(queryManager) {
-			//create patient location mappings based on the patientrecords we are using
+			//create patient-endpoint mappings for doc discovery based on the patientrecords we are using
 			for(Long patientRecordId : request.getPatientRecordIds()) {
-				PatientLocationMapDTO patLocMapDto = patientManager.createPatientLocationMapFromPatientRecord(patient, patientRecordId);
-	
-				//kick off document list retrieval service
-				SAMLInput input = new SAMLInput();
-				input.setStrIssuer(user.getSubjectName());
-				input.setStrNameID("UserBrianLindsey");
-				input.setStrNameQualifier("My Website");
-				input.setSessionId("abcdedf1234567");
-				HashMap<String, String> customAttributes = new HashMap<String,String>();
-				customAttributes.put("RequesterFirstName", user.getFirstName());
-				customAttributes.put("RequestReason", "Get patient documents");
-				customAttributes.put("PatientRecordId", patLocMapDto.getExternalPatientRecordId());
-				input.setAttributes(customAttributes);
-	
-				patient.getLocationMaps().add(patLocMapDto);
-				docManager.queryForDocuments(user, input, patLocMapDto);
+				PatientEndpointMapDTO patientEndpointMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient, patientRecordId);
+				if(patientEndpointMapDto != null) {
+					//kick off document list retrieval service if there was a suitable endpoint
+					SAMLInput input = new SAMLInput();
+					input.setStrIssuer(user.getSubjectName());
+					input.setStrNameID("UserBrianLindsey");
+					input.setStrNameQualifier("My Website");
+					input.setSessionId("abcdedf1234567");
+					HashMap<String, String> customAttributes = new HashMap<String,String>();
+					customAttributes.put("RequesterFirstName", user.getFirstName());
+					customAttributes.put("RequestReason", "Get patient documents");
+					customAttributes.put("PatientRecordId", patientEndpointMapDto.getExternalPatientRecordId());
+					input.setAttributes(customAttributes);
+		
+					patient.getEndpointMaps().add(patientEndpointMapDto);
+					docManager.queryForDocuments(user, input, patientEndpointMapDto);
+				}
 			}
 	
 			//delete query (all associated items should cascade)

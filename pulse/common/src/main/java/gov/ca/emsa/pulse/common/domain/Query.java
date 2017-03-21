@@ -10,10 +10,10 @@ public class Query {
 	private QueryStatus status;
 	private PatientSearch terms;
 	private Date lastRead;
-	private List<QueryLocationMap> locationStatuses;
+	private List<QueryEndpointMap> endpointStatuses;
 
 	public Query() {
-		locationStatuses = new ArrayList<QueryLocationMap>();
+		endpointStatuses = new ArrayList<QueryEndpointMap>();
 	}
 	
 	public Long getId() {
@@ -48,12 +48,12 @@ public class Query {
 		this.terms = terms;
 	}
 
-	public List<QueryLocationMap> getLocationStatuses() {
-		return locationStatuses;
+	public List<QueryEndpointMap> getEndpointStatuses() {
+		return endpointStatuses;
 	}
 
-	public void setLocationStatuses(List<QueryLocationMap> locationStatuses) {
-		this.locationStatuses = locationStatuses;
+	public void setEndpointStatuses(List<QueryEndpointMap> endpointStatuses) {
+		this.endpointStatuses = endpointStatuses;
 	}
 
 	public Date getLastRead() {
