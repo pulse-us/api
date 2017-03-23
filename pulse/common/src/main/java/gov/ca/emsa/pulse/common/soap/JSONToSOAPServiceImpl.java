@@ -12,10 +12,15 @@ import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.DocumentRequest;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.activation.DataHandler;
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
@@ -29,13 +34,21 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 import org.hl7.v3.ADExplicit;
+import org.hl7.v3.ActClassControlAct;
 import org.hl7.v3.AdxpExplicitState;
+import org.hl7.v3.CD;
 import org.hl7.v3.CE;
+import org.hl7.v3.CS;
+import org.hl7.v3.CommunicationFunctionType;
 import org.hl7.v3.ENExplicit;
 import org.hl7.v3.EnExplicitFamily;
 import org.hl7.v3.EnExplicitGiven;
+import org.hl7.v3.EntityClassDevice;
 import org.hl7.v3.II;
 import org.hl7.v3.IVLTSExplicit;
+import org.hl7.v3.MCCIMT000100UV01Device;
+import org.hl7.v3.MCCIMT000100UV01Receiver;
+import org.hl7.v3.MCCIMT000100UV01Sender;
 import org.hl7.v3.PNExplicit;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201305UV02QUQIMT021001UV01ControlActProcess;
@@ -55,12 +68,25 @@ import org.hl7.v3.PRPAMT201306UV02PatientAddress;
 import org.hl7.v3.PRPAMT201306UV02PatientTelecom;
 import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
 import org.hl7.v3.PRPAMT201310UV02OtherIDs;
+import org.hl7.v3.ST;
 import org.hl7.v3.TELExplicit;
+import org.hl7.v3.TSExplicit;
+import org.hl7.v3.XActMoodIntentEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.UUID;
 @Service
 public class JSONToSOAPServiceImpl implements JSONToSOAPService{
+	
+	public String generateUUID(){
+		return UUID.randomUUID().toString();
+	}
+	
+	public String generateCreationTime(){
+		return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+	}
+	
 	public PRPAIN201310UV02 convertPatientRecordListToSOAPResponse(List<PatientRecord> patientRecords){
 		PRPAIN201310UV02 returnSOAP = new PRPAIN201310UV02();
 		List<PRPAIN201310UV02MFMIMT700711UV01Subject1> subjects = new ArrayList<PRPAIN201310UV02MFMIMT700711UV01Subject1>();
@@ -70,8 +96,8 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 			PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent registrationEvent = new PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent();
 			PRPAIN201310UV02MFMIMT700711UV01Subject2 subject1 = new PRPAIN201310UV02MFMIMT700711UV01Subject2();
 			PRPAMT201304UV02Patient patient = new PRPAMT201304UV02Patient();
-			JAXBElement<EnExplicitGiven> given = new JAXBElement(new QName("given"), String.class, record.getPatientRecordName().get(0).getGivenName());
-			JAXBElement<EnExplicitFamily> family = new JAXBElement(new QName("family"), String.class, record.getPatientRecordName().get(0).getFamilyName());
+			JAXBElement<EnExplicitGiven> given = new JAXBElement(new QName("urn:hl7-org:v3","given"), String.class, record.getPatientRecordName().get(0).getGivenName());
+			JAXBElement<EnExplicitFamily> family = new JAXBElement(new QName("urn:hl7-org:v3","family"), String.class, record.getPatientRecordName().get(0).getFamilyName());
 			PNExplicit pnGiven = new PNExplicit();
 			PNExplicit pnFamily = new PNExplicit();
 			pnGiven.getContent().add(given);
@@ -79,7 +105,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 			PRPAMT201304UV02Person patientPerson1 = new PRPAMT201304UV02Person();
 			patientPerson1.getName().add(pnGiven);
 			patientPerson1.getName().add(pnFamily);
-			JAXBElement<PRPAMT201304UV02Person> patientPerson = new JAXBElement(new QName("patient"), PRPAMT201304UV02Person.class, patientPerson1);
+			JAXBElement<PRPAMT201304UV02Person> patientPerson = new JAXBElement(new QName("urn:hl7-org:v3","patient"), PRPAMT201304UV02Person.class, patientPerson1);
 			patient.setPatientPerson(patientPerson);
 			subject1.setPatient(patient);
 			registrationEvent.setSubject1(subject1);
@@ -97,38 +123,92 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 	
 	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch search) {
 		PRPAIN201305UV02 request = new PRPAIN201305UV02();
+		II id = new II();
+		id.setRoot(generateUUID());
+		request.setId(id);
+		TSExplicit creationTime = new TSExplicit();
+		creationTime.setValue(generateCreationTime());
+		request.setCreationTime(creationTime);
+		II interactionId = new II();
+		interactionId.setExtension("PRPA_IN201305UV02");
+		interactionId.setRoot("2.16.840.1.113883");
+		request.setInteractionId(interactionId);
+		CS processingCode = new CS();
+		processingCode.setCode("T");
+		request.setProcessingCode(processingCode);
+		CS processingModeCode = new CS();
+		processingModeCode.setCode("T");
+		request.setProcessingModeCode(processingModeCode);
+		CS acceptAckCode = new CS();
+		acceptAckCode.setCode("AL");
+		request.setAcceptAckCode(acceptAckCode);
+		
+		MCCIMT000100UV01Receiver reciever = new MCCIMT000100UV01Receiver();
+		reciever.setTypeCode(CommunicationFunctionType.RCV);
+		MCCIMT000100UV01Device device = new MCCIMT000100UV01Device();
+		device.setDeterminerCode("INSTANCE");
+		device.setClassCode(EntityClassDevice.DEV);
+		II deviceId = new II();
+		deviceId.setRoot(""); // homeCommunityId of the receiving HIO
+		device.getId().add(deviceId);
+		reciever.setDevice(device);
+		request.getReceiver().add(reciever);
+		
+		MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
+		sender.setTypeCode(CommunicationFunctionType.SND);
+		MCCIMT000100UV01Device deviceSender = new MCCIMT000100UV01Device();
+		deviceSender.setDeterminerCode("INSTANCE");
+		deviceSender.setClassCode(EntityClassDevice.DEV);
+		II deviceIdSender = new II();
+		deviceIdSender.setRoot(""); // homeCommunityId of PULSE
+		deviceSender.getId().add(deviceIdSender);
+		sender.setDevice(deviceSender);
+		request.setSender(sender);
+		
 		PRPAIN201305UV02QUQIMT021001UV01ControlActProcess controlActProcess = new PRPAIN201305UV02QUQIMT021001UV01ControlActProcess();
+		controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
+		controlActProcess.setClassCode(ActClassControlAct.CACT);
+		CD code = new CD();
+		code.setCodeSystem("2.16.840.1.113883.1.6");
+		code.setCode("PRPA_TE201305UV02");
+		controlActProcess.setCode(code);
 		PRPAMT201306UV02QueryByParameter queryByParameter1 = new PRPAMT201306UV02QueryByParameter();
 		PRPAMT201306UV02ParameterList parameterList = new PRPAMT201306UV02ParameterList();
 		
 		for(PatientSearchName patientName : search.getPatientNames()){
 			if(!patientName.getGivenName().isEmpty() || !StringUtils.isEmpty(patientName.getFamilyName())) {
 				PRPAMT201306UV02LivingSubjectName name = new PRPAMT201306UV02LivingSubjectName();
+				ST semanticsText = new ST();
+				semanticsText.setMediaType("LivingSubject.name");
+				name.setSemanticsText(semanticsText);
 				ENExplicit nameValue = new ENExplicit();
-				nameValue.getContent().add(new JAXBElement<String>(new QName("family"), String.class, patientName.getFamilyName()));
+				nameValue.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","family"), String.class, patientName.getFamilyName()));
 				for(String given : patientName.getGivenName()){
-					nameValue.getContent().add(new JAXBElement<String>(new QName("given"), String.class, given));
+					nameValue.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","given"), String.class, given));
 				}
 				if(!StringUtils.isEmpty(patientName.getPrefix())){
-					nameValue.getContent().add(new JAXBElement<String>(new QName("prefix"), String.class, patientName.getPrefix()));
+					nameValue.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","prefix"), String.class, patientName.getPrefix()));
 				}
 				if(!StringUtils.isEmpty(patientName.getSuffix())){
-					nameValue.getContent().add(new JAXBElement<String>(new QName("suffix"), String.class, patientName.getSuffix()));
+					nameValue.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","suffix"), String.class, patientName.getSuffix()));
 				}
 				name.getValue().add(nameValue);
 				parameterList.getLivingSubjectName().add(name);
 			}
 		}
 		PRPAMT201306UV02PatientAddress patientAddress = new PRPAMT201306UV02PatientAddress();
+		ST semanticsText = new ST();
+		semanticsText.setMediaType("Patient.addr");
+		patientAddress.setSemanticsText(semanticsText);
 		if(search.getAddresses() != null){
 			for(PatientSearchAddress patientSearchAddress : search.getAddresses()){
 				ADExplicit addr = new ADExplicit();
-				addr.getContent().add(new JAXBElement<String>(new QName("state"), String.class, patientSearchAddress.getState()));
-				addr.getContent().add(new JAXBElement<String>(new QName("city"), String.class, patientSearchAddress.getCity()));
-				addr.getContent().add(new JAXBElement<String>(new QName("postalCode"), String.class, patientSearchAddress.getZipcode()));
+				addr.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","state"), String.class, patientSearchAddress.getState()));
+				addr.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","city"), String.class, patientSearchAddress.getCity()));
+				addr.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","postalCode"), String.class, patientSearchAddress.getZipcode()));
 
 				for(String line : patientSearchAddress.getLines()){
-					addr.getContent().add(new JAXBElement<String>(new QName("streetAddressLine"), String.class, line));
+					addr.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","streetAddressLine"), String.class, line));
 				}
 				patientAddress.getValue().add(addr);
 				parameterList.getPatientAddress().add(patientAddress);
@@ -137,6 +217,9 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 
 		if(!StringUtils.isEmpty(search.getGender())) {
 			PRPAMT201306UV02LivingSubjectAdministrativeGender gender = new PRPAMT201306UV02LivingSubjectAdministrativeGender();
+			ST semanticsTextGender = new ST();
+			semanticsTextGender.setMediaType("LivingSubject.AdministrativeGender");
+			gender.setSemanticsText(semanticsTextGender);
 			CE genderValue = new CE();
 			genderValue.setCode(search.getGender());
 			gender.getValue().add(genderValue);
@@ -145,6 +228,9 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		
 		if(!StringUtils.isEmpty(search.getDob())) {
 			PRPAMT201306UV02LivingSubjectBirthTime birthTime = new PRPAMT201306UV02LivingSubjectBirthTime();
+			ST semanticsTextDob = new ST();
+			semanticsTextDob.setMediaType("LivingSubject.BirthTime");
+			birthTime.setSemanticsText(semanticsTextDob);
 			IVLTSExplicit birthTimeValue = new IVLTSExplicit();
 			birthTimeValue.setValue(search.getDob());
 			birthTime.getValue().add(birthTimeValue);
@@ -153,6 +239,9 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		
 		if(!StringUtils.isEmpty(search.getTelephone())) {
 			PRPAMT201306UV02PatientTelecom telecom = new PRPAMT201306UV02PatientTelecom();
+			ST semanticsTextTelecom = new ST();
+			semanticsTextTelecom.setMediaType("Patient.telecom");
+			telecom.setSemanticsText(semanticsTextTelecom);
 			TELExplicit telecomEx = new TELExplicit();
 			telecomEx.setValue(search.getTelephone());
 			telecom.getValue().add(telecomEx);
@@ -161,6 +250,9 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		
 		if(!StringUtils.isEmpty(search.getSsn())) {
 			PRPAMT201306UV02LivingSubjectId ssn = new PRPAMT201306UV02LivingSubjectId();
+			ST semanticsTextSSN = new ST();
+			semanticsTextSSN.setMediaType("LivingSubject.id");
+			ssn.setSemanticsText(semanticsTextSSN);
 			II ssnEx = new II();
 			ssnEx.setRoot("2.16.840.1.113883.4.1");
 			ssnEx.setExtension(search.getSsn());
@@ -171,11 +263,22 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		queryByParameter1.setParameterList(parameterList);
 		
 		JAXBElement<PRPAMT201306UV02QueryByParameter> queryByParameter = 
-				new JAXBElement<PRPAMT201306UV02QueryByParameter>(new QName("queryByParameter"), PRPAMT201306UV02QueryByParameter.class, queryByParameter1);
-
+				new JAXBElement<PRPAMT201306UV02QueryByParameter>(new QName("urn:hl7-org:v3","queryByParameter"), PRPAMT201306UV02QueryByParameter.class, queryByParameter1);
+		II queryId = new II();
+		queryId.setRoot(generateUUID());
+		queryByParameter.getValue().setQueryId(queryId);
+		CS statusCode = new CS();
+		statusCode.setCode("new");
+		queryByParameter.getValue().setStatusCode(statusCode);
+		CS responsePriorityCode = new CS();
+		responsePriorityCode.setCode("I");
+		CS responseModalityCode = new CS();
+		responseModalityCode.setCode("R");
+		queryByParameter.getValue().setResponsePriorityCode(responsePriorityCode);
+		queryByParameter.getValue().setResponseModalityCode(responseModalityCode);
 		controlActProcess.setQueryByParameter(queryByParameter);
 		request.setControlActProcess(controlActProcess);
-		
+		System.out.println("************************Request***************************: " + request);
 		return request;
 	}
 	

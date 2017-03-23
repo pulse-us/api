@@ -28,11 +28,14 @@ import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
+import org.apache.commons.io.output.XmlStreamWriter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hl7.v3.PRPAIN201305UV02;
@@ -143,7 +146,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 			logger.error(soap);
 		}
 		
-		JAXBElement<PRPAIN201305UV02> je = new JAXBElement<PRPAIN201305UV02>(new QName("PRPAIN201305UV02"), PRPAIN201305UV02.class, request);
+		JAXBElement<PRPAIN201305UV02> je = new JAXBElement<PRPAIN201305UV02>(new QName("urn:hl7-org:v3","PRPA_IN201305UV02"), PRPAIN201305UV02.class, request);
 		Document document = null;
 		try {
 			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
@@ -151,6 +154,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 			e.printStackTrace();
 		}
 		Marshaller documentMarshaller = createMarshaller(createJAXBContext(request.getClass()));
+		documentMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		documentMarshaller.marshal(je, document);
 		try {
 			soapMessage.getSOAPBody().addDocument(document);
