@@ -30,6 +30,7 @@ import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
 
 @Service
 public class DocumentManagerImpl implements DocumentManager {
@@ -41,6 +42,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	@Autowired private PatientDAO patientDao;
 	@Autowired private EndpointDAO endpointDao;
 	@Autowired private AdapterFactory adapterFactory;
+	@Autowired private QueryableEndpointStatusUtil endpointStatusesForQuery;
 
 	private final ExecutorService pool;
 
@@ -113,7 +115,7 @@ public class DocumentManagerImpl implements DocumentManager {
 				List<LocationDTO> relatedLocations = documentDiscoveryEndpoint.getLocations();
 				if(relatedLocations != null && relatedLocations.size() > 0) {
 					LocationDTO firstRelatedLocation = relatedLocations.get(0);
-					documentContentsEndpoint = endpointDao.findByLocationIdAndType(firstRelatedLocation.getId(), EndpointStatusEnum.ACTIVE, EndpointTypeEnum.DOCUMENT_RETRIEVE);
+					documentContentsEndpoint = endpointDao.findByLocationIdAndType(firstRelatedLocation.getId(), endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_RETRIEVE);
 				}
 			}
 			

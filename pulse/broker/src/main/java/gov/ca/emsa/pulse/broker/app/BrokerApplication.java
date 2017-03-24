@@ -14,6 +14,8 @@ import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 
 import java.util.Timer;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -36,6 +38,8 @@ public class BrokerApplication {
 		SpringApplication.run(BrokerApplication.class, args);
 	}
 	
+	private static final Logger logger = LogManager.getLogger(BrokerApplication.class);
+
 	@Autowired private LocationManager locationManager;
 	@Autowired private EndpointManager endpointManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
@@ -170,16 +174,16 @@ public class BrokerApplication {
 		return qcTask;
 	}
 	
-	   @Bean
-	    public FilterRegistrationBean acfLastAccessFilter() {
-		   AcfLastAccessFilter filter = new AcfLastAccessFilter();
-		   filter.setAcfManager(acfManager);
-	        FilterRegistrationBean registration = new FilterRegistrationBean();
-	        registration.setFilter(filter);
-	        registration.setOrder(2);
-	        return registration;
-	    }
-	   
+   @Bean
+    public FilterRegistrationBean acfLastAccessFilter() {
+	   AcfLastAccessFilter filter = new AcfLastAccessFilter();
+	   filter.setAcfManager(acfManager);
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(filter);
+        registration.setOrder(2);
+        return registration;
+    }
+   
 	@Bean
     @Scope(scopeName=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public PatientQueryService patientQueryService() {
