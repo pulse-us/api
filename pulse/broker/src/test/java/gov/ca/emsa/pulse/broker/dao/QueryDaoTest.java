@@ -10,6 +10,7 @@ import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationStatusDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
+import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.sql.SQLException;
@@ -37,6 +38,7 @@ public class QueryDaoTest extends TestCase {
 	@Autowired LocationDAO locationDao;
 	@Autowired EndpointDAO endpointDao;
 	@Autowired LocationEndpointMapDAO mappingDao;
+	@Autowired QueryableEndpointStatusUtil endpointStatusesForQuery;
 	private LocationDTO location1, location2;
 	private EndpointDTO endpoint1, endpoint2, endpoint3;
 	
@@ -144,7 +146,7 @@ public class QueryDaoTest extends TestCase {
 	public void findDocumentDiscoveryEndpointFromPatientDiscoveryEndpoint() throws SQLException {
 		insertLocationsAndEndpoints();
 
-		EndpointDTO docDiscoveryEndpoint = endpointDao.findByLocationIdAndType(location1.getId(), EndpointStatusEnum.ACTIVE, EndpointTypeEnum.DOCUMENT_DISCOVERY);
+		EndpointDTO docDiscoveryEndpoint = endpointDao.findByLocationIdAndType(location1.getId(), endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_DISCOVERY);
 		assertNotNull(docDiscoveryEndpoint);
 		assertEquals(endpoint3.getId(), docDiscoveryEndpoint.getId());
 	}
