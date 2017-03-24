@@ -4,7 +4,6 @@ import gov.ca.emsa.pulse.broker.cache.CacheCleanupException;
 import gov.ca.emsa.pulse.broker.dao.EndpointDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
-import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
