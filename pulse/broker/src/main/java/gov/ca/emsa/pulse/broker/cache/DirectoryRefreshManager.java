@@ -1,30 +1,80 @@
 package gov.ca.emsa.pulse.broker.cache;
 
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationDTO;
+import gov.ca.emsa.pulse.broker.dto.LocationEndpointMapDTO;
+import gov.ca.emsa.pulse.broker.manager.EndpointManager;
+import gov.ca.emsa.pulse.broker.manager.LocationManager;
+import gov.ca.emsa.pulse.common.domain.Endpoint;
+import gov.ca.emsa.pulse.common.domain.Location;
+import gov.ca.emsa.pulse.cten.CtenToPulseConverter;
+import gov.ca.emsa.pulse.cten.domain.EndpointWrapper;
+import gov.ca.emsa.pulse.cten.domain.LocationWrapper;
+
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.TimerTask;
 
-import gov.ca.emsa.pulse.broker.domain.Organization;
-import gov.ca.emsa.pulse.broker.manager.OrganizationManager;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.web.client.RestTemplate;
 
 public class DirectoryRefreshManager extends TimerTask {
-	private OrganizationManager organizationManager;
-	private String directoryServicesUrl;
+	private static final Logger logger = LogManager.getLogger(DirectoryRefreshManager.class);
+
+	private LocationManager locationManager;
+	private EndpointManager endpointManager;
+	private String locationDirectoryUrl, endpointDirectoryUrl;
 	private long expirationMillis;
 	
-	public void getDirectories(){
-		System.out.println("Updating the directories...");
+	public void getLocationsAndEndpoints(){
+		//query locations
+		logger.info("Querying the locations from " + locationDirectoryUrl);
 		RestTemplate restTemplate = new RestTemplate();
-		Organization[] orgs = restTemplate.getForObject(directoryServicesUrl, Organization[].class);
-		ArrayList<Organization> orgList = new ArrayList<Organization>(Arrays.asList(orgs));
-		organizationManager.updateOrganizations(orgList);
+		LocationWrapper remoteLocations = restTemplate.getForObject(locationDirectoryUrl, LocationWrapper.class);
+		//convert to our internal location object
+		List<Location> locations = CtenToPulseConverter.convertLocations(remoteLocations);
+		logger.debug("Found " + locations.size() + " locations from " + locationDirectoryUrl);;
+		locationManager.updateLocations(locations);
+		
+		//query the endpoints
+		logger.info("Querying the endpoints from " + endpointDirectoryUrl);
+		restTemplate = new RestTemplate();
+		EndpointWrapper remoteEndpoints = restTemplate.getForObject(endpointDirectoryUrl, EndpointWrapper.class);
+		//convert to our internal endpoint object
+		List<Endpoint> endpoints = CtenToPulseConverter.convertEndpoints(remoteEndpoints);
+		logger.debug("Found " + endpoints.size() + " endpoints from " + endpointDirectoryUrl);;
+		endpointManager.updateEndpoints(endpoints);
+		
+		//now update the mappings between locations and endpoints
+		//these mappings aren't referenced by other tables so it should be ok if any need to get deleted
+		List<LocationEndpointMapDTO> locationEndpointMappings = new ArrayList<LocationEndpointMapDTO>();
+		for(Location ctenLocation : locations) {
+			for(Endpoint ctenEndpoint : ctenLocation.getEndpoints()) {
+				
+				//find location with same external id
+				LocationDTO locationToMap = locationManager.getByExternalId(ctenLocation.getExternalId());
+				//find the endpoint with the same external id
+				EndpointDTO endpointToMap = endpointManager.getByExternalId(ctenEndpoint.getExternalId());
+				if(locationToMap != null && endpointToMap != null) {
+					LocationEndpointMapDTO toMap = new LocationEndpointMapDTO();
+					toMap.setEndpointId(endpointToMap.getId());
+					toMap.setLocationId(locationToMap.getId());
+					locationEndpointMappings.add(toMap);
+				}
+			}
+		}
+		endpointManager.updateEndpointLocationMappings(locationEndpointMappings);
 	}
 
 	@Override
 	public void run() {
-		getDirectories();
+		try {
+			getLocationsAndEndpoints();
+		} catch(Exception ex) {
+			logger.error("Error updating location cache", ex);
+			ex.printStackTrace();
+		}
 	}
 
 	public void setExpirationMillis(long directoryRefreshExpirationMillis) {
@@ -34,16 +84,36 @@ public class DirectoryRefreshManager extends TimerTask {
 	public long getExpirationMillis() {
 		return expirationMillis;
 	}
-	
-	public void setManager(OrganizationManager orgMan){
-		this.organizationManager = orgMan;
+
+	public String getLocationDirectoryUrl() {
+		return locationDirectoryUrl;
 	}
 
-	public String getDirectoryServicesUrl() {
-		return directoryServicesUrl;
+	public void setLocationDirectoryUrl(String locationDirectoryUrl) {
+		this.locationDirectoryUrl = locationDirectoryUrl;
 	}
 
-	public void setDirectoryServicesUrl(String directoryServicesUrl) {
-		this.directoryServicesUrl = directoryServicesUrl;
+	public String getEndpointDirectoryUrl() {
+		return endpointDirectoryUrl;
+	}
+
+	public void setEndpointDirectoryUrl(String endpointDirectoryUrl) {
+		this.endpointDirectoryUrl = endpointDirectoryUrl;
+	}
+
+	public LocationManager getLocationManager() {
+		return locationManager;
+	}
+
+	public void setLocationManager(LocationManager locationManager) {
+		this.locationManager = locationManager;
+	}
+
+	public EndpointManager getEndpointManager() {
+		return endpointManager;
+	}
+
+	public void setEndpointManager(EndpointManager endpointManager) {
+		this.endpointManager = endpointManager;
 	}
 }

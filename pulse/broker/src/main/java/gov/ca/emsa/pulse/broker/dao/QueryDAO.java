@@ -1,17 +1,23 @@
 package gov.ca.emsa.pulse.broker.dao;
 
-import java.util.List;
-
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryOrganizationDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
+
+import java.util.Date;
+import java.util.List;
 
 public interface QueryDAO {
 	public QueryDTO create(QueryDTO dto);
-	public QueryOrganizationDTO updateQueryOrganization(QueryOrganizationDTO orgStatus);
+	public QueryEndpointMapDTO updateQueryEndpointMap(QueryEndpointMapDTO queryEndpointMap);
 	public QueryDTO update(QueryDTO dto);
-	public QueryOrganizationDTO createQueryOrganization(QueryOrganizationDTO orgStatus);
-	public void delete(Long id);
+	public QueryEndpointMapDTO createQueryEndpointMap(QueryEndpointMapDTO queryEndpointMap);
+	public void close(Long id);
 	public List<QueryDTO> findAllForUser(String userToken);	
-	public List<QueryDTO> findAllForUserWithStatus(String userToken, String status);	
-	public QueryDTO getById(Long id);
+	public List<QueryDTO> findAllForUserWithStatus(String userToken, List<QueryStatus> status);	
+	public QueryDTO findById(Long id);
+	public QueryEndpointMapDTO findQueryEndpointMapById(Long id);
+	public List<QueryEndpointMapDTO> findQueryEndpointsByQueryAndEndpoint(Long queryId, Long endpointId);
+	public void deleteItemsOlderThan(Date oldestDate);
+	public Boolean hasActiveLocations(Long queryId);
 }

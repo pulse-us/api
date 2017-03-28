@@ -9,21 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-
-import com.google.common.base.Predicate;
 
 import springfox.documentation.PathProvider;
 import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.ApiListingReference;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.paths.RelativePathProvider;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import com.google.common.base.Predicate;
+
 @Configuration
-@PropertySource("classpath:environment.properties")
 @EnableSwagger2
 public class SwaggerConfig implements EnvironmentAware {
 
@@ -47,8 +45,7 @@ public class SwaggerConfig implements EnvironmentAware {
 
     private ApiInfo apiInfo() {
     	return new ApiInfo("PULSE", "Patient Unified Lookup System for Emergencies", "0.0.1",
-                           "http://terms/of/service.url", "pulse@ainq.com",
-                           "License Text", "LICENSE");
+                           "http://termsofservice.com", new Contact("Brian Lindsey", "www.ainq.com", "blindsey@ainq.com"), "License Text", "LICENSE");
     }
 
     private PathProvider pathProvider() {
@@ -57,9 +54,15 @@ public class SwaggerConfig implements EnvironmentAware {
 
     @SuppressWarnings("unchecked")
     private Predicate<String> paths() {
-        return or(
-                  regex("/greeting.*")
-                  );
+    	return or(
+    			regex("/acfs.*"),
+    			regex("/locations.*"),
+    			regex("/documents.*"),
+    			regex("/patients.*"),
+    			regex("/queries.*"),
+    			regex("/search.*"),
+    			regex("/requery.*")
+    			);
     }
 
     private class AbsolutePathProvider extends RelativePathProvider {

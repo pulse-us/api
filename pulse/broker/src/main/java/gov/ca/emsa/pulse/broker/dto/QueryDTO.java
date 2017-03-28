@@ -1,21 +1,24 @@
 package gov.ca.emsa.pulse.broker.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import gov.ca.emsa.pulse.broker.entity.QueryEntity;
-import gov.ca.emsa.pulse.broker.entity.QueryOrganizationStatusMap;
+import gov.ca.emsa.pulse.broker.entity.QueryEndpointMapEntity;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class QueryDTO {
 
 	private Long id;
-	private String userToken;
-	private String status;
+	private String userId;
+	private QueryStatus status;
 	private String terms;
-	private List<QueryOrganizationDTO> orgStatuses;
+	private Date lastReadDate;
+	private List<QueryEndpointMapDTO> endpointMaps;
 	
 	public QueryDTO(){
-		orgStatuses = new ArrayList<QueryOrganizationDTO>();
+		endpointMaps = new ArrayList<QueryEndpointMapDTO>();
 	}
 	
 	public QueryDTO(QueryEntity entity)
@@ -23,14 +26,17 @@ public class QueryDTO {
 		this();
 		if(entity != null) {
 			this.id = entity.getId();
-			this.userToken = entity.getUserToken();
-			this.status = entity.getStatus();
+			this.userId = entity.getUserId();
+			if(entity.getStatus() != null) {
+				this.status = entity.getStatus().getStatus();
+			}
 			this.terms = entity.getTerms();
+			this.lastReadDate = entity.getLastReadDate();
 			
-			if(entity.getOrgStatuses() != null && entity.getOrgStatuses().size() > 0) {
-				for(QueryOrganizationStatusMap orgStatus : entity.getOrgStatuses()) {
-					QueryOrganizationDTO dto = new QueryOrganizationDTO(orgStatus);
-					orgStatuses.add(dto);
+			if(entity.getEndpointStatuses() != null && entity.getEndpointStatuses().size() > 0) {
+				for(QueryEndpointMapEntity locationStatus : entity.getEndpointStatuses()) {
+					QueryEndpointMapDTO dto = new QueryEndpointMapDTO(locationStatus);
+					endpointMaps.add(dto);
 				}
 			}
 		}
@@ -43,19 +49,19 @@ public class QueryDTO {
 		this.id = id;
 	}
 
-	public String getUserToken() {
-		return userToken;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setUserToken(String userToken) {
-		this.userToken = userToken;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
-	public String getStatus() {
+	public QueryStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(QueryStatus status) {
 		this.status = status;
 	}
 
@@ -67,11 +73,19 @@ public class QueryDTO {
 		this.terms = terms;
 	}
 
-	public List<QueryOrganizationDTO> getOrgStatuses() {
-		return orgStatuses;
+	public List<QueryEndpointMapDTO> getEndpointMaps() {
+		return endpointMaps;
 	}
 
-	public void setOrgStatuses(List<QueryOrganizationDTO> orgStatuses) {
-		this.orgStatuses = orgStatuses;
+	public void setEndpointMaps(List<QueryEndpointMapDTO> endpointMaps) {
+		this.endpointMaps = endpointMaps;
+	}
+
+	public Date getLastReadDate() {
+		return lastReadDate;
+	}
+
+	public void setLastReadDate(Date lastReadDate) {
+		this.lastReadDate = lastReadDate;
 	}
 }

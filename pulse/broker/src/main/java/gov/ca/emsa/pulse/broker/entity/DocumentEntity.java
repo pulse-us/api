@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="document", schema="pulse")
+@Table(name="document")
 public class DocumentEntity {
 	
 	@Id 
@@ -22,21 +23,55 @@ public class DocumentEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="patient_id")
-	private Long patientId;
+	@Column(name="patient_endpoint_map_id")
+	private Long patientEndpointMapId;
 	
+	//metadata
 	@Column(name="name")
 	private String name;
 	
 	@Column(name = "format")
 	private String format;
 	
+	@Column(name = "class_name")
+	private String className;
+	
+	@Column(name = "confidentiality")
+	private String confidentiality;
+	
+	@Column(name = "description")
+	private String description;
+	
+	@Column(name = "size")
+	private String size;
+	
+	@Column(name = "doc_creation_time")
+	private String creationTime;
+		
+	//required to get the document back later
+	@Column(name = "home_community_id")
+	private String homeCommunityId; 
+	
+	@Column(name = "repository_unique_id")
+	private String repositoryUniqueId;
+	
+	@Column(name = "document_unique_id")
+	private String documentUniqueId;
+	
 	@Column(name = "contents")
 	private byte[] contents;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "patient_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private PatientEntity patient;
+	@JoinColumn(name = "patient_endpoint_map_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private PatientEndpointMapEntity patientEndpointMap;
+	
+	@Column(name = "status_id")
+	private Long statusId;
+	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "status_id", unique=true, nullable = false, insertable=false, updatable= false)
+	private QueryEndpointStatusEntity status;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -55,28 +90,12 @@ public class DocumentEntity {
 		this.id = id;
 	}
 
-	public Long getPatientId() {
-		return patientId;
-	}
-
-	public void setPatientId(Long patientId) {
-		this.patientId = patientId;
-	}
-
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public PatientEntity getPatient() {
-		return patient;
-	}
-
-	public void setPatient(PatientEntity patient) {
-		this.patient = patient;
 	}
 
 	public Date getCreationDate() {
@@ -117,5 +136,101 @@ public class DocumentEntity {
 
 	public void setContents(byte[] contents) {
 		this.contents = contents;
+	}
+
+	public Long getPatientEndpointMapId() {
+		return patientEndpointMapId;
+	}
+
+	public void setPatientEndpointMapId(Long patientEndpointMapId) {
+		this.patientEndpointMapId = patientEndpointMapId;
+	}
+
+	public PatientEndpointMapEntity getPatientEndpointMap() {
+		return patientEndpointMap;
+	}
+
+	public void setPatientEndpointMap(PatientEndpointMapEntity patientEndpointMap) {
+		this.patientEndpointMap = patientEndpointMap;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public String getConfidentiality() {
+		return confidentiality;
+	}
+
+	public void setConfidentiality(String confidentiality) {
+		this.confidentiality = confidentiality;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getSize() {
+		return size;
+	}
+
+	public void setSize(String size) {
+		this.size = size;
+	}
+
+	public String getCreationTime() {
+		return creationTime;
+	}
+
+	public void setCreationTime(String creationTime) {
+		this.creationTime = creationTime;
+	}
+
+	public String getHomeCommunityId() {
+		return homeCommunityId;
+	}
+
+	public void setHomeCommunityId(String homeCommunityId) {
+		this.homeCommunityId = homeCommunityId;
+	}
+
+	public String getRepositoryUniqueId() {
+		return repositoryUniqueId;
+	}
+
+	public void setRepositoryUniqueId(String repositoryUniqueId) {
+		this.repositoryUniqueId = repositoryUniqueId;
+	}
+
+	public String getDocumentUniqueId() {
+		return documentUniqueId;
+	}
+
+	public void setDocumentUniqueId(String documentUniqueId) {
+		this.documentUniqueId = documentUniqueId;
+	}
+
+	public Long getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Long statusId) {
+		this.statusId = statusId;
+	}
+
+	public QueryEndpointStatusEntity getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueryEndpointStatusEntity status) {
+		this.status = status;
 	}
 }

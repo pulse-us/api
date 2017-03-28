@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.dao.impl;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,135 +11,113 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
-import gov.ca.emsa.pulse.broker.dao.OrganizationDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
-import gov.ca.emsa.pulse.broker.dto.OrganizationDTO;
+import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientQueryResultDTO;
-import gov.ca.emsa.pulse.broker.entity.AddressEntity;
-import gov.ca.emsa.pulse.broker.entity.OrganizationEntity;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
+import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientQueryResultEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientEndpointMapEntity;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
 @Repository
 public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	private static final Logger logger = LogManager.getLogger(PatientDAOImpl.class);
-	@Autowired OrganizationDAO orgDao;
-	
+	@Autowired QueryStatusDAO statusDao;
+
 	@Override
-	public PatientDTO create(PatientDTO dto) {
-		
+	public PatientDTO create(PatientDTO dto) throws SQLException {
 		PatientEntity patient = new PatientEntity();
-		patient.setFirstName(dto.getFirstName());
-		patient.setLastName(dto.getLastName());
+		patient.setFullName(dto.getFullName());
+		patient.setFriendlyName(dto.getFriendlyName());
 		patient.setDateOfBirth(dto.getDateOfBirth());
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
-		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setPulsePatientId(dto.getPulsePatientId());
-		patient.setOrgPatientId(dto.getOrgPatientId());
+		if(dto.getAcf() != null) {
+			patient.setAcfId(dto.getAcf().getId());
+			AlternateCareFacilityEntity acf = entityManager.find(AlternateCareFacilityEntity.class, dto.getAcf().getId());
+			patient.setAcf(acf);
+		}
 		patient.setLastReadDate(new Date());
-		
-		if(dto.getOrganization() != null) {
-			OrganizationDTO foundOrg = null;
-			if(dto.getOrganization().getId() != null) {
-				foundOrg = orgDao.findById(dto.getOrganization().getId());
-			} else if(!StringUtils.isEmpty(dto.getOrganization().getName())) {
-				List<OrganizationDTO> orgNameMatches = orgDao.findByName(dto.getOrganization().getName());
-				if(orgNameMatches != null && orgNameMatches.size() > 0) {
-					foundOrg = orgNameMatches.get(0);
-				}
-			}
-			
-			OrganizationEntity org = new OrganizationEntity();
-			org.setName(dto.getOrganization().getName());
-			org.setAdapter(dto.getOrganization().getAdapter());
-			org.setOrganizationId(dto.getOrganization().getOrganizationId());
-			if(foundOrg != null) {
-				org.setId(foundOrg.getId());
-			} else {
-				entityManager.persist(org);
-				entityManager.flush();
-			}
-			patient.setOrganizationId(org.getId());
-			patient.setOrganization(org);
-		}
-		
-		if(dto.getAddress() != null) {
-			AddressEntity add = new AddressEntity();
-			add.setId(dto.getAddress().getId());
-			add.setStreetLineOne(dto.getAddress().getStreetLineOne());
-			add.setStreetLineTwo(dto.getAddress().getStreetLineTwo());
-			add.setCity(dto.getAddress().getCity());
-			add.setState(dto.getAddress().getState());
-			add.setZipcode(dto.getAddress().getZipcode());
-			add.setCountry("US");
-			entityManager.persist(add);
-			entityManager.flush();
-			
-			patient.setAddressId(add.getId());
-			patient.setAddress(add);
-		}
-		
+
 		entityManager.persist(patient);
 		entityManager.flush();
 		return new PatientDTO(patient);
 	}
 
 	@Override
-	public PatientDTO update(PatientDTO dto) {
+	public PatientEndpointMapDTO createPatientEndpointMap(PatientEndpointMapDTO toCreate) throws SQLException {
+		PatientEndpointMapEntity orgMap = new PatientEndpointMapEntity();
+		orgMap.setDocumentsQueryStatusId(statusDao.getQueryEndpointStatusByName(QueryEndpointStatus.Active.name()).getId());
+		orgMap.setDocumentsQueryStart(new Date());
+		orgMap.setDocumentsQueryEnd(null);
+		orgMap.setEndpointId(toCreate.getEndpointId());
+		orgMap.setExternalPatientRecordId(toCreate.getExternalPatientRecordId());
+		orgMap.setPatientId(toCreate.getPatientId());
+
+		entityManager.persist(orgMap);
+		entityManager.flush();
+		return new PatientEndpointMapDTO(orgMap);
+	}
+
+	@Override
+	public PatientDTO update(PatientDTO dto) throws SQLException {
 		PatientEntity patient = this.getEntityById(dto.getId());
-		patient.setFirstName(dto.getFirstName());
-		patient.setLastName(dto.getLastName());
+		patient.setFriendlyName(dto.getFriendlyName());
+		patient.setFullName(dto.getFullName());
 		patient.setDateOfBirth(dto.getDateOfBirth());
 		patient.setSsn(dto.getSsn());
 		patient.setGender(dto.getGender());
-		patient.setPhoneNumber(dto.getPhoneNumber());
-		patient.setPulsePatientId(dto.getPulsePatientId());
-		patient.setOrgPatientId(dto.getOrgPatientId());
-		patient.setLastReadDate(new Date());
-		patient.setLastModifiedDate(new Date());
-		if(dto.getOrganization() != null) {
-			OrganizationEntity org = new OrganizationEntity();
-			org.setId(dto.getOrganization().getId());
-			patient.setOrganization(org);
+		if(dto.getAcf() != null) {
+			patient.setAcfId(dto.getAcf().getId());
+		} else {
+			patient.setAcfId(null);
 		}
-		if(dto.getAddress() != null) {
-			AddressEntity add = new AddressEntity();
-			add.setId(dto.getAddress().getId());
-			patient.setAddress(add);
-		}
-		
+		patient.setLastReadDate(dto.getLastReadDate());
 		patient = entityManager.merge(patient);
 		entityManager.flush();
 		return new PatientDTO(patient);
 	}
 
 	@Override
-	public void delete(Long id) {
-		PatientEntity toDelete = getEntityById(id);
-		entityManager.remove(toDelete);
+	public PatientEndpointMapDTO updatePatientEndpointMap(PatientEndpointMapDTO toUpdate) throws SQLException {
+		logger.debug("Looking up patient org map with id " + toUpdate.getId());
+		PatientEndpointMapEntity orgMap = getOrgMapById(toUpdate.getId());
+		if(orgMap == null) {
+			logger.error("Could not find patient org map with id " + toUpdate.getId());
+		}		
+		orgMap.setDocumentsQueryStatusId(statusDao.getQueryEndpointStatusByName(toUpdate.getDocumentsQueryStatus().name()).getId());
+		orgMap.setDocumentsQueryStart(toUpdate.getDocumentsQueryStart());
+		orgMap.setDocumentsQueryEnd(toUpdate.getDocumentsQueryEnd());
+		orgMap.setEndpointId(toUpdate.getEndpointId());
+		orgMap.setExternalPatientRecordId(toUpdate.getExternalPatientRecordId());
+		orgMap.setPatientId(toUpdate.getPatientId());
+
+		entityManager.merge(orgMap);
 		entityManager.flush();
+		return new PatientEndpointMapDTO(orgMap);
 	}
 
 	@Override
-	public List<PatientDTO> findAll() {
-		List<PatientEntity> result = this.findAllEntities();
-		List<PatientDTO> dtos = new ArrayList<PatientDTO>(result.size());
-		for(PatientEntity entity : result) {
-			dtos.add(new PatientDTO(entity));
+	public void delete(Long id) throws SQLException {
+		PatientEntity toDelete = getEntityById(id);
+		if(toDelete != null) {
+			try {
+				entityManager.remove(toDelete);
+				entityManager.flush();
+			} catch(Exception ex) {
+				logger.error("Could not delete patient. Was it removed before the delete method was called?", ex);
+			}
 		}
-		return dtos;
 	}
-	
+
+
 	@Override
 	public PatientDTO getById(Long id) {
-		
 		PatientDTO dto = null;
 		PatientEntity pe = this.getEntityById(id);
-		
+
 		if (pe != null){
 			dto = new PatientDTO(pe); 
 		}
@@ -146,88 +125,84 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public List<PatientDTO> getByPatientIdAndOrg(PatientDTO pat) {
-		List<PatientEntity> patients = getEntityByPatientIdAndOrg(pat);
-		List<PatientDTO> results = new ArrayList<PatientDTO>(patients.size());
-		
-		for(PatientEntity pEntity : patients) {
-			PatientDTO patDto = new PatientDTO(pEntity);
-			results.add(patDto);
-		}
-		return results;
-	}
-	
-	@Override
-	public List<PatientDTO> getPatientResultsForQuery(Long queryId) {
-		Query query = entityManager.createQuery( "SELECT p "
-				+ "from PatientEntity p, PatientQueryResultEntity r "
-				+ "where r.queryOrg.queryId = :queryId "
-				+ "and r.patientId = p.id", 
-				PatientEntity.class );
-		query.setParameter("queryId", queryId);
-		List<PatientEntity> patients = query.getResultList();
-		List<PatientDTO> results = new ArrayList<PatientDTO>();
-		for(PatientEntity patient : patients) {
-			PatientDTO result = new PatientDTO(patient);
-			results.add(result);
-		}
-		return results;
-	}
-	
-	@Override
-	public PatientQueryResultDTO addPatientResultForQuery(PatientQueryResultDTO toCreate) {
-		PatientQueryResultEntity entity = new PatientQueryResultEntity();
-		entity.setPatientId(toCreate.getPatientId());
-		entity.setQueryOrganizationId(toCreate.getQueryOrgId());
-		
-		entityManager.persist(entity);
-		entityManager.flush();
-		return new PatientQueryResultDTO(entity);
-	}
-	
-	@Override
-	public void deleteItemsOlderThan(Date oldestDate) {			
-		Query query = entityManager.createQuery( "DELETE from PatientEntity pe "
-				+ " WHERE pe.lastReadDate <= :cacheDate");
-		
-		query.setParameter("cacheDate", oldestDate);
-		int deletedCount = query.executeUpdate();
-		logger.info("Deleted " + deletedCount + " patients from the cache.");
-	}
-	
-	private List<PatientEntity> findAllEntities() {
-		Query query = entityManager.createQuery("from PatientEntity");
-		return query.getResultList();
-	}
-	
-	private PatientEntity getEntityById(Long id) {
-		PatientEntity entity = null;
-		
-		Query query = entityManager.createQuery( "SELECT pat from PatientEntity pat "
-				+ "LEFT OUTER JOIN FETCH pat.address "
-				+ "LEFT OUTER JOIN FETCH pat.organization "
+	public PatientEndpointMapDTO getPatientEndpointMapById(Long id) {
+		PatientEndpointMapEntity entity = null;
+
+		Query query = entityManager.createQuery( "SELECT pat from PatientEndpointMapEntity pat "
+				+ "LEFT OUTER JOIN FETCH pat.patient "
+				+ "LEFT OUTER JOIN FETCH pat.endpoint "
+				+ "LEFT OUTER JOIN FETCH pat.status "
 				+ "where pat.id = :entityid) ", 
-				PatientEntity.class );
-		
+				PatientEndpointMapEntity.class );
+
 		query.setParameter("entityid", id);
-		List<PatientEntity> result = query.getResultList();
+		List<PatientEndpointMapEntity> result = query.getResultList();
 		if(result.size() == 1) {
 			entity = result.get(0);
 		}
-		
+
+		return new PatientEndpointMapDTO(entity);
+	}
+
+	@Override
+	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
+		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
+				+ "LEFT OUTER JOIN FETCH pat.acf "
+				+ "LEFT OUTER JOIN FETCH pat.endpointMaps "
+				+ "where pat.acfId = :acfId) ", 
+				PatientEntity.class );
+
+		query.setParameter("acfId", acfId);
+		List<PatientEntity> patients = query.getResultList();
+		List<PatientDTO> results = new ArrayList<PatientDTO>();
+		for(PatientEntity patient : patients) {
+			results.add(new PatientDTO(patient));
+		}
+		return results;
+	}
+
+	@Override
+	public void deleteItemsOlderThan(Date oldestDate) throws SQLException {			
+		Query query = entityManager.createQuery( "DELETE from PatientEntity pat "
+				+ " WHERE pat.lastReadDate <= :cacheDate");
+
+		query.setParameter("cacheDate", oldestDate);
+		int deletedCount = query.executeUpdate();		
+		logger.info("Deleted " + deletedCount + " patients from the cache with last read date older than " + oldestDate.toString());
+	}
+
+	private PatientEntity getEntityById(Long id) {
+		PatientEntity entity = null;
+
+		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
+				+ "LEFT OUTER JOIN FETCH pat.acf "
+				+ "where pat.id = :entityid) ", 
+				PatientEntity.class );
+
+		query.setParameter("entityid", id);
+		List<PatientEntity> patients = query.getResultList();
+		if(patients.size() != 0) {
+			entity = patients.get(0);
+		}
 		return entity;
 	}
-	
-	private List<PatientEntity> getEntityByPatientIdAndOrg(PatientDTO patient) {		
-		Query query = entityManager.createQuery( "SELECT pat from PatientEntity pat "
-				+ "LEFT OUTER JOIN FETCH pat.address "
-				+ "LEFT OUTER JOIN FETCH pat.organization "
-				+ "where pat.pulsePatientId LIKE :pulsePatientId "
-				+ "and pat.organization.id = :orgId) ", 
-				PatientEntity.class );
-		
-		query.setParameter("pulsePatientId", patient.getPulsePatientId());
-		query.setParameter("orgId", patient.getOrganization().getId());
-		return query.getResultList();
+
+	private PatientEndpointMapEntity getOrgMapById(Long id) {		
+		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEndpointMapEntity pat "
+				+ "LEFT OUTER JOIN FETCH pat.endpoint "
+				+ "LEFT OUTER JOIN FETCH pat.patient "
+				+ "LEFT OUTER JOIN FETCH pat.documents " 
+				+ "LEFT OUTER JOIN FETCH pat.status "
+				+ "where pat.id = :entityid) ", 
+				PatientEndpointMapEntity.class );
+
+		query.setParameter("entityid", id);
+
+		PatientEndpointMapEntity entity = null;
+		List<PatientEndpointMapEntity> results = query.getResultList();
+		if(results.size() != 0) {
+			entity = results.get(0);
+		}
+		return entity;
 	}
 }

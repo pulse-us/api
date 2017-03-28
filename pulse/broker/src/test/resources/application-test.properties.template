@@ -1,0 +1,41 @@
+#for embedded gradle tomcat
+server.port=9090
+
+security.user.password=password
+springfox.documentation.swagger.v2.path=/api-docs
+basePath=/rest
+
+#spring boot properties
+spring.datasource.url= jdbc:postgresql://localhost:5432/pulse
+spring.datasource.driverClassName=org.postgresql.Driver
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.username=postgres
+spring.datasource.password=admin
+persistenceUnitName=pulse-test
+
+#can users create and edit ACFs?
+acfWritesAllowed=true
+
+#the url where the list of queryable locations is located
+locationDirectoryUrl=http://localhost:9080/mock/Location
+#locationDirectoryUrl=https://cten-staging.ca-hie.net:8443/fhir/Location
+
+#the url where the list of queryable endpoints is located
+endpointDirectoryUrl=http://localhost:9080/mock/Endpoint
+#endpointDirectoryUrl=https://cten-staging.ca-hie.net:8443/fhir/Endpoint
+
+#default timeout to connect to external organizations 
+#"ping time" (should typically be a smaller number than request timeout)
+defaultConnectTimeoutSeconds=10
+
+#default timeout for all requests to external organizations
+defaultRequestTimeoutSeconds=180
+
+#refresh the list of organizations from directory services
+directoryRefreshSeconds=20
+
+#how long is something valid in the cache
+queryCacheExpireMinutes=240
+
+#how often do we check the cache to clean up expired entries
+queryCacheCleanupMinutes=10

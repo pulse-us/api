@@ -1,0 +1,23 @@
+security.user.password=password
+springfox.documentation.swagger.v2.path=/api-docs
+basePath=/rest
+debug=true
+
+brokerUrl=https://localhost:8090
+samlServiceUrl=http://localhost:8080
+
+keyLocation=C:\\JSONPulseRsaJoseJWebKeyTest.txt
+jwtAllowedClockSkew=30
+jwtIssuer=CALEMSA
+jwtAudience=CALEMSA
+jwtExpirationTimeMinutesInTheFuture=30
+jwtNotBeforeMinutesInThePast=4
+server.port=9090
+
+#allow detailed health information to come back without authentication
+management.security.enabled=false
+endpoints.health.sensitive=false
+
+#interval for polling broker about /search results
+delaySeconds=1
+timeout=10

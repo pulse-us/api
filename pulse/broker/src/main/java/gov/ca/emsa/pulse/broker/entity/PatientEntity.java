@@ -1,8 +1,9 @@
 package gov.ca.emsa.pulse.broker.entity;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,11 +11,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 @Entity
-@Table(name="patient", schema="pulse")
+@Table(name="patient")
 public class PatientEntity {
 	
 	@Id 
@@ -22,20 +27,14 @@ public class PatientEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="patient_id")
-	private String pulsePatientId;
+	@Column(name = "full_name")
+	private String fullName;
 	
-	@Column(name = "organization_patient_id")
-	private String orgPatientId;
-	
-	@Column(name="first_name")
-	private String firstName;
-	
-	@Column(name = "last_name")
-	private String lastName;
+	@Column(name = "friendly_name")
+	private String friendlyName;
 	
 	@Column(name = "dob")
-	private Date dateOfBirth;
+	private String dateOfBirth;
 	
 	@Column(name = "ssn")
 	private String ssn;
@@ -43,31 +42,27 @@ public class PatientEntity {
 	@Column(name = "gender")
 	private String gender;
 	
-	@Column(name = "phone_number")
-	private String phoneNumber;
-	
-	@Column(name = "address_id")
-	private Long addressId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "address_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private AddressEntity address;
-	
-	@Column(name = "organization_id")
-	private Long organizationId;
+	@Column(name = "alternate_care_facility_id")
+	private Long acfId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "organization_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private OrganizationEntity organization;
+	@Fetch(FetchMode.JOIN)
+	@JoinColumn(name = "alternate_care_facility_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private AlternateCareFacilityEntity acf;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
 	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
-
-	@Column( name = "last_read_date")
+	
+	@Column(name = "last_read_date")
 	private Date lastReadDate;
+	
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientId"  )
+	@Fetch(FetchMode.JOIN)
+	@Column( name = "patient_id", nullable = false  )
+	private Set<PatientEndpointMapEntity> endpointMaps = new HashSet<PatientEndpointMapEntity>();
 	
 	public Long getId() {
 		return id;
@@ -77,35 +72,11 @@ public class PatientEntity {
 		this.id = id;
 	}
 
-	public String getPulsePatientId() {
-		return pulsePatientId;
-	}
-
-	public void setPulsePatientId(String patientId) {
-		this.pulsePatientId = patientId;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public Date getDateOfBirth() {
+	public String getDateOfBirth() {
 		return dateOfBirth;
 	}
 
-	public void setDateOfBirth(Date dateOfBirth) {
+	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 
@@ -125,30 +96,6 @@ public class PatientEntity {
 		this.gender = gender;
 	}
 
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
-	public AddressEntity getAddress() {
-		return address;
-	}
-
-	public void setAddress(AddressEntity address) {
-		this.address = address;
-	}
-
-	public OrganizationEntity getOrganization() {
-		return organization;
-	}
-
-	public void setOrganization(OrganizationEntity organization) {
-		this.organization = organization;
-	}
-
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -165,6 +112,22 @@ public class PatientEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
+	public Long getAcfId() {
+		return acfId;
+	}
+
+	public void setAcfId(Long acfId) {
+		this.acfId = acfId;
+	}
+
+	public AlternateCareFacilityEntity getAcf() {
+		return acf;
+	}
+
+	public void setAcf(AlternateCareFacilityEntity acf) {
+		this.acf = acf;
+	}
+
 	public Date getLastReadDate() {
 		return lastReadDate;
 	}
@@ -173,27 +136,28 @@ public class PatientEntity {
 		this.lastReadDate = lastReadDate;
 	}
 
-	public Long getAddressId() {
-		return addressId;
+	public Set<PatientEndpointMapEntity> getEndpointMaps() {
+		return endpointMaps;
 	}
 
-	public void setAddressId(Long addressId) {
-		this.addressId = addressId;
+	public void setEndpointMaps(Set<PatientEndpointMapEntity> endpointMaps) {
+		this.endpointMaps = endpointMaps;
 	}
 
-	public Long getOrganizationId() {
-		return organizationId;
+	public String getFullName() {
+		return fullName;
 	}
 
-	public void setOrganizationId(Long organizationId) {
-		this.organizationId = organizationId;
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 
-	public String getOrgPatientId() {
-		return orgPatientId;
+	public String getFriendlyName() {
+		return friendlyName;
 	}
 
-	public void setOrgPatientId(String orgPatientId) {
-		this.orgPatientId = orgPatientId;
+	public void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
 	}
+	
 }

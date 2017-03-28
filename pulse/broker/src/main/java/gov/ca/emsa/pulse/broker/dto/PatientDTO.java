@@ -1,40 +1,46 @@
 package gov.ca.emsa.pulse.broker.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientEndpointMapEntity;
 
 public class PatientDTO {
 	private Long id;
-	private String pulsePatientId;
-	private String orgPatientId;
-	private String firstName;
-	private String lastName;
-	private Date dateOfBirth;
+	private String fullName;
+	private String friendlyName;
+	private String dateOfBirth;
 	private String ssn;
 	private String gender;
-	private String phoneNumber;
-	private AddressDTO address;
-	private OrganizationDTO organization;
+	private Date lastReadDate;
+	private AlternateCareFacilityDTO acf;
+	private List<PatientEndpointMapDTO> endpointMaps;
+	private Date creationDate;
 	
 	public PatientDTO() {
+		endpointMaps = new ArrayList<PatientEndpointMapDTO>();
 	}
 	
 	public PatientDTO(PatientEntity entity) {
+		this();
 		this.id = entity.getId();
-		this.pulsePatientId = entity.getPulsePatientId();
-		this.orgPatientId = entity.getOrgPatientId();
-		this.firstName = entity.getFirstName();
-		this.lastName = entity.getLastName();
+		this.fullName = entity.getFullName();
+		this.friendlyName = entity.getFriendlyName();
 		this.dateOfBirth = entity.getDateOfBirth();
 		this.ssn = entity.getSsn();
 		this.gender = entity.getGender();
-		this.phoneNumber = entity.getPhoneNumber();
-		if(entity.getAddress() != null) {
-			this.address = new AddressDTO(entity.getAddress());
+		this.lastReadDate = entity.getLastReadDate();
+		this.creationDate = entity.getCreationDate();
+		if(entity.getAcf() != null) {
+			this.acf = new AlternateCareFacilityDTO(entity.getAcf());
 		}
-		if(entity.getOrganization() != null) {
-			this.organization = new OrganizationDTO(entity.getOrganization());
+		if(entity.getEndpointMaps() != null && entity.getEndpointMaps().size() > 0) {
+			for(PatientEndpointMapEntity endpointMap : entity.getEndpointMaps()) {
+				PatientEndpointMapDTO endpointMapDto = new PatientEndpointMapDTO(endpointMap);
+				this.endpointMaps.add(endpointMapDto);
+			}
 		}
 	}
 	
@@ -44,22 +50,11 @@ public class PatientDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getFirstName() {
-		return firstName;
-	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-	public Date getDateOfBirth() {
+
+	public String getDateOfBirth() {
 		return dateOfBirth;
 	}
-	public void setDateOfBirth(Date dateOfBirth) {
+	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 	public String getSsn() {
@@ -74,38 +69,53 @@ public class PatientDTO {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-	public AddressDTO getAddress() {
-		return address;
-	}
-	public void setAddress(AddressDTO address) {
-		this.address = address;
-	}
-	public OrganizationDTO getOrganization() {
-		return organization;
-	}
-	public void setOrganization(OrganizationDTO organization) {
-		this.organization = organization;
+
+	public AlternateCareFacilityDTO getAcf() {
+		return acf;
 	}
 
-	public String getPulsePatientId() {
-		return pulsePatientId;
+	public void setAcf(AlternateCareFacilityDTO acf) {
+		this.acf = acf;
 	}
 
-	public void setPulsePatientId(String pulsePatientId) {
-		this.pulsePatientId = pulsePatientId;
+	public Date getLastReadDate() {
+		return lastReadDate;
 	}
 
-	public String getOrgPatientId() {
-		return orgPatientId;
+	public void setLastReadDate(Date lastReadDate) {
+		this.lastReadDate = lastReadDate;
 	}
 
-	public void setOrgPatientId(String orgPatientId) {
-		this.orgPatientId = orgPatientId;
+	public List<PatientEndpointMapDTO> getEndpointMaps() {
+		return endpointMaps;
 	}
+
+	public void setEndpointMaps(List<PatientEndpointMapDTO> endpointMaps) {
+		this.endpointMaps = endpointMaps;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public String getFriendlyName() {
+		return friendlyName;
+	}
+
+	public void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+	
 }

@@ -1,9 +1,24 @@
 subprojects {
   apply plugin: 'java'
   apply plugin: 'eclipse'
+  apply plugin: 'findbugs'
 
   repositories {
     mavenCentral()
+  }
+
+  findbugs {
+    effort = 'max'
+    ignoreFailures = true
+    reportsDir = file("$project.buildDir/reports/tests")
+    reportLevel = 'low'
+  }
+
+  tasks.withType(FindBugs) {
+    reports {
+      xml.enabled = false
+      html.enabled = true
+    }
   }
 
   eclipse {

@@ -1,21 +1,18 @@
 package gov.ca.emsa.pulse.broker.manager;
 
-import java.util.Date;
+import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
+
+import java.sql.SQLException;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientQueryResultDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-
-public interface PatientManager {
+public interface PatientManager extends CachedDataManager {
 	public PatientDTO getPatientById(Long patientId);
-	public List<PatientDTO> searchPatients(PatientDTO toSearch);
-	public QueryDTO queryPatients(String samlMessage, String firstName, String lastName) throws JsonProcessingException;
-	public PatientDTO create(PatientDTO toCreate);
-	public PatientQueryResultDTO mapPatientToQuery(PatientQueryResultDTO toCreate);
-	public PatientDTO update(PatientDTO toUpdate);
-	public void cleanupPatientCache(Date oldestAllowedPatient);
-	public List<PatientDTO> getPatientsByQuery(Long queryId);
+	public List<PatientDTO> getPatientsAtAcf(Long acfId);
+	public PatientDTO create(PatientDTO toCreate) throws SQLException;
+	public PatientDTO update(PatientDTO toUpdate) throws SQLException;
+	public void delete(Long patientId) throws SQLException;
+	
+	public PatientEndpointMapDTO updatePatientEndpointMap(PatientEndpointMapDTO toUpdate) throws SQLException;
+	public PatientEndpointMapDTO createEndpointMapForDocumentDiscovery(PatientDTO patient, Long patientRecordId) throws SQLException;	
 }

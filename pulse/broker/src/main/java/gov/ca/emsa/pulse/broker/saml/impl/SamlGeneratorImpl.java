@@ -1,21 +1,15 @@
 package gov.ca.emsa.pulse.broker.saml.impl;
 
-import org.opensaml.common.SAMLObjectBuilder;
-
-import org.opensaml.xml.XMLObjectBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.opensaml.Configuration;
 import org.opensaml.DefaultBootstrap;
+import org.opensaml.common.SAMLObjectBuilder;
 import org.opensaml.common.SAMLVersion;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Attribute;
@@ -34,10 +28,12 @@ import org.opensaml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml2.core.SubjectConfirmationData;
 import org.opensaml.saml2.core.impl.AssertionMarshaller;
 import org.opensaml.xml.ConfigurationException;
+import org.opensaml.xml.XMLObjectBuilder;
 import org.opensaml.xml.XMLObjectBuilderFactory;
 import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.schema.XSString;
 import org.opensaml.xml.util.XMLHelper;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SamlGeneratorImpl implements SamlGenerator {
@@ -64,6 +60,13 @@ public class SamlGeneratorImpl implements SamlGenerator {
 		return originalAssertionString;
 	}
 
+	public org.w3c.dom.Element createSAMLElement(SAMLInput input) throws MarshallingException {
+		Assertion assertion = buildDefaultAssertion(input);
+		AssertionMarshaller marshaller = new AssertionMarshaller();
+		org.w3c.dom.Element element = marshaller.marshall(assertion);
+		return element;
+	}
+	
 	/**
 	 * Builds a SAML Attribute of type String
 	 * @param name
@@ -153,7 +156,10 @@ public class SamlGeneratorImpl implements SamlGenerator {
 				while (keySet.hasNext())
 				{
 					String key = keySet.next().toString();
-					String val = attributes.get(key).toString();
+					String val = "";
+					if(attributes.get(key) != null) {
+						val = attributes.get(key).toString();
+					}
 					Attribute attrFirstName = buildStringAttribute(key, val, getSAMLBuilder());
 					attrStatement.getAttributes().add(attrFirstName);
 				}
