@@ -85,7 +85,7 @@ public class DocumentEntity {
 	@ColumnTransformer(
 			read = "pgp_pub_decrypt(contents_enc, dearmor((SELECT * from private_key())))", 
 			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
-	private byte[] contents;
+	private String contents;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "patient_endpoint_map_id", unique=true, nullable = true, insertable=false, updatable= false)
@@ -156,11 +156,11 @@ public class DocumentEntity {
 		this.format = format;
 	}
 
-	public byte[] getContents() {
+	public String getContents() {
 		return contents;
 	}
 
-	public void setContents(byte[] contents) {
+	public void setContents(String contents) {
 		this.contents = contents;
 	}
 

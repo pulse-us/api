@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
@@ -106,7 +107,7 @@ public class DocumentManagerImpl implements DocumentManager {
 			acfManager.updateLastModifiedDate(patient.getAcf().getId());
 		}
 		
-		if(cachedDoc.getContents() != null && cachedDoc.getContents().length > 0) {
+		if(!StringUtils.isEmpty(cachedDoc.getContents())) {
 			docContents = new String(cachedDoc.getContents());
 		} else {
 			EndpointDTO documentContentsEndpoint = null;
@@ -123,8 +124,8 @@ public class DocumentManagerImpl implements DocumentManager {
 				List<DocumentDTO> docsToGet = new ArrayList<DocumentDTO>();
 				docsToGet.add(cachedDoc);
 				queryForDocumentContents(user, samlInput, documentContentsEndpoint, docsToGet, patientEndpointMap);
-				byte[] retrievedContents = docsToGet.get(0).getContents();
-				docContents = retrievedContents == null ? "" : new String(retrievedContents);
+				String retrievedContents = docsToGet.get(0).getContents();
+				docContents = retrievedContents == null ? "" : retrievedContents;
 			}
 		}
 		return docContents;
