@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
+
 @Entity
 @Table(name = "audit_document")
 public class AuditDocumentEntity {
@@ -52,16 +54,28 @@ public class AuditDocumentEntity {
 	@Column(name="participant_object_id")
 	private String participantObjectId;
 	
-	@Column(name="participant_object_name")
+	@Column(name="participant_object_name_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(participant_object_name_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String participantObjectName;
 	
-	@Column(name="participant_object_query")
+	@Column(name="participant_object_query_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(participant_object_query_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String participantObjectQuery;
 	
-	@Column(name="participant_object_detail") 
+	@Column(name="participant_object_detail_enc") 
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(participant_object_detail_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String participantObjectDetail;
 	
-	@Column(name="participant_object_detail_two") 
+	@Column(name="participant_object_detail_two_enc") 
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(participant_object_detail_two_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String participantObjectDetail2;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
