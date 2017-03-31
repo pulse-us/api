@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
+
 @Entity
 @Table(name="given_name")
 public class GivenNameEntity {
@@ -16,7 +18,10 @@ public class GivenNameEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "name", nullable = false)
+	@Column(name = "name_enc", nullable = false)
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(name_enc, dearmor((SELECT * from private_key())::text))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
 	private String givenName;
 	
 	@Column(name = "patient_record_name_id")

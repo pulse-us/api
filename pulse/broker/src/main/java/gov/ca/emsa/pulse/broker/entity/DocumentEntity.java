@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
+
 @Entity
 @Table(name="document")
 public class DocumentEntity {
@@ -27,25 +29,46 @@ public class DocumentEntity {
 	private Long patientEndpointMapId;
 	
 	//metadata
-	@Column(name="name")
+	@Column(name="name_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(name_enc, dearmor((SELECT * from private_key())::text))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
 	private String name;
 	
-	@Column(name = "format")
+	@Column(name = "format_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(format_enc, dearmor((SELECT * from private_key())::text))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
 	private String format;
 	
-	@Column(name = "class_name")
+	@Column(name = "class_name_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(class_name_enc, dearmor((SELECT * from private_key())::text))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
 	private String className;
 	
-	@Column(name = "confidentiality")
+	@Column(name = "confidentiality_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(confidentiality_enc, dearmor((SELECT * from private_key())::text))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
 	private String confidentiality;
 	
-	@Column(name = "description")
+	@Column(name = "description_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(description_enc, dearmor((SELECT * from private_key())::text))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
 	private String description;
 	
-	@Column(name = "size")
+	@Column(name = "size_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(size_enc, dearmor((SELECT * from private_key())::text))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
 	private String size;
 	
-	@Column(name = "doc_creation_time")
+	@Column(name = "doc_creation_time_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(doc_creation_time_enc, dearmor((SELECT * from private_key())::text))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
 	private String creationTime;
 		
 	//required to get the document back later
@@ -58,7 +81,10 @@ public class DocumentEntity {
 	@Column(name = "document_unique_id")
 	private String documentUniqueId;
 	
-	@Column(name = "contents")
+	@Column(name = "contents_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(contents_enc, dearmor((SELECT * from private_key())::text))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
 	private byte[] contents;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

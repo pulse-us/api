@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
+
 @Entity
 @Table(name="patient_record_address_line")
 public class PatientRecordAddressLineEntity {
@@ -23,7 +25,10 @@ public class PatientRecordAddressLineEntity {
 	@Column(name = "patient_record_address_id")
 	private Long patientRecordAddressId;
 	
-	@Column(name = "line")
+	@Column(name = "line_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(line_enc, dearmor((SELECT * from private_key())::text))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
 	private String line;
 	
 	@Column(name = "line_order")
