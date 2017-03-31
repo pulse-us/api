@@ -41,8 +41,8 @@ public class QueryEntity {
 	
 	@Column(name = "terms_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(terms_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(terms_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String terms;
 	
 	@Column( name = "last_read_date")

@@ -30,32 +30,32 @@ public class PatientEntity {
 	
 	@Column(name = "full_name_enc")
 	@ColumnTransformer(
-		read = "pgp_pub_decrypt(full_name_enc, dearmor((SELECT * from private_key())::text))", 
-		write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+		read = "pgp_pub_decrypt(full_name_enc, dearmor((SELECT * from private_key())))", 
+		write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String fullName;
 	
 	@Column(name = "friendly_name_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(friendly_name_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(friendly_name_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String friendlyName;
 	
 	@Column(name = "dob_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(dob_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(dob_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String dateOfBirth;
 	
 	@Column(name = "ssn_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(ssn_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(ssn_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String ssn;
 	
 	@Column(name = "gender_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(gender_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(gender_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String gender;
 	
 	@Column(name = "alternate_care_facility_id")

@@ -20,8 +20,8 @@ public class GivenNameEntity {
 	
 	@Column(name = "name_enc", nullable = false)
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(name_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(name_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String givenName;
 	
 	@Column(name = "patient_record_name_id")

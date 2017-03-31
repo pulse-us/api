@@ -45,8 +45,8 @@ public class PatientRecordNameEntity {
 	
 	@Column(name="family_name_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(family_name_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(family_name_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String familyName;
 	
 	@Column(name = "name_representation_id")
@@ -65,20 +65,20 @@ public class PatientRecordNameEntity {
 	
 	@Column(name="suffix_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(suffix_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(suffix_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String suffix;
 	
 	@Column(name="prefix_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(prefix_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(prefix_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String prefix;
 	
 	@Column(name = "prof_suffix_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(prof_suffix_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(prof_suffix_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String profSuffix;
 	
 	@Column(name="effective_date")

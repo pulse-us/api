@@ -19,14 +19,14 @@ public class PatientGenderEntity {
 	
 	@Column(name = "code_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(code_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(code_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String code;
 	
 	@Column(name = "description_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(description_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(description_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String description;
 
 	public Long getId() {

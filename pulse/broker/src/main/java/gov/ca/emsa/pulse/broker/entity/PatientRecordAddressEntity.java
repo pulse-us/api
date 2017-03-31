@@ -41,20 +41,20 @@ public class PatientRecordAddressEntity {
 	
 	@Column(name = "city_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(city_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(city_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String city;
 	
 	@Column(name = "state_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(state_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(state_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String state;
 	
 	@Column(name = "zipcode_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(zipcode_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(zipcode_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String zipcode;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)

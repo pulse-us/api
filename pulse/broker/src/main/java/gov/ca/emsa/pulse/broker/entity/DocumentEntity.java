@@ -31,44 +31,44 @@ public class DocumentEntity {
 	//metadata
 	@Column(name="name_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(name_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(name_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String name;
 	
 	@Column(name = "format_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(format_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(format_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String format;
 	
 	@Column(name = "class_name_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(class_name_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(class_name_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String className;
 	
 	@Column(name = "confidentiality_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(confidentiality_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(confidentiality_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String confidentiality;
 	
 	@Column(name = "description_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(description_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(description_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String description;
 	
 	@Column(name = "size_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(size_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(size_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String size;
 	
 	@Column(name = "doc_creation_time_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(doc_creation_time_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(doc_creation_time_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String creationTime;
 		
 	//required to get the document back later
@@ -83,8 +83,8 @@ public class DocumentEntity {
 	
 	@Column(name = "contents_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(contents_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(contents_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private byte[] contents;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

@@ -27,8 +27,8 @@ public class PatientRecordAddressLineEntity {
 	
 	@Column(name = "line_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(line_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(line_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String line;
 	
 	@Column(name = "line_order")

@@ -28,14 +28,14 @@ public class PatientRecordEntity {
 	
 	@Column(name = "dob_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(dob_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(dob_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String dateOfBirth;
 	
 	@Column(name = "ssn_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(ssn_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(ssn_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String ssn;
 	
 	@Column(name = "patient_gender_id")
@@ -50,8 +50,8 @@ public class PatientRecordEntity {
 	
 	@Column(name = "phone_number_enc")
 	@ColumnTransformer(
-			read = "pgp_pub_decrypt(phone_number_enc, dearmor((SELECT * from private_key())::text))", 
-			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())::text))")
+			read = "pgp_pub_decrypt(phone_number_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String phoneNumber;
 	
 	@Column(name = "query_endpoint_map_id")
