@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
+
 @Entity
 @Table(name="patient_record")
 public class PatientRecordEntity {
@@ -24,10 +26,16 @@ public class PatientRecordEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "dob")
+	@Column(name = "dob_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(dob_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String dateOfBirth;
 	
-	@Column(name = "ssn")
+	@Column(name = "ssn_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(ssn_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String ssn;
 	
 	@Column(name = "patient_gender_id")
@@ -40,7 +48,10 @@ public class PatientRecordEntity {
 	@Column(name = "endpoint_patient_record_id")
 	private String endpointPatientRecordId;
 	
-	@Column(name = "phone_number")
+	@Column(name = "phone_number_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(phone_number_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String phoneNumber;
 	
 	@Column(name = "query_endpoint_map_id")

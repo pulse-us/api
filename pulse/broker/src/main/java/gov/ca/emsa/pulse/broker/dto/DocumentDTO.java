@@ -5,7 +5,7 @@ import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
 public class DocumentDTO {
 	private long id;
-	private byte[] contents;
+	private String contents;
 	private Long patientEndpointMapId;
 	private Long statusId;
 	private QueryEndpointStatus status;
@@ -70,11 +70,11 @@ public class DocumentDTO {
 		this.format = format;
 	}
 
-	public byte[] getContents() {
+	public String getContents() {
 		return contents;
 	}
 
-	public void setContents(byte[] contents) {
+	public void setContents(String contents) {
 		this.contents = contents;
 	}
 

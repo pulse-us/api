@@ -18,6 +18,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
+
 @Entity
 @Table(name="patient_record_name")
 public class PatientRecordNameEntity {
@@ -41,7 +43,10 @@ public class PatientRecordNameEntity {
 	@JoinColumn(name="id")
 	private NameTypeEntity nameType;
 	
-	@Column(name="family_name")
+	@Column(name="family_name_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(family_name_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String familyName;
 	
 	@Column(name = "name_representation_id")
@@ -58,13 +63,22 @@ public class PatientRecordNameEntity {
 	@JoinColumn(name="id")
 	private NameAssemblyEntity nameAssembly;
 	
-	@Column(name="suffix")
+	@Column(name="suffix_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(suffix_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String suffix;
 	
-	@Column(name="prefix")
+	@Column(name="prefix_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(prefix_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String prefix;
 	
-	@Column(name = "prof_suffix")
+	@Column(name = "prof_suffix_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(prof_suffix_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String profSuffix;
 	
 	@Column(name="effective_date")

@@ -289,7 +289,7 @@ public class EHealthAdapter implements Adapter {
 							IOUtils.copy(in, writer, Charset.forName("UTF-8"));
 							String dataStr = base64DecodeMessage(writer.toString());
 							logger.debug("Converted binary to " + dataStr);
-							matchingDto.setContents(dataStr.getBytes());
+							matchingDto.setContents(new String(dataStr.getBytes()));
 						} catch(IOException e) {
 							e.printStackTrace();
 						} finally {

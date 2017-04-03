@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.IndexColumn;
@@ -38,13 +39,22 @@ public class PatientRecordAddressEntity {
 	@Column(name = "patient_record_address_id", nullable = false)
 	private List<PatientRecordAddressLineEntity> patientRecordAddressLines = new ArrayList<PatientRecordAddressLineEntity>();
 	
-	@Column(name = "city")
+	@Column(name = "city_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(city_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String city;
 	
-	@Column(name = "state")
+	@Column(name = "state_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(state_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String state;
 	
-	@Column(name = "zipcode")
+	@Column(name = "zipcode_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(zipcode_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String zipcode;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
