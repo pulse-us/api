@@ -156,7 +156,12 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 	}
 	
 	@Override
-	public EndpointDTO findByLocationIdAndType(Long locationId, EndpointStatusEnum status, EndpointTypeEnum type) {
+	public EndpointDTO findByLocationIdAndType(Long locationId, List<EndpointStatusEnum> statuses, EndpointTypeEnum type) {
+		List<String> statusNames = new ArrayList<String>(statuses.size());
+		for(EndpointStatusEnum status : statuses) {
+			statusNames.add(status.getName().toUpperCase());
+		}
+		
 		Query query = entityManager.createQuery("SELECT DISTINCT endpoint "
 				+ "FROM EndpointEntity endpoint "
 				+ "JOIN FETCH endpoint.endpointStatus endpointStatus "
@@ -166,11 +171,11 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				+ "LEFT OUTER JOIN FETCH locMaps.location loc "
 				+ "WHERE loc.id = :locationId "
 				+ "AND UPPER(endpoint.endpointType.code) = :typeCode "
-				+ "AND UPPER(endpointStatus.name) = :endpointStatusName"
+				+ "AND UPPER(endpointStatus.name) IN (:endpointStatusNames)"
 				, EndpointEntity.class);
 		query.setParameter("typeCode", type.getCode().toUpperCase());
 		query.setParameter("locationId", locationId);
-		query.setParameter("endpointStatusName", status.getName().toUpperCase());
+		query.setParameter("endpointStatusNames", statusNames);
 		
 		List<EndpointEntity> endpoints = query.getResultList();
 		if(endpoints != null && endpoints.size() > 0) {

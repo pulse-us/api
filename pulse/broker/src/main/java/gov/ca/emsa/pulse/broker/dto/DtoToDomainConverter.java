@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -299,7 +300,7 @@ public class DtoToDomainConverter {
 		result.setStatus(dtoObj.getStatus());
 		result.setName(dtoObj.getName());
 		result.setFormat(dtoObj.getFormat());
-		result.setCached(dtoObj.getContents() != null && dtoObj.getContents().length > 0);
+		result.setCached(!StringUtils.isEmpty(dtoObj.getContents()));
 		result.setEndpointMapId(dtoObj.getPatientEndpointMapId());
 
 		result.setClassName(dtoObj.getClassName());

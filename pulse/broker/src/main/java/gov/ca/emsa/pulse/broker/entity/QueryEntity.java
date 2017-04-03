@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.Where;
 
 @Entity
@@ -38,7 +39,10 @@ public class QueryEntity {
 	@JoinColumn(name = "query_status_id", unique=true, nullable = false, insertable=false, updatable= false)
 	private QueryStatusEntity status;
 	
-	@Column(name = "terms")
+	@Column(name = "terms_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(terms_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String terms;
 	
 	@Column( name = "last_read_date")

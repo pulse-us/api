@@ -6,6 +6,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
@@ -56,14 +57,14 @@ public class DocumentRetrievalService implements Runnable {
 		if(querySuccess) {
 			//store the returned document contents
 			for(DocumentDTO doc : documents) {
-				if(doc.getContents() != null && doc.getContents().length > 0) {
+				if(!StringUtils.isEmpty(doc.getContents())) {
 					doc.setStatus(QueryEndpointStatus.Successful);
 					docDao.update(doc);
 				}
 			}
 		} else {
 			for(DocumentDTO doc : documents) {
-				if(doc.getContents() != null && doc.getContents().length > 0) {
+				if(!StringUtils.isEmpty(doc.getContents())) {
 					doc.setStatus(QueryEndpointStatus.Successful);
 					docDao.update(doc);
 				} else {

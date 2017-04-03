@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
@@ -30,6 +31,7 @@ import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
 
 @Service
 public class DocumentManagerImpl implements DocumentManager {
@@ -41,6 +43,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	@Autowired private PatientDAO patientDao;
 	@Autowired private EndpointDAO endpointDao;
 	@Autowired private AdapterFactory adapterFactory;
+	@Autowired private QueryableEndpointStatusUtil endpointStatusesForQuery;
 
 	private final ExecutorService pool;
 
@@ -104,7 +107,7 @@ public class DocumentManagerImpl implements DocumentManager {
 			acfManager.updateLastModifiedDate(patient.getAcf().getId());
 		}
 		
-		if(cachedDoc.getContents() != null && cachedDoc.getContents().length > 0) {
+		if(!StringUtils.isEmpty(cachedDoc.getContents())) {
 			docContents = new String(cachedDoc.getContents());
 		} else {
 			EndpointDTO documentContentsEndpoint = null;
@@ -113,7 +116,7 @@ public class DocumentManagerImpl implements DocumentManager {
 				List<LocationDTO> relatedLocations = documentDiscoveryEndpoint.getLocations();
 				if(relatedLocations != null && relatedLocations.size() > 0) {
 					LocationDTO firstRelatedLocation = relatedLocations.get(0);
-					documentContentsEndpoint = endpointDao.findByLocationIdAndType(firstRelatedLocation.getId(), EndpointStatusEnum.ACTIVE, EndpointTypeEnum.DOCUMENT_RETRIEVE);
+					documentContentsEndpoint = endpointDao.findByLocationIdAndType(firstRelatedLocation.getId(), endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_RETRIEVE);
 				}
 			}
 			
@@ -121,8 +124,8 @@ public class DocumentManagerImpl implements DocumentManager {
 				List<DocumentDTO> docsToGet = new ArrayList<DocumentDTO>();
 				docsToGet.add(cachedDoc);
 				queryForDocumentContents(user, samlInput, documentContentsEndpoint, docsToGet, patientEndpointMap);
-				byte[] retrievedContents = docsToGet.get(0).getContents();
-				docContents = retrievedContents == null ? "" : new String(retrievedContents);
+				String retrievedContents = docsToGet.get(0).getContents();
+				docContents = retrievedContents == null ? "" : retrievedContents;
 			}
 		}
 		return docContents;

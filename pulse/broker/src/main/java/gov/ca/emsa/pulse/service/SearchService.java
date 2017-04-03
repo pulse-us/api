@@ -27,8 +27,9 @@ import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.EndpointManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
-import gov.ca.emsa.pulse.broker.manager.impl.JSONUtils;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.broker.util.JSONUtils;
+import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
@@ -45,7 +46,8 @@ public class SearchService {
 	@Autowired private EndpointManager endpointManager;
 	public static String dobFormat = "yyyy-MM-dd";
 	@Autowired private AuditEventManager auditManager;
-
+	@Autowired private QueryableEndpointStatusUtil endpointStatusesForQuery;
+	
 	public SearchService() {
 	}
 
@@ -80,9 +82,7 @@ public class SearchService {
 		synchronized(queryManager) {
 			List<EndpointTypeEnum> relevantEndpointTypes = new ArrayList<EndpointTypeEnum>();
 			relevantEndpointTypes.add(EndpointTypeEnum.PATIENT_DISCOVERY);
-			List<EndpointStatusEnum> relevantEndpointStatuses = new ArrayList<EndpointStatusEnum>();
-			relevantEndpointStatuses.add(EndpointStatusEnum.ACTIVE);
-			List<EndpointDTO> endpointsToQuery = endpointManager.getByStatusAndType(relevantEndpointStatuses, relevantEndpointTypes);
+			List<EndpointDTO> endpointsToQuery = endpointManager.getByStatusAndType(endpointStatusesForQuery.getStatuses(), relevantEndpointTypes);
 			if(endpointsToQuery != null && endpointsToQuery.size() > 0) {
 				QueryDTO query = new QueryDTO();
 				query.setUserId(user.getSubjectName());
@@ -101,6 +101,8 @@ public class SearchService {
 						queryEndpointMap.setStatus(QueryEndpointStatus.Active);
 						queryEndpointMap = queryManager.createOrUpdateQueryEndpointMap(queryEndpointMap);
 						query.getEndpointMaps().add(queryEndpointMap);
+					} else {
+						logger.warn("Endpoint " + endpoint.getId() + "(url: " + endpoint.getUrl() + ") is being ignored because it is not associated with any locations.");
 					}
 				}
 	

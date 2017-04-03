@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -32,7 +33,10 @@ public class PulseEventActionEntity {
 	@Column(name="action_tstamp", insertable = false, updatable = false)
 	private Date actionTStamp;
 	
-	@Column(name="action_json")
+	@Column(name="action_json_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(action_json_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String actionJson;
 	
 	@Column(name="pulse_event_action_code_id")
