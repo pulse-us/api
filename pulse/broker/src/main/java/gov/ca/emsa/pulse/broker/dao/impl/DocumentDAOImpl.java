@@ -49,29 +49,40 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 
 	@Override
 	@Transactional
-	public DocumentDTO update(DocumentDTO dto) {
-		DocumentEntity doc = this.getEntityById(dto.getId());	
-
-		QueryEndpointStatusEntity newStatus = 
-				statusDao.getQueryEndpointStatusByName(dto.getStatus().name());
-		doc.setStatusId(newStatus == null ? null : newStatus.getId());
+	public DocumentDTO update(DocumentDTO newDocument) {
+		DocumentEntity existingDocument = this.getEntityById(newDocument.getId());	
 		
-		doc.setName(dto.getName());
-		doc.setFormat(dto.getFormat());
-		doc.setConfidentiality(dto.getConfidentiality());
-		doc.setCreationTime(dto.getCreationTime());
-		doc.setDescription(dto.getDescription());
-		doc.setDocumentUniqueId(dto.getDocumentUniqueId());
-		doc.setHomeCommunityId(dto.getHomeCommunityId());
-		doc.setRepositoryUniqueId(dto.getRepositoryUniqueId());
-		doc.setSize(dto.getSize());
-		doc.setContents(dto.getContents());
-		doc.setLastReadDate(new Date());
-		doc.setPatientEndpointMapId(dto.getPatientEndpointMapId());
+		if(existingDocument.getStatus() == null
+			||
+			(newDocument.getStatus() != null && 
+			newDocument.getStatus() == QueryEndpointStatus.Closed) 
+			||
+			(existingDocument.getStatus() != null && 
+			existingDocument.getStatus().getStatus() != QueryEndpointStatus.Cancelled && 
+			existingDocument.getStatus().getStatus() != QueryEndpointStatus.Closed)) {
+				//always change the status if we are moving to Closed.
+				//aside from that, don't do any update if the document is currently Cancelled or Closed.
+				QueryEndpointStatusEntity newStatus = 
+						statusDao.getQueryEndpointStatusByName(newDocument.getStatus().name());
+				existingDocument.setStatusId(newStatus == null ? null : newStatus.getId());
+				existingDocument.setName(newDocument.getName());
+				existingDocument.setFormat(newDocument.getFormat());
+				existingDocument.setConfidentiality(newDocument.getConfidentiality());
+				existingDocument.setCreationTime(newDocument.getCreationTime());
+				existingDocument.setDescription(newDocument.getDescription());
+				existingDocument.setDocumentUniqueId(newDocument.getDocumentUniqueId());
+				existingDocument.setHomeCommunityId(newDocument.getHomeCommunityId());
+				existingDocument.setRepositoryUniqueId(newDocument.getRepositoryUniqueId());
+				existingDocument.setSize(newDocument.getSize());
+				existingDocument.setContents(newDocument.getContents());
+				existingDocument.setLastReadDate(new Date());
+				existingDocument.setPatientEndpointMapId(newDocument.getPatientEndpointMapId());
+				
+				existingDocument = entityManager.merge(existingDocument);
+				entityManager.flush();
+		} 
 		
-		doc = entityManager.merge(doc);
-		entityManager.flush();
-		return new DocumentDTO(doc);
+		return new DocumentDTO(existingDocument);
 	}
 
 	@Override

@@ -17,7 +17,8 @@ public interface PatientDAO {
 	public void delete(Long id) throws SQLException;
 	public PatientDTO getById(Long id);
 	public PatientEndpointMapDTO getPatientEndpointMapById(Long id);
-
+	public List<PatientEndpointMapDTO> getPatientEndpointMaps(Long patientId, Long endpointId);
+	
 	public List<PatientDTO> getPatientsAtAcf(Long acfId);
 	public void deleteItemsOlderThan(Date oldestItem) throws SQLException;
 }
