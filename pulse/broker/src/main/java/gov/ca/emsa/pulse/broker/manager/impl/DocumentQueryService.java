@@ -85,14 +85,16 @@ public class DocumentQueryService implements Runnable {
 			patientEndpointMap.setDocumentsQueryStatus(QueryEndpointStatus.Failed);
 		}
 		//update mapping of our staged patient to the endpoint just queried
-		try {
-			patientManager.updatePatientEndpointMap(patientEndpointMap);
-		} catch(SQLException ex) {
-			logger.error("Could not update patient endpoint map with "
-					+ "[id: " + patientEndpointMap.getId() + ", "
-					+ "externalPatientRecordId: " + patientEndpointMap.getExternalPatientRecordId() + ", " 
-					+ "endpointId: " + patientEndpointMap.getEndpointId() + ", " 
-					+ "patientId: " + patientEndpointMap.getPatientId() + "]");
+		synchronized(patientManager) {
+			try {
+				patientManager.updatePatientEndpointMap(patientEndpointMap);
+			} catch(SQLException ex) {
+				logger.error("Could not update patient endpoint map with "
+						+ "[id: " + patientEndpointMap.getId() + ", "
+						+ "externalPatientRecordId: " + patientEndpointMap.getExternalPatientRecordId() + ", " 
+						+ "endpointId: " + patientEndpointMap.getEndpointId() + ", " 
+						+ "patientId: " + patientEndpointMap.getPatientId() + "]");
+			}
 		}
 	}
 

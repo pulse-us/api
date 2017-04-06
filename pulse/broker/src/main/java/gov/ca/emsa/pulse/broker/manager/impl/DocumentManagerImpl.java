@@ -32,6 +32,7 @@ import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
 @Service
 public class DocumentManagerImpl implements DocumentManager {
@@ -58,6 +59,12 @@ public class DocumentManagerImpl implements DocumentManager {
 	}
 	
 	@Override
+	@Transactional
+	public synchronized DocumentDTO update(DocumentDTO toCreate) {
+		return docDao.update(toCreate);
+	}
+	
+	@Override
 	public void queryForDocuments(CommonUser user, SAMLInput samlInput, PatientEndpointMapDTO dto) {
 		DocumentQueryService service = getDocumentQueryService();
 		service.setSamlInput(samlInput);
@@ -72,9 +79,6 @@ public class DocumentManagerImpl implements DocumentManager {
 		return docDao.getByPatientId(patientId);
 	}
 	
-	//for the time being, we want this method to be synchronous 
-	//we are using it to get just one document at a time but it could accept
-	//multiple documents from the same organization if we want to do that in the future
 	@Override
 	@Transactional
 	public void queryForDocumentContents(CommonUser user, SAMLInput samlInput, EndpointDTO endpoint, List<DocumentDTO> docsFromEndpoints, PatientEndpointMapDTO patientEndpointMap) {
@@ -85,6 +89,16 @@ public class DocumentManagerImpl implements DocumentManager {
 		service.setDocuments(docsFromEndpoints);
 		service.setUser(user);
 		pool.execute(service);
+	}
+	
+	@Override
+	@Transactional
+	public synchronized DocumentDTO cancelDocumentContentQuery(Long documentId, Long patientId) {
+		DocumentDTO documentToCancel = docDao.getById(documentId);
+		documentToCancel.setStatus(QueryEndpointStatus.Cancelled);
+		docDao.update(documentToCancel);
+		
+		return docDao.getById(documentId);
 	}
 	
 	@Override

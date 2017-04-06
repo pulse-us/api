@@ -78,7 +78,7 @@ public class QueryService {
 
 	@ApiOperation(value = "Cancel part of a query that's going to a specific endpoint")
 	@RequestMapping(value = "/{queryId}/endpoint/{endpointId}/cancel", method = RequestMethod.POST)
-	public Query cancelQueryToEndpoint(@PathVariable(value="queryId") Long queryId, 
+	public Query cancelPatientDiscoveryQuery(@PathVariable(value="queryId") Long queryId, 
 			@PathVariable(value="endpointId") Long endpointId) throws InvalidArgumentsException {
 		synchronized (queryManager) {
 			QueryDTO query = queryManager.getById(queryId);
