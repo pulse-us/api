@@ -13,6 +13,7 @@ import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 public class PatientRecordDTO {
 	private Long id;
 	private String locationPatientRecordId;
+	private String homeCommunityId;
 	private List<PatientRecordNameDTO> patientRecordName;
 	private PatientGenderDTO patientGender;
 	private String dateOfBirth;
@@ -68,6 +69,7 @@ public class PatientRecordDTO {
 		this.patientGenderId = entity.getPatientGenderId();
 		this.phoneNumber = entity.getPhoneNumber();
 		this.locationPatientRecordId = entity.getLocationPatientRecordId();
+		this.homeCommunityId = entity.getHomeCommunityId();
 		
 		List<PatientRecordAddressDTO> praArr = new ArrayList<PatientRecordAddressDTO>();
 		for(PatientRecordAddressEntity pra : entity.getPatientRecordAddress()){
@@ -129,6 +131,14 @@ public class PatientRecordDTO {
 
 	public void setLocationPatientRecordId(String locationPatientRecordId) {
 		this.locationPatientRecordId = locationPatientRecordId;
+	}
+
+	public String getHomeCommunityId() {
+		return homeCommunityId;
+	}
+
+	public void setHomeCommunityId(String homeCommunityId) {
+		this.homeCommunityId = homeCommunityId;
 	}
 
 	public Long getQueryLocationId() {

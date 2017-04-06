@@ -16,6 +16,7 @@ import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.Query;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -102,7 +103,7 @@ public class QueryService {
 				request.getPatientRecordIds().size() == 0) {
 			throw new InvalidArgumentsException("A patient object and at least one patient record id is required.");
 		}
-
+		
 		//create a new Patient
 		PatientDTO patientToCreate = DomainToDtoConverter.convertToPatient(request.getPatient());
 		//full name required by db
@@ -122,8 +123,6 @@ public class QueryService {
 			//create patient location mappings based on the patientrecords we are using
 			for(Long patientRecordId : request.getPatientRecordIds()) {
 				PatientLocationMapDTO patLocMapDto = patientManager.createPatientLocationMapFromPatientRecord(patient, patientRecordId);
-	
-				//kick off document list retrieval service
 				SAMLInput input = new SAMLInput();
 				input.setStrIssuer(user.getSubjectName());
 				input.setStrNameID("UserBrianLindsey");
@@ -132,13 +131,14 @@ public class QueryService {
 				HashMap<String, String> customAttributes = new HashMap<String,String>();
 				customAttributes.put("RequesterFirstName", user.getFirstName());
 				customAttributes.put("RequestReason", "Get patient documents");
-				customAttributes.put("PatientRecordId", patLocMapDto.getExternalPatientRecordId());
+				//customAttributes.put("PatientRecordId", patLocMapDto.getExternalPatientRecordId());
 				input.setAttributes(customAttributes);
-	
 				patient.getLocationMaps().add(patLocMapDto);
 				docManager.queryForDocuments(user, input, patLocMapDto);
+				//kick off document list retrieval service
+				
 			}
-	
+
 			//delete query (all associated items should cascade)
 			queryManager.close(queryId);
 		}

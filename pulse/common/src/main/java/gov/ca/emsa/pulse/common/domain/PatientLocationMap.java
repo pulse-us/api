@@ -8,6 +8,8 @@ public class PatientLocationMap {
 	private Long id;
 	private Long patientId;
 	private Location location;
+	private String homeCommunityId;
+	private String externalPatientRecordId; // PID + AA
 	private QueryLocationStatus documentsQueryStatus;
 	private Date documentsQueryStart;
 	private Date documentsQueryEnd;
@@ -38,6 +40,22 @@ public class PatientLocationMap {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public String getHomeCommunityId() {
+		return homeCommunityId;
+	}
+
+	public void setHomeCommunityId(String homeCommunityId) {
+		this.homeCommunityId = homeCommunityId;
+	}
+
+	public String getExternalPatientRecordId() {
+		return externalPatientRecordId;
+	}
+
+	public void setExternalPatientRecordId(String externalPatientRecordId) {
+		this.externalPatientRecordId = externalPatientRecordId;
 	}
 
 	public QueryLocationStatus getDocumentsQueryStatus() {

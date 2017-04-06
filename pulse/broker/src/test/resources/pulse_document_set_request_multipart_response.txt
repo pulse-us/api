@@ -1,0 +1,44 @@
+--MIMEBoundary112233445566778899
+Content-Type: application/xop+xml; charset=UTF-8; type="application/soap+xml"
+Content-Transfer-Encoding: binary
+Content-ID: <doc0@ihexds.nist.gov>
+
+<S:Envelope xmlns:S="http://www.w3.org/2003/05/soap-envelope"><S:Header><wsa:Action xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:s="http://www.w3.org/2003/05/soap-envelope" s:mustUnderstand="1">urn:ihe:iti:2007:RetrieveDocumentSetResponse</wsa:Action><wsa:RelatesTo xmlns:wsa="http://www.w3.org/2005/08/addressing">urn:uuid:753aa8b4-9c58-4bed-9de2-26f4dfa53914</wsa:RelatesTo></S:Header><S:Body><xdsb:RetrieveDocumentSetResponse xmlns:xdsb="urn:ihe:iti:xds-b:2007"><rs:RegistryResponse xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success" /><xdsb:DocumentResponse><xdsb:HomeCommunityId>urn:oid:1.1.4567334.1.1</xdsb:HomeCommunityId><xdsb:RepositoryUniqueId>1.1.4567332.1.2</xdsb:RepositoryUniqueId><xdsb:DocumentUniqueId>1.42.20170329160551.2</xdsb:DocumentUniqueId><xdsb:mimeType>text/plain</xdsb:mimeType><xdsb:Document>Rm91ciBzY29yZSBhbmQgc2V2ZW4geWVhcnMgYWdvIG91ciBmYXRoZXJzIGJyb3VnaHQgZm9ydGgg&#xd;
+b24gdGhpcyBjb250aW5lbnQgYSBuZXcgbmF0aW9uLCBjb25jZWl2ZWQgaW4gTGliZXJ0eSwgYW5k&#xd;
+IGRlZGljYXRlZCB0byB0aGUgcHJvcG9zaXRpb24gdGhhdCBhbGwgbWVuIGFyZSBjcmVhdGVkIGVx&#xd;
+dWFsLgoKTm93IHdlIGFyZSBlbmdhZ2VkIGluIGEgZ3JlYXQgY2l2aWwgd2FyLCB0ZXN0aW5nIHdo&#xd;
+ZXRoZXIgdGhhdCBuYXRpb24sIG9yIGFueSBuYXRpb24sIHNvIGNvbmNlaXZlZCBhbmQgc28gZGVk&#xd;
+aWNhdGVkLCBjYW4gbG9uZyBlbmR1cmUuIFdlIGFyZSBtZXQgb24gYSBncmVhdCBiYXR0bGUtZmll&#xd;
+bGQgb2YgdGhhdCB3YXIuIFdlIGhhdmUgY29tZSB0byBkZWRpY2F0ZSBhIHBvcnRpb24gb2YgdGhh&#xd;
+dCBmaWVsZCwgYXMgYSBmaW5hbCByZXN0aW5nIHBsYWNlIGZvciB0aG9zZSB3aG8gaGVyZSBnYXZl&#xd;
+IHRoZWlyIGxpdmVzIHRoYXQgdGhhdCBuYXRpb24gbWlnaHQgbGl2ZS4gSXQgaXMgYWx0b2dldGhl&#xd;
+ciBmaXR0aW5nIGFuZCBwcm9wZXIgdGhhdCB3ZSBzaG91bGQgZG8gdGhpcy4KCkJ1dCwgaW4gYSBs&#xd;
+YXJnZXIgc2Vuc2UsIHdlIGNhbiBub3QgZGVkaWNhdGUuLi53ZSBjYW4gbm90IGNvbnNlY3JhdGUu&#xd;
+Li53ZSBjYW4gbm90IGhhbGxvdyB0aGlzIGdyb3VuZC4gVGhlIGJyYXZlIG1lbiwgbGl2aW5nIGFu&#xd;
+ZCBkZWFkLCB3aG8gc3RydWdnbGVkIGhlcmUsIGhhdmUgY29uc2VjcmF0ZWQgaXQsIGZhciBhYm92&#xd;
+ZSBvdXIgcG9vciBwb3dlciB0byBhZGQgb3IgZGV0cmFjdC4gVGhlIHdvcmxkIHdpbGwgbGl0dGxl&#xd;
+IG5vdGUsIG5vciBsb25nIHJlbWVtYmVyIHdoYXQgd2Ugc2F5IGhlcmUsIGJ1dCBpdCBjYW4gbmV2&#xd;
+ZXIgZm9yZ2V0IHdoYXQgdGhleSBkaWQgaGVyZS4gSXQgaXMgZm9yIHVzIHRoZSBsaXZpbmcsIHJh&#xd;
+dGhlciwgdG8gYmUgZGVkaWNhdGVkIGhlcmUgdG8gdGhlIHVuZmluaXNoZWQgd29yayB3aGljaCB0&#xd;
+aGV5IHdobyBmb3VnaHQgaGVyZSBoYXZlIHRodXMgZmFyIHNvIG5vYmx5IGFkdmFuY2VkLiBJdCBp&#xd;
+cyByYXRoZXIgZm9yIHVzIHRvIGJlIGhlcmUgZGVkaWNhdGVkIHRvIHRoZSBncmVhdCB0YXNrIHJl&#xd;
+bWFpbmluZyBiZWZvcmUgdXPvv710aGF0IGZyb20gdGhlc2UgaG9ub3JlZCBkZWFkIHdlIHRha2Ug&#xd;
+aW5jcmVhc2VkIGRldm90aW9uIHRvIHRoYXQgY2F1c2UgZm9yIHdoaWNoIHRoZXkgZ2F2ZSB0aGUg&#xd;
+bGFzdCBmdWxsIG1lYXN1cmUgb2YgZGV2b3Rpb27vv710aGF0IHdlIGhlcmUgaGlnaGx5IHJlc29s&#xd;
+dmUgdGhhdCB0aGVzZSBkZWFkIHNoYWxsIG5vdCBoYXZlIGRpZWQgaW4gdmFpbu+/vXRoYXQgdGhp&#xd;
+cyBuYXRpb24sIHVuZGVyIEdvZCwgc2hhbGwgaGF2ZSBhIG5ldyBiaXJ0aCBvZiBmcmVlZG9t77+9&#xd;
+YW5kIHRoYXQgZ292ZXJubWVudDogb2YgdGhlIHBlb3BsZSwgYnkgdGhlIHBlb3BsZSwgZm9yIHRo&#xd;
+ZSBwZW9wbGUsIHNoYWxsIG5vdCBwZXJpc2ggZnJvbSB0aGUgZWFydGgu&#xd;
+</xdsb:Document></xdsb:DocumentResponse></xdsb:RetrieveDocumentSetResponse></S:Body></S:Envelope>
+
+--MIMEBoundary112233445566778899
+Content-Type: text/plain
+Content-Transfer-Encoding: binary
+Content-ID: <doc1@toolkit.info>
+
+Four score and seven years ago our fathers brought forth on this continent a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.
+
+Now we are engaged in a great civil war, testing whether that nation, or any nation, so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this.
+
+But, in a larger sense, we can not dedicate...we can not consecrate...we can not hallow this ground. The brave men, living and dead, who struggled here, have consecrated it, far above our poor power to add or detract. The world will little note, nor long remember what we say here, but it can never forget what they did here. It is for us the living, rather, to be dedicated here to the unfinished work which they who fought here have thus far so nobly advanced. It is rather for us to be here dedicated to the great task remaining before usï¿½that from these honored dead we take increased devotion to that cause for which they gave the last full measure of devotionï¿½that we here highly resolve that these dead shall not have died in vainï¿½that this nation, under God, shall have a new birth of freedomï¿½and that government: of the people, by the people, for the people, shall not perish from the earth.
+--MIMEBoundary112233445566778899--

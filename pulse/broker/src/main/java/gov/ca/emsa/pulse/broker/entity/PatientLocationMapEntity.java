@@ -42,6 +42,9 @@ public class PatientLocationMapEntity {
 	
 	@Column(name = "location_patient_record_id")
 	private String externalPatientRecordId;
+	
+	@Column(name = "home_community_id")
+	private String homeCommunityId;
 
 	@Column(name = "documents_query_status_id")
 	private Long documentsQueryStatusId;
@@ -89,6 +92,14 @@ public class PatientLocationMapEntity {
 
 	public void setLocation(LocationEntity location) {
 		this.location = location;
+	}
+
+	public String getHomeCommunityId() {
+		return homeCommunityId;
+	}
+
+	public void setHomeCommunityId(String homeCommunityId) {
+		this.homeCommunityId = homeCommunityId;
 	}
 
 	public String getExternalPatientRecordId() {

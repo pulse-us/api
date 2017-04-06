@@ -152,7 +152,9 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 		List<PRPAIN201306UV02MFMIMT700711UV01Subject1> subjects = request.getControlActProcess().getSubject();
 		if(subjects != null && subjects.size() > 0) {
 			for(PRPAIN201306UV02MFMIMT700711UV01Subject1 subject : subjects) {
-				PatientRecord patientRecord = new PatientRecord();				
+				PatientRecord patientRecord = new PatientRecord();
+				String homeCommunityId = request.getSender().getDevice().getId().get(0).getRoot();
+				patientRecord.setHomeCommunityId(homeCommunityId);
 				
 				PRPAIN201306UV02MFMIMT700711UV01Subject2 currSubject = subject.getRegistrationEvent().getSubject1();
 				PRPAMT201310UV02Patient patient = currSubject.getPatient();
@@ -164,6 +166,8 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 				List<II> ids = patient.getId();
 				if(ids != null && ids.size() > 0) {
 					//TODO: prob want to store the extension and root separately
+					// extension is the Assigning Authority of the patient
+					// the root is the PID of the patient from the AA
 					patientRecord.setLocationPatientRecordId(ids.get(0).getExtension() + "^^^&amp;" + ids.get(0).getRoot() + "&amp;ISO");
 				} else {
 					patientRecord.setLocationPatientRecordId("COULD NOT PARSE OR WAS EMPTY");

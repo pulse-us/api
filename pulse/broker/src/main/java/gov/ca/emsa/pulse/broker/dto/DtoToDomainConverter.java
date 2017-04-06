@@ -73,6 +73,7 @@ public class DtoToDomainConverter {
 			org.setId(dto.getLocationId());
 			result.setLocation(org);
 		}
+		result.setHomeCommunityId(dto.getHomeCommunityId());
 		result.setDocumentsQueryStatus(dto.getDocumentsQueryStatus());
 		result.setDocumentsQueryStart(dto.getDocumentsQueryStart());
 		result.setDocumentsQueryEnd(dto.getDocumentsQueryEnd());

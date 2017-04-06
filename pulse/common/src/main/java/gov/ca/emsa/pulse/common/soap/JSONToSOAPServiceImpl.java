@@ -3,6 +3,7 @@ package gov.ca.emsa.pulse.common.soap;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientLocationMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.PatientSearchAddress;
@@ -26,6 +27,8 @@ import javax.xml.namespace.QName;
 
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.ResponseOptionType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.AdhocQueryType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotListType;
@@ -278,7 +281,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		queryByParameter.getValue().setResponseModalityCode(responseModalityCode);
 		controlActProcess.setQueryByParameter(queryByParameter);
 		request.setControlActProcess(controlActProcess);
-		System.out.println("************************Request***************************: " + request);
+		
 		return request;
 	}
 	
@@ -300,17 +303,31 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		return response;
 	}
 
-	public AdhocQueryRequest convertToDocumentRequest(Patient patient) {
-		AdhocQueryRequest request = new AdhocQueryRequest();
-		SlotListType slotList = new SlotListType();
-		SlotType1 slot = new SlotType1();
-		slot.setName("$XDSDocumentEntryPatientId");
-		ValueListType valueList = new ValueListType();
-		valueList.getValue().add(patient.getLocationPatientId());
-		slot.setValueList(valueList);
-		slotList.getSlot().add(slot);
-		request.setRequestSlotList(slotList);
-		return request;
+	public AdhocQueryRequest convertToDocumentRequest(String patientId) {
+			AdhocQueryRequest request = new AdhocQueryRequest();
+			AdhocQueryType query = new AdhocQueryType();
+			ResponseOptionType responseOption = new ResponseOptionType();
+			responseOption.setReturnComposedObjects(true);
+			responseOption.setReturnType("LeafClass");
+			request.setResponseOption(responseOption);
+			query.setId("urn:uuid:14d4debf-8f97-4251-9a74-a90016b0af0d");
+			request.setAdhocQuery(query);
+			
+			SlotType1 slot = new SlotType1();
+			slot.setName("$XDSDocumentEntryPatientId");
+			ValueListType valueList = new ValueListType();  
+			valueList.getValue().add("'" + patientId + "'");
+			slot.setValueList(valueList);
+			query.getSlot().add(slot);
+			
+			SlotType1 slot2 = new SlotType1();
+			slot2.setName("$XDSDocumentEntryStatus");
+			ValueListType valueList2 = new ValueListType();  
+			valueList2.getValue().add("('urn:oasis:names:tc:ebxml-regrep:StatusType:Approved')");
+			slot2.setValueList(valueList2);
+			query.getSlot().add(slot2);
+			
+			return request;
 	}
 	
 	public RetrieveDocumentSetResponseType convertDocumentSetToSOAPResponse(List<DocumentWrapper> docs) {

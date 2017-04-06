@@ -96,6 +96,7 @@ public class DomainToDtoConverter {
 
 		result.setPhoneNumber(domainObj.getPhoneNumber());
 		result.setSsn(domainObj.getSsn());
+		result.setHomeCommunityId(domainObj.getHomeCommunityId());
 		
 		List<PatientRecordAddressDTO> praDto = new ArrayList<PatientRecordAddressDTO>();
 		for(Address pra : domainObj.getAddress()){

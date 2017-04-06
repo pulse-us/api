@@ -1,7 +1,9 @@
 package gov.ca.emsa.pulse.broker.adapter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
@@ -9,16 +11,24 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
+import javax.xml.soap.SOAPConnection;
+import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.mail.*;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.LogManager;
@@ -33,9 +43,21 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.*;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
+import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartRequest;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
+
+import com.google.common.collect.MultimapBuilder;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
@@ -61,6 +83,7 @@ import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientLocationMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
@@ -92,6 +115,9 @@ public class EHealthAdapter implements Adapter {
 	@Autowired NameTypeDAO nameTypeDao;
 	@Autowired AuditEventManager auditManager;
 	private RestTemplate restTemplate;
+	FormHttpMessageConverter formConverter;
+	class MyMultiValueMap extends LinkedMultiValueMap<String, Object>
+	{}
 	
 	@PostConstruct
 	public void initRestTemplate() {
@@ -100,6 +126,16 @@ public class EHealthAdapter implements Adapter {
 			    (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
 		rf.setConnectTimeout(defaultConnectTimeoutSeconds.intValue() * 1000);
 		rf.setReadTimeout(defaultRequestTimeoutSeconds.intValue() * 1000);
+		formConverter = new FormHttpMessageConverter() {
+		    @Override
+		    public boolean canRead(Class<?> clazz, MediaType mediaType) {
+		        if (clazz == MyMultiValueMap.class) {
+		            return true;
+		        }
+		        return super.canRead(clazz, mediaType);
+		    }
+		};
+		restTemplate.getMessageConverters().add(formConverter);
 	}
 	
 	@Override
@@ -107,7 +143,7 @@ public class EHealthAdapter implements Adapter {
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch);
 		String requestBodyXml = null;
 		try {
-			requestBodyXml = queryProducer.marshallPatientDiscoveryRequest(samlInput, requestBody);
+			requestBodyXml = queryProducer.marshallPatientDiscoveryRequest(endpoint, samlInput, requestBody);
 		} catch(JAXBException ex) {
 			logger.error(ex.getMessage(), ex);
 		}
@@ -164,61 +200,59 @@ public class EHealthAdapter implements Adapter {
 
 	@Override
 	public DocumentQueryResults queryDocuments(CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO toSearch, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException {
-		Patient patientToSearch = new Patient();
-		toSearch.setExternalPatientRecordId(toSearch.getExternalPatientRecordId());
-		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientToSearch);
-		String requestBodyXml = null;
-		try {
-			requestBodyXml = queryProducer.marshallDocumentQueryRequest(samlInput, requestBody);
-		} catch(JAXBException ex) {
-			logger.error(ex.getMessage(), ex);
-		}
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_XML);   
-		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
-		
-		String patientId = toSearch.getExternalPatientRecordId();
-		
-		String searchResults = null;
-		try {
-			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
-			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
-		} catch(Exception ex) {
-			logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
-			auditManager.createAuditEventDCXGatewayQuery("FAILURE", user, endpoint.getUrl(),"", "", patientId);
-			throw ex;
-		}
-		
-		DocumentQueryResults results = new DocumentQueryResults();
-		results.setStatus(IheStatus.Success);
-		if(!StringUtils.isEmpty(searchResults)) {
-			try {
-				AdhocQueryResponse resultObj = queryProducer.unMarshallDocumentQueryResponseObject(searchResults);
-				List<Document> documentResults = soapConverterService.convertToDocumentQueryResponse(resultObj);
-				for(int i = 0; i < documentResults.size(); i++) {
-					DocumentDTO record = DomainToDtoConverter.convert(documentResults.get(i));
-					auditManager.createAuditEventDCXGatewayQuery("SUCCESS", user, endpoint.getUrl(),record.getRepositoryUniqueId(), record.getDocumentUniqueId(), patientId);
-					results.getResults().add(record);
-				}
-			} catch(Exception ex) {
-				logger.error("Exception unmarshalling document discovery response", ex);
-				results.setStatus(IheStatus.Failure);
-			}
+			String patientId = toSearch.getExternalPatientRecordId();
 			
-			if(results.getStatus() != IheStatus.Success) {
-				logger.error("Trying to unmarshal response as an AdHocQueryRequest object to look for errors.");
-				try {
-					AdhocQueryResponse resultObj = queryProducer.unmarshallErrorQueryResponse(searchResults);
-					results.setStatus(soapConverterService.getErrorStatus(resultObj));
-					logger.error("Got error back from " + endpoint.getUrl() + ". Status: " + results.getStatus().name());
-					auditManager.createAuditEventDCXGatewayQuery("FAILURE", user, endpoint.getUrl(),"", "", patientId);
-				} catch(Exception ex) {
-					logger.error("Exception unmarshalling documents discovery response as error", ex);
-				}
+			AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientId);
+			String requestBodyXml = null;
+			try {
+				requestBodyXml = queryProducer.marshallDocumentQueryRequest(endpoint, samlInput, requestBody);
+			} catch(JAXBException ex) {
+				logger.error(ex.getMessage(), ex);
 			}
-		}
 
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", "application/soap+xml");
+			headers.set("action", "urn:ihe:iti:2007:CrossGatewayQuery");
+			HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
+			
+			String searchResults = null;
+			try {
+				logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
+				searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
+			} catch(Exception ex) {
+				logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
+				auditManager.createAuditEventDCXGatewayQuery("FAILURE", user, endpoint.getUrl(),"", "", patientId);
+				throw ex;
+			}
+
+			DocumentQueryResults results = new DocumentQueryResults();
+			results.setStatus(IheStatus.Success);
+			if(!StringUtils.isEmpty(searchResults)) {
+				try {
+					AdhocQueryResponse resultObj = queryProducer.unMarshallDocumentQueryResponseObject(searchResults);
+					List<Document> documentResults = soapConverterService.convertToDocumentQueryResponse(resultObj);
+					for(int i = 0; i < documentResults.size(); i++) {
+						DocumentDTO record = DomainToDtoConverter.convert(documentResults.get(i));
+						auditManager.createAuditEventDCXGatewayQuery("SUCCESS", user, endpoint.getUrl(),record.getRepositoryUniqueId(), record.getDocumentUniqueId(), patientId);
+						results.getResults().add(record);
+					}
+				} catch(Exception ex) {
+					logger.error("Exception unmarshalling document discovery response", ex);
+					results.setStatus(IheStatus.Failure);
+				}
+
+				if(results.getStatus() != IheStatus.Success) {
+					logger.error("Trying to unmarshal response as an AdHocQueryRequest object to look for errors.");
+					try {
+						AdhocQueryResponse resultObj = queryProducer.unmarshallErrorQueryResponse(searchResults);
+						results.setStatus(soapConverterService.getErrorStatus(resultObj));
+						logger.error("Got error back from " + endpoint.getUrl() + ". Status: " + results.getStatus().name());
+						auditManager.createAuditEventDCXGatewayQuery("FAILURE", user, endpoint.getUrl(),"", "", patientId);
+					} catch(Exception ex) {
+						logger.error("Exception unmarshalling documents discovery response as error", ex);
+					}
+				}
+		}
 		return results;
 	}
 
@@ -227,12 +261,12 @@ public class EHealthAdapter implements Adapter {
 	 * @param orgMap
 	 * @param documents
 	 * @return
-	 * @throws UnsupportedEncodingException 
-	 * @throws UnknownHostException 
+	 * @throws MessagingException 
+	 * @throws IOException 
 	 */
 	@Override
 	public void retrieveDocumentsContents(CommonUser user, LocationEndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput, PatientLocationMapDTO patientMap) 
-			throws UnknownHostException, UnsupportedEncodingException, IheErrorException {
+			throws IheErrorException, MessagingException, IOException {
 		List<Document> docsToSearch = new ArrayList<Document>();
 		for(DocumentDTO docDto : documents) {
 			Document doc = DtoToDomainConverter.convert(docDto);
@@ -241,14 +275,22 @@ public class EHealthAdapter implements Adapter {
 		RetrieveDocumentSetRequestType requestBody = jsonConverterService.convertToRetrieveDocumentSetRequest(docsToSearch);
 		String requestBodyXml = null;
 		try {
-			requestBodyXml = queryProducer.marshallDocumentSetRequest(samlInput, requestBody);
+			requestBodyXml = queryProducer.marshallDocumentSetRequest(endpoint, samlInput, requestBody);
 		} catch(JAXBException ex) {
 			logger.error(ex.getMessage(), ex);
 		}
+		String boundary = UUID.randomUUID().toString().replace("-", "");
+		
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_XML);   
-		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
-
+		headers.set("Content-Type", "multipart/related;" + " boundary=" + boundary + "; " + "start=\"<" + boundary + ">\"; type=\"application/xop+xml\"");
+		
+		String part0Header = "Content-Type: application/soap+xml\n" +
+							 "Content-ID: <" + boundary + ">\n";
+		String requestStringXml = "--" + boundary + "\n" +
+									part0Header + "\n" +
+									requestBodyXml + "\n" +
+									"--" + boundary + "--";
+		HttpEntity<String> request = new HttpEntity<String>(requestStringXml, headers);
 		String searchResults = null;
 		try {
 			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");

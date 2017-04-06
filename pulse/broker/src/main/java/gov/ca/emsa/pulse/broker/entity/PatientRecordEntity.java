@@ -40,6 +40,9 @@ public class PatientRecordEntity {
 	@Column(name = "location_patient_record_id")
 	private String locationPatientRecordId;
 	
+	@Column(name = "home_community_id")
+	private String homeCommunityId;
+	
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
@@ -158,6 +161,14 @@ public class PatientRecordEntity {
 
 	public void setLocationPatientRecordId(String locationPatientRecordId) {
 		this.locationPatientRecordId = locationPatientRecordId;
+	}
+
+	public String getHomeCommunityId() {
+		return homeCommunityId;
+	}
+
+	public void setHomeCommunityId(String homeCommunityId) {
+		this.homeCommunityId = homeCommunityId;
 	}
 
 	public Set<PatientRecordAddressEntity> getPatientRecordAddress() {

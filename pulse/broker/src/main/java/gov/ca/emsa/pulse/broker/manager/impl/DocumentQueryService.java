@@ -68,13 +68,14 @@ public class DocumentQueryService implements Runnable {
 			if(adapter != null) {
 				logger.info("Starting query to endpoint with external id '" + endpointToQuery.getExternalId() + "'");
 				try {
+					System.out.println("*****************************Query for Documents*************************************");
 					searchResults = adapter.queryDocuments(user, endpointToQuery, patientLocationMap, samlInput);
 				} catch(Exception ex) {
 					logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 					querySuccess = false;
 				}
 			}
-			
+
 			//store the returned document info
 			if(searchResults != null && searchResults.getStatus() == IheStatus.Success) {
 				List<DocumentDTO> docs = searchResults.getResults();

@@ -14,7 +14,8 @@ public class PatientLocationMapDTO {
 	private Long patientId;
 	private Long locationId;
 	private LocationDTO location;
-	private String externalPatientRecordId;
+	private String homeCommunityId;
+	private String externalPatientRecordId; // PID + AA
 	private QueryLocationStatus documentsQueryStatus;
 	private Date documentsQueryStart;
 	private Date documentsQueryEnd;
@@ -32,6 +33,7 @@ public class PatientLocationMapDTO {
 		if(entity.getLocation() != null) {
 			this.location = new LocationDTO(entity.getLocation());
 		}
+		this.homeCommunityId = entity.getHomeCommunityId();
 		this.externalPatientRecordId = entity.getExternalPatientRecordId();
 		if(entity.getStatus() != null) {
 			this.documentsQueryStatus = entity.getStatus().getStatus();
@@ -64,6 +66,15 @@ public class PatientLocationMapDTO {
 	public void setLocationId(Long locationId) {
 		this.locationId = locationId;
 	}
+	
+	public String getHomeCommunityId() {
+		return homeCommunityId;
+	}
+
+	public void setHomeCommunityId(String homeCommunityId) {
+		this.homeCommunityId = homeCommunityId;
+	}
+
 	public String getExternalPatientRecordId() {
 		return externalPatientRecordId;
 	}

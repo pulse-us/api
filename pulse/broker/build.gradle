@@ -29,6 +29,8 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
+  compile('javax.mail:mail:1.4.7')
+  compile('com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.8.7')
   compile('org.springframework.boot:spring-boot-starter-web')
   compile('org.springframework:spring-beans:4.2.6.RELEASE')
   compile('org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final')

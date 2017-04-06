@@ -3,6 +3,7 @@ package gov.ca.emsa.pulse.common.soap;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientLocationMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
@@ -22,7 +23,7 @@ import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
 public interface JSONToSOAPService {
 	public PRPAIN201310UV02 convertPatientRecordListToSOAPResponse(List<PatientRecord> patientRecords);
 	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch ps);
-	public AdhocQueryRequest convertToDocumentRequest(Patient patient);
+	public AdhocQueryRequest convertToDocumentRequest(String patientId);
 	public AdhocQueryResponse convertDocumentListToSOAPResponse(List<Document> docs, String patientId);
 	public RetrieveDocumentSetResponseType convertDocumentSetToSOAPResponse(List<DocumentWrapper> docs);
 	public RetrieveDocumentSetRequestType convertToRetrieveDocumentSetRequest(List<Document> documents);

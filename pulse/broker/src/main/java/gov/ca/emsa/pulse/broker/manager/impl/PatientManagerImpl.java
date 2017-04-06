@@ -107,6 +107,7 @@ public class PatientManagerImpl implements PatientManager {
 		
 		if(patientRecord != null) {
 			PatientLocationMapDTO patientLocationMapToCreate = new PatientLocationMapDTO();
+			patientLocationMapToCreate.setHomeCommunityId(patientRecord.getHomeCommunityId());
 			patientLocationMapToCreate.setPatientId(patient.getId());
 			patientLocationMapToCreate.setExternalPatientRecordId(patientRecord.getLocationPatientRecordId());
 			QueryLocationMapDTO queryLocationMapDto = queryDao.getQueryLocationById(patientRecord.getQueryLocationId());

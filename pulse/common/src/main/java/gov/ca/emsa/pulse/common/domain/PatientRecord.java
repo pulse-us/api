@@ -8,6 +8,7 @@ public class PatientRecord {
 	private Long id;
 	private ArrayList<PatientRecordName> patientRecordName;
 	private String locationPatientRecordId;
+	private String homeCommunityId;
 	private String dateOfBirth;
 	private PatientGender gender;
 	private String phoneNumber;
@@ -57,6 +58,14 @@ public class PatientRecord {
 	}
 	public void setSsn(String ssn) {
 		this.ssn = ssn;
+	}
+
+	public String getHomeCommunityId() {
+		return homeCommunityId;
+	}
+
+	public void setHomeCommunityId(String homeCommunityId) {
+		this.homeCommunityId = homeCommunityId;
 	}
 
 	public ArrayList<PatientRecordName> getPatientRecordName() {

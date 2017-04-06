@@ -5,12 +5,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import gov.ca.emsa.pulse.auth.jwt.JWTValidationException;
+import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
+import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
+import gov.ca.emsa.pulse.broker.dto.DocumentQueryResults;
+import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
+import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientLocationMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.PatientSearchAddress;
@@ -19,12 +26,19 @@ import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
 import gov.ca.emsa.pulse.cten.IheStatus;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.SOAPException;
 
@@ -51,12 +65,14 @@ import com.google.common.io.Resources;
 @WebAppConfiguration
 @ContextConfiguration(classes = BrokerApplicationTestConfig.class)
 public class JSONToSoapTest {
-	
+
 	@Autowired JSONToSOAPService service;
 	@Autowired SOAPToJSONService reverseService;
 	@Autowired EHealthQueryProducerService ehealthService;
 	@Autowired private ResourceLoader resourceLoader;
-	
+	@Autowired EHealthAdapter eHealthAdapter;
+	@Autowired EHealthQueryProducerService queryProducer;
+
 	@Test
 	public void testUnmarshallPatientDiscoveryExampleRequest() throws IOException, SAMLException, SOAPException {
 		Resource pdFile = resourceLoader.getResource("classpath:NHINPatientDiscoveryRequest.xml");
@@ -64,7 +80,7 @@ public class JSONToSoapTest {
 		PRPAIN201305UV02 unmarshalledRequest = ehealthService.unMarshallPatientDiscoveryRequestObject(pdRequestStr);
 		assertNotNull(unmarshalledRequest);
 	}
-	
+
 	@Test
 	public void testUnmarshallDocumentDiscoveryExampleRequest() throws IOException, SAMLException, SOAPException {
 		Resource pdFile = resourceLoader.getResource("classpath:NHINQueryForDocumentsRequest.xml");
@@ -72,16 +88,16 @@ public class JSONToSoapTest {
 		AdhocQueryRequest unmarshalledRequest = ehealthService.unMarshallDocumentQueryRequestObject(pdRequestStr);
 		assertNotNull(unmarshalledRequest);
 	}
-	
+
 	@Test
 	public void testCreatePatientDiscoveryRequest() throws JAXBException, 
-		SAMLException, SOAPException, JWTValidationException {
+	SAMLException, SOAPException, JWTValidationException {
 		PatientSearch ps = new PatientSearch();
 		PatientSearchName toCreate1 = new PatientSearchName();
 		toCreate1.setFamilyName("Lindsey");
 		toCreate1.setPrefix("Mr.");
 		toCreate1.setSuffix("MDS");
-		
+
 		ArrayList<String> givens = new ArrayList<String>();
 		givens.add("Brian");
 		givens.add("Bryan");
@@ -95,7 +111,7 @@ public class JSONToSoapTest {
 		names.add(toCreate1);
 		ps.setPatientNames(names);
 		ps.getPatientNames().get(0).getGivenName().add("Brian");
-		
+
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID("UserBrianLindsey");
@@ -110,9 +126,11 @@ public class JSONToSoapTest {
 		customAttributes.put("PatientHomeZip", ps.getZip());
 		customAttributes.put("PatientSSN", ps.getSsn());
 		input.setAttributes(customAttributes);
+		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
-		String requestXml = ehealthService.marshallPatientDiscoveryRequest(input, request);
+		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, input, request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
 		PRPAIN201305UV02 unmarshalledRequest = ehealthService.unMarshallPatientDiscoveryRequestObject(requestXml);
@@ -130,31 +148,15 @@ public class JSONToSoapTest {
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
 	}
 	
-	@Test
-	public void testCreatePatientDiscoveryRequestWithAddress() throws JAXBException, 
-		SAMLException, SOAPException, JWTValidationException {
+	//@Test
+	public void testCreatePatientDiscoveryXDSToolsRequest() throws JAXBException, 
+	SAMLException, SOAPException, JWTValidationException {
 		PatientSearch ps = new PatientSearch();
 		PatientSearchName toCreate1 = new PatientSearchName();
 		toCreate1.setFamilyName("Lindsey");
-		toCreate1.setPrefix("Mr.");
-		toCreate1.setSuffix("MDS");
-		
-		PatientSearchAddress psa = new PatientSearchAddress();
-		psa.setCity("Bel AIr");
-		psa.setState("MD");
-		psa.setZipcode("21015");
-		ArrayList<String> lines = new ArrayList<String>();
-		lines.add("406 Main Street");
-		lines.add("Apt 6B");
-		psa.setLines(lines);
-		ArrayList<PatientSearchAddress> addresses = new ArrayList<PatientSearchAddress>();
-		addresses.add(psa);
-		ps.setAddresses(addresses);
-		
+
 		ArrayList<String> givens = new ArrayList<String>();
 		givens.add("Brian");
-		givens.add("Bryan");
-		givens.add("Briaann");
 		toCreate1.setGivenName(givens);
 		ps.setDob("19830205");
 		ps.setGender("F");
@@ -164,7 +166,7 @@ public class JSONToSoapTest {
 		names.add(toCreate1);
 		ps.setPatientNames(names);
 		ps.getPatientNames().get(0).getGivenName().add("Brian");
-		
+
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID("UserBrianLindsey");
@@ -179,9 +181,82 @@ public class JSONToSoapTest {
 		customAttributes.put("PatientHomeZip", ps.getZip());
 		customAttributes.put("PatientSSN", ps.getSsn());
 		input.setAttributes(customAttributes);
+		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
-		String requestXml = ehealthService.marshallPatientDiscoveryRequest(input, request);
+		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, input, request);
+		Assert.notNull(requestXml);
+		System.out.println(requestXml);
+		PRPAIN201305UV02 unmarshalledRequest = ehealthService.unMarshallPatientDiscoveryRequestObject(requestXml);
+		assertNotNull(unmarshalledRequest);
+		PatientSearch unmarshalledSearch = reverseService.convertToPatientSearch(unmarshalledRequest);
+		assertNotNull(unmarshalledSearch);
+		assertEquals(ps.getPatientNames().get(0).getFamilyName(), unmarshalledSearch.getPatientNames().get(0).getFamilyName());
+		assertEquals(ps.getDob(), unmarshalledSearch.getDob());
+		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
+		assertEquals(ps.getSsn(), unmarshalledSearch.getSsn());
+		assertEquals(ps.getTelephone(), unmarshalledSearch.getTelephone());
+		assertEquals(ps.getPatientNames().get(0).getPrefix(), unmarshalledSearch.getPatientNames().get(0).getPrefix());
+		assertEquals(ps.getPatientNames().get(0).getSuffix(), unmarshalledSearch.getPatientNames().get(0).getSuffix());
+		assertEquals(ps.getPatientNames().get(0).getGivenName(), unmarshalledSearch.getPatientNames().get(0).getGivenName());
+		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
+	}
+
+	@Test
+	public void testCreatePatientDiscoveryRequestWithAddress() throws JAXBException, 
+	SAMLException, SOAPException, JWTValidationException {
+		PatientSearch ps = new PatientSearch();
+		PatientSearchName toCreate1 = new PatientSearchName();
+		toCreate1.setFamilyName("Lindsey");
+		toCreate1.setPrefix("Mr.");
+		toCreate1.setSuffix("MDS");
+
+		PatientSearchAddress psa = new PatientSearchAddress();
+		psa.setCity("Bel AIr");
+		psa.setState("MD");
+		psa.setZipcode("21015");
+		ArrayList<String> lines = new ArrayList<String>();
+		lines.add("406 Main Street");
+		lines.add("Apt 6B");
+		psa.setLines(lines);
+		ArrayList<PatientSearchAddress> addresses = new ArrayList<PatientSearchAddress>();
+		addresses.add(psa);
+		ps.setAddresses(addresses);
+
+		ArrayList<String> givens = new ArrayList<String>();
+		givens.add("Brian");
+		givens.add("Bryan");
+		givens.add("Briaann");
+		toCreate1.setGivenName(givens);
+		ps.setDob("19830205");
+		ps.setGender("F");
+		ps.setSsn("123456789");
+		ps.setTelephone("4439871013");
+		ArrayList<PatientSearchName> names = new ArrayList<PatientSearchName>();
+		names.add(toCreate1);
+		ps.setPatientNames(names);
+		ps.getPatientNames().get(0).getGivenName().add("Brian");
+
+		SAMLInput input = new SAMLInput();
+		input.setStrIssuer("https://idp.dhv.gov");
+		input.setStrNameID("UserBrianLindsey");
+		input.setStrNameQualifier("My Website");
+		input.setSessionId("abcdedf1234567");
+		HashMap<String, String> customAttributes = new HashMap<String,String>();
+		customAttributes.put("RequesterFirstName", "Katy");
+		customAttributes.put("RequestReason", "Patient is bleeding.");
+		customAttributes.put("PatientFamilyName", ps.getPatientNames().get(0).getFamilyName());
+		customAttributes.put("PatientDOB", ps.getDob());
+		customAttributes.put("PatientGender", ps.getGender());
+		customAttributes.put("PatientHomeZip", ps.getZip());
+		customAttributes.put("PatientSSN", ps.getSsn());
+		input.setAttributes(customAttributes);
+		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		endpoint.setUrl("http://someihe/endpointTransaction");
+
+		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
+		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, input, request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
 		PRPAIN201305UV02 unmarshalledRequest = ehealthService.unMarshallPatientDiscoveryRequestObject(requestXml);
@@ -203,16 +278,16 @@ public class JSONToSoapTest {
 		assertEquals(ps.getPatientNames().get(0).getGivenName(), unmarshalledSearch.getPatientNames().get(0).getGivenName());
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
 	}
-	
+
 	@Test
 	public void testCreatePatientDiscoveryRequestWithMultipleAddress() throws JAXBException, 
-		SAMLException, SOAPException, JWTValidationException {
+	SAMLException, SOAPException, JWTValidationException {
 		PatientSearch ps = new PatientSearch();
 		PatientSearchName toCreate1 = new PatientSearchName();
 		toCreate1.setFamilyName("Lindsey");
 		toCreate1.setPrefix("Mr.");
 		toCreate1.setSuffix("MDS");
-		
+
 		PatientSearchAddress psa = new PatientSearchAddress();
 		psa.setCity("Bel AIr");
 		psa.setState("MD");
@@ -223,7 +298,7 @@ public class JSONToSoapTest {
 		psa.setLines(lines);
 		ArrayList<PatientSearchAddress> addresses = new ArrayList<PatientSearchAddress>();
 		addresses.add(psa);
-		
+
 		PatientSearchAddress psa2 = new PatientSearchAddress();
 		psa2.setCity("Baltimore");
 		psa2.setState("MD");
@@ -234,7 +309,7 @@ public class JSONToSoapTest {
 		psa2.setLines(lines2);
 		addresses.add(psa2);
 		ps.setAddresses(addresses);
-		
+
 		ArrayList<String> givens = new ArrayList<String>();
 		givens.add("Brian");
 		givens.add("Bryan");
@@ -248,7 +323,7 @@ public class JSONToSoapTest {
 		names.add(toCreate1);
 		ps.setPatientNames(names);
 		ps.getPatientNames().get(0).getGivenName().add("Brian");
-		
+
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID("UserBrianLindsey");
@@ -263,9 +338,11 @@ public class JSONToSoapTest {
 		customAttributes.put("PatientHomeZip", ps.getZip());
 		customAttributes.put("PatientSSN", ps.getSsn());
 		input.setAttributes(customAttributes);
+		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
-		String requestXml = ehealthService.marshallPatientDiscoveryRequest(input, request);
+		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, input, request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
 		PRPAIN201305UV02 unmarshalledRequest = ehealthService.unMarshallPatientDiscoveryRequestObject(requestXml);
@@ -292,16 +369,16 @@ public class JSONToSoapTest {
 		assertEquals(ps.getPatientNames().get(0).getGivenName(), unmarshalledSearch.getPatientNames().get(0).getGivenName());
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
 	}
-	
+
 	@Test
 	public void testCreatePatientDiscoveryRequestWithoutOptionalparams() throws JAXBException, 
-		SAMLException, SOAPException, JWTValidationException {
+	SAMLException, SOAPException, JWTValidationException {
 		PatientSearch ps = new PatientSearch();
 		PatientSearchName toCreate1 = new PatientSearchName();
 		toCreate1.setFamilyName("Lindsey");
 		toCreate1.setPrefix("Mr.");
 		toCreate1.setSuffix("MDS");
-		
+
 		ArrayList<String> givens = new ArrayList<String>();
 		givens.add("Brian");
 		givens.add("Bryan");
@@ -313,7 +390,7 @@ public class JSONToSoapTest {
 		names.add(toCreate1);
 		ps.setPatientNames(names);
 		ps.getPatientNames().get(0).getGivenName().add("Brian");
-		
+
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID("UserBrianLindsey");
@@ -328,9 +405,11 @@ public class JSONToSoapTest {
 		customAttributes.put("PatientHomeZip", ps.getZip());
 		customAttributes.put("PatientSSN", ps.getSsn());
 		input.setAttributes(customAttributes);
+		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
-		String requestXml = ehealthService.marshallPatientDiscoveryRequest(input, request);
+		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, input, request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
 		PRPAIN201305UV02 unmarshalledRequest = ehealthService.unMarshallPatientDiscoveryRequestObject(requestXml);
@@ -345,10 +424,10 @@ public class JSONToSoapTest {
 		assertEquals(ps.getPatientNames().get(0).getGivenName(), unmarshalledSearch.getPatientNames().get(0).getGivenName());
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
 	}
-	
+
 	@Test
 	public void testCreatePatientDiscoveryRequestMultipleNames() throws JAXBException, 
-		SAMLException, SOAPException, JWTValidationException {
+	SAMLException, SOAPException, JWTValidationException {
 		PatientSearch ps = new PatientSearch();
 		PatientSearchName toCreate1 = new PatientSearchName();
 		toCreate1.setFamilyName("Lindsey");
@@ -358,19 +437,19 @@ public class JSONToSoapTest {
 		toCreate2.setFamilyName("Doe");
 		toCreate2.setPrefix("Sgt.");
 		toCreate2.setSuffix("MD");
-		
+
 		ArrayList<String> givens = new ArrayList<String>();
 		givens.add("Brian");
 		givens.add("Bryan");
 		givens.add("Briaann");
 		toCreate1.setGivenName(givens);
-		
+
 		ArrayList<String> givens2 = new ArrayList<String>();
 		givens2.add("Jon");
 		givens2.add("John");
 		givens2.add("Jahn");
 		toCreate1.setGivenName(givens2);
-		
+
 		ps.setDob("19830205");
 		ps.setSsn("123456789");
 		ps.setTelephone("4439871013");
@@ -379,7 +458,7 @@ public class JSONToSoapTest {
 		names.add(toCreate1);
 		names.add(toCreate2);
 		ps.setPatientNames(names);
-		
+
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID("UserBrianLindsey");
@@ -395,8 +474,11 @@ public class JSONToSoapTest {
 		customAttributes.put("PatientSSN", ps.getSsn());
 		input.setAttributes(customAttributes);
 
+		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		endpoint.setUrl("http://someihe/endpointTransaction");
+
 		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
-		String requestXml = ehealthService.marshallPatientDiscoveryRequest(input, request);
+		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, input, request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
 		PRPAIN201305UV02 unmarshalledRequest = ehealthService.unMarshallPatientDiscoveryRequestObject(requestXml);
@@ -410,7 +492,7 @@ public class JSONToSoapTest {
 		assertEquals(ps.getPatientNames().get(0).getSuffix(), unmarshalledSearch.getPatientNames().get(0).getSuffix());
 		assertEquals(ps.getPatientNames().get(0).getGivenName(), unmarshalledSearch.getPatientNames().get(0).getGivenName());
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
-		
+
 		assertEquals(ps.getPatientNames().get(1).getFamilyName(), unmarshalledSearch.getPatientNames().get(1).getFamilyName());
 		assertEquals(ps.getDob(), unmarshalledSearch.getDob());
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
@@ -419,7 +501,7 @@ public class JSONToSoapTest {
 		assertEquals(ps.getPatientNames().get(1).getGivenName(), unmarshalledSearch.getPatientNames().get(1).getGivenName());
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
 	}
-	
+
 	@Test
 	public void testParsePatientDiscoveryResponse() throws SAMLException, SOAPException, JAXBException, IOException {
 		Resource pdFile = resourceLoader.getResource("classpath:NHINPatientDiscoveryResponse.xml");
@@ -429,7 +511,7 @@ public class JSONToSoapTest {
 		List<PatientRecord> patientRecords = reverseService.convertToPatientRecords(resultObj);
 		assertNotNull(patientRecords);
 		assertEquals(2, patientRecords.size());
-		
+
 		PatientRecord firstPatient = patientRecords.get(0);
 		assertEquals("James", firstPatient.getPatientRecordName().get(0).getGivenName().get(0));
 		assertEquals("Jones", firstPatient.getPatientRecordName().get(0).getFamilyName());
@@ -444,13 +526,42 @@ public class JSONToSoapTest {
 		//assertEquals("Some City", firstPatientAddress.getCity());
 		//assertEquals("IL", firstPatientAddress.getState());
 	}
-	
+
 	@Test
 	public void testCreateDocumentQueryRequest() throws JAXBException, 
-		SAMLException, SOAPException, JWTValidationException {
+	SAMLException, SOAPException, JWTValidationException {
 		Patient patient = new Patient();
 		patient.setLocationPatientId("11.5.4.4.6667.110");
-		
+
+		SAMLInput input = new SAMLInput();
+		input.setStrIssuer("https://idp.dhv.gov");
+		input.setStrNameID("UserBrianLindsey");
+		input.setStrNameQualifier("My Website");
+		input.setSessionId("abcdedf1234567");
+		HashMap<String, String> customAttributes = new HashMap<String,String>();
+		customAttributes.put("RequesterFirstName", "Katy");
+		customAttributes.put("RequestReason", "Patient is bleeding.");
+		input.setAttributes(customAttributes);
+		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		endpoint.setUrl("http://someihe/endpointTransaction");
+
+		AdhocQueryRequest request = service.convertToDocumentRequest("1");
+		String requestXml = ehealthService.marshallDocumentQueryRequest(endpoint,input, request);
+		Assert.notNull(requestXml);
+		System.out.println(requestXml);
+		AdhocQueryRequest unmarshalledRequest = ehealthService.unMarshallDocumentQueryRequestObject(requestXml);
+		assertNotNull(unmarshalledRequest);
+	}
+
+	// TODO
+	@Test
+	public void testDocumentQueryRequestXDSTools() throws JAXBException, 
+	SAMLException, SOAPException, JWTValidationException {
+		final String XCQEndpoint = "http://localhost:8080/xdstools-4.3.4/sim/default__rg_mock_hie/rg/xcq";
+		final String patientId = "P20170327093045.2^^^&1.3.6.1.4.1.21367.2005.13.20.1000&ISO";
+		PatientLocationMapDTO plmDto = new PatientLocationMapDTO();
+		plmDto.setExternalPatientRecordId(patientId);
+
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID("UserBrianLindsey");
@@ -461,14 +572,100 @@ public class JSONToSoapTest {
 		customAttributes.put("RequestReason", "Patient is bleeding.");
 		input.setAttributes(customAttributes);
 
-		AdhocQueryRequest request = service.convertToDocumentRequest(patient);
-		String requestXml = ehealthService.marshallDocumentQueryRequest(input, request);
-		Assert.notNull(requestXml);
-		System.out.println(requestXml);
-		AdhocQueryRequest unmarshalledRequest = ehealthService.unMarshallDocumentQueryRequestObject(requestXml);
-		assertNotNull(unmarshalledRequest);
+		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		endpoint.setUrl(XCQEndpoint);
+
+		CommonUser user = new CommonUser();
+		user.setEmail("blindey@ainq.com");
+		user.setSubjectName("Brian");
+		user.setusername("blindsey");
+		user.setfull_name("Brian Lindsey");
+		user.setrole("USER");
+
+
+		// CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO locationMapDTO, SAMLInput samlInput
+		DocumentQueryResults dqr = null;
+		try {
+			dqr = eHealthAdapter.queryDocuments(user, endpoint, plmDto, input);
+		} catch (UnknownHostException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		Assert.notNull(dqr);
+		Assert.notNull(dqr.getResults());
+		for(DocumentDTO docDto : dqr.getResults()){
+			Assert.notNull(docDto.getHomeCommunityId());
+			Assert.notNull(docDto.getDocumentUniqueId());
+			Assert.notNull(docDto.getRepositoryUniqueId());
+		}
 	}
-	
+
+	// TODO
+	@Test
+	public void testDocumentRetrieveRequestXDSTools() throws JAXBException, 
+	SAMLException, SOAPException, JWTValidationException {
+		final String XCQEndpoint = "http://localhost:8080/xdstools-4.3.4/sim/default__rg_mock_hie/rg/xcr";
+		final String patientId = "P20170327093045.2^^^&1.3.6.1.4.1.21367.2005.13.20.1000&ISO";
+		final String homeCommunityId = "urn:oid:1.1.4567334.1.1";
+		final String repositoryUniqueId = "1.1.4567332.1.2";
+		final String documentUniqueId = "1.42.20170329160551.2";
+		
+		List<DocumentDTO> docs = new ArrayList<DocumentDTO>();
+		Document doc = new Document();
+		DocumentIdentifier docId = new DocumentIdentifier();
+		docId.setHomeCommunityId(homeCommunityId);
+		docId.setRepositoryUniqueId(repositoryUniqueId);
+		docId.setDocumentUniqueId(documentUniqueId);
+		doc.setIdentifier(docId);
+		docs.add(DomainToDtoConverter.convert(doc));
+		
+		PatientLocationMapDTO plmDto = new PatientLocationMapDTO();
+		plmDto.setExternalPatientRecordId(patientId);
+
+		SAMLInput input = new SAMLInput();
+		input.setStrIssuer("https://idp.dhv.gov");
+		input.setStrNameID("UserBrianLindsey");
+		input.setStrNameQualifier("My Website");
+		input.setSessionId("abcdedf1234567");
+		HashMap<String, String> customAttributes = new HashMap<String,String>();
+		customAttributes.put("RequesterFirstName", "Katy");
+		customAttributes.put("RequestReason", "Patient is bleeding.");
+		input.setAttributes(customAttributes);
+
+		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		endpoint.setUrl(XCQEndpoint);
+
+		CommonUser user = new CommonUser();
+		user.setEmail("blindey@ainq.com");
+		user.setSubjectName("Brian");
+		user.setusername("blindsey");
+		user.setfull_name("Brian Lindsey");
+		user.setrole("USER");
+
+
+		//CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO locationMapDTO, SAMLInput samlInput
+		try {
+			eHealthAdapter.retrieveDocumentsContents(user, endpoint, docs, input, plmDto);
+		} catch (UnknownHostException | UnsupportedEncodingException | IheErrorException | MessagingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Assert.notNull(docs.get(0).getContents());
+	}
+
+	// TODO
+	@Test
+	public void unMarshallDocumentSetRetrieve() throws JAXBException, 
+	SAMLException, SOAPException, JWTValidationException, IOException {
+		Resource pdFile = resourceLoader.getResource("classpath:pulse_document_set_request_multipart_response.txt");
+		String request = Resources.toString(pdFile.getURL(), Charsets.UTF_8);
+		RetrieveDocumentSetResponseType resultObj = queryProducer.unMarshallDocumentSetRetrieveResponseObject(request);
+		Assert.notNull(resultObj);
+	}
+
 	@Test
 	public void testParseDocumentQueryResponse() throws SAMLException, SOAPException, JAXBException, IOException {
 		Resource dqFile = resourceLoader.getResource("classpath:NHINQueryForDocumentsResponse.xml");
@@ -490,10 +687,10 @@ public class JSONToSoapTest {
 		assertEquals("HL7 CCD Document", doc.getFormat());
 		assertEquals("129.6.58.92.147", doc.getIdentifier().getDocumentUniqueId());
 	}
-	
+
 	@Test
 	public void testCreateDocumentRetrieveRequest() throws JAXBException, 
-		SAMLException, SOAPException, JWTValidationException {
+	SAMLException, SOAPException, JWTValidationException {
 		List<Document> docs = new ArrayList<Document>();
 		Document doc = new Document();
 		DocumentIdentifier docId = new DocumentIdentifier();
@@ -502,7 +699,7 @@ public class JSONToSoapTest {
 		docId.setDocumentUniqueId("3.3.3.3.3");
 		doc.setIdentifier(docId);
 		docs.add(doc);
-		
+
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID("UserBrianLindsey");
@@ -512,13 +709,15 @@ public class JSONToSoapTest {
 		customAttributes.put("RequesterFirstName", "Katy");
 		customAttributes.put("RequestReason", "Patient is bleeding.");
 		input.setAttributes(customAttributes);
+		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		RetrieveDocumentSetRequestType request = service.convertToRetrieveDocumentSetRequest(docs);
-		String requestXml = ehealthService.marshallDocumentSetRequest(input, request);
+		String requestXml = ehealthService.marshallDocumentSetRequest(endpoint, input, request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
 	}
-	
+
 	@Test
 	public void testParseErrorResponse() throws SAMLException, SOAPException, JAXBException, IOException {
 		Resource errFile = resourceLoader.getResource("classpath:NHINErrorResponse.xml");

@@ -58,6 +58,7 @@ public class PatientRecordDAOImpl extends BaseDAOImpl implements PatientRecordDA
 		patient.setPhoneNumber(dto.getPhoneNumber());
 		patient.setLocationPatientRecordId(dto.getLocationPatientRecordId());
 		patient.setQueryLocationId(dto.getQueryLocationId());
+		patient.setHomeCommunityId(dto.getHomeCommunityId());
 		
 		entityManager.persist(patient);
 		entityManager.flush();

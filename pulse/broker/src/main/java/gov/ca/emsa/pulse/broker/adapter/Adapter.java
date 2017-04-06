@@ -9,13 +9,16 @@ import gov.ca.emsa.pulse.broker.dto.PatientRecordResults;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 public interface Adapter {
 	public PatientRecordResults queryPatients(CommonUser user, LocationEndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) throws Exception;
-	public  DocumentQueryResults queryDocuments(CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO patientLocationMap, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException;
+	public DocumentQueryResults queryDocuments(CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO patientLocationMap, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException;
 	public void retrieveDocumentsContents(CommonUser user, LocationEndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput, PatientLocationMapDTO patientLocationMap) 
-			throws UnknownHostException, UnsupportedEncodingException, IheErrorException;
+			throws UnknownHostException, UnsupportedEncodingException, IheErrorException, MessagingException, IOException;
 }
