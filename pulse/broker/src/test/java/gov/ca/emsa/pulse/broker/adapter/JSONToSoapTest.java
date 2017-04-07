@@ -554,7 +554,7 @@ public class JSONToSoapTest {
 	}
 
 	// TODO
-	@Test
+	//@Test
 	public void testDocumentQueryRequestXDSTools() throws JAXBException, 
 	SAMLException, SOAPException, JWTValidationException {
 		final String XCQEndpoint = "http://localhost:8080/xdstools-4.3.4/sim/default__rg_mock_hie/rg/xcq";
@@ -601,7 +601,7 @@ public class JSONToSoapTest {
 	}
 
 	// TODO
-	@Test
+	//@Test
 	public void testDocumentRetrieveRequestXDSTools() throws JAXBException, 
 	SAMLException, SOAPException, JWTValidationException {
 		final String XCQEndpoint = "http://localhost:8080/xdstools-4.3.4/sim/default__rg_mock_hie/rg/xcr";
@@ -657,7 +657,7 @@ public class JSONToSoapTest {
 	}
 
 	// TODO
-	@Test
+	//@Test
 	public void unMarshallDocumentSetRetrieve() throws JAXBException, 
 	SAMLException, SOAPException, JWTValidationException, IOException {
 		Resource pdFile = resourceLoader.getResource("classpath:pulse_document_set_request_multipart_response.txt");

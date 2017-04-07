@@ -29,8 +29,10 @@ import javax.xml.soap.SOAPMessage;
 import javax.mail.*;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.Message;
 
 import org.apache.commons.io.IOUtils;
+//import org.apache.cxf.message.MessageImpl;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hl7.v3.PRPAIN201305UV02;
@@ -41,6 +43,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.*;
@@ -291,10 +294,17 @@ public class EHealthAdapter implements Adapter {
 									requestBodyXml + "\n" +
 									"--" + boundary + "--";
 		HttpEntity<String> request = new HttpEntity<String>(requestStringXml, headers);
-		String searchResults = null;
+		ResponseEntity<String> searchResults = null;
+		String returnBody = null;
+		String ct = null;
 		try {
 			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
-			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
+			//searchResults = restTemplate.postForObject(endpoint.getUrl(), request, Message.class);
+			searchResults = restTemplate.postForEntity(endpoint.getUrl(), request, String.class);
+			returnBody = searchResults.getBody();
+			ct = searchResults.getHeaders().getFirst("Content-Type");
+			
+			//MessageImpl msg = new MessageImpl();
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
 			for(Document doc : docsToSearch){
@@ -306,7 +316,7 @@ public class EHealthAdapter implements Adapter {
 		if(!StringUtils.isEmpty(searchResults)) {
 			IheStatus resultStatus = IheStatus.Success;
 			try {
-				RetrieveDocumentSetResponseType resultObj = queryProducer.unMarshallDocumentSetRetrieveResponseObject(searchResults);
+				RetrieveDocumentSetResponseType resultObj = queryProducer.unMarshallDocumentSetRetrieveResponseObject(returnBody);
 				List<DocumentResponse> documentResponses = soapConverterService.convertToDocumentSetResponse(resultObj);
 				for(DocumentResponse docResponse : documentResponses) {
 					//find the matching DocumentDTO that we sent in
@@ -349,7 +359,7 @@ public class EHealthAdapter implements Adapter {
 			if(resultStatus != IheStatus.Success) {
 				logger.error("Trying to unmarshal response as an AdHocQueryRequest object to look for errors.");
 				try {
-					AdhocQueryResponse resultObj = queryProducer.unmarshallErrorQueryResponse(searchResults);
+					AdhocQueryResponse resultObj = queryProducer.unmarshallErrorQueryResponse(searchResults.getBody());
 					resultStatus = soapConverterService.getErrorStatus(resultObj);
 					logger.error("Got error back from " + endpoint.getUrl() + ". Status: " + resultStatus.name());
 					for(Document doc : docsToSearch){

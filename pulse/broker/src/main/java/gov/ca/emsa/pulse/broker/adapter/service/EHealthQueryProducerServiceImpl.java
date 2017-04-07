@@ -39,7 +39,9 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -64,6 +66,7 @@ import org.springframework.ws.soap.SoapEnvelope;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+import org.springframework.xml.transform.StringSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -545,13 +548,12 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 
 	public RetrieveDocumentSetResponseType unMarshallDocumentSetRetrieveResponseObject(String xml) 
 			throws SAMLException, JAXBException, SOAPException {
+    	
+		
 		ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
-		StreamSource source = new StreamSource(stream);
 		MessageFactory factory = MessageFactory.newInstance();
 		SOAPMessage soapMessage = factory.createMessage();
-		DataHandler dh = new DataHandler(new BinaryDataSource(stream));
-		AttachmentPart attachment = soapMessage.createAttachmentPart(dh);
-		soapMessage.addAttachmentPart(attachment);
+		soapMessage.getSOAPBody().getElementsByTagName("Document");
 		
 		//SaajSoapMessage saajSoap = new SaajSoapMessage(soapMessage);
 		
