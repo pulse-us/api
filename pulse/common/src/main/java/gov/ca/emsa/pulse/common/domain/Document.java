@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Document {
 	private String id;
 	private Boolean cached;
+	private String contents;
 	private Long endpointMapId;
 	private Patient patient;
 	private QueryEndpointStatus status;
@@ -122,6 +123,14 @@ public class Document {
 
 	public void setStatus(QueryEndpointStatus status) {
 		this.status = status;
+	}
+
+	public String getContents() {
+		return contents;
+	}
+
+	public void setContents(String contents) {
+		this.contents = contents;
 	}
 	
 }

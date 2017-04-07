@@ -301,8 +301,9 @@ public class DtoToDomainConverter {
 		result.setName(dtoObj.getName());
 		result.setFormat(dtoObj.getFormat());
 		result.setCached(!StringUtils.isEmpty(dtoObj.getContents()));
+		result.setContents(dtoObj.getContents());
 		result.setEndpointMapId(dtoObj.getPatientEndpointMapId());
-
+		
 		result.setClassName(dtoObj.getClassName());
 		result.setConfidentiality(dtoObj.getConfidentiality());
 		result.setCreationTime(dtoObj.getCreationTime());
@@ -314,6 +315,7 @@ public class DtoToDomainConverter {
 		docId.setHomeCommunityId(dtoObj.getHomeCommunityId());
 		docId.setRepositoryUniqueId(dtoObj.getRepositoryUniqueId());
 		result.setIdentifier(docId);
+		
 		return result;
 	}
 	

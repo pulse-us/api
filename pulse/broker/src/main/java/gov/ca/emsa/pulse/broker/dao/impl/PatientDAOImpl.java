@@ -12,8 +12,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
+import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
@@ -26,6 +28,7 @@ import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	private static final Logger logger = LogManager.getLogger(PatientDAOImpl.class);
 	@Autowired QueryStatusDAO statusDao;
+	@Autowired DocumentDAO docDao;
 
 	@Override
 	public PatientDTO create(PatientDTO dto) throws SQLException {
@@ -179,14 +182,21 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 	
 	@Override
-	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
+	public List<PatientDTO> getPatientsAtAcf(Long acfId, List<QueryEndpointStatus> statuses) {
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.acf "
-				+ "LEFT OUTER JOIN FETCH pat.endpointMaps "
-				+ "where pat.acfId = :acfId) ", 
+				+ "LEFT OUTER JOIN FETCH pat.endpointMaps patientEndpointMap "
+				+ "LEFT OUTER JOIN FETCH patientEndpointMap.status endpointStatus "
+				+ "LEFT JOIN FETCH patientEndpointMap.documents doc "
+				+ "LEFT JOIN FETCH doc.status docStatus " 
+				+ "WHERE pat.acfId = :acfId "
+				+ "AND (patientEndpointMap.documentsQueryStatusId IS NULL OR endpointStatus.status IN (:statuses)) "
+				+ "AND (doc.statusId IS NULL OR docStatus.status IN (:statuses)) ", 
 				PatientEntity.class );
 
 		query.setParameter("acfId", acfId);
+		query.setParameter("statuses", statuses);
+		
 		List<PatientEntity> patients = query.getResultList();
 		List<PatientDTO> results = new ArrayList<PatientDTO>();
 		for(PatientEntity patient : patients) {

@@ -27,6 +27,21 @@ public class DocumentDTO {
 	public DocumentDTO() {
 	}
 	
+	public DocumentDTO(DocumentDTO otherDoc) {
+		this.name = otherDoc.getName();
+		this.format = otherDoc.getFormat();
+		this.className = otherDoc.getClassName();
+		this.confidentiality = otherDoc.getConfidentiality();
+		this.description = otherDoc.getDescription();
+		this.size = otherDoc.getSize();
+		this.creationTime = otherDoc.getCreationTime();
+		this.homeCommunityId = otherDoc.getHomeCommunityId();
+		this.repositoryUniqueId = otherDoc.getRepositoryUniqueId();
+		this.documentUniqueId = otherDoc.getDocumentUniqueId();
+		this.contents = otherDoc.getContents();
+		this.patientEndpointMapId = otherDoc.getPatientEndpointMapId();
+	}
+	
 	public DocumentDTO(DocumentEntity entity) {
 		this.id = entity.getId();
 		this.statusId = entity.getStatusId();
