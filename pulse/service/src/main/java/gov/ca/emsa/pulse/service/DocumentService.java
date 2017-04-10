@@ -111,30 +111,26 @@ public class DocumentService {
 	
 	@ApiOperation(value="Retrieve a specific Document from an endpoint.")
 	@RequestMapping(value = "/patients/{patientId}/documents/{documentId}", method = RequestMethod.GET)
-	public DocumentWrapper getDocumentContents(@PathVariable("documentId") Long documentId,
+	public Document getDocumentContents(@PathVariable("documentId") Long documentId,
 			@PathVariable("patientId") Long patientId,
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
-		DocumentWrapper dw = new DocumentWrapper("");
-
+		Document doc = null;
+		
 		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
-		HttpEntity<String> response = null;
 		if(jwtUser == null){
 			logger.error("Could not find a logged in user. ");
 		}else{
-
 			headers.set("User", mapper.writeValueAsString(jwtUser));
 			HttpEntity<Document> entity = new HttpEntity<Document>(headers);
-			response = query.exchange(brokerUrl + "/patients/" + patientId + "/documents/" + documentId + "?cacheOnly=" + cacheOnly.toString(), HttpMethod.GET, entity, String.class);
-			if(!cacheOnly){
-				dw.setData(response.getBody());
-			}
+			HttpEntity<Document> response = query.exchange(brokerUrl + "/patients/" + patientId + "/documents/" + documentId + "?cacheOnly=" + cacheOnly.toString(), HttpMethod.GET, entity, Document.class);
 			logger.info("Request sent to broker from services REST.");
+			doc = response.getBody();
 		}
-		return dw;
+		return doc;
 	}
 	
 	@ApiOperation(value="Cancel the retrieval of a specific document from an endpoint.")

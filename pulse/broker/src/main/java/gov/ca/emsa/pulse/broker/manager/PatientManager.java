@@ -11,6 +11,7 @@ public interface PatientManager extends CachedDataManager {
 	public PatientDTO getPatientById(Long patientId);
 	public List<PatientDTO> getPatientsAtAcf(Long acfId);
 	public List<PatientEndpointMapDTO> getPatientEndpointMaps(Long patientId, Long endpointId);
+	public PatientEndpointMapDTO getPatientEndpointMapById(Long id);
 	public PatientDTO create(PatientDTO toCreate) throws SQLException;
 	public PatientDTO update(PatientDTO toUpdate) throws SQLException;
 	public void delete(Long patientId) throws SQLException;

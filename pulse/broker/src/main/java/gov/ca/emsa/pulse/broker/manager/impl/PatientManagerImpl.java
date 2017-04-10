@@ -12,7 +12,6 @@ import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
@@ -21,13 +20,13 @@ import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
-import gov.ca.emsa.pulse.common.domain.PatientEndpointMap;
 import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 import gov.ca.emsa.pulse.service.UserUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -37,8 +36,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.services.nhinc.schema.auditmessage.AuditMessageType;
 
 @Service
 public class PatientManagerImpl implements PatientManager {
@@ -66,7 +63,13 @@ public class PatientManagerImpl implements PatientManager {
 	@Override
 	@Transactional	
 	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
-		List<PatientDTO> results = patientDao.getPatientsAtAcf(acfId);
+		List<QueryEndpointStatus> documentOpenStatuses = new ArrayList<QueryEndpointStatus>();
+		documentOpenStatuses.add(QueryEndpointStatus.Active);
+		documentOpenStatuses.add(QueryEndpointStatus.Successful);
+		documentOpenStatuses.add(QueryEndpointStatus.Failed);
+		documentOpenStatuses.add(QueryEndpointStatus.Cancelled);
+		
+		List<PatientDTO> results = patientDao.getPatientsAtAcf(acfId, documentOpenStatuses);
 		return results;
 	}
 	
@@ -75,6 +78,12 @@ public class PatientManagerImpl implements PatientManager {
 	public List<PatientEndpointMapDTO> getPatientEndpointMaps(Long patientId, Long endpointId) {
 		List<PatientEndpointMapDTO> results = patientDao.getPatientEndpointMaps(patientId, endpointId);
 		return results;
+	}
+	
+	@Override
+	@Transactional	
+	public PatientEndpointMapDTO getPatientEndpointMapById(Long id) {
+		return patientDao.getPatientEndpointMapById(id);
 	}
 	
 	@Override

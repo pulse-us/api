@@ -6,6 +6,7 @@ import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
 import gov.ca.emsa.pulse.broker.entity.QueryEndpointStatusEntity;
 import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -116,8 +117,8 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	}
 
 	@Override
-	public List<DocumentDTO> getByPatientId(Long patientId) {
-		List<DocumentEntity> documents = getEntityByPatientId(patientId);
+	public List<DocumentDTO> getDocumentsWithStatusForPatient(Long patientId, List<QueryEndpointStatus> statuses) {
+		List<DocumentEntity> documents = getEntitiesWithStatusForPatient(patientId, statuses);
 		List<DocumentDTO> results = new ArrayList<DocumentDTO>(documents.size());
 		
 		for(DocumentEntity dEntity : documents) {
@@ -129,7 +130,8 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 	
 	private List<DocumentEntity> findAllEntities() {
 		Query query = entityManager.createQuery("SELECT doc from DocumentEntity doc "
-				+ "LEFT JOIN FETCH doc.status ");
+				+ "LEFT JOIN FETCH doc.status docStatus "
+				+ "WHERE docStatus.status != 'Closed'");
 		return query.getResultList();
 	}
 	
@@ -151,15 +153,19 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		return entity;
 	}
 	
-	private List<DocumentEntity> getEntityByPatientId(Long patientId) {		
+	private List<DocumentEntity> getEntitiesWithStatusForPatient(Long patientId, List<QueryEndpointStatus> statuses) {		
 		Query query = entityManager.createQuery( "SELECT doc "
-				+ "FROM DocumentEntity doc, PatientLocationMapEntity patientEndpointMap "
-				+ "LEFT JOIN FETCH doc.status "
-				+ "WHERE doc.patientEndpointMapId = patientEndpointMap.id "
-				+ "and patientEndpointMap.patientId = :patientId", 
+				+ "FROM DocumentEntity doc, PatientEndpointMapEntity patientEndpointMap "
+				+ "LEFT JOIN FETCH doc.status docStatus "
+				+ "WHERE (doc.statusId IS NULL "
+					+ " OR "
+					+ "docStatus.status IN (:statuses)) "
+				+ "AND doc.patientEndpointMapId = patientEndpointMap.id "
+				+ "AND patientEndpointMap.patientId = :patientId", 
 				DocumentEntity.class );
 		
 		query.setParameter("patientId", patientId);
+		query.setParameter("statuses", statuses);
 		return query.getResultList();
 	}
 }

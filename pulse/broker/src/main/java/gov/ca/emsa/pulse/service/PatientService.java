@@ -164,7 +164,7 @@ public class PatientService {
 	
 	@ApiOperation(value="Retrieve a specific document from an endpoint.")
 	@RequestMapping(value = "/{patientId}/documents/{documentId}")
-	public @ResponseBody String getDocumentContents(@PathVariable("patientId") Long patientId,
+	public @ResponseBody Document getDocumentContents(@PathVariable("patientId") Long patientId,
 			@PathVariable("documentId") Long documentId,
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) 
 		throws SQLException, JsonProcessingException {
@@ -185,14 +185,16 @@ public class PatientService {
 		customAttributes.put("PatientSSN", "123456789");
 		input.setAttributes(customAttributes);
 
-		String result = "";
+		DocumentDTO result = null;
 		if(cacheOnly == null || cacheOnly.booleanValue() == false) {
+			//get the contents that are cached for this document
 			result = docManager.getDocumentById(user, input, documentId);
 			auditManager.createPulseAuditEvent(AuditType.DV, documentId);
 		} else {
-			docManager.getDocumentById(user, input, documentId);
+			//cache the document's contents
+			result = docManager.getDocumentById(user, input, documentId);
 		}
-		return result;
+		return DtoToDomainConverter.convert(result);
 	}
 	
 	@ApiOperation(value="Cancel the retrieval of a specific document from an endpoint.")
