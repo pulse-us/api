@@ -217,6 +217,9 @@ public class PatientManagerImpl implements PatientManager {
 		patientEndpointMapForRequery.setExternalPatientRecordId(externalPatientRecordId);
 		patientEndpointMapForRequery.setEndpointId(endpointId);
 		patientEndpointMapForRequery = patientDao.createPatientEndpointMap(patientEndpointMapForRequery);
+		EndpointDTO endpointForRequery = endpointDao.findById(endpointId);
+		patientEndpointMapForRequery.setEndpoint(endpointForRequery);
+
 		if(patientEndpointMapForRequery != null) {
 			SAMLInput input = new SAMLInput();
 			input.setStrIssuer(user.getSubjectName());

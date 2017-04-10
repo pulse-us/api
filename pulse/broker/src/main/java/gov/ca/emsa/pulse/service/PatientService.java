@@ -142,19 +142,7 @@ public class PatientService {
 			List<PatientEndpointMapDTO> patientMapsForDocuments = patientManager.getPatientEndpointMaps(patientId, endpointId);
 			if(patientMapsForDocuments == null || patientMapsForDocuments.size() == 0){
 				throw new InvalidArgumentsException("No document query was found for patient " + patientId + " and endpoint " + endpointId);
-			} else {
-				//make sure there is at least one active/non-closed request
-				boolean hasOpenRequest = false;
-				for(PatientEndpointMapDTO dto : patientMapsForDocuments) {
-					if(dto.getDocumentsQueryStatus() != null && 
-						dto.getDocumentsQueryStatus() == QueryEndpointStatus.Active) {
-						hasOpenRequest = true;
-					}
-				}
-				if(!hasOpenRequest) {
-					throw new InvalidArgumentsException("There are no Active requests between patient " + patientId + " and endpoint " + endpointId + " eligible for cancellation.");
-				}
-			}
+			} 
 			
 			patientManager.requeryForDocuments(patientId, endpointId, user);
 			PatientDTO patientWithCancelledDocumentRequest = patientManager.getPatientById(patientId);
