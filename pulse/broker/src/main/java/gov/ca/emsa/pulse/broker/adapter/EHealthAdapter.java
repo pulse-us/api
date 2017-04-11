@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.adapter;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,13 +27,13 @@ import javax.xml.soap.SOAPConnection;
 import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-import javax.mail.*;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.Message;
 
 import org.apache.commons.io.IOUtils;
-//import org.apache.cxf.message.MessageImpl;
+import org.apache.cxf.attachment.AttachmentDeserializer;
+import org.apache.cxf.message.Message;
+import org.apache.cxf.message.MessageImpl;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hl7.v3.PRPAIN201305UV02;
@@ -269,7 +270,7 @@ public class EHealthAdapter implements Adapter {
 	 */
 	@Override
 	public void retrieveDocumentsContents(CommonUser user, LocationEndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput, PatientLocationMapDTO patientMap) 
-			throws IheErrorException, MessagingException, IOException {
+			throws IheErrorException, IOException {
 		List<Document> docsToSearch = new ArrayList<Document>();
 		for(DocumentDTO docDto : documents) {
 			Document doc = DtoToDomainConverter.convert(docDto);
@@ -296,15 +297,23 @@ public class EHealthAdapter implements Adapter {
 		HttpEntity<String> request = new HttpEntity<String>(requestStringXml, headers);
 		ResponseEntity<String> searchResults = null;
 		String returnBody = null;
+		String returnEnvelope = null;
 		String ct = null;
 		try {
 			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
-			//searchResults = restTemplate.postForObject(endpoint.getUrl(), request, Message.class);
 			searchResults = restTemplate.postForEntity(endpoint.getUrl(), request, String.class);
 			returnBody = searchResults.getBody();
 			ct = searchResults.getHeaders().getFirst("Content-Type");
-			
-			//MessageImpl msg = new MessageImpl();
+			InputStream is = new ByteArrayInputStream(returnBody.getBytes());
+			MessageImpl msg = new MessageImpl();
+			msg.put(Message.CONTENT_TYPE, ct);
+			msg.setContent(InputStream.class, is);
+			AttachmentDeserializer deserializer = new AttachmentDeserializer(msg);
+		    deserializer.initializeAttachments();
+		    InputStream attBody = msg.getContent(InputStream.class);
+		    ByteArrayOutputStream out = new ByteArrayOutputStream();
+		    IOUtils.copy(attBody, out);
+		    returnEnvelope = out.toString();
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
 			for(Document doc : docsToSearch){
@@ -316,7 +325,7 @@ public class EHealthAdapter implements Adapter {
 		if(!StringUtils.isEmpty(searchResults)) {
 			IheStatus resultStatus = IheStatus.Success;
 			try {
-				RetrieveDocumentSetResponseType resultObj = queryProducer.unMarshallDocumentSetRetrieveResponseObject(returnBody);
+				RetrieveDocumentSetResponseType resultObj = queryProducer.unMarshallDocumentSetRetrieveResponseObject(returnEnvelope);
 				List<DocumentResponse> documentResponses = soapConverterService.convertToDocumentSetResponse(resultObj);
 				for(DocumentResponse docResponse : documentResponses) {
 					//find the matching DocumentDTO that we sent in
@@ -339,7 +348,7 @@ public class EHealthAdapter implements Adapter {
 							in = dataHandler.getDataSource().getInputStream();
 							StringWriter writer = new StringWriter();
 							IOUtils.copy(in, writer, Charset.forName("UTF-8"));
-							String dataStr = base64DecodeMessage(writer.toString());
+							String dataStr = writer.toString(); 
 							logger.debug("Converted binary to " + dataStr);
 							matchingDto.setContents(dataStr.getBytes());
 						} catch(IOException e) {

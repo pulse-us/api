@@ -118,7 +118,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		String fault = new String(outputStream.toByteArray());
 
 		return fault;
-	} 
+	}
 
 	private void createSecurityHeadingPatientDiscovery(LocationEndpointDTO endpoint, SOAPMessage message, SAMLInput samlInput) throws SOAPException {
 		SOAPEnvelope env = message.getSOAPPart().getEnvelope();
@@ -549,13 +549,20 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 	public RetrieveDocumentSetResponseType unMarshallDocumentSetRetrieveResponseObject(String xml) 
 			throws SAMLException, JAXBException, SOAPException {
     	
-		
-		ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
-		MessageFactory factory = MessageFactory.newInstance();
-		SOAPMessage soapMessage = factory.createMessage();
-		soapMessage.getSOAPBody().getElementsByTagName("Document");
-		
-		//SaajSoapMessage saajSoap = new SaajSoapMessage(soapMessage);
+		MessageFactory factory = null;
+		try {
+			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+		} catch (SOAPException e1) {
+			logger.error(e1);
+		}
+		SOAPMessage soapMessage = null;
+		try {
+			soapMessage = factory.createMessage(new MimeHeaders(), new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+		} catch (IOException | SOAPException e) {
+			logger.error(e);
+		}
+		SaajSoapMessage saajSoap = new SaajSoapMessage(soapMessage);
+		Source requestSource = saajSoap.getSoapBody().getPayloadSource();
 		
 		// Create a JAXB context
 		JAXBContext jc = createJAXBContext(RetrieveDocumentSetResponseType.class);
@@ -569,11 +576,11 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 			logger.error(ex);
 		}
 		JAXBElement<?> requestObj = null;
-		/*try {
-			//requestObj = (JAXBElement<?>) unmarshaller.unmarshal(requestSource, RetrieveDocumentSetResponseType.class);
+		try {
+			requestObj = (JAXBElement<?>) unmarshaller.unmarshal(requestSource, RetrieveDocumentSetResponseType.class);
 		} catch (JAXBException e) {
 			logger.error(e);
-		}*/
+		}
 
 		if(requestObj == null) {
 			return null;
