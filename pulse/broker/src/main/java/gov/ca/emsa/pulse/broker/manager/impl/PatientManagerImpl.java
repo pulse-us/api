@@ -1,17 +1,20 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
 import gov.ca.emsa.pulse.broker.cache.CacheCleanupException;
-import gov.ca.emsa.pulse.broker.dao.LocationDAO;
+import gov.ca.emsa.pulse.broker.dao.EndpointDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
+import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -24,9 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PatientManagerImpl implements PatientManager {
 	@Autowired private PatientDAO patientDao;
-	@Autowired private LocationDAO locationDao;
+	@Autowired private EndpointDAO endpointDao;
 	@Autowired private QueryManager queryManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
+	@Autowired QueryableEndpointStatusUtil endpointStatusesForQuery;
 	@Autowired private QueryDAO queryDao;
 	
 	public PatientManagerImpl() {
@@ -86,38 +90,42 @@ public class PatientManagerImpl implements PatientManager {
 
 	@Override
 	@Transactional
-	public PatientLocationMapDTO updatePatientLocationMap(PatientLocationMapDTO toUpdate)
+	public PatientEndpointMapDTO updatePatientEndpointMap(PatientEndpointMapDTO toUpdate)
 			throws SQLException{
-		return patientDao.updatePatientLocationMap(toUpdate);
-	}
-	
-	@Override
-	@Transactional
-	public PatientLocationMapDTO createPatientLocationMap(PatientLocationMapDTO toCreate) 
-			throws SQLException {
-		return patientDao.createPatientLocationMap(toCreate);
+		return patientDao.updatePatientEndpointMap(toUpdate);
 	}
 
 	@Override
 	@Transactional
-	public PatientLocationMapDTO createPatientLocationMapFromPatientRecord(PatientDTO patient, Long patientRecordId)
+	public PatientEndpointMapDTO createEndpointMapForDocumentDiscovery(PatientDTO patient, Long patientRecordId)
 			throws SQLException {
-		PatientLocationMapDTO result = null;
+		PatientEndpointMapDTO result = null;
 		PatientRecordDTO patientRecord = queryManager.getPatientRecordById(patientRecordId);
 		
 		if(patientRecord != null) {
-			PatientLocationMapDTO patientLocationMapToCreate = new PatientLocationMapDTO();
-			patientLocationMapToCreate.setHomeCommunityId(patientRecord.getHomeCommunityId());
-			patientLocationMapToCreate.setPatientId(patient.getId());
-			patientLocationMapToCreate.setExternalPatientRecordId(patientRecord.getLocationPatientRecordId());
-			QueryLocationMapDTO queryLocationMapDto = queryDao.getQueryLocationById(patientRecord.getQueryLocationId());
-			if(queryLocationMapDto != null) {
-				patientLocationMapToCreate.setLocationId(queryLocationMapDto.getLocationId());	
+			EndpointDTO documentDiscoveryEndpoint = null;
+			PatientEndpointMapDTO patientEndpointMapToCreate = new PatientEndpointMapDTO();
+			patientEndpointMapToCreate.setPatientId(patient.getId());
+			patientEndpointMapToCreate.setExternalPatientRecordId(patientRecord.getEndpointPatientRecordId());
+			//get the endpoint that was queried for the patient discovery
+			QueryEndpointMapDTO queryEndpointMapDto = queryDao.findQueryEndpointMapById(patientRecord.getQueryEndpointId());
+			Long patientDiscoveryEndpointId = queryEndpointMapDto.getEndpointId();
+			//figure out which location this endpoint came from
+			//we assume that any locations which share this patient discovery endpoint
+			//will also have the same document query and document retrieve endpoints
+			EndpointDTO patientDiscoveryEndpoint = endpointDao.findById(patientDiscoveryEndpointId);
+			if(patientDiscoveryEndpoint != null) {
+				List<LocationDTO> relatedLocations = patientDiscoveryEndpoint.getLocations();
+				if(relatedLocations != null && relatedLocations.size() > 0) {
+					LocationDTO firstRelatedLocation = relatedLocations.get(0);
+					documentDiscoveryEndpoint = endpointDao.findByLocationIdAndType(firstRelatedLocation.getId(), endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_DISCOVERY);
+				}
 			}
-			result = patientDao.createPatientLocationMap(patientLocationMapToCreate);
-			if(result.getLocationId() != null && result.getLocation() == null) {
-				LocationDTO location = locationDao.findById(result.getLocationId());
-				result.setLocation(location);
+			
+			if(documentDiscoveryEndpoint != null) {
+				patientEndpointMapToCreate.setEndpointId(documentDiscoveryEndpoint.getId());	
+				result = patientDao.createPatientEndpointMap(patientEndpointMapToCreate);
+				result.setEndpoint(documentDiscoveryEndpoint);
 			}
 		}
 		return result;

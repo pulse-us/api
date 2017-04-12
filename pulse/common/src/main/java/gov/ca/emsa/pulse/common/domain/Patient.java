@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Patient {
 	private Long id;
-	private String locationPatientId;
+	private String externalPatientId;
 	private String fullName;
 	private String friendlyName;
 	private String dateOfBirth;
@@ -15,11 +15,11 @@ public class Patient {
 	private String ssn;
 	private Date lastRead;
 	private AlternateCareFacility acf;
-	private List<PatientLocationMap> locationMaps;
+	private List<PatientEndpointMap> endpointMaps;
 	private Date creationDate;
 	
 	public Patient() {
-		this.locationMaps = new ArrayList<PatientLocationMap>();
+		this.endpointMaps = new ArrayList<PatientEndpointMap>();
 	}
 	
 	public Long getId() {
@@ -29,12 +29,12 @@ public class Patient {
 		this.id = id;
 	}
 	
-	public String getLocationPatientId() {
-		return locationPatientId;
+	public String getExternalPatientId() {
+		return externalPatientId;
 	}
 
-	public void setLocationPatientId(String locationPatientId) {
-		this.locationPatientId = locationPatientId;
+	public void setExternalPatientId(String externalPatientId) {
+		this.externalPatientId = externalPatientId;
 	}
 
 	public String getDateOfBirth() {
@@ -68,12 +68,12 @@ public class Patient {
 		this.ssn = ssn;
 	}
 
-	public List<PatientLocationMap> getLocationMaps() {
-		return locationMaps;
+	public List<PatientEndpointMap> getEndpointMaps() {
+		return endpointMaps;
 	}
 
-	public void setLocationMaps(List<PatientLocationMap> locationMaps) {
-		this.locationMaps = locationMaps;
+	public void setEndpointMaps(List<PatientEndpointMap> endpointMaps) {
+		this.endpointMaps = endpointMaps;
 	}
 
 	public Date getLastRead() {

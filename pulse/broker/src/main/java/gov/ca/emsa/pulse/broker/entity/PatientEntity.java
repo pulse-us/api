@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -27,19 +28,34 @@ public class PatientEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "full_name")
+	@Column(name = "full_name_enc")
+	@ColumnTransformer(
+		read = "pgp_pub_decrypt(full_name_enc, dearmor((SELECT * from private_key())))", 
+		write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String fullName;
 	
-	@Column(name = "friendly_name")
+	@Column(name = "friendly_name_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(friendly_name_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String friendlyName;
 	
-	@Column(name = "dob")
+	@Column(name = "dob_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(dob_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String dateOfBirth;
 	
-	@Column(name = "ssn")
+	@Column(name = "ssn_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(ssn_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String ssn;
 	
-	@Column(name = "gender")
+	@Column(name = "gender_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(gender_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String gender;
 	
 	@Column(name = "alternate_care_facility_id")
@@ -62,7 +78,7 @@ public class PatientEntity {
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "patientId"  )
 	@Fetch(FetchMode.JOIN)
 	@Column( name = "patient_id", nullable = false  )
-	private Set<PatientLocationMapEntity> locationMaps = new HashSet<PatientLocationMapEntity>();
+	private Set<PatientEndpointMapEntity> endpointMaps = new HashSet<PatientEndpointMapEntity>();
 	
 	public Long getId() {
 		return id;
@@ -136,12 +152,12 @@ public class PatientEntity {
 		this.lastReadDate = lastReadDate;
 	}
 
-	public Set<PatientLocationMapEntity> getLocationMaps() {
-		return locationMaps;
+	public Set<PatientEndpointMapEntity> getEndpointMaps() {
+		return endpointMaps;
 	}
 
-	public void setLocationMaps(Set<PatientLocationMapEntity> locationMaps) {
-		this.locationMaps = locationMaps;
+	public void setEndpointMaps(Set<PatientEndpointMapEntity> endpointMaps) {
+		this.endpointMaps = endpointMaps;
 	}
 
 	public String getFullName() {

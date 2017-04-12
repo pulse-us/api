@@ -11,13 +11,13 @@ import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentQueryResults;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
-import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentIdentifier;
 import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientLocationMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.PatientSearchAddress;
@@ -126,7 +126,7 @@ public class JSONToSoapTest {
 		customAttributes.put("PatientHomeZip", ps.getZip());
 		customAttributes.put("PatientSSN", ps.getSsn());
 		input.setAttributes(customAttributes);
-		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
@@ -181,7 +181,7 @@ public class JSONToSoapTest {
 		customAttributes.put("PatientHomeZip", ps.getZip());
 		customAttributes.put("PatientSSN", ps.getSsn());
 		input.setAttributes(customAttributes);
-		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
@@ -252,7 +252,7 @@ public class JSONToSoapTest {
 		customAttributes.put("PatientHomeZip", ps.getZip());
 		customAttributes.put("PatientSSN", ps.getSsn());
 		input.setAttributes(customAttributes);
-		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
@@ -338,7 +338,7 @@ public class JSONToSoapTest {
 		customAttributes.put("PatientHomeZip", ps.getZip());
 		customAttributes.put("PatientSSN", ps.getSsn());
 		input.setAttributes(customAttributes);
-		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
@@ -405,7 +405,7 @@ public class JSONToSoapTest {
 		customAttributes.put("PatientHomeZip", ps.getZip());
 		customAttributes.put("PatientSSN", ps.getSsn());
 		input.setAttributes(customAttributes);
-		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
@@ -474,7 +474,7 @@ public class JSONToSoapTest {
 		customAttributes.put("PatientSSN", ps.getSsn());
 		input.setAttributes(customAttributes);
 
-		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps);
@@ -531,8 +531,7 @@ public class JSONToSoapTest {
 	public void testCreateDocumentQueryRequest() throws JAXBException, 
 	SAMLException, SOAPException, JWTValidationException {
 		Patient patient = new Patient();
-		patient.setLocationPatientId("11.5.4.4.6667.110");
-
+		patient.setExternalPatientId("11.5.4.4.6667.110");
 		SAMLInput input = new SAMLInput();
 		input.setStrIssuer("https://idp.dhv.gov");
 		input.setStrNameID("UserBrianLindsey");
@@ -542,7 +541,7 @@ public class JSONToSoapTest {
 		customAttributes.put("RequesterFirstName", "Katy");
 		customAttributes.put("RequestReason", "Patient is bleeding.");
 		input.setAttributes(customAttributes);
-		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		AdhocQueryRequest request = service.convertToDocumentRequest("1");
@@ -559,7 +558,7 @@ public class JSONToSoapTest {
 	SAMLException, SOAPException, JWTValidationException {
 		final String XCQEndpoint = "http://localhost:8080/xdstools-4.3.4/sim/default__rg_mock_hie/rg/xcq";
 		final String patientId = "P20170327093045.2^^^&1.3.6.1.4.1.21367.2005.13.20.1000&ISO";
-		PatientLocationMapDTO plmDto = new PatientLocationMapDTO();
+		PatientEndpointMapDTO plmDto = new PatientEndpointMapDTO();
 		plmDto.setExternalPatientRecordId(patientId);
 
 		SAMLInput input = new SAMLInput();
@@ -572,7 +571,7 @@ public class JSONToSoapTest {
 		customAttributes.put("RequestReason", "Patient is bleeding.");
 		input.setAttributes(customAttributes);
 
-		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl(XCQEndpoint);
 
 		CommonUser user = new CommonUser();
@@ -583,7 +582,7 @@ public class JSONToSoapTest {
 		user.setrole("USER");
 
 
-		// CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO locationMapDTO, SAMLInput samlInput
+		// CommonUser user, EndpointDTO endpoint, PatientLocationMapDTO locationMapDTO, SAMLInput samlInput
 		DocumentQueryResults dqr = null;
 		try {
 			dqr = eHealthAdapter.queryDocuments(user, endpoint, plmDto, input);
@@ -619,7 +618,7 @@ public class JSONToSoapTest {
 		doc.setIdentifier(docId);
 		docs.add(DomainToDtoConverter.convert(doc));
 		
-		PatientLocationMapDTO plmDto = new PatientLocationMapDTO();
+		PatientEndpointMapDTO plmDto = new PatientEndpointMapDTO();
 		plmDto.setExternalPatientRecordId(patientId);
 
 		SAMLInput input = new SAMLInput();
@@ -632,7 +631,7 @@ public class JSONToSoapTest {
 		customAttributes.put("RequestReason", "Patient is bleeding.");
 		input.setAttributes(customAttributes);
 
-		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl(XCQEndpoint);
 
 		CommonUser user = new CommonUser();
@@ -643,12 +642,15 @@ public class JSONToSoapTest {
 		user.setrole("USER");
 
 
-		//CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO locationMapDTO, SAMLInput samlInput
+		//CommonUser user, EndpointDTO endpoint, PatientLocationMapDTO locationMapDTO, SAMLInput samlInput
 		try {
 			eHealthAdapter.retrieveDocumentsContents(user, endpoint, docs, input, plmDto);
 		} catch (UnknownHostException | UnsupportedEncodingException | IheErrorException | MessagingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -709,7 +711,7 @@ public class JSONToSoapTest {
 		customAttributes.put("RequesterFirstName", "Katy");
 		customAttributes.put("RequestReason", "Patient is bleeding.");
 		input.setAttributes(customAttributes);
-		LocationEndpointDTO endpoint = new LocationEndpointDTO();
+		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
 
 		RetrieveDocumentSetRequestType request = service.convertToRetrieveDocumentSetRequest(docs);

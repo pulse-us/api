@@ -1,37 +1,37 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.DocumentEntity;
-import gov.ca.emsa.pulse.broker.entity.PatientLocationMapEntity;
+import gov.ca.emsa.pulse.broker.entity.PatientEndpointMapEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
-public class PatientLocationMapDTO {
+public class PatientEndpointMapDTO {
 	private Long id;
 	private Long patientId;
-	private Long locationId;
-	private LocationDTO location;
 	private String homeCommunityId;
 	private String externalPatientRecordId; // PID + AA
-	private QueryLocationStatus documentsQueryStatus;
+	private QueryEndpointStatus documentsQueryStatus;
+	private Long endpointId;
+	private EndpointDTO endpoint;
 	private Date documentsQueryStart;
 	private Date documentsQueryEnd;
 	private List<DocumentDTO> documents;
 	
-	public PatientLocationMapDTO() {
+	public PatientEndpointMapDTO() {
 		documents = new ArrayList<DocumentDTO>();
 	}
 	
-	public PatientLocationMapDTO(PatientLocationMapEntity entity) {
+	public PatientEndpointMapDTO(PatientEndpointMapEntity entity) {
 		this();
 		this.id = entity.getId();
 		this.patientId = entity.getPatientId();
-		this.locationId = entity.getLocationId();
-		if(entity.getLocation() != null) {
-			this.location = new LocationDTO(entity.getLocation());
+		this.endpointId = entity.getEndpointId();
+		if(entity.getEndpoint() != null) {
+			this.endpoint = new EndpointDTO(entity.getEndpoint());
 		}
 		this.homeCommunityId = entity.getHomeCommunityId();
 		this.externalPatientRecordId = entity.getExternalPatientRecordId();
@@ -60,11 +60,11 @@ public class PatientLocationMapDTO {
 	public void setPatientId(Long patientRecordId) {
 		this.patientId = patientRecordId;
 	}
-	public Long getLocationId() {
-		return locationId;
+	public Long getEndpointId() {
+		return endpointId;
 	}
-	public void setLocationId(Long locationId) {
-		this.locationId = locationId;
+	public void setEndpointId(Long endpointId) {
+		this.endpointId = endpointId;
 	}
 	
 	public String getHomeCommunityId() {
@@ -94,12 +94,12 @@ public class PatientLocationMapDTO {
 		this.documentsQueryEnd = documentsQueryEnd;
 	}
 
-	public LocationDTO getLocation() {
-		return location;
+	public EndpointDTO getEndpoint() {
+		return endpoint;
 	}
 
-	public void setLocation(LocationDTO location) {
-		this.location = location;
+	public void setEndpoint(EndpointDTO endpoint) {
+		this.endpoint = endpoint;
 	}
 
 	public List<DocumentDTO> getDocuments() {
@@ -110,11 +110,11 @@ public class PatientLocationMapDTO {
 		this.documents = documents;
 	}
 
-	public QueryLocationStatus getDocumentsQueryStatus() {
+	public QueryEndpointStatus getDocumentsQueryStatus() {
 		return documentsQueryStatus;
 	}
 
-	public void setDocumentsQueryStatus(QueryLocationStatus status) {
+	public void setDocumentsQueryStatus(QueryEndpointStatus status) {
 		this.documentsQueryStatus = status;
 	}
 }

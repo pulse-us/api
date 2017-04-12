@@ -12,15 +12,15 @@ import gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity;
 
 public class PatientRecordDTO {
 	private Long id;
-	private String locationPatientRecordId;
 	private String homeCommunityId;
+	private String locationPatientRecordId;
 	private List<PatientRecordNameDTO> patientRecordName;
 	private PatientGenderDTO patientGender;
 	private String dateOfBirth;
 	private String ssn;
 	private String phoneNumber;
 	private List<PatientRecordAddressDTO> address;
-	private Long queryLocationId;
+	private Long queryEndpointId;
 	private Date lastModifiedDate;
 	private Long patientGenderId;
 	
@@ -68,9 +68,8 @@ public class PatientRecordDTO {
 		this.patientGender = patientGenderDTO;
 		this.patientGenderId = entity.getPatientGenderId();
 		this.phoneNumber = entity.getPhoneNumber();
-		this.locationPatientRecordId = entity.getLocationPatientRecordId();
 		this.homeCommunityId = entity.getHomeCommunityId();
-		
+		this.locationPatientRecordId = entity.getEndpointPatientRecordId();
 		List<PatientRecordAddressDTO> praArr = new ArrayList<PatientRecordAddressDTO>();
 		for(PatientRecordAddressEntity pra : entity.getPatientRecordAddress()){
 			PatientRecordAddressDTO praDto = new PatientRecordAddressDTO();
@@ -90,7 +89,7 @@ public class PatientRecordDTO {
 		}
 		this.address = praArr;
 		
-		this.queryLocationId = entity.getQueryLocationId();
+		this.queryEndpointId = entity.getQueryEndpointId();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 	}
 	
@@ -125,12 +124,12 @@ public class PatientRecordDTO {
 		this.address = address;
 	}
 
-	public String getLocationPatientRecordId() {
+	public String getEndpointPatientRecordId() {
 		return locationPatientRecordId;
 	}
 
-	public void setLocationPatientRecordId(String locationPatientRecordId) {
-		this.locationPatientRecordId = locationPatientRecordId;
+	public void setEndpointPatientRecordId(String endpointPatientRecordId) {
+		this.locationPatientRecordId = endpointPatientRecordId;
 	}
 
 	public String getHomeCommunityId() {
@@ -141,12 +140,13 @@ public class PatientRecordDTO {
 		this.homeCommunityId = homeCommunityId;
 	}
 
-	public Long getQueryLocationId() {
-		return queryLocationId;
+
+	public Long getQueryEndpointId() {
+		return queryEndpointId;
 	}
 
-	public void setQueryLocationId(Long queryLocationId) {
-		this.queryLocationId = queryLocationId;
+	public void setQueryEndpointId(Long queryEndpointId) {
+		this.queryEndpointId = queryEndpointId;
 	}
 
 	public List<PatientRecordNameDTO> getPatientRecordName() {
@@ -179,6 +179,15 @@ public class PatientRecordDTO {
 
 	public void setPatientGenderId(Long patientGenderId) {
 		this.patientGenderId = patientGenderId;
+	}
+
+	public Object getLocationPatientRecordId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setLocationPatientRecordId(String locationPatientRecordId) {
+		this.locationPatientRecordId = locationPatientRecordId;
 	}
 	
 }

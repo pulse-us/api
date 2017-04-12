@@ -1,7 +1,5 @@
 package gov.ca.emsa.pulse.broker;
 
-import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
-
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.EnvironmentAware;
@@ -10,6 +8,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 
 @PropertySource("classpath:/application-test.properties")
 @EnableTransactionManagement(proxyTargetClass=true)
@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 		"gov.ca.emsa.pulse.broker.entity.**",
 		"gov.ca.emsa.pulse.broker.manager.**",
 		"gov.ca.emsa.pulse.broker.saml.**",
+		"gov.ca.emsa.pulse.broker.util.**",
 		"gov.ca.emsa.pulse.service.**",
 		"gov.ca.emsa.pulse.common.soap.**"})
 public class BrokerApplicationTestConfig implements EnvironmentAware {
@@ -50,7 +51,7 @@ public class BrokerApplicationTestConfig implements EnvironmentAware {
 	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor(){
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
-	
+	 
 	@Bean
     @Scope(scopeName=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public PatientQueryService patientQueryService() {

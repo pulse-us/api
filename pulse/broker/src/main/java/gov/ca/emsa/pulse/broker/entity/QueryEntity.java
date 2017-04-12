@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.Where;
 
 @Entity
@@ -38,7 +39,10 @@ public class QueryEntity {
 	@JoinColumn(name = "query_status_id", unique=true, nullable = false, insertable=false, updatable= false)
 	private QueryStatusEntity status;
 	
-	@Column(name = "terms")
+	@Column(name = "terms_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(terms_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String terms;
 	
 	@Column( name = "last_read_date")
@@ -52,8 +56,8 @@ public class QueryEntity {
 	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "queryId"  )
 	@Column( name = "query_id", nullable = false  )
- 	@Where(clause="query_location_status_id != 5")
-	private Set<QueryLocationMapEntity> locationStatuses = new HashSet<QueryLocationMapEntity>();
+ 	@Where(clause="query_endpoint_status_id != 5")
+	private Set<QueryEndpointMapEntity> endpointStatuses = new HashSet<QueryEndpointMapEntity>();
 	
 	public Long getId() {
 		return id;
@@ -95,12 +99,12 @@ public class QueryEntity {
 		this.terms = terms;
 	}
 
-	public Set<QueryLocationMapEntity> getLocationStatuses() {
-		return locationStatuses;
+	public Set<QueryEndpointMapEntity> getEndpointStatuses() {
+		return endpointStatuses;
 	}
 
-	public void setLocationStatuses(Set<QueryLocationMapEntity> locationStatuses) {
-		this.locationStatuses = locationStatuses;
+	public void setEndpointStatuses(Set<QueryEndpointMapEntity> endpointStatuses) {
+		this.endpointStatuses = endpointStatuses;
 	}
 
 	public Date getLastReadDate() {

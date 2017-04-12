@@ -78,16 +78,16 @@ import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentQueryResults;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
-import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.NameTypeDTO;
-import gov.ca.emsa.pulse.broker.dto.PatientLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordResults;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientLocationMap;
+import gov.ca.emsa.pulse.common.domain.PatientEndpointMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
@@ -143,7 +143,7 @@ public class EHealthAdapter implements Adapter {
 	}
 	
 	@Override
-	public PatientRecordResults queryPatients(CommonUser user, LocationEndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) throws Exception {
+	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) throws Exception {
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch);
 		String requestBodyXml = null;
 		try {
@@ -203,16 +203,15 @@ public class EHealthAdapter implements Adapter {
 	}
 
 	@Override
-	public DocumentQueryResults queryDocuments(CommonUser user, LocationEndpointDTO endpoint, PatientLocationMapDTO toSearch, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException {
-			String patientId = toSearch.getExternalPatientRecordId();
-			
-			AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientId);
-			String requestBodyXml = null;
-			try {
-				requestBodyXml = queryProducer.marshallDocumentQueryRequest(endpoint, samlInput, requestBody);
-			} catch(JAXBException ex) {
-				logger.error(ex.getMessage(), ex);
-			}
+	public DocumentQueryResults queryDocuments(CommonUser user, EndpointDTO endpoint, PatientEndpointMapDTO toSearch, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException {
+		String patientId = toSearch.getExternalPatientRecordId();
+		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientId);
+		String requestBodyXml = null;
+		try {
+			requestBodyXml = queryProducer.marshallDocumentQueryRequest(endpoint, samlInput, requestBody);
+		} catch(JAXBException ex) {
+			logger.error(ex.getMessage(), ex);
+		}
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Content-Type", "application/soap+xml");
@@ -265,12 +264,14 @@ public class EHealthAdapter implements Adapter {
 	 * @param orgMap
 	 * @param documents
 	 * @return
+	 * @throws Exception 
 	 * @throws MessagingException 
 	 * @throws IOException 
 	 */
 	@Override
-	public void retrieveDocumentsContents(CommonUser user, LocationEndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput, PatientLocationMapDTO patientMap) 
-			throws IheErrorException, IOException {
+
+	public void retrieveDocumentsContents(CommonUser user, EndpointDTO endpoint, List<DocumentDTO> documents, SAMLInput samlInput, PatientEndpointMapDTO patientMap) 
+			throws Exception {
 		List<Document> docsToSearch = new ArrayList<Document>();
 		for(DocumentDTO docDto : documents) {
 			Document doc = DtoToDomainConverter.convert(docDto);
@@ -350,7 +351,7 @@ public class EHealthAdapter implements Adapter {
 							IOUtils.copy(in, writer, Charset.forName("UTF-8"));
 							String dataStr = writer.toString(); 
 							logger.debug("Converted binary to " + dataStr);
-							matchingDto.setContents(dataStr.getBytes());
+							matchingDto.setContents(new String(dataStr.getBytes()));
 						} catch(IOException e) {
 							e.printStackTrace();
 						} finally {

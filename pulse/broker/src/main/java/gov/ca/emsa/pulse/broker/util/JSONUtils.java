@@ -1,4 +1,4 @@
-package gov.ca.emsa.pulse.broker.manager.impl;
+package gov.ca.emsa.pulse.broker.util;
 
 import java.io.IOException;
 

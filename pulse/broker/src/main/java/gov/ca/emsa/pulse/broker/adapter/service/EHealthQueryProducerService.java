@@ -1,6 +1,7 @@
 package gov.ca.emsa.pulse.broker.adapter.service;
 
-import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
+
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
@@ -23,10 +24,10 @@ public interface EHealthQueryProducerService {
 	public PRPAIN201306UV02 unMarshallPatientDiscoveryResponseObject(String xml) throws SOAPException, SAMLException, JAXBException;
 	public AdhocQueryResponse unMarshallDocumentQueryResponseObject(String xml) throws SAMLException, SOAPException, JAXBException;
 	public RetrieveDocumentSetResponseType unMarshallDocumentSetRetrieveResponseObject(String searchResults) throws SAMLException, JAXBException, SOAPException;
-	public String marshallPatientDiscoveryRequest(LocationEndpointDTO endpoint, SAMLInput samlInput, PRPAIN201305UV02 response) throws JAXBException;
+	public String marshallPatientDiscoveryRequest(EndpointDTO endpoint,SAMLInput samlInput, PRPAIN201305UV02 response) throws JAXBException;
 	public String createSOAPFault();
-	public String marshallDocumentQueryRequest(LocationEndpointDTO endpoint, SAMLInput samlInput, AdhocQueryRequest request) throws JAXBException;
-	public String marshallDocumentSetRequest(LocationEndpointDTO endpoint, SAMLInput samlInput, RetrieveDocumentSetRequestType requestObj) throws JAXBException;
+	public String marshallDocumentQueryRequest(EndpointDTO endpoint,SAMLInput samlInput, AdhocQueryRequest request) throws JAXBException;
+	public String marshallDocumentSetRequest(EndpointDTO endpoint,SAMLInput samlInput, RetrieveDocumentSetRequestType requestObj) throws JAXBException;
 	public PRPAIN201305UV02 unMarshallPatientDiscoveryRequestObject(String xml) throws SOAPException, SAMLException;
 	public AdhocQueryRequest unMarshallDocumentQueryRequestObject(String xml) throws SAMLException;
 	public RetrieveDocumentSetRequestType unMarshallDocumentSetRetrieveRequestObject(String xml) throws SAMLException;

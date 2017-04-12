@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class QueryLocationMap {
+public class QueryEndpointMap {
 	private Long id;
 	private Long queryId;
-	private Location location;
-	private QueryLocationStatus status;
+	private Endpoint endpoint;
+	private QueryEndpointStatus status;
 	private Date startDate;
 	private Date endDate;
 	private List<PatientRecord> results;
 	
-	public QueryLocationMap() {
+	public QueryEndpointMap() {
 		results = new ArrayList<PatientRecord>();
 	}
 
@@ -33,11 +33,11 @@ public class QueryLocationMap {
 		this.queryId = queryId;
 	}
 
-	public QueryLocationStatus getStatus() {
+	public QueryEndpointStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryLocationStatus status) {
+	public void setStatus(QueryEndpointStatus status) {
 		this.status = status;
 	}
 
@@ -65,11 +65,11 @@ public class QueryLocationMap {
 		this.results = results;
 	}
 
-	public Location getLocation() {
-		return location;
+	public Endpoint getEndpoint() {
+		return endpoint;
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setEndpoint(Endpoint endpoint) {
+		this.endpoint = endpoint;
 	}
 }

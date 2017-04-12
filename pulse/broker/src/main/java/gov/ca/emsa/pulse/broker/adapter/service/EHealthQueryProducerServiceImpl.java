@@ -1,6 +1,6 @@
 package gov.ca.emsa.pulse.broker.adapter.service;
 
-import gov.ca.emsa.pulse.broker.dto.LocationEndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
@@ -120,7 +120,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return fault;
 	}
 
-	private void createSecurityHeadingPatientDiscovery(LocationEndpointDTO endpoint, SOAPMessage message, SAMLInput samlInput) throws SOAPException {
+	private void createSecurityHeadingPatientDiscovery(EndpointDTO endpoint, SOAPMessage message, SAMLInput samlInput) throws SOAPException {
 		SOAPEnvelope env = message.getSOAPPart().getEnvelope();
 		
 		SOAPHeaderElement header1 = message.getSOAPHeader()
@@ -158,7 +158,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		message.getSOAPHeader().addChildElement(securityElement);
 	}
 	
-	private void createSecurityHeadingDocumentQuery(LocationEndpointDTO endpoint, SOAPMessage message, SAMLInput samlInput) throws SOAPException {
+	private void createSecurityHeadingDocumentQuery(EndpointDTO endpoint, SOAPMessage message, SAMLInput samlInput) throws SOAPException {
 		SOAPEnvelope env = message.getSOAPPart().getEnvelope();
 		
 		SOAPHeaderElement header1 = message.getSOAPHeader()
@@ -196,7 +196,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		message.getSOAPHeader().addChildElement(securityElement);
 	}
 	
-	private void createSecurityHeadingDocumentRetrieve(LocationEndpointDTO endpoint, SOAPMessage message, SAMLInput samlInput) throws SOAPException {
+	private void createSecurityHeadingDocumentRetrieve(EndpointDTO endpoint, SOAPMessage message, SAMLInput samlInput) throws SOAPException {
 		SOAPEnvelope env = message.getSOAPPart().getEnvelope();
 		
 		SOAPHeaderElement header1 = message.getSOAPHeader()
@@ -246,7 +246,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return false;
 	}
 	
-	public String marshallPatientDiscoveryRequest(LocationEndpointDTO endpoint, SAMLInput samlInput, PRPAIN201305UV02 request) throws JAXBException{
+	public String marshallPatientDiscoveryRequest(EndpointDTO endpoint, SAMLInput samlInput, PRPAIN201305UV02 request) throws JAXBException{
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -300,7 +300,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		
 	}
 	
-	public String marshallDocumentQueryRequest(LocationEndpointDTO endpoint, SAMLInput samlInput, AdhocQueryRequest request) throws JAXBException{
+	public String marshallDocumentQueryRequest(EndpointDTO endpoint, SAMLInput samlInput, AdhocQueryRequest request) throws JAXBException{
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -342,7 +342,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return sw.toString();
 	}
 	
-	public String marshallDocumentSetRequest(LocationEndpointDTO endpoint, SAMLInput samlInput, RetrieveDocumentSetRequestType request) throws JAXBException{
+	public String marshallDocumentSetRequest(EndpointDTO endpoint, SAMLInput samlInput, RetrieveDocumentSetRequestType request) throws JAXBException{
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);

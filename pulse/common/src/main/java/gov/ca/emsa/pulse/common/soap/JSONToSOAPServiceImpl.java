@@ -3,7 +3,6 @@ package gov.ca.emsa.pulse.common.soap;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
 import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientLocationMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.domain.PatientSearchAddress;
@@ -328,6 +327,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 			query.getSlot().add(slot2);
 			
 			return request;
+
 	}
 	
 	public RetrieveDocumentSetResponseType convertDocumentSetToSOAPResponse(List<DocumentWrapper> docs) {

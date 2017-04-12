@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
+
 @Entity
 @Table(name="patient_record")
 public class PatientRecordEntity {
@@ -24,10 +26,16 @@ public class PatientRecordEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name = "dob")
+	@Column(name = "dob_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(dob_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String dateOfBirth;
 	
-	@Column(name = "ssn")
+	@Column(name = "ssn_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(ssn_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String ssn;
 	
 	@Column(name = "patient_gender_id")
@@ -37,21 +45,25 @@ public class PatientRecordEntity {
 	@JoinColumn(name="patient_gender_id", insertable= false, updatable = false)
 	private PatientGenderEntity patientGender;
 	
-	@Column(name = "location_patient_record_id")
-	private String locationPatientRecordId;
+	@Column(name = "endpoint_patient_record_id")
+	private String endpointPatientRecordId;
 	
 	@Column(name = "home_community_id")
 	private String homeCommunityId;
 	
-	@Column(name = "phone_number")
+	@Column(name = "phone_number_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(phone_number_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
+
 	private String phoneNumber;
 	
-	@Column(name = "query_location_map_id")
-	private Long queryLocationId;
+	@Column(name = "query_endpoint_map_id")
+	private Long queryEndpointId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "query_location_map_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private QueryLocationMapEntity queryLocation;
+	@JoinColumn(name = "query_endpoint_map_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private QueryEndpointMapEntity queryEndpoint;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="patientRecordId")
 	@Column( name = "patient_record_id", nullable = false  )
@@ -131,20 +143,20 @@ public class PatientRecordEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public Long getQueryLocationId() {
-		return queryLocationId;
+	public Long getQueryEndpointId() {
+		return queryEndpointId;
 	}
 
-	public void setQueryLocationId(Long queryLocationId) {
-		this.queryLocationId = queryLocationId;
+	public void setQueryEndpointId(Long queryEndpointId) {
+		this.queryEndpointId = queryEndpointId;
 	}
 
-	public QueryLocationMapEntity getQueryLocation() {
-		return queryLocation;
+	public QueryEndpointMapEntity getQueryEndpoint() {
+		return queryEndpoint;
 	}
 
-	public void setQueryLocation(QueryLocationMapEntity queryLocation) {
-		this.queryLocation = queryLocation;
+	public void setQueryEndpoint(QueryEndpointMapEntity queryEndpoint) {
+		this.queryEndpoint = queryEndpoint;
 	}
 	
 	public Set<PatientRecordNameEntity> getPatientRecordName() {
@@ -155,12 +167,12 @@ public class PatientRecordEntity {
 		this.patientRecordName = patientRecordName;
 	}
 
-	public String getLocationPatientRecordId() {
-		return locationPatientRecordId;
+	public String getEndpointPatientRecordId() {
+		return endpointPatientRecordId;
 	}
 
-	public void setLocationPatientRecordId(String locationPatientRecordId) {
-		this.locationPatientRecordId = locationPatientRecordId;
+	public void setEndpointPatientRecordId(String endpointPatientRecordId) {
+		this.endpointPatientRecordId = endpointPatientRecordId;
 	}
 
 	public String getHomeCommunityId() {

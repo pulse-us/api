@@ -2,9 +2,9 @@ package gov.ca.emsa.pulse.broker.dto;
 
 import java.util.Date;
 
-import gov.ca.emsa.pulse.broker.entity.LocationEndpointMimeTypeEntity;
+import gov.ca.emsa.pulse.broker.entity.EndpointMimeTypeEntity;
 
-public class LocationEndpointMimeTypeDTO {
+public class EndpointMimeTypeDTO {
 	
 	private Long id;
 	private Long endpointId;
@@ -12,11 +12,11 @@ public class LocationEndpointMimeTypeDTO {
 	private Date creationDate;
 	private Date lastModifiedDate;
 		
-	public LocationEndpointMimeTypeDTO(){
+	public EndpointMimeTypeDTO(){
 		super();
 	}
 	
-	public LocationEndpointMimeTypeDTO(LocationEndpointMimeTypeEntity entity){
+	public EndpointMimeTypeDTO(EndpointMimeTypeEntity entity){
 		this();
 		
 		this.id = entity.getId();

@@ -2,9 +2,9 @@ package gov.ca.emsa.pulse.broker.dao.impl;
 
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
-import gov.ca.emsa.pulse.broker.dto.QueryLocationMapDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.entity.QueryEntity;
-import gov.ca.emsa.pulse.broker.entity.QueryLocationMapEntity;
+import gov.ca.emsa.pulse.broker.entity.QueryEndpointMapEntity;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 import java.util.ArrayList;
@@ -18,8 +18,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
-import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
-import gov.ca.emsa.pulse.broker.entity.QueryLocationStatusEntity;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
+import gov.ca.emsa.pulse.broker.entity.QueryEndpointStatusEntity;
 import gov.ca.emsa.pulse.broker.entity.QueryStatusEntity;
 
 @Repository
@@ -42,95 +42,84 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		query.setLastReadDate(new Date());
 		entityManager.persist(query);
 		
-		if(dto.getLocationStatuses() != null && dto.getLocationStatuses().size() > 0) {
-			for(QueryLocationMapDTO queryLocStatus : dto.getLocationStatuses()) {
-				QueryLocationMapEntity queryLocMap = new QueryLocationMapEntity();
-				queryLocMap.setLocationId(queryLocStatus.getLocationId());
-				queryLocMap.setQueryId(query.getId());
-				queryLocMap.setStartDate(new Date());
-				QueryLocationStatusEntity status = statusDao.getQueryLocationStatusByName(QueryLocationStatus.Active.name());
-				queryLocMap.setStatusId(status == null ? null : status.getId());
-				queryLocMap.setStatus(status);
-				entityManager.persist(queryLocMap);
-				query.getLocationStatuses().add(queryLocMap);
+		if(dto.getEndpointMaps() != null && dto.getEndpointMaps().size() > 0) {
+			for(QueryEndpointMapDTO queryEndpointMap : dto.getEndpointMaps()) {
+				QueryEndpointMapEntity queryEndpointToInsert = new QueryEndpointMapEntity();
+				queryEndpointToInsert.setEndpointId(queryEndpointMap.getEndpointId());
+				queryEndpointToInsert.setQueryId(query.getId());
+				queryEndpointToInsert.setStartDate(new Date());
+				QueryEndpointStatusEntity status = statusDao.getQueryEndpointStatusByName(QueryEndpointStatus.Active.name());
+				queryEndpointToInsert.setStatusId(status == null ? null : status.getId());
+				queryEndpointToInsert.setStatus(status);
+				entityManager.persist(queryEndpointToInsert);
+				query.getEndpointStatuses().add(queryEndpointToInsert);
 			}
 		}
 		
 		entityManager.flush();
+		entityManager.clear();
 		return new QueryDTO(query);
 	}
 
-	public QueryLocationMapDTO getQueryLocationById(Long queryOrgId) {
-		QueryLocationMapEntity entity = null;
-		
-		Query query = entityManager.createQuery( "SELECT q from QueryLocationMapEntity q "
-				+ "JOIN FETCH q.status "
-				+ "where q.id = :entityid) ", 
-				QueryLocationMapEntity.class );
-		
-		query.setParameter("entityid", queryOrgId);
-		List<QueryLocationMapEntity> results = query.getResultList();
-		if(results.size() != 0) {
-			entity = results.get(0);
+	@Override
+	public QueryEndpointMapDTO findQueryEndpointMapById(Long queryEndpointId) {
+		QueryEndpointMapEntity entity = getQueryEndpointById(queryEndpointId);
+		if(entity != null) {
+			return new QueryEndpointMapDTO(entity);
 		}
-		return new QueryLocationMapDTO(entity);
-	}
-	
-	public QueryLocationMapDTO getQueryLocationMapByQueryAndLocation(Long queryId, Long locationId) {
-		QueryLocationMapEntity entity = null;
-		
-		Query query = entityManager.createQuery( "SELECT q from QueryLocationMapEntity q "
-				+ "JOIN FETCH q.status "
-				+ "where q.queryId = :queryId " 
-				+ "AND q.locationId = :locationId", 
-				QueryLocationMapEntity.class );
-		
-		query.setParameter("queryId", queryId);
-		query.setParameter("locationId", locationId);
-		List<QueryLocationMapEntity> results = query.getResultList();
-		if(results.size() != 0) {
-			entity = results.get(0);
-		}
-		return new QueryLocationMapDTO(entity);
-	}
-	
-	public QueryLocationMapDTO createQueryLocationMap(QueryLocationMapDTO queryLocationMapDto) {
-		QueryLocationMapEntity toInsert = new QueryLocationMapEntity();
-		toInsert.setLocationId(queryLocationMapDto.getLocationId());
-		toInsert.setQueryId(queryLocationMapDto.getQueryId());
-		toInsert.setStartDate(new Date());
-		QueryLocationStatusEntity status = statusDao.getQueryLocationStatusByName(QueryLocationStatus.Active.name());
-		toInsert.setStatusId(status == null ? null : status.getId());
-		entityManager.persist(toInsert);
-		entityManager.flush();
-		return new QueryLocationMapDTO(toInsert);
+		return null;
 	}
 	
 	@Override
-	public QueryLocationMapDTO updateQueryLocationMap(QueryLocationMapDTO newQueryLocationMap) {
-		logger.info("Update query location " + newQueryLocationMap.getId() + " with status " + newQueryLocationMap.getStatus());
-		QueryLocationMapEntity existingQueryLocationMap = getQueryStatusById(newQueryLocationMap.getId());
-		if(existingQueryLocationMap != null) {
-			existingQueryLocationMap.setEndDate(newQueryLocationMap.getEndDate());
-			if((newQueryLocationMap.getStatus() != null && 
-				newQueryLocationMap.getStatus() == QueryLocationStatus.Closed) 
+	public List<QueryEndpointMapDTO> findQueryEndpointsByQueryAndEndpoint(Long queryId, Long endpointId) {
+		List<QueryEndpointMapEntity> entities = getQueryEndpointByQueryAndEndpoint(queryId, endpointId);
+		List<QueryEndpointMapDTO> results = new ArrayList<QueryEndpointMapDTO>(entities.size());
+		for(QueryEndpointMapEntity entity : entities) {
+			results.add(new QueryEndpointMapDTO(entity));
+		}
+		return results;
+	}
+	
+	@Override
+	public QueryEndpointMapDTO createQueryEndpointMap(QueryEndpointMapDTO queryEndpointMapDto) {
+		QueryEndpointMapEntity toInsert = new QueryEndpointMapEntity();
+		toInsert.setEndpointId(queryEndpointMapDto.getEndpointId());
+		toInsert.setQueryId(queryEndpointMapDto.getQueryId());
+		toInsert.setStartDate(new Date());
+		QueryEndpointStatusEntity status = statusDao.getQueryEndpointStatusByName(QueryEndpointStatus.Active.name());
+		toInsert.setStatusId(status == null ? null : status.getId());
+		entityManager.persist(toInsert);
+		entityManager.flush();
+		entityManager.clear();
+		return new QueryEndpointMapDTO(toInsert);
+	}
+	
+	@Override
+	public QueryEndpointMapDTO updateQueryEndpointMap(QueryEndpointMapDTO newQueryEndpointMap) {
+		logger.info("Update query endpoint map " + newQueryEndpointMap.getId() + " with status " + newQueryEndpointMap.getStatus());
+		QueryEndpointMapEntity existingQueryEndpointMap = getQueryEndpointById(newQueryEndpointMap.getId());
+		if(existingQueryEndpointMap != null) {
+			existingQueryEndpointMap.setEndDate(newQueryEndpointMap.getEndDate());
+			if((newQueryEndpointMap.getStatus() != null && 
+				newQueryEndpointMap.getStatus() == QueryEndpointStatus.Closed) 
 				||
-				(existingQueryLocationMap.getStatus() != null && 
-				(existingQueryLocationMap.getStatus().getStatus() != QueryLocationStatus.Cancelled || 
-				existingQueryLocationMap.getStatus().getStatus() != QueryLocationStatus.Closed))) {
+				(existingQueryEndpointMap.getStatus() != null && 
+				existingQueryEndpointMap.getStatus().getStatus() != QueryEndpointStatus.Cancelled && 
+				existingQueryEndpointMap.getStatus().getStatus() != QueryEndpointStatus.Closed)) {
 				//always change the status if we are moving to Closed.
 				//aside from that, don't change the status if it's currently Cancelled or Closed.
-				QueryLocationStatusEntity newStatus = 
-						statusDao.getQueryLocationStatusByName(newQueryLocationMap.getStatus().name());
-				existingQueryLocationMap.setStatusId(newStatus == null ? null : newStatus.getId());
+				QueryEndpointStatusEntity newStatus = 
+						statusDao.getQueryEndpointStatusByName(newQueryEndpointMap.getStatus().name());
+				existingQueryEndpointMap.setStatusId(newStatus == null ? null : newStatus.getId());
 			} 
-			entityManager.merge(existingQueryLocationMap);
+			entityManager.merge(existingQueryEndpointMap);
 			entityManager.flush();
-			logger.info("Updated query location Status " + newQueryLocationMap.getId());
-			return new QueryLocationMapDTO(existingQueryLocationMap);
+			logger.info("Updated query endpoint Status " + newQueryEndpointMap.getId());
+			return new QueryEndpointMapDTO(existingQueryEndpointMap);
 		} else {
-			logger.info("Could not find a query location map with ID " + newQueryLocationMap.getId());
+			logger.info("Could not find a query endpoint map with ID " + newQueryEndpointMap.getId());
 		}
+		entityManager.clear();
 		return null;
 	}
 	
@@ -138,18 +127,18 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	public QueryDTO update(QueryDTO dto) {
 		QueryEntity query = this.getEntityById(dto.getId());
 		if(query.getStatus().getStatus() != QueryStatus.Closed) {
-			logger.info("Set last read date for query " + dto.getId() + " to " + dto.getLastReadDate());
 			query.setLastReadDate(dto.getLastReadDate());
-			logger.info("Set status for query " + dto.getId() + " to " + dto.getStatus());
+			logger.info("Set last read date for query " + dto.getId() + " to " + dto.getLastReadDate());
 			QueryStatusEntity qStatus = statusDao.getQueryStatusByName(dto.getStatus().name());
 			query.setStatus(qStatus);
 			if(qStatus != null) {
 				query.setStatusId(qStatus.getId());
 			}
 			//terms and user wouldn't change
-			//location statuses should be updated separately in a manager
+			//endpoint statuses should be updated separately in a manager
 			entityManager.merge(query);
 			entityManager.flush();
+			logger.info("Set status for query " + dto.getId() + " to " + dto.getStatus());
 		} else {
 			logger.warn("Attempted to update query " + dto.getId() + " but it is already marked 'Closed'. Not updating.");
 		}
@@ -193,7 +182,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	@Override
-	public QueryDTO getById(Long id) {
+	public QueryDTO findById(Long id) {
 		
 		QueryDTO dto = null;
 		QueryEntity qe = this.getEntityById(id);
@@ -223,11 +212,6 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		}
 	}
 	
-	private List<QueryEntity> findAllEntities() {
-		Query query = entityManager.createQuery("from QueryEntity");
-		return query.getResultList();
-	}
-	
 	private QueryEntity getEntityById(Long id) {
 		//the status entity was being cached and calling clear here
 		//forces it to refresh based on the query we run
@@ -236,8 +220,9 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		QueryEntity entity = null;
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.status "
-				+ "LEFT OUTER JOIN FETCH q.locationStatuses locs "
-				+ "LEFT OUTER JOIN FETCH locs.status status "
+				+ "LEFT OUTER JOIN FETCH q.endpointStatuses endpointMaps "
+				+ "LEFT OUTER JOIN FETCH endpointMaps.endpoint endpoint "
+				+ "LEFT OUTER JOIN FETCH endpointMaps.status status "
 				+ "where q.id = :entityid) ", 
 				QueryEntity.class );
 		
@@ -250,13 +235,13 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	public Boolean hasActiveLocations(Long queryId) {		
-		QueryLocationStatusEntity statusEntity = statusDao.getQueryLocationStatusByName(QueryLocationStatus.Active.name());
+		QueryEndpointStatusEntity statusEntity = statusDao.getQueryEndpointStatusByName(QueryEndpointStatus.Active.name());
 		if(statusEntity == null) {
 			return Boolean.FALSE;
 		}
-		Query query = entityManager.createQuery( "SELECT count(loc) "
-				+ "FROM QueryLocationMapEntity loc " 
-				+ "WHERE loc.queryId = :queryId " 
+		Query query = entityManager.createQuery( "SELECT count(map) "
+				+ "FROM QueryEndpointMapEntity map " 
+				+ "WHERE map.queryId = :queryId " 
 				+ "AND statusId = :statusId", Long.class);
 		
 		query.setParameter("queryId", queryId);
@@ -266,29 +251,44 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 		return activeCount > 0;
 	}
 	
-	private QueryLocationMapEntity getQueryStatusById(Long id) {
-		QueryLocationMapEntity entity = null;
-		
-		Query query = entityManager.createQuery( "SELECT distinct q from QueryLocationMapEntity q "
-				+ "LEFT OUTER JOIN FETCH q.location " 
+	private QueryEndpointMapEntity getQueryEndpointById(Long id) {
+		QueryEndpointMapEntity entity = null;
+		Query query = entityManager.createQuery( "SELECT distinct q from QueryEndpointMapEntity q "
+				+ "JOIN FETCH q.endpoint " 
 				+ "LEFT OUTER JOIN FETCH q.results "
 				+ "JOIN FETCH q.status "
-				+ "where q.id = :entityid) ", 
-				QueryLocationMapEntity.class );
+				+ "where q.id = :entityid ", 
+				QueryEndpointMapEntity.class );
 		
 		query.setParameter("entityid", id);
-		List<QueryLocationMapEntity> result = query.getResultList();
+		List<QueryEndpointMapEntity> result = query.getResultList();
 		if(result.size() == 1) {
 			entity = result.get(0);
 		}
-		
 		return entity;
+	}
+	
+	private List<QueryEndpointMapEntity> getQueryEndpointByQueryAndEndpoint(Long queryId, Long endpointId) {
+		QueryEndpointMapEntity entity = null;
+		Query query = entityManager.createQuery( "SELECT distinct q "
+				+ "FROM QueryEndpointMapEntity q, QueryEndpointStatusEntity eStatus "
+				+ "JOIN FETCH q.endpoint endpoint " 
+				+ "LEFT OUTER JOIN FETCH q.results "
+				+ "JOIN FETCH q.status "
+				+ "WHERE q.queryId = :queryId "
+				+ "AND q.endpointId = :endpointId "
+				+ "AND eStatus.status != '" + QueryEndpointStatus.Closed.name() + "'", 
+				QueryEndpointMapEntity.class );
+		
+		query.setParameter("queryId", queryId);
+		query.setParameter("endpointId", endpointId);
+		return query.getResultList();
 	}
 	
 	private List<QueryEntity> getEntitiesByUser(String user) {
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.status "
-				+ "LEFT OUTER JOIN FETCH q.locationStatuses "
+				+ "LEFT OUTER JOIN FETCH q.endpointStatuses "
 				+ "where q.userId = :userId) ", 
 				QueryEntity.class );
 		
@@ -300,7 +300,7 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	private List<QueryEntity> getEntitiesByUserAndStatus(String user, List<QueryStatus> statuses) {		
 		Query query = entityManager.createQuery( "SELECT distinct q from QueryEntity q "
 				+ "LEFT OUTER JOIN FETCH q.status "
-				+ "LEFT OUTER JOIN FETCH q.locationStatuses "
+				+ "LEFT OUTER JOIN FETCH q.endpointStatuses "
 				+ "where q.userId = :userId "
 				+ "and q.status.status IN (:status)) ", 
 				QueryEntity.class );

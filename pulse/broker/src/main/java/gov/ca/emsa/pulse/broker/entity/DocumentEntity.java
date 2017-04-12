@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
+
 @Entity
 @Table(name="document")
 public class DocumentEntity {
@@ -23,29 +25,50 @@ public class DocumentEntity {
 	@Column( name = "id", nullable = false )
 	private Long id;
 	
-	@Column(name="patient_location_map_id")
-	private Long patientLocationMapId;
+	@Column(name="patient_endpoint_map_id")
+	private Long patientEndpointMapId;
 	
 	//metadata
-	@Column(name="name")
+	@Column(name="name_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(name_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String name;
 	
-	@Column(name = "format")
+	@Column(name = "format_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(format_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String format;
 	
-	@Column(name = "class_name")
+	@Column(name = "class_name_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(class_name_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String className;
 	
-	@Column(name = "confidentiality")
+	@Column(name = "confidentiality_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(confidentiality_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String confidentiality;
 	
-	@Column(name = "description")
+	@Column(name = "description_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(description_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String description;
 	
-	@Column(name = "size")
+	@Column(name = "size_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(size_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String size;
 	
-	@Column(name = "doc_creation_time")
+	@Column(name = "doc_creation_time_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(doc_creation_time_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
 	private String creationTime;
 		
 	//required to get the document back later
@@ -58,12 +81,15 @@ public class DocumentEntity {
 	@Column(name = "document_unique_id")
 	private String documentUniqueId;
 	
-	@Column(name = "contents")
-	private byte[] contents;
+	@Column(name = "contents_enc")
+	@ColumnTransformer(
+			read = "pgp_pub_decrypt(contents_enc, dearmor((SELECT * from private_key())))", 
+			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
+	private String contents;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "patient_location_map_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private PatientLocationMapEntity patientLocationMap;
+	@JoinColumn(name = "patient_endpoint_map_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private PatientEndpointMapEntity patientEndpointMap;
 	
 	@Column(name = "status_id")
 	private Long statusId;
@@ -71,7 +97,7 @@ public class DocumentEntity {
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "status_id", unique=true, nullable = false, insertable=false, updatable= false)
-	private QueryLocationStatusEntity status;
+	private QueryEndpointStatusEntity status;
 	
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
@@ -130,28 +156,28 @@ public class DocumentEntity {
 		this.format = format;
 	}
 
-	public byte[] getContents() {
+	public String getContents() {
 		return contents;
 	}
 
-	public void setContents(byte[] contents) {
+	public void setContents(String contents) {
 		this.contents = contents;
 	}
 
-	public Long getPatientLocationMapId() {
-		return patientLocationMapId;
+	public Long getPatientEndpointMapId() {
+		return patientEndpointMapId;
 	}
 
-	public void setPatientLocationMapId(Long patientLocationMapId) {
-		this.patientLocationMapId = patientLocationMapId;
+	public void setPatientEndpointMapId(Long patientEndpointMapId) {
+		this.patientEndpointMapId = patientEndpointMapId;
 	}
 
-	public PatientLocationMapEntity getPatientLocationMap() {
-		return patientLocationMap;
+	public PatientEndpointMapEntity getPatientEndpointMap() {
+		return patientEndpointMap;
 	}
 
-	public void setPatientLocationMap(PatientLocationMapEntity patientLocationMap) {
-		this.patientLocationMap = patientLocationMap;
+	public void setPatientEndpointMap(PatientEndpointMapEntity patientEndpointMap) {
+		this.patientEndpointMap = patientEndpointMap;
 	}
 
 	public String getClassName() {
@@ -226,11 +252,11 @@ public class DocumentEntity {
 		this.statusId = statusId;
 	}
 
-	public QueryLocationStatusEntity getStatus() {
+	public QueryEndpointStatusEntity getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryLocationStatusEntity status) {
+	public void setStatus(QueryEndpointStatusEntity status) {
 		this.status = status;
 	}
 }

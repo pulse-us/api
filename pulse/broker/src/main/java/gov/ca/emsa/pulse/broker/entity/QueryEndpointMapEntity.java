@@ -17,8 +17,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="query_location_map")
-public class QueryLocationMapEntity {
+@Table(name="query_endpoint_map")
+public class QueryEndpointMapEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,21 +28,21 @@ public class QueryLocationMapEntity {
 	@Column(name="query_id")
 	private Long queryId;
 	
-	@Column(name = "location_id")
-	private Long locationId;
+	@Column(name = "endpoint_id")
+	private Long endpointId;
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "location_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private LocationEntity location;
+	@JoinColumn(name = "endpoint_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private EndpointEntity endpoint;
 	
-	@Column(name = "query_location_status_id")
+	@Column(name = "query_endpoint_status_id")
 	private Long statusId;
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "query_location_status_id", unique=true, nullable = false, insertable=false, updatable= false)
-	private QueryLocationStatusEntity status;
+	@JoinColumn(name = "query_endpoint_status_id", unique=true, nullable = false, insertable=false, updatable= false)
+	private QueryEndpointStatusEntity status;
 	
 	@Column(name = "start_date", insertable = false, updatable = false)
 	private Date startDate;
@@ -56,8 +56,8 @@ public class QueryLocationMapEntity {
 	@Column( name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "queryLocationId"  )
-	@Column( name = "query_location_map_id", nullable = false  )
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "queryEndpointId"  )
+	@Column( name = "query_endpoint_map_id", nullable = false  )
 	private Set<PatientRecordEntity> results = new HashSet<PatientRecordEntity>();
 	
 	public Long getId() {
@@ -84,11 +84,11 @@ public class QueryLocationMapEntity {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public QueryLocationStatusEntity getStatus() {
+	public QueryEndpointStatusEntity getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryLocationStatusEntity status) {
+	public void setStatus(QueryEndpointStatusEntity status) {
 		this.status = status;
 	}
 
@@ -100,20 +100,20 @@ public class QueryLocationMapEntity {
 		this.queryId = queryId;
 	}
 
-	public Long getLocationId() {
-		return locationId;
+	public Long getEndpointId() {
+		return endpointId;
 	}
 
-	public void setLocationId(Long locationId) {
-		this.locationId = locationId;
+	public void setEndpointId(Long endpointId) {
+		this.endpointId = endpointId;
 	}
 
-	public LocationEntity getLocation() {
-		return location;
+	public EndpointEntity getEndpoint() {
+		return endpoint;
 	}
 
-	public void setLocation(LocationEntity location) {
-		this.location = location;
+	public void setEndpoint(EndpointEntity endpoint) {
+		this.endpoint = endpoint;
 	}
 
 	public Date getStartDate() {

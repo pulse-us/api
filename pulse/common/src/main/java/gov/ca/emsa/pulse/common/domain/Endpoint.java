@@ -16,10 +16,12 @@ public class Endpoint {
 	private String publicKey;
 	private String url;
 	private Date externalLastUpdateDate;
+	private List<Location> locations;
 	private Date creationDate;
 	private Date lastModifiedDate;
 	
 	public Endpoint(){
+		locations = new ArrayList<Location>();
 		mimeTypes = new ArrayList<EndpointMimeType>();
 	}
 
@@ -117,6 +119,14 @@ public class Endpoint {
 
 	public void setMimeTypes(List<EndpointMimeType> mimeTypes) {
 		this.mimeTypes = mimeTypes;
+	}
+
+	public List<Location> getLocations() {
+		return locations;
+	}
+
+	public void setLocations(List<Location> locations) {
+		this.locations = locations;
 	}
 	
 	

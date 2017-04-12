@@ -1,38 +1,38 @@
 package gov.ca.emsa.pulse.broker.dto;
 
 import gov.ca.emsa.pulse.broker.entity.PatientRecordEntity;
-import gov.ca.emsa.pulse.broker.entity.QueryLocationMapEntity;
+import gov.ca.emsa.pulse.broker.entity.QueryEndpointMapEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.ca.emsa.pulse.common.domain.QueryLocationStatus;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
-public class QueryLocationMapDTO {
+public class QueryEndpointMapDTO {
 
 	private Long id;
 	private Long queryId;
-	private Long locationId;
-	private LocationDTO location;
-	private QueryLocationStatus status;
+	private Long endpointId;
+	private EndpointDTO endpoint;
+	private QueryEndpointStatus status;
 	private Date startDate;
 	private Date endDate;
 	private List<PatientRecordDTO> results;
 	
-	public QueryLocationMapDTO(){
+	public QueryEndpointMapDTO(){
 		results = new ArrayList<PatientRecordDTO>();
 	}
 	
-	public QueryLocationMapDTO(QueryLocationMapEntity entity)
+	public QueryEndpointMapDTO(QueryEndpointMapEntity entity)
 	{
 		this();
 		if(entity != null) {
 			this.id = entity.getId();
 			this.queryId = entity.getQueryId();
-			this.locationId = entity.getLocationId();
-			if(entity.getLocation() != null) {
-				this.location = new LocationDTO(entity.getLocation());
+			this.endpointId = entity.getEndpointId();
+			if(entity.getEndpoint() != null) {
+				this.endpoint = new EndpointDTO(entity.getEndpoint());
 			}
 			
 			if(entity.getStatus() != null) {
@@ -65,19 +65,19 @@ public class QueryLocationMapDTO {
 		this.queryId = queryId;
 	}
 
-	public Long getLocationId() {
-		return locationId;
+	public Long getEndpointId() {
+		return endpointId;
 	}
 
-	public void setLocationId(Long locationId) {
-		this.locationId = locationId;
+	public void setEndpointId(Long endpointId) {
+		this.endpointId = endpointId;
 	}
 
-	public QueryLocationStatus getStatus() {
+	public QueryEndpointStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(QueryLocationStatus status) {
+	public void setStatus(QueryEndpointStatus status) {
 		this.status = status;
 	}
 
@@ -105,11 +105,11 @@ public class QueryLocationMapDTO {
 		this.results = results;
 	}
 
-	public LocationDTO getLocation() {
-		return location;
+	public EndpointDTO getEndpoint() {
+		return endpoint;
 	}
 
-	public void setLocation(LocationDTO location) {
-		this.location = location;
+	public void setEndpoint(EndpointDTO endpoint) {
+		this.endpoint = endpoint;
 	}
 }
