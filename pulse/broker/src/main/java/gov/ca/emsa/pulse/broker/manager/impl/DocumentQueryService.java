@@ -57,42 +57,48 @@ public class DocumentQueryService implements Runnable {
 					querySuccess = false;
 				}
 			}
-			
-			//store the returned document info
-			if(searchResults != null && searchResults.getStatus() == IheStatus.Success) {
-				List<DocumentDTO> docs = searchResults.getResults();
-				if(docs != null && docs.size() > 0) {
-					for(DocumentDTO doc : docs) {
-						doc.setPatientEndpointMapId(patientEndpointMap.getId());
-						//save document
-						docManager.create(doc);
+			synchronized(patientManager) {
+				patientEndpointMap = patientManager.getPatientEndpointMapById(patientEndpointMap.getId());
+				if(patientEndpointMap.getDocumentsQueryStatus() != QueryEndpointStatus.Cancelled && 
+					patientEndpointMap.getDocumentsQueryStatus() != QueryEndpointStatus.Closed) {
+					//store the returned document info
+					if(searchResults != null && searchResults.getStatus() == IheStatus.Success) {
+						List<DocumentDTO> docs = searchResults.getResults();
+						if(docs != null && docs.size() > 0) {
+							for(DocumentDTO doc : docs) {
+								doc.setPatientEndpointMapId(patientEndpointMap.getId());
+								//save document
+								docManager.create(doc);
+							}
+						} else {
+							logger.info("Got 0 document results from query to endpoint with external id '" + endpoint.getExternalId() + "'");
+						}
+					} else if(searchResults != null && searchResults.getStatus() == IheStatus.Failure) {
+						querySuccess = false;
+					} else {
+						logger.error("Got a null response back from query to endpoint with external id '" + endpoint.getExternalId() + "'");
 					}
-				} else {
-					logger.info("Got 0 document results from query to endpoint with external id '" + endpoint.getExternalId() + "'");
+					logger.info("Completed query to endpoint with external id '" + endpoint.getExternalId() + "'");
 				}
-			} else if(searchResults != null && searchResults.getStatus() == IheStatus.Failure) {
-				querySuccess = false;
-			} else {
-				logger.error("Got a null response back from query to endpoint with external id '" + endpoint.getExternalId() + "'");
+				
+				patientEndpointMap.setDocumentsQueryEnd(new Date());
+				if(querySuccess) {
+					patientEndpointMap.setDocumentsQueryStatus(QueryEndpointStatus.Successful);
+				} else {
+					patientEndpointMap.setDocumentsQueryStatus(QueryEndpointStatus.Failed);
+				}
+				
+				//update mapping of our staged patient to the endpoint just queried
+				try {
+					patientManager.updatePatientEndpointMap(patientEndpointMap);
+				} catch(SQLException ex) {
+					logger.error("Could not update patient endpoint map with "
+							+ "[id: " + patientEndpointMap.getId() + ", "
+							+ "externalPatientRecordId: " + patientEndpointMap.getExternalPatientRecordId() + ", " 
+							+ "endpointId: " + patientEndpointMap.getEndpointId() + ", " 
+							+ "patientId: " + patientEndpointMap.getPatientId() + "]");
+				}
 			}
-			logger.info("Completed query to endpoint with external id '" + endpoint.getExternalId() + "'");
-		}
-		
-		patientEndpointMap.setDocumentsQueryEnd(new Date());
-		if(querySuccess) {
-			patientEndpointMap.setDocumentsQueryStatus(QueryEndpointStatus.Successful);
-		} else {
-			patientEndpointMap.setDocumentsQueryStatus(QueryEndpointStatus.Failed);
-		}
-		//update mapping of our staged patient to the endpoint just queried
-		try {
-			patientManager.updatePatientEndpointMap(patientEndpointMap);
-		} catch(SQLException ex) {
-			logger.error("Could not update patient endpoint map with "
-					+ "[id: " + patientEndpointMap.getId() + ", "
-					+ "externalPatientRecordId: " + patientEndpointMap.getExternalPatientRecordId() + ", " 
-					+ "endpointId: " + patientEndpointMap.getEndpointId() + ", " 
-					+ "patientId: " + patientEndpointMap.getPatientId() + "]");
 		}
 	}
 

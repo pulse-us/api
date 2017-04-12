@@ -19,7 +19,7 @@ public class PatientEndpointMapDTO {
 	private Date documentsQueryStart;
 	private Date documentsQueryEnd;
 	private List<DocumentDTO> documents;
-	
+		
 	public PatientEndpointMapDTO() {
 		documents = new ArrayList<DocumentDTO>();
 	}
