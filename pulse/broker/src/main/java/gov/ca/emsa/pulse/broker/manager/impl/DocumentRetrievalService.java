@@ -50,6 +50,7 @@ public class DocumentRetrievalService implements Runnable {
 					adapter.retrieveDocumentsContents(user, endpoint, documents, samlInput, patientEndpointMap);
 				} catch(Exception ex) {
 					logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
+					ex.printStackTrace();
 					querySuccess = false;
 				}
 			}

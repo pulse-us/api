@@ -150,7 +150,7 @@ public class DocumentManagerImpl implements DocumentManager {
 					DocumentDTO newDocRequest = new DocumentDTO(resultDoc);
 					newDocRequest.setStatus(QueryEndpointStatus.Active);
 					resultDoc = docDao.create(newDocRequest);
-					docsToGet.add(resultDoc);
+					docsToGet.add(newDocRequest);
 				} else {
 					docsToGet.add(resultDoc);
 				}
