@@ -83,10 +83,8 @@ public class DocumentRetrievalService implements Runnable {
 			if(querySuccess) {
 				//store the returned document contents
 				for(DocumentDTO doc : documents) {
-					if(!StringUtils.isEmpty(doc.getContents())) {
-						doc.setStatus(QueryEndpointStatus.Successful);
-						docManager.update(doc);
-					}
+					doc.setStatus(QueryEndpointStatus.Successful);
+					docManager.update(doc);
 				}
 			} else {
 				for(DocumentDTO doc : documents) {
