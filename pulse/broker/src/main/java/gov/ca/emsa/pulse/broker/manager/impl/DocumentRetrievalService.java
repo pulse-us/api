@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
@@ -24,7 +25,8 @@ public class DocumentRetrievalService implements Runnable {
 
 	private PatientEndpointMapDTO patientEndpointMap;
 	private EndpointDTO endpoint;
-	private List<DocumentDTO> documents;
+	private DocumentDTO document;
+	//private List<DocumentDTO> documents;
 	@Autowired private DocumentManager docManager;
 	@Autowired private AdapterFactory adapterFactory;
 	private SAMLInput samlInput;
@@ -32,11 +34,31 @@ public class DocumentRetrievalService implements Runnable {
 	
 	@Override
 	public void run() {
+		List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
+		
 		boolean querySuccess = true;
 		if(endpoint == null) {
 			logger.error("There is no document retrieval endpoint to get document contents.");
 			querySuccess = false;
+		} else if(document == null) {
+			logger.error("No document was specified.");
+			querySuccess = false;
 		} else {
+			if(document.getStatus() != null && 
+				(document.getStatus() == QueryEndpointStatus.Cancelled ||
+				document.getStatus() == QueryEndpointStatus.Failed)) {
+				
+				document.setStatus(QueryEndpointStatus.Closed);
+				docManager.update(document);
+				
+				DocumentDTO newDocRequest = new DocumentDTO(document);
+				newDocRequest.setStatus(QueryEndpointStatus.Active);
+				document = docManager.create(newDocRequest);
+				logger.info("Is resultDoc null?: " + (document == null));
+				logger.info("Created document with ID " + document.getId());
+			} 
+			documents.add(document);
+			
 			Adapter adapter = adapterFactory.getAdapter(endpoint);
 			if(adapter != null) {
 				logger.info("Starting query to endpoint with external id '" + endpoint.getExternalId() + "' for document contents.");
@@ -112,13 +134,13 @@ public class DocumentRetrievalService implements Runnable {
 		this.samlInput = samlInput;
 	}
 
-	public List<DocumentDTO> getDocuments() {
-		return documents;
-	}
-
-	public void setDocuments(List<DocumentDTO> documents) {
-		this.documents = documents;
-	}
+//	public List<DocumentDTO> getDocuments() {
+//		return documents;
+//	}
+//
+//	public void setDocuments(List<DocumentDTO> documents) {
+//		this.documents = documents;
+//	}
 
 	public PatientEndpointMapDTO getPatientEndpointMap() {
 		return patientEndpointMap;
@@ -126,5 +148,13 @@ public class DocumentRetrievalService implements Runnable {
 
 	public void setPatientEndpointMap(PatientEndpointMapDTO patientEndpointMap) {
 		this.patientEndpointMap = patientEndpointMap;
+	}
+
+	public DocumentDTO getDocument() {
+		return document;
+	}
+
+	public void setDocument(DocumentDTO document) {
+		this.document = document;
 	}
 }

@@ -45,18 +45,21 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		
 		entityManager.persist(doc);
 		entityManager.flush();
-		return new DocumentDTO(doc);
+		entityManager.clear();
+		return getById(doc.getId());
 	}
 
 	@Override
 	@Transactional
-	public DocumentDTO update(DocumentDTO newDocument) {
-		DocumentEntity existingDocument = this.getEntityById(newDocument.getId());	
+	public DocumentDTO update(DocumentDTO toUpdate) {
+		logger.info("Trying to update document " + toUpdate.getId() + " to status " + toUpdate.getStatus());
+		DocumentEntity existingDocument = this.getEntityById(toUpdate.getId());	
+		logger.info("Found document: " + existingDocument);
 		
 		if(existingDocument.getStatus() == null
 			||
-			(newDocument.getStatus() != null && 
-			newDocument.getStatus() == QueryEndpointStatus.Closed) 
+			(toUpdate.getStatus() != null && 
+			toUpdate.getStatus() == QueryEndpointStatus.Closed) 
 			||
 			(existingDocument.getStatus() != null && 
 			existingDocument.getStatus().getStatus() != QueryEndpointStatus.Cancelled && 
@@ -64,20 +67,20 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 				//always change the status if we are moving to Closed.
 				//aside from that, don't do any update if the document is currently Cancelled or Closed.
 				QueryEndpointStatusEntity newStatus = 
-						statusDao.getQueryEndpointStatusByName(newDocument.getStatus().name());
+						statusDao.getQueryEndpointStatusByName(toUpdate.getStatus().name());
 				existingDocument.setStatusId(newStatus == null ? null : newStatus.getId());
-				existingDocument.setName(newDocument.getName());
-				existingDocument.setFormat(newDocument.getFormat());
-				existingDocument.setConfidentiality(newDocument.getConfidentiality());
-				existingDocument.setCreationTime(newDocument.getCreationTime());
-				existingDocument.setDescription(newDocument.getDescription());
-				existingDocument.setDocumentUniqueId(newDocument.getDocumentUniqueId());
-				existingDocument.setHomeCommunityId(newDocument.getHomeCommunityId());
-				existingDocument.setRepositoryUniqueId(newDocument.getRepositoryUniqueId());
-				existingDocument.setSize(newDocument.getSize());
-				existingDocument.setContents(newDocument.getContents());
+				existingDocument.setName(toUpdate.getName());
+				existingDocument.setFormat(toUpdate.getFormat());
+				existingDocument.setConfidentiality(toUpdate.getConfidentiality());
+				existingDocument.setCreationTime(toUpdate.getCreationTime());
+				existingDocument.setDescription(toUpdate.getDescription());
+				existingDocument.setDocumentUniqueId(toUpdate.getDocumentUniqueId());
+				existingDocument.setHomeCommunityId(toUpdate.getHomeCommunityId());
+				existingDocument.setRepositoryUniqueId(toUpdate.getRepositoryUniqueId());
+				existingDocument.setSize(toUpdate.getSize());
+				existingDocument.setContents(toUpdate.getContents());
 				existingDocument.setLastReadDate(new Date());
-				existingDocument.setPatientEndpointMapId(newDocument.getPatientEndpointMapId());
+				existingDocument.setPatientEndpointMapId(toUpdate.getPatientEndpointMapId());
 				
 				existingDocument = entityManager.merge(existingDocument);
 				entityManager.flush();
@@ -146,7 +149,7 @@ public class DocumentDAOImpl extends BaseDAOImpl implements DocumentDAO {
 		
 		query.setParameter("entityid", id);
 		List<DocumentEntity> result = query.getResultList();
-		if(result.size() == 1) {
+		if(result != null && result.size() > 0) {
 			entity = result.get(0);
 		}
 		

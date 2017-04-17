@@ -61,7 +61,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	@Transactional
-	public synchronized DocumentDTO update(DocumentDTO toCreate) {
+	public DocumentDTO update(DocumentDTO toCreate) {
 		return docDao.update(toCreate);
 	}
 	
@@ -88,12 +88,12 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	@Transactional
-	public void queryForDocumentContents(CommonUser user, SAMLInput samlInput, EndpointDTO endpoint, List<DocumentDTO> docsFromEndpoints, PatientEndpointMapDTO patientEndpointMap) {
+	public void queryForDocumentContents(CommonUser user, SAMLInput samlInput, EndpointDTO endpoint, DocumentDTO document, PatientEndpointMapDTO patientEndpointMap) {
 		DocumentRetrievalService service = getDocumentRetrievalService();
 		service.setSamlInput(samlInput);
 		service.setEndpoint(endpoint);
 		service.setPatientEndpointMap(patientEndpointMap);
-		service.setDocuments(docsFromEndpoints);
+		service.setDocument(document);
 		service.setUser(user);
 		pool.execute(service);
 	}
@@ -138,25 +138,7 @@ public class DocumentManagerImpl implements DocumentManager {
 				}
 			}
 			
-			if(documentContentsEndpoint != null) {
-				List<DocumentDTO> docsToGet = new ArrayList<DocumentDTO>();
-				if(resultDoc.getStatus() != null && 
-					(resultDoc.getStatus() == QueryEndpointStatus.Cancelled ||
-					resultDoc.getStatus() == QueryEndpointStatus.Failed)) {
-					
-					resultDoc.setStatus(QueryEndpointStatus.Closed);
-					docDao.update(resultDoc);
-					
-					DocumentDTO newDocRequest = new DocumentDTO(resultDoc);
-					newDocRequest.setStatus(QueryEndpointStatus.Active);
-					resultDoc = docDao.create(newDocRequest);
-					docsToGet.add(newDocRequest);
-				} else {
-					docsToGet.add(resultDoc);
-				}
-				
-				queryForDocumentContents(user, samlInput, documentContentsEndpoint, docsToGet, patientEndpointMap);
-			}
+			queryForDocumentContents(user, samlInput, documentContentsEndpoint, resultDoc, patientEndpointMap);
 		}
 		return resultDoc;
 	}
