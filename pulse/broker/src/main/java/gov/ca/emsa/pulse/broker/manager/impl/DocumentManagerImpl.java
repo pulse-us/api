@@ -61,7 +61,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	@Transactional
-	public synchronized DocumentDTO update(DocumentDTO toCreate) {
+	public DocumentDTO update(DocumentDTO toCreate) {
 		return docDao.update(toCreate);
 	}
 	
@@ -87,11 +87,11 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	@Transactional
-	public void queryForDocumentContents(CommonUser user, EndpointDTO endpoint, List<DocumentDTO> docsFromEndpoints, PatientEndpointMapDTO patientEndpointMap) {
+	public void queryForDocumentContents(CommonUser user, EndpointDTO endpoint, DocumentDTO document, PatientEndpointMapDTO patientEndpointMap) {
 		DocumentRetrievalService service = getDocumentRetrievalService();
 		service.setEndpoint(endpoint);
 		service.setPatientEndpointMap(patientEndpointMap);
-		service.setDocuments(docsFromEndpoints);
+		service.setDocument(document);
 		service.setUser(user);
 		pool.execute(service);
 	}
@@ -153,7 +153,7 @@ public class DocumentManagerImpl implements DocumentManager {
 					docsToGet.add(resultDoc);
 				}
 				
-				queryForDocumentContents(user, documentContentsEndpoint, docsToGet, patientEndpointMap);
+				queryForDocumentContents(user, documentContentsEndpoint, resultDoc, patientEndpointMap);
 			}
 		}
 		return resultDoc;

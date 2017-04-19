@@ -14,7 +14,7 @@ public interface DocumentManager {
 	public DocumentDTO update(DocumentDTO toUpdate);
 	public void queryForDocuments(CommonUser user, PatientEndpointMapDTO dto);
 	public void queryForDocumentContents(CommonUser user,  
-			EndpointDTO endpoint, List<DocumentDTO> docsFromEndpoints, PatientEndpointMapDTO dto);
+			EndpointDTO endpoint, DocumentDTO document, PatientEndpointMapDTO dto);
 	public DocumentDTO cancelDocumentContentQuery(Long documentId, Long patientId);
 	public List<DocumentDTO> getDocumentsForPatient(Long patientId);
 	public DocumentDTO getDocumentById(CommonUser user, Long documentId) throws SQLException;

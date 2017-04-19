@@ -6,6 +6,7 @@ import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import java.util.Collection;
 import java.util.Set;
 
+import org.opensaml.saml2.core.Assertion;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -35,6 +36,8 @@ public interface User extends UserDetails , Authentication {
     public void setpurpose_for_use(String purpose_for_use);
     public String getrole ();
     public void setrole(String role);
+    public Assertion getAssertion();
+    public void setAssertion(Assertion assertion);
 
     public void setAcf(AlternateCareFacility acf);
     public AlternateCareFacility getAcf();
