@@ -2,6 +2,7 @@ package gov.ca.emsa.pulse.broker.dao;
 
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -17,7 +18,8 @@ public interface PatientDAO {
 	public void delete(Long id) throws SQLException;
 	public PatientDTO getById(Long id);
 	public PatientEndpointMapDTO getPatientEndpointMapById(Long id);
-
-	public List<PatientDTO> getPatientsAtAcf(Long acfId);
+	public List<PatientEndpointMapDTO> getPatientEndpointMaps(Long patientId, Long endpointId);
+	
+	public List<PatientDTO> getPatientsAtAcf(Long acfId, List<QueryEndpointStatus> statuses);
 	public void deleteItemsOlderThan(Date oldestItem) throws SQLException;
 }

@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.opensaml.saml2.core.Assertion;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JWTAuthenticatedUser implements User {
@@ -24,6 +26,7 @@ public class JWTAuthenticatedUser implements User {
     private String organization;
     private String purpose_for_use;
     private String role;
+    private Assertion assertion;
 
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private AlternateCareFacility acf;
@@ -102,6 +105,14 @@ public class JWTAuthenticatedUser implements User {
     public void setrole(String role) {
         this.role = role;
     }
+
+	public Assertion getAssertion() {
+		return assertion;
+	}
+
+	public void setAssertion(Assertion assertion) {
+		this.assertion = assertion;
+	}
 
 	public Set<GrantedPermission> getPermissions() {
 		return this.permissions;

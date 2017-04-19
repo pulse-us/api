@@ -168,7 +168,7 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 					//TODO: prob want to store the extension and root separately
 					// extension is the Assigning Authority of the patient
 					// the root is the PID of the patient from the AA
-					patientRecord.setLocationPatientRecordId(ids.get(0).getExtension() + "^^^&amp;" + ids.get(0).getRoot() + "&amp;ISO");
+					patientRecord.setLocationPatientRecordId(ids.get(0).getExtension() + "^^^&" + ids.get(0).getRoot() + "&ISO");
 				} else {
 					patientRecord.setLocationPatientRecordId("COULD NOT PARSE OR WAS EMPTY");
 				}

@@ -79,7 +79,7 @@ public class QueryService {
 
 	@ApiOperation(value = "Cancel part of a query that's going to a specific endpoint")
 	@RequestMapping(value = "/{queryId}/endpoint/{endpointId}/cancel", method = RequestMethod.POST)
-	public Query cancelQueryToEndpoint(@PathVariable(value="queryId") Long queryId, 
+	public Query cancelPatientDiscoveryQuery(@PathVariable(value="queryId") Long queryId, 
 			@PathVariable(value="endpointId") Long endpointId) throws InvalidArgumentsException {
 		synchronized (queryManager) {
 			QueryDTO query = queryManager.getById(queryId);
@@ -107,7 +107,6 @@ public class QueryService {
     public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
     		@PathVariable("endpointId") Long endpointId) throws JsonProcessingException, InvalidArgumentsException, IOException {
 		CommonUser user = UserUtil.getCurrentUser();
-		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
         QueryDTO initiatedQuery = null;
         synchronized(queryManager) {
         	QueryDTO query = queryManager.getById(queryId);
@@ -168,18 +167,8 @@ public class QueryService {
 			//create patient-endpoint mappings for doc discovery based on the patientrecords we are using
 			for(Long patientRecordId : request.getPatientRecordIds()) {
 				PatientEndpointMapDTO patLocMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient, patientRecordId);
-				SAMLInput input = new SAMLInput();
-				input.setStrIssuer(user.getSubjectName());
-				input.setStrNameID("UserBrianLindsey");
-				input.setStrNameQualifier("My Website");
-				input.setSessionId("abcdedf1234567");
-				HashMap<String, String> customAttributes = new HashMap<String,String>();
-				customAttributes.put("RequesterFirstName", user.getFirstName());
-				customAttributes.put("RequestReason", "Get patient documents");
-				//customAttributes.put("PatientRecordId", patLocMapDto.getExternalPatientRecordId());
-				input.setAttributes(customAttributes);
 				patient.getEndpointMaps().add(patLocMapDto);
-				docManager.queryForDocuments(user, input, patLocMapDto);
+				docManager.queryForDocuments(user, patLocMapDto);
 				//kick off document list retrieval service
 				
 			}

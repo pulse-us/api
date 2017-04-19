@@ -12,12 +12,15 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryStatusDAO;
+import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.entity.AlternateCareFacilityEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientEntity;
+import gov.ca.emsa.pulse.broker.entity.QueryEndpointStatusEntity;
 import gov.ca.emsa.pulse.broker.entity.PatientEndpointMapEntity;
 import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
@@ -25,6 +28,7 @@ import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	private static final Logger logger = LogManager.getLogger(PatientDAOImpl.class);
 	@Autowired QueryStatusDAO statusDao;
+	@Autowired DocumentDAO docDao;
 
 	@Override
 	public PatientDTO create(PatientDTO dto) throws SQLException {
@@ -81,22 +85,34 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 	}
 
 	@Override
-	public PatientEndpointMapDTO updatePatientEndpointMap(PatientEndpointMapDTO toUpdate) throws SQLException {
-		logger.debug("Looking up patient org map with id " + toUpdate.getId());
-		PatientEndpointMapEntity orgMap = getOrgMapById(toUpdate.getId());
-		if(orgMap == null) {
-			logger.error("Could not find patient org map with id " + toUpdate.getId());
+	public PatientEndpointMapDTO updatePatientEndpointMap(PatientEndpointMapDTO newPatientEndpointMap) throws SQLException {
+		logger.debug("Looking up patient org map with id " + newPatientEndpointMap.getId());
+		PatientEndpointMapEntity existingPatientEndpointMap = getOrgMapById(newPatientEndpointMap.getId());
+		if(existingPatientEndpointMap == null) {
+			logger.error("Could not find patient org map with id " + newPatientEndpointMap.getId());
 		}		
-		orgMap.setDocumentsQueryStatusId(statusDao.getQueryEndpointStatusByName(toUpdate.getDocumentsQueryStatus().name()).getId());
-		orgMap.setDocumentsQueryStart(toUpdate.getDocumentsQueryStart());
-		orgMap.setDocumentsQueryEnd(toUpdate.getDocumentsQueryEnd());
-		orgMap.setEndpointId(toUpdate.getEndpointId());
-		orgMap.setExternalPatientRecordId(toUpdate.getExternalPatientRecordId());
-		orgMap.setPatientId(toUpdate.getPatientId());
+		if((newPatientEndpointMap.getDocumentsQueryStatus() != null && 
+			newPatientEndpointMap.getDocumentsQueryStatus() == QueryEndpointStatus.Closed) 
+			||
+			(existingPatientEndpointMap.getStatus() != null && 
+			existingPatientEndpointMap.getStatus().getStatus() != QueryEndpointStatus.Cancelled && 
+			existingPatientEndpointMap.getStatus().getStatus() != QueryEndpointStatus.Closed)) {
+				//always change the status if we are moving to Closed.
+				//aside from that, don't change the status if it's currently Cancelled or Closed.
+				QueryEndpointStatusEntity newStatus = 
+						statusDao.getQueryEndpointStatusByName(newPatientEndpointMap.getDocumentsQueryStatus().name());
+				existingPatientEndpointMap.setDocumentsQueryStatusId(newStatus == null ? null : newStatus.getId());
+		} 
+		
+		existingPatientEndpointMap.setDocumentsQueryStart(newPatientEndpointMap.getDocumentsQueryStart());
+		existingPatientEndpointMap.setDocumentsQueryEnd(newPatientEndpointMap.getDocumentsQueryEnd());
+		existingPatientEndpointMap.setEndpointId(newPatientEndpointMap.getEndpointId());
+		existingPatientEndpointMap.setExternalPatientRecordId(newPatientEndpointMap.getExternalPatientRecordId());
+		existingPatientEndpointMap.setPatientId(newPatientEndpointMap.getPatientId());
 
-		entityManager.merge(orgMap);
+		entityManager.merge(existingPatientEndpointMap);
 		entityManager.flush();
-		return new PatientEndpointMapDTO(orgMap);
+		return new PatientEndpointMapDTO(existingPatientEndpointMap);
 	}
 
 	@Override
@@ -132,7 +148,7 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 				+ "LEFT OUTER JOIN FETCH pat.patient "
 				+ "LEFT OUTER JOIN FETCH pat.endpoint "
 				+ "LEFT OUTER JOIN FETCH pat.status "
-				+ "where pat.id = :entityid) ", 
+				+ "where pat.id = :entityid ", 
 				PatientEndpointMapEntity.class );
 
 		query.setParameter("entityid", id);
@@ -143,16 +159,44 @@ public class PatientDAOImpl extends BaseDAOImpl implements PatientDAO {
 
 		return new PatientEndpointMapDTO(entity);
 	}
-
+	
 	@Override
-	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
+	public List<PatientEndpointMapDTO> getPatientEndpointMaps(Long patientId, Long endpointId) {
+		Query query = entityManager.createQuery( "SELECT pat from PatientEndpointMapEntity pat "
+				+ "LEFT OUTER JOIN FETCH pat.patient "
+				+ "LEFT OUTER JOIN FETCH pat.endpoint "
+				+ "LEFT OUTER JOIN FETCH pat.status "
+				+ "where pat.patientId = :patientId " 
+				+ "and pat.endpointId = :endpointId", 
+				PatientEndpointMapEntity.class );
+
+		query.setParameter("patientId", patientId);
+		query.setParameter("endpointId", endpointId);
+		
+		List<PatientEndpointMapEntity> results = query.getResultList();
+		List<PatientEndpointMapDTO> dtoResults = new ArrayList<PatientEndpointMapDTO>();
+		for(PatientEndpointMapEntity result : results) {
+			dtoResults.add(new PatientEndpointMapDTO(result));
+		}
+		return dtoResults;
+	}
+	
+	@Override
+	public List<PatientDTO> getPatientsAtAcf(Long acfId, List<QueryEndpointStatus> statuses) {
 		Query query = entityManager.createQuery( "SELECT distinct pat from PatientEntity pat "
 				+ "LEFT OUTER JOIN FETCH pat.acf "
-				+ "LEFT OUTER JOIN FETCH pat.endpointMaps "
-				+ "where pat.acfId = :acfId) ", 
+				+ "LEFT OUTER JOIN FETCH pat.endpointMaps patientEndpointMap "
+				+ "LEFT OUTER JOIN FETCH patientEndpointMap.status endpointStatus "
+				+ "LEFT JOIN FETCH patientEndpointMap.documents doc "
+				+ "LEFT JOIN FETCH doc.status docStatus " 
+				+ "WHERE pat.acfId = :acfId "
+				+ "AND (patientEndpointMap.documentsQueryStatusId IS NULL OR endpointStatus.status IN (:statuses)) "
+				+ "AND (doc.statusId IS NULL OR docStatus.status IN (:statuses)) ", 
 				PatientEntity.class );
 
 		query.setParameter("acfId", acfId);
+		query.setParameter("statuses", statuses);
+		
 		List<PatientEntity> patients = query.getResultList();
 		List<PatientDTO> results = new ArrayList<PatientDTO>();
 		for(PatientEntity patient : patients) {

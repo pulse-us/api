@@ -11,10 +11,10 @@ import org.springframework.util.StringUtils;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.Adapter;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
-import gov.ca.emsa.pulse.broker.dao.DocumentDAO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
+import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
@@ -25,9 +25,8 @@ public class DocumentRetrievalService implements Runnable {
 	private PatientEndpointMapDTO patientEndpointMap;
 	private EndpointDTO endpoint;
 	private List<DocumentDTO> documents;
-	@Autowired private DocumentDAO docDao;
+	@Autowired private DocumentManager docManager;
 	@Autowired private AdapterFactory adapterFactory;
-	private SAMLInput samlInput;
 	private CommonUser user;
 	
 	@Override
@@ -41,11 +40,13 @@ public class DocumentRetrievalService implements Runnable {
 			if(adapter != null) {
 				logger.info("Starting query to endpoint with external id '" + endpoint.getExternalId() + "' for document contents.");
 				try {
-					for(DocumentDTO document : documents) {
-						document.setStatus(QueryEndpointStatus.Active);
-						docDao.update(document);
+					synchronized(docManager) {
+						for(DocumentDTO document : documents) {
+							document.setStatus(QueryEndpointStatus.Active);
+							docManager.update(document);
+						}
 					}
-					adapter.retrieveDocumentsContents(user, endpoint, documents, samlInput, patientEndpointMap);
+					adapter.retrieveDocumentsContents(user, endpoint, documents, patientEndpointMap);
 				} catch(Exception ex) {
 					logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 					querySuccess = false;
@@ -54,22 +55,24 @@ public class DocumentRetrievalService implements Runnable {
 			logger.info("Completed query to endpoint with external id '" + endpoint.getEndpointStatus() + "' for contents of " + documents.size() + " documents.");
 		}
 		
-		if(querySuccess) {
-			//store the returned document contents
-			for(DocumentDTO doc : documents) {
-				if(!StringUtils.isEmpty(doc.getContents())) {
-					doc.setStatus(QueryEndpointStatus.Successful);
-					docDao.update(doc);
+		synchronized(docManager) {
+			if(querySuccess) {
+				//store the returned document contents
+				for(DocumentDTO doc : documents) {
+					if(!StringUtils.isEmpty(doc.getContents())) {
+						doc.setStatus(QueryEndpointStatus.Successful);
+						docManager.update(doc);
+					}
 				}
-			}
-		} else {
-			for(DocumentDTO doc : documents) {
-				if(!StringUtils.isEmpty(doc.getContents())) {
-					doc.setStatus(QueryEndpointStatus.Successful);
-					docDao.update(doc);
-				} else {
-					doc.setStatus(QueryEndpointStatus.Failed);
-					docDao.update(doc);
+			} else {
+				for(DocumentDTO doc : documents) {
+					if(!StringUtils.isEmpty(doc.getContents())) {
+						doc.setStatus(QueryEndpointStatus.Successful);
+						docManager.update(doc);
+					} else {
+						doc.setStatus(QueryEndpointStatus.Failed);
+						docManager.update(doc);
+					}
 				}
 			}
 		}
@@ -97,14 +100,6 @@ public class DocumentRetrievalService implements Runnable {
 
 	public void setAdapterFactory(AdapterFactory adapterFactory) {
 		this.adapterFactory = adapterFactory;
-	}
-
-	public SAMLInput getSamlInput() {
-		return samlInput;
-	}
-
-	public void setSamlInput(SAMLInput samlInput) {
-		this.samlInput = samlInput;
 	}
 
 	public List<DocumentDTO> getDocuments() {

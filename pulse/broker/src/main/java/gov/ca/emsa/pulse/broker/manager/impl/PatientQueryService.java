@@ -36,7 +36,6 @@ public class PatientQueryService implements Runnable {
 	@Autowired private LocationManager locationManager;
 	@Autowired private AdapterFactory adapterFactory;
 	private PatientSearch toSearch;
-	private SAMLInput samlInput;
 	private CommonUser user;
 	
 	@Override
@@ -53,7 +52,7 @@ public class PatientQueryService implements Runnable {
 			if(adapter != null) {
 				logger.info("Starting query to endpoint with external id '" + endpoint.getExternalId() + "'");
 				try {
-					searchResults = adapter.queryPatients(user, endpoint, toSearch, samlInput);
+					searchResults = adapter.queryPatients(user, endpoint, toSearch);
 					logger.info("Successfully queried endpoint with external id '" + endpoint.getExternalId() + "'");
 				} catch(Exception ex) {
 					logger.error("Exception thrown in adapter " + adapter.getClass() + ": " + ex.getMessage(), ex);
@@ -146,14 +145,6 @@ public class PatientQueryService implements Runnable {
 
 	public void setLocationManager(LocationManager locationManager) {
 		this.locationManager = locationManager;
-	}
-
-	public SAMLInput getSamlInput() {
-		return samlInput;
-	}
-
-	public void setSamlInput(SAMLInput samlInput) {
-		this.samlInput = samlInput;
 	}
 
 	public QueryEndpointMapDTO getQueryEndpointMap() {

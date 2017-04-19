@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
@@ -56,7 +57,11 @@ import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
 import org.opensaml.common.SAMLException;
+import org.opensaml.saml2.core.Assertion;
+import org.opensaml.saml2.core.impl.AssertionImpl;
+import org.opensaml.saml2.core.impl.AssertionMarshaller;
 import org.opensaml.xml.io.MarshallingException;
+import org.opensaml.xml.util.XMLHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartRequest;
@@ -67,6 +72,7 @@ import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.xml.transform.StringSource;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -120,7 +126,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return fault;
 	}
 
-	private void createSecurityHeadingPatientDiscovery(EndpointDTO endpoint, SOAPMessage message, SAMLInput samlInput) throws SOAPException {
+	private void createSecurityHeadingPatientDiscovery(EndpointDTO endpoint, SOAPMessage message, Assertion assertion) throws SOAPException, MarshallingException {
 		SOAPEnvelope env = message.getSOAPPart().getEnvelope();
 		
 		SOAPHeaderElement header1 = message.getSOAPHeader()
@@ -145,20 +151,16 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		SOAPHeaderElement securityElement = message.getSOAPHeader()
 				.addHeaderElement(env.createName("Security", "wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"));
 		
-		//get the SAML assertion into the header. have to "import" it because it's created by a different Document
-		try {
-			Document owner = securityElement.getOwnerDocument();
-			org.w3c.dom.Element samlElement = samlGenerator.createSAMLElement(samlInput);
-			Node importedSamlElement = owner.importNode(samlElement, true);
-			securityElement.appendChild(importedSamlElement);
-		} catch (MarshallingException e) {
-			logger.error("Could not create SAML from input " + samlInput, e);
-		}
+		Document owner = securityElement.getOwnerDocument();
+		AssertionMarshaller am = new AssertionMarshaller();
+		
+		Node importedSamlElement = owner.importNode(am.marshall(assertion), true);
+		securityElement.appendChild(importedSamlElement);
 
 		message.getSOAPHeader().addChildElement(securityElement);
 	}
 	
-	private void createSecurityHeadingDocumentQuery(EndpointDTO endpoint, SOAPMessage message, SAMLInput samlInput) throws SOAPException {
+	private void createSecurityHeadingDocumentQuery(EndpointDTO endpoint, SOAPMessage message, Assertion assertion) throws SOAPException, DOMException, MarshallingException {
 		SOAPEnvelope env = message.getSOAPPart().getEnvelope();
 		
 		SOAPHeaderElement header1 = message.getSOAPHeader()
@@ -183,20 +185,15 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		SOAPHeaderElement securityElement = message.getSOAPHeader()
 				.addHeaderElement(env.createName("Security", "wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"));
 		
-		//get the SAML assertion into the header. have to "import" it because it's created by a different Document
-		try {
-			Document owner = securityElement.getOwnerDocument();
-			org.w3c.dom.Element samlElement = samlGenerator.createSAMLElement(samlInput);
-			Node importedSamlElement = owner.importNode(samlElement, true);
-			securityElement.appendChild(importedSamlElement);
-		} catch (MarshallingException e) {
-			logger.error("Could not create SAML from input " + samlInput, e);
-		}
+		Document owner = securityElement.getOwnerDocument();
+		AssertionMarshaller am = new AssertionMarshaller();
+		
+		Node importedSamlElement = owner.importNode(am.marshall(assertion), true);
 
 		message.getSOAPHeader().addChildElement(securityElement);
 	}
 	
-	private void createSecurityHeadingDocumentRetrieve(EndpointDTO endpoint, SOAPMessage message, SAMLInput samlInput) throws SOAPException {
+	private void createSecurityHeadingDocumentRetrieve(EndpointDTO endpoint, SOAPMessage message, Assertion assertion) throws SOAPException, DOMException, MarshallingException {
 		SOAPEnvelope env = message.getSOAPPart().getEnvelope();
 		
 		SOAPHeaderElement header1 = message.getSOAPHeader()
@@ -221,15 +218,10 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		SOAPHeaderElement securityElement = message.getSOAPHeader()
 				.addHeaderElement(env.createName("Security", "wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"));
 		
-		//get the SAML assertion into the header. have to "import" it because it's created by a different Document
-		try {
-			Document owner = securityElement.getOwnerDocument();
-			org.w3c.dom.Element samlElement = samlGenerator.createSAMLElement(samlInput);
-			Node importedSamlElement = owner.importNode(samlElement, true);
-			securityElement.appendChild(importedSamlElement);
-		} catch (MarshallingException e) {
-			logger.error("Could not create SAML from input " + samlInput, e);
-		}
+		Document owner = securityElement.getOwnerDocument();
+		AssertionMarshaller am = new AssertionMarshaller();
+		
+		Node importedSamlElement = owner.importNode(am.marshall(assertion), true);
 
 		message.getSOAPHeader().addChildElement(securityElement);
 	}
@@ -246,7 +238,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return false;
 	}
 	
-	public String marshallPatientDiscoveryRequest(EndpointDTO endpoint, SAMLInput samlInput, PRPAIN201305UV02 request) throws JAXBException{
+	public String marshallPatientDiscoveryRequest(EndpointDTO endpoint, Assertion assertion, PRPAIN201305UV02 request) throws JAXBException, MarshallingException{
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -261,7 +253,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		}
 		
 		try {
-			createSecurityHeadingPatientDiscovery(endpoint, soapMessage, samlInput);
+			createSecurityHeadingPatientDiscovery(endpoint, soapMessage, assertion);
 		} catch(SOAPException soap) {
 			logger.error(soap);
 		}
@@ -300,7 +292,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		
 	}
 	
-	public String marshallDocumentQueryRequest(EndpointDTO endpoint, SAMLInput samlInput, AdhocQueryRequest request) throws JAXBException{
+	public String marshallDocumentQueryRequest(EndpointDTO endpoint, Assertion assertion, AdhocQueryRequest request) throws JAXBException, DOMException, MarshallingException{
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -315,7 +307,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		}
 		
 		try {
-			createSecurityHeadingDocumentQuery(endpoint, soapMessage, samlInput);
+			createSecurityHeadingDocumentQuery(endpoint, soapMessage, assertion);
 		} catch(SOAPException soap) {
 			logger.error(soap);
 		}
@@ -342,7 +334,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return sw.toString();
 	}
 	
-	public String marshallDocumentSetRequest(EndpointDTO endpoint, SAMLInput samlInput, RetrieveDocumentSetRequestType request) throws JAXBException{
+	public String marshallDocumentSetRequest(EndpointDTO endpoint, Assertion assertion, RetrieveDocumentSetRequestType request) throws JAXBException, DOMException, MarshallingException{
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -357,7 +349,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		}
 		
 		try {
-			createSecurityHeadingDocumentRetrieve(endpoint, soapMessage, samlInput);
+			createSecurityHeadingDocumentRetrieve(endpoint, soapMessage, assertion);
 		} catch(SOAPException soap) {
 			logger.error(soap);
 		}
@@ -420,7 +412,6 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		}
 		return unmarshaller;
 	}
-	
 
 	public AdhocQueryResponse unmarshallErrorQueryResponse(String xml) {
 		MessageFactory factory = null;

@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.opensaml.saml2.core.Assertion;
+
 public class CommonUser implements User{
 
 	private static final long serialVersionUID = -4255948572251487878L;
@@ -25,6 +27,7 @@ public class CommonUser implements User{
     private String organization;
     private String purpose_for_use;
     private String role;
+    private Assertion assertion;
 
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private boolean authenticated = true;
@@ -104,6 +107,13 @@ public class CommonUser implements User{
     public void setrole(String role) {
         this.role = role;
     }
+    
+	public Assertion getAssertion() {
+		return assertion;
+	}
+	public void setAssertion(Assertion assertion) {
+		this.assertion = assertion;
+	}
 	public Set<GrantedPermission> getPermissions() {
 		return permissions;
 	}

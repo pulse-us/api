@@ -322,7 +322,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 			SlotType1 slot2 = new SlotType1();
 			slot2.setName("$XDSDocumentEntryStatus");
 			ValueListType valueList2 = new ValueListType();  
-			valueList2.getValue().add("('urn:oasis:names:tc:ebxml-regrep:StatusType:Approved')");
+			valueList2.getValue().add("('urn:oasis:names:tc:ebxml-regrep:StatusType:Approved','urn:oasis:names:tc:ebxml-regrep:StatusType:Deprecated')");
 			slot2.setValueList(valueList2);
 			query.getSlot().add(slot2);
 			
