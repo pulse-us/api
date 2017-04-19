@@ -50,6 +50,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			Object notBefore = validatedClaims.remove("nbf");
 			Object expires = validatedClaims.remove("exp");
 			Object jti = validatedClaims.remove("jti");
+			Object assertion = validatedClaims.remove("assertion");
             //			Object typ = validatedClaims.remove("typ");
 
 			String subject = (String) validatedClaims.remove("sub");

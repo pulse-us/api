@@ -16,12 +16,13 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
+import org.opensaml.common.SAMLException;
 import org.opensaml.xml.io.MarshallingException;
 import org.w3c.dom.DOMException;
 
 public interface Adapter {
 	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch) throws Exception;
-	public DocumentQueryResults queryDocuments(CommonUser user, EndpointDTO endpoint, PatientEndpointMapDTO patientLocationMap) throws UnknownHostException, UnsupportedEncodingException, DOMException, MarshallingException;
+	public DocumentQueryResults queryDocuments(CommonUser user, EndpointDTO endpoint, PatientEndpointMapDTO patientLocationMap) throws UnknownHostException, UnsupportedEncodingException, DOMException, MarshallingException, SAMLException;
 	public void retrieveDocumentsContents(CommonUser user, EndpointDTO endpoint, List<DocumentDTO> documents, PatientEndpointMapDTO patientLocationMap) 
 			throws UnknownHostException, UnsupportedEncodingException, IheErrorException, MessagingException, IOException, Exception;
 }

@@ -27,10 +27,10 @@ public interface EHealthQueryProducerService {
 	public PRPAIN201306UV02 unMarshallPatientDiscoveryResponseObject(String xml) throws SOAPException, SAMLException, JAXBException;
 	public AdhocQueryResponse unMarshallDocumentQueryResponseObject(String xml) throws SAMLException, SOAPException, JAXBException;
 	public RetrieveDocumentSetResponseType unMarshallDocumentSetRetrieveResponseObject(String searchResults) throws SAMLException, JAXBException, SOAPException;
-	public String marshallPatientDiscoveryRequest(EndpointDTO endpoint, Assertion assertion, PRPAIN201305UV02 response) throws JAXBException, MarshallingException;
+	public String marshallPatientDiscoveryRequest(EndpointDTO endpoint, String assertion, PRPAIN201305UV02 response) throws JAXBException, MarshallingException, SAMLException;
 	public String createSOAPFault();
-	public String marshallDocumentQueryRequest(EndpointDTO endpoint, Assertion assertion, AdhocQueryRequest request) throws JAXBException, DOMException, MarshallingException;
-	public String marshallDocumentSetRequest(EndpointDTO endpoint, Assertion assertion, RetrieveDocumentSetRequestType requestObj) throws JAXBException, DOMException, MarshallingException;
+	public String marshallDocumentQueryRequest(EndpointDTO endpoint, String assertion, AdhocQueryRequest request) throws JAXBException, DOMException, MarshallingException, SAMLException;
+	public String marshallDocumentSetRequest(EndpointDTO endpoint, String assertion, RetrieveDocumentSetRequestType requestObj) throws JAXBException, DOMException, MarshallingException, SAMLException;
 	public PRPAIN201305UV02 unMarshallPatientDiscoveryRequestObject(String xml) throws SOAPException, SAMLException;
 	public AdhocQueryRequest unMarshallDocumentQueryRequestObject(String xml) throws SAMLException;
 	public RetrieveDocumentSetRequestType unMarshallDocumentSetRetrieveRequestObject(String xml) throws SAMLException;

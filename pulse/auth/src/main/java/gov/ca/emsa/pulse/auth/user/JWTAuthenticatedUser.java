@@ -26,7 +26,7 @@ public class JWTAuthenticatedUser implements User {
     private String organization;
     private String purpose_for_use;
     private String role;
-    private Assertion assertion;
+    private String assertion;
 
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private AlternateCareFacility acf;
@@ -106,11 +106,11 @@ public class JWTAuthenticatedUser implements User {
         this.role = role;
     }
 
-	public Assertion getAssertion() {
+	public String getAssertion() {
 		return assertion;
 	}
 
-	public void setAssertion(Assertion assertion) {
+	public void setAssertion(String assertion) {
 		this.assertion = assertion;
 	}
 
@@ -234,6 +234,7 @@ public class JWTAuthenticatedUser implements User {
             "[organization: " + organization + "]" +
             "[purpose_for_use: " + purpose_for_use + "]" +
             "[role: " + role + "]" +
+            "[assertion: " + assertion.toString() + "]" +
             "[jwt: " + details.get("jwt") + "]";
         return ret;
     }

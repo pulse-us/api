@@ -89,16 +89,9 @@ public class JSONToSoapTest {
 	@Autowired EHealthAdapter eHealthAdapter;
 	@Autowired EHealthQueryProducerService queryProducer;
 	
-	public Assertion getAssertion() throws IOException, ConfigurationException{
-		DefaultBootstrap.bootstrap();
-		XMLObjectBuilderFactory builderFactory = Configuration.getBuilderFactory();
-		SAMLObjectBuilder issuerBuilder = (SAMLObjectBuilder) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME);
-        Issuer issuer = (Issuer) issuerBuilder.buildObject();
-		issuer.setValue("https://california.demo.collaborativefusion.com/sso/saml2/idp/");
-		SAMLObjectBuilder assertionBuilder = (SAMLObjectBuilder) builderFactory.getBuilder(Assertion.DEFAULT_ELEMENT_NAME);
-        Assertion assertion = (Assertion) assertionBuilder.buildObject();
-        assertion.setIssuer(issuer);
-		return assertion;
+	public String getAssertion() throws IOException, ConfigurationException{
+		Resource pdFile = resourceLoader.getResource("classpath:assertion.xml");
+		return Resources.toString(pdFile.getURL(), Charsets.UTF_8);
 	}
 
 	@Test
