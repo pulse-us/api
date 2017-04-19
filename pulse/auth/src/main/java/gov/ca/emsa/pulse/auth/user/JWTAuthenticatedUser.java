@@ -234,7 +234,6 @@ public class JWTAuthenticatedUser implements User {
             "[organization: " + organization + "]" +
             "[purpose_for_use: " + purpose_for_use + "]" +
             "[role: " + role + "]" +
-            "[assertion: " + assertion.toString() + "]" +
             "[jwt: " + details.get("jwt") + "]";
         return ret;
     }

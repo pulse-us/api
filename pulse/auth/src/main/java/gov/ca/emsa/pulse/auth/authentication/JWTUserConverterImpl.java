@@ -11,14 +11,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.opensaml.xml.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 
 @Service
 public class JWTUserConverterImpl implements JWTUserConverter {
@@ -50,7 +55,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			Object notBefore = validatedClaims.remove("nbf");
 			Object expires = validatedClaims.remove("exp");
 			Object jti = validatedClaims.remove("jti");
-			Object assertion = validatedClaims.remove("assertion");
+			Object assertionobj = validatedClaims.remove("assertion");
             //			Object typ = validatedClaims.remove("typ");
 
 			String subject = (String) validatedClaims.remove("sub");
@@ -81,6 +86,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             String organization = identityInfo.get(4);
             String purpose_for_use = identityInfo.get(5);
             String role = identityInfo.get(6);
+            String assertion = identityInfo.get(7);
 
             user.setuser_id(user_id);
             user.setusername(username);
@@ -89,8 +95,9 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             user.setorganization(organization);
             user.setpurpose_for_use(purpose_for_use);
             user.setrole(role);
+            user.setAssertion(assertion);
 
-            if (identityInfo.size() > 7) {
+            if (identityInfo.size() > 8) {
                 String acfObjStr = identityInfo.get(7);
             	try {
 	            	ObjectReader reader = new ObjectMapper().reader().forType(AlternateCareFacility.class);
