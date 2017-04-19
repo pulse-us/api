@@ -8,7 +8,6 @@ import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
-import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
@@ -150,13 +149,8 @@ public class PatientManagerImpl implements PatientManager {
 			//we assume that any locations which share this patient discovery endpoint
 			//will also have the same document query and document retrieve endpoints
 			EndpointDTO patientDiscoveryEndpoint = endpointDao.findById(patientDiscoveryEndpointId);
-			if(patientDiscoveryEndpoint != null) {
-				List<LocationDTO> relatedLocations = patientDiscoveryEndpoint.getLocations();
-				if(relatedLocations != null && relatedLocations.size() > 0) {
-					LocationDTO firstRelatedLocation = relatedLocations.get(0);
-					documentDiscoveryEndpoint = endpointDao.findByLocationIdAndType(firstRelatedLocation.getId(), endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_DISCOVERY);
-				}
-			}
+			documentDiscoveryEndpoint = endpointDao.findByManagingOrganizationAndType(patientDiscoveryEndpoint.getManagingOrganization(), 
+					endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_DISCOVERY);
 			
 			if(documentDiscoveryEndpoint != null) {
 				patientEndpointMapToCreate.setEndpointId(documentDiscoveryEndpoint.getId());	

@@ -14,6 +14,7 @@ public class EndpointDTO {
 	private String externalId;
 	private EndpointTypeDTO endpointType;
 	private EndpointStatusDTO endpointStatus;
+	private String managingOrganization;
 	private String adapter;
 	private List<EndpointMimeTypeDTO> mimeTypes;
 	private String payloadType;
@@ -47,6 +48,7 @@ public class EndpointDTO {
 			this.endpointStatus = new EndpointStatusDTO();
 			this.endpointStatus.setId(entity.getEndpointStatusId());
 		}
+		this.managingOrganization = entity.getManagingOrganization();
 		this.adapter = entity.getAdapter();
 		if(entity.getMimeTypes() != null && entity.getMimeTypes().size() > 0) {
 			for(EndpointMimeTypeEntity entityMimeType : entity.getMimeTypes()) {
@@ -173,5 +175,13 @@ public class EndpointDTO {
 
 	public void setLocations(List<LocationDTO> locations) {
 		this.locations = locations;
+	}
+
+	public String getManagingOrganization() {
+		return managingOrganization;
+	}
+
+	public void setManagingOrganization(String managingOrganization) {
+		this.managingOrganization = managingOrganization;
 	}
 }
