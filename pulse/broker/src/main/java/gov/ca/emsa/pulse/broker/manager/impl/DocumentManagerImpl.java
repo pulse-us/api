@@ -131,11 +131,8 @@ public class DocumentManagerImpl implements DocumentManager {
 			EndpointDTO documentContentsEndpoint = null;
 			EndpointDTO documentDiscoveryEndpoint = endpointDao.findById(patientEndpointMap.getEndpointId());
 			if(documentDiscoveryEndpoint != null) {
-				List<LocationDTO> relatedLocations = documentDiscoveryEndpoint.getLocations();
-				if(relatedLocations != null && relatedLocations.size() > 0) {
-					LocationDTO firstRelatedLocation = relatedLocations.get(0);
-					documentContentsEndpoint = endpointDao.findByLocationIdAndType(firstRelatedLocation.getId(), endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_RETRIEVE);
-				}
+				String managingOrganizationName = documentDiscoveryEndpoint.getManagingOrganization();
+				documentContentsEndpoint = endpointDao.findByManagingOrganizationAndType(managingOrganizationName, endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_RETRIEVE);
 			}
 			
 			queryForDocumentContents(user, samlInput, documentContentsEndpoint, resultDoc, patientEndpointMap);

@@ -184,6 +184,35 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 		return null;
 	}
 	
+	@Override
+	public EndpointDTO findByManagingOrganizationAndType(String managingOrganizationName, List<EndpointStatusEnum> statuses, EndpointTypeEnum type) {
+		List<String> statusNames = new ArrayList<String>(statuses.size());
+		for(EndpointStatusEnum status : statuses) {
+			statusNames.add(status.getName().toUpperCase());
+		}
+		
+		Query query = entityManager.createQuery("SELECT DISTINCT endpoint "
+				+ "FROM EndpointEntity endpoint "
+				+ "JOIN FETCH endpoint.endpointStatus endpointStatus "
+				+ "JOIN FETCH endpoint.endpointType "
+				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes "
+				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
+				+ "LEFT OUTER JOIN FETCH locMaps.location loc "
+				+ "WHERE endpoint.managingOrganization = :managingOrgName "
+				+ "AND UPPER(endpoint.endpointType.code) = :typeCode "
+				+ "AND UPPER(endpointStatus.name) IN (:endpointStatusNames)"
+				, EndpointEntity.class);
+		query.setParameter("typeCode", type.getCode().toUpperCase());
+		query.setParameter("managingOrgName", managingOrganizationName);
+		query.setParameter("endpointStatusNames", statusNames);
+		
+		List<EndpointEntity> endpoints = query.getResultList();
+		if(endpoints != null && endpoints.size() > 0) {
+			return new EndpointDTO(endpoints.get(0));
+		}
+		return null;
+	}
+	
 	private EndpointStatusEntity getEndpointStatusByName(String name) {
 		EndpointStatusEntity result = null;
 		Query query = entityManager.createQuery("from EndpointStatusEntity where UPPER(name) = :name",
@@ -319,6 +348,7 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 	private EndpointEntity convert(EndpointDTO endpointDto, EndpointEntity entity) {
 		EndpointEntity endpointEntity = (entity != null ? entity : new EndpointEntity());
 		endpointEntity.setAdapter(endpointDto.getAdapter());
+		endpointEntity.setManagingOrganization(endpointDto.getManagingOrganization());
 		if(endpointDto.getEndpointStatus() != null) {
 			if(endpointDto.getEndpointStatus().getId() != null) {
 				endpointEntity.setEndpointStatusId(endpointDto.getEndpointStatus().getId());

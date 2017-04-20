@@ -10,6 +10,7 @@ public class Endpoint {
 	private String externalId;
 	private EndpointType endpointType;
 	private EndpointStatus endpointStatus;
+	private String managingOrganization;
 	private String adapter;
 	private List<EndpointMimeType> mimeTypes;
 	private String payloadType;
@@ -127,6 +128,14 @@ public class Endpoint {
 
 	public void setLocations(List<Location> locations) {
 		this.locations = locations;
+	}
+
+	public String getManagingOrganization() {
+		return managingOrganization;
+	}
+
+	public void setManagingOrganization(String managingOrganization) {
+		this.managingOrganization = managingOrganization;
 	}
 	
 	

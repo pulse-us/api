@@ -92,18 +92,12 @@ public class SearchService {
 		
 				//get the list of endpoints		
 				for(EndpointDTO endpoint : endpointsToQuery) {
-					//not querying any endpoint that doesn't have 
-					//an associated location
-					if(endpoint.getLocations() != null && endpoint.getLocations().size() > 0) {
-						QueryEndpointMapDTO queryEndpointMap = new QueryEndpointMapDTO();
-						queryEndpointMap.setEndpointId(endpoint.getId());
-						queryEndpointMap.setQueryId(query.getId());
-						queryEndpointMap.setStatus(QueryEndpointStatus.Active);
-						queryEndpointMap = queryManager.createOrUpdateQueryEndpointMap(queryEndpointMap);
-						query.getEndpointMaps().add(queryEndpointMap);
-					} else {
-						logger.warn("Endpoint " + endpoint.getId() + "(url: " + endpoint.getUrl() + ") is being ignored because it is not associated with any locations.");
-					}
+					QueryEndpointMapDTO queryEndpointMap = new QueryEndpointMapDTO();
+					queryEndpointMap.setEndpointId(endpoint.getId());
+					queryEndpointMap.setQueryId(query.getId());
+					queryEndpointMap.setStatus(QueryEndpointStatus.Active);
+					queryEndpointMap = queryManager.createOrUpdateQueryEndpointMap(queryEndpointMap);
+					query.getEndpointMaps().add(queryEndpointMap);
 				}
 	
 	        	queryManager.queryForPatientRecords(input, toSearch, query, user);

@@ -142,6 +142,7 @@ public class EHealthAdapter implements Adapter {
 				}
 			} catch(Exception ex) {
 				logger.error("Exception unmarshalling patient discovery response", ex);
+				ex.printStackTrace();
 				results.setStatus(IheStatus.Failure);
 			}
 			
