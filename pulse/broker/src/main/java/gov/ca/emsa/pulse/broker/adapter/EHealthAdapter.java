@@ -121,7 +121,6 @@ public class EHealthAdapter implements Adapter {
 	@Autowired NameTypeDAO nameTypeDao;
 	@Autowired AuditEventManager auditManager;
 	private RestTemplate restTemplate;
-	FormHttpMessageConverter formConverter;
 	class MyMultiValueMap extends LinkedMultiValueMap<String, Object>
 	{}
 	
@@ -132,16 +131,6 @@ public class EHealthAdapter implements Adapter {
 			    (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
 		rf.setConnectTimeout(defaultConnectTimeoutSeconds.intValue() * 1000);
 		rf.setReadTimeout(defaultRequestTimeoutSeconds.intValue() * 1000);
-		formConverter = new FormHttpMessageConverter() {
-		    @Override
-		    public boolean canRead(Class<?> clazz, MediaType mediaType) {
-		        if (clazz == MyMultiValueMap.class) {
-		            return true;
-		        }
-		        return super.canRead(clazz, mediaType);
-		    }
-		};
-		restTemplate.getMessageConverters().add(formConverter);
 	}
 	
 	@Override
