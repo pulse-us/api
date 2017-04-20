@@ -55,7 +55,6 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			Object notBefore = validatedClaims.remove("nbf");
 			Object expires = validatedClaims.remove("exp");
 			Object jti = validatedClaims.remove("jti");
-			Object assertionobj = validatedClaims.remove("assertion");
             //			Object typ = validatedClaims.remove("typ");
 
 			String subject = (String) validatedClaims.remove("sub");
@@ -86,7 +85,6 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             String organization = identityInfo.get(4);
             String purpose_for_use = identityInfo.get(5);
             String role = identityInfo.get(6);
-            String assertion = identityInfo.get(7);
 
             user.setuser_id(user_id);
             user.setusername(username);
@@ -95,9 +93,8 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             user.setorganization(organization);
             user.setpurpose_for_use(purpose_for_use);
             user.setrole(role);
-            user.setAssertion(assertion);
 
-            if (identityInfo.size() > 8) {
+            if (identityInfo.size() > 7) {
                 String acfObjStr = identityInfo.get(7);
             	try {
 	            	ObjectReader reader = new ObjectMapper().reader().forType(AlternateCareFacility.class);

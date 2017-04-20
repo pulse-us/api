@@ -27,7 +27,6 @@ public class CommonUser implements User{
     private String organization;
     private String purpose_for_use;
     private String role;
-    private String assertion;
 
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private boolean authenticated = true;
@@ -107,13 +106,6 @@ public class CommonUser implements User{
     public void setrole(String role) {
         this.role = role;
     }
-    
-	public String getAssertion() {
-		return assertion;
-	}
-	public void setAssertion(String assertion) {
-		this.assertion = assertion;
-	}
 	public Set<GrantedPermission> getPermissions() {
 		return permissions;
 	}

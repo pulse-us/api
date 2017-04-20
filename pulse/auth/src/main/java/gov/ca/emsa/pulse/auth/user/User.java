@@ -36,8 +36,6 @@ public interface User extends UserDetails , Authentication {
     public void setpurpose_for_use(String purpose_for_use);
     public String getrole ();
     public void setrole(String role);
-    public String getAssertion();
-    public void setAssertion(String assertion);
 
     public void setAcf(AlternateCareFacility acf);
     public AlternateCareFacility getAcf();
