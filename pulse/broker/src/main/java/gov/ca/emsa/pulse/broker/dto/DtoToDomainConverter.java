@@ -254,6 +254,7 @@ public class DtoToDomainConverter {
 		Endpoint result = new Endpoint();
 		result.setId(dto.getId());
 		result.setAdapter(dto.getAdapter());
+		result.setManagingOrganization(dto.getManagingOrganization());
 		if(dto.getEndpointStatus() != null) {
 			EndpointStatus status = new EndpointStatus();
 			status.setId(dto.getEndpointStatus().getId());

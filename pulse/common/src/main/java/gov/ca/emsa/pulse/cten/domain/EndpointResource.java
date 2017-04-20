@@ -8,6 +8,7 @@ public class EndpointResource {
 	private ResourceMetadata meta;
 	private String name;
 	private String address;
+	private ManagingOrganization managingOrganization;
 	private List<String> payloadMimeType;
 	private List<ResourceType> payloadType;
 	private ResourceCoding connectionType;
@@ -78,5 +79,11 @@ public class EndpointResource {
 	}
 	public void setPayloadMimeType(List<String> payloadMimeType) {
 		this.payloadMimeType = payloadMimeType;
+	}
+	public ManagingOrganization getManagingOrganization() {
+		return managingOrganization;
+	}
+	public void setManagingOrganization(ManagingOrganization managingOrganization) {
+		this.managingOrganization = managingOrganization;
 	}
 }
