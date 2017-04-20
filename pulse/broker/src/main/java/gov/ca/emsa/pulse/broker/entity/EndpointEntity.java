@@ -46,6 +46,9 @@ public class EndpointEntity {
 	@JoinColumn(name = "endpoint_status_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private EndpointStatusEntity endpointStatus;
 	
+	@Column(name = "managing_organization_name")
+	private String managingOrganization;
+	
 	@Column(name = "adapter")
 	private String adapter;
 	
@@ -198,5 +201,13 @@ public class EndpointEntity {
 
 	public void setLocationEndpointMaps(Set<LocationEndpointMapEntity> locationEndpointMaps) {
 		this.locationEndpointMaps = locationEndpointMaps;
+	}
+
+	public String getManagingOrganization() {
+		return managingOrganization;
+	}
+
+	public void setManagingOrganization(String managingOrganization) {
+		this.managingOrganization = managingOrganization;
 	}
 }

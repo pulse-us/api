@@ -117,6 +117,7 @@ public class CtenToPulseConverter {
 		EndpointResource ctenResource = ctenEnd.getResource();
 		result.setExternalId(ctenResource.getId());
 		result.setAdapter("eHealthExchange");
+		result.setManagingOrganization(ctenResource.getManagingOrganization().getDisplay());
 		EndpointStatus resultStatus = new EndpointStatus();
 		resultStatus.setName(ctenResource.getStatus());
 		result.setEndpointStatus(resultStatus);

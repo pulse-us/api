@@ -1,8 +1,5 @@
 package gov.ca.emsa.pulse.cten.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Endpoint {
 	private EndpointResource resource;
 	private String fullUrl;
