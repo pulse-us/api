@@ -35,7 +35,6 @@ public class DocumentQueryService implements Runnable {
 	@Autowired private DocumentManager docManager;
 	@Autowired private AdapterFactory adapterFactory;
 	private PatientDTO toSearch;
-	private SAMLInput samlInput;
 	private CommonUser user;
 	
 	@Override
@@ -51,12 +50,13 @@ public class DocumentQueryService implements Runnable {
 			if(adapter != null) {
 				logger.info("Starting query to endpoint with external id '" + endpoint.getExternalId() + "'");
 				try {
-					searchResults = adapter.queryDocuments(user, endpoint, patientEndpointMap, samlInput);
+					searchResults = adapter.queryDocuments(user, endpoint, patientEndpointMap);
 				} catch(Exception ex) {
 					logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 					querySuccess = false;
 				}
 			}
+
 			synchronized(patientManager) {
 				patientEndpointMap = patientManager.getPatientEndpointMapById(patientEndpointMap.getId());
 				if(patientEndpointMap.getDocumentsQueryStatus() != QueryEndpointStatus.Cancelled && 
@@ -76,7 +76,7 @@ public class DocumentQueryService implements Runnable {
 					} else if(searchResults != null && searchResults.getStatus() == IheStatus.Failure) {
 						querySuccess = false;
 					} else {
-						logger.error("Got a null response back from query to endpoint with external id '" + endpoint.getExternalId() + "'");
+						logger.error("Got a null response back from query to endpoint with external id '" + endpoint.getExternalId() + "'"); 
 					}
 					logger.info("Completed query to endpoint with external id '" + endpoint.getExternalId() + "'");
 				}
@@ -156,13 +156,5 @@ public class DocumentQueryService implements Runnable {
 
 	public void setToSearch(PatientDTO toSearch) {
 		this.toSearch = toSearch;
-	}
-
-	public SAMLInput getSamlInput() {
-		return samlInput;
-	}
-
-	public void setSamlInput(SAMLInput samlInput) {
-		this.samlInput = samlInput;
 	}
 }

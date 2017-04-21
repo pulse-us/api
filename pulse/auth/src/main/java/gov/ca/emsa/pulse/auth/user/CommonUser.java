@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.opensaml.saml2.core.Assertion;
+
 public class CommonUser implements User{
 
 	private static final long serialVersionUID = -4255948572251487878L;

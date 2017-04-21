@@ -66,9 +66,8 @@ public class DocumentManagerImpl implements DocumentManager {
 	}
 	
 	@Override
-	public void queryForDocuments(CommonUser user, SAMLInput samlInput, PatientEndpointMapDTO dto) {
+	public void queryForDocuments(CommonUser user, PatientEndpointMapDTO dto) {
 		DocumentQueryService service = getDocumentQueryService();
-		service.setSamlInput(samlInput);
 		service.setPatientEndpointMap(dto);
 		service.setEndpoint(dto.getEndpoint());
 		service.setUser(user);
@@ -88,9 +87,8 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	@Transactional
-	public void queryForDocumentContents(CommonUser user, SAMLInput samlInput, EndpointDTO endpoint, DocumentDTO document, PatientEndpointMapDTO patientEndpointMap) {
+	public void queryForDocumentContents(CommonUser user, EndpointDTO endpoint, DocumentDTO document, PatientEndpointMapDTO patientEndpointMap) {
 		DocumentRetrievalService service = getDocumentRetrievalService();
-		service.setSamlInput(samlInput);
 		service.setEndpoint(endpoint);
 		service.setPatientEndpointMap(patientEndpointMap);
 		service.setDocument(document);
@@ -110,7 +108,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	@Transactional
-	public DocumentDTO getDocumentById(CommonUser user, SAMLInput samlInput, Long documentId) throws SQLException {		
+	public DocumentDTO getDocumentById(CommonUser user, Long documentId) throws SQLException {		
 		DocumentDTO resultDoc = docDao.getById(documentId);
 		if(resultDoc == null) {
 			logger.error("Could not find the document with id " + documentId);
@@ -135,7 +133,25 @@ public class DocumentManagerImpl implements DocumentManager {
 				documentContentsEndpoint = endpointDao.findByManagingOrganizationAndType(managingOrganizationName, endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_RETRIEVE);
 			}
 			
-			queryForDocumentContents(user, samlInput, documentContentsEndpoint, resultDoc, patientEndpointMap);
+			if(documentContentsEndpoint != null) {
+				List<DocumentDTO> docsToGet = new ArrayList<DocumentDTO>();
+				if(resultDoc.getStatus() != null && 
+					(resultDoc.getStatus() == QueryEndpointStatus.Cancelled ||
+					resultDoc.getStatus() == QueryEndpointStatus.Failed)) {
+					
+					resultDoc.setStatus(QueryEndpointStatus.Closed);
+					docDao.update(resultDoc);
+					
+					DocumentDTO newDocRequest = new DocumentDTO(resultDoc);
+					newDocRequest.setStatus(QueryEndpointStatus.Active);
+					resultDoc = docDao.create(newDocRequest);
+					docsToGet.add(resultDoc);
+				} else {
+					docsToGet.add(resultDoc);
+				}
+				
+				queryForDocumentContents(user, documentContentsEndpoint, resultDoc, patientEndpointMap);
+			}
 		}
 		return resultDoc;
 	}

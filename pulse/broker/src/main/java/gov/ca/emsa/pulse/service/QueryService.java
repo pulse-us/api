@@ -17,6 +17,7 @@ import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import io.swagger.annotations.Api;
@@ -106,7 +107,6 @@ public class QueryService {
     public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
     		@PathVariable("endpointId") Long endpointId) throws JsonProcessingException, InvalidArgumentsException, IOException {
 		CommonUser user = UserUtil.getCurrentUser();
-		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
         QueryDTO initiatedQuery = null;
         synchronized(queryManager) {
         	QueryDTO query = queryManager.getById(queryId);
@@ -147,7 +147,7 @@ public class QueryService {
 				request.getPatientRecordIds().size() == 0) {
 			throw new InvalidArgumentsException("A patient object and at least one patient record id is required.");
 		}
-
+		
 		//create a new Patient
 		PatientDTO patientToCreate = DomainToDtoConverter.convertToPatient(request.getPatient());
 		//full name required by db
@@ -166,25 +166,13 @@ public class QueryService {
 		synchronized(queryManager) {
 			//create patient-endpoint mappings for doc discovery based on the patientrecords we are using
 			for(Long patientRecordId : request.getPatientRecordIds()) {
-				PatientEndpointMapDTO patientEndpointMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient, patientRecordId);
-				if(patientEndpointMapDto != null) {
-					//kick off document list retrieval service if there was a suitable endpoint
-					SAMLInput input = new SAMLInput();
-					input.setStrIssuer(user.getSubjectName());
-					input.setStrNameID("UserBrianLindsey");
-					input.setStrNameQualifier("My Website");
-					input.setSessionId("abcdedf1234567");
-					HashMap<String, String> customAttributes = new HashMap<String,String>();
-					customAttributes.put("RequesterFirstName", user.getFirstName());
-					customAttributes.put("RequestReason", "Get patient documents");
-					customAttributes.put("PatientRecordId", patientEndpointMapDto.getExternalPatientRecordId());
-					input.setAttributes(customAttributes);
-		
-					patient.getEndpointMaps().add(patientEndpointMapDto);
-					docManager.queryForDocuments(user, input, patientEndpointMapDto);
-				}
+				PatientEndpointMapDTO patLocMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient, patientRecordId);
+				patient.getEndpointMaps().add(patLocMapDto);
+				docManager.queryForDocuments(user, patLocMapDto);
+				//kick off document list retrieval service
+				
 			}
-	
+
 			//delete query (all associated items should cascade)
 			queryManager.close(queryId);
 		}

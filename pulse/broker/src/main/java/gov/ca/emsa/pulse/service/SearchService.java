@@ -58,23 +58,6 @@ public class SearchService {
     public @ResponseBody Query searchPatients(@RequestBody(required=true) PatientSearch toSearch) throws JsonProcessingException {
 
 		CommonUser user = UserUtil.getCurrentUser();
-		//auditManager.addAuditEntry(QueryType.SEARCH_PATIENT, "/search", user.getSubjectName());
-
-		SAMLInput input = new SAMLInput();
-		input.setStrIssuer(user.getSubjectName());
-		input.setStrNameQualifier("My Website");
-		input.setSessionId(user.getSubjectName());
-
-		HashMap<String, String> customAttributes = new HashMap<String,String>();
-		customAttributes.put("RequesterFirstName", user.getFirstName());
-		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientGivenName", toSearch.getPatientNames().get(0).getGivenName().get(0));
-		customAttributes.put("PatientDOB", toSearch.getDob());
-		customAttributes.put("PatientGender", toSearch.getGender());
-		customAttributes.put("PatientHomeZip", toSearch.getZip());
-		customAttributes.put("PatientSSN", toSearch.getSsn());
-
-		input.setAttributes(customAttributes);
 
 		String queryTermsJson = JSONUtils.toJSON(toSearch);
 		QueryDTO initiatedQuery = null;
@@ -100,7 +83,7 @@ public class SearchService {
 					query.getEndpointMaps().add(queryEndpointMap);
 				}
 	
-	        	queryManager.queryForPatientRecords(input, toSearch, query, user);
+	        	queryManager.queryForPatientRecords(toSearch, query, user);
 	        	initiatedQuery = queryManager.getById(query.getId());  
 	        }
 	        return DtoToDomainConverter.convert(initiatedQuery);

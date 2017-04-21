@@ -64,7 +64,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RequestMapping("/patients")
 public class PatientService {
 	private static final Logger logger = LogManager.getLogger(PatientService.class);
-	@Autowired SamlGenerator samlGenerator;
 	@Autowired private PatientManager patientManager;
 	@Autowired private DocumentManager docManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
@@ -93,7 +92,6 @@ public class PatientService {
 	@RequestMapping("/{patientId}/documents")
 	public List<Document> getDocumentListForPatient(@PathVariable("patientId")Long patientId) {
 		CommonUser user = UserUtil.getCurrentUser();
-		//auditManager.addAuditEntry(QueryType.SEARCH_DOCUMENT, "/" + patientId + "/documents", user.getSubjectName());
 		List<DocumentDTO> docDtos = docManager.getDocumentsForPatient(patientId);
 		List<Document> results = new ArrayList<Document>(docDtos.size());
 		for(DocumentDTO docDto : docDtos) {
@@ -158,29 +156,15 @@ public class PatientService {
 		throws SQLException, JsonProcessingException {
 		
 		CommonUser user = UserUtil.getCurrentUser();
-		//auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getSubjectName());
-		SAMLInput input = new SAMLInput();
-		input.setStrIssuer(user.getSubjectName());
-		input.setStrNameID(user.getSubjectName());
-		input.setStrNameQualifier("My Website");
-		input.setSessionId("abcdedf1234567");
-
-		HashMap<String, String> customAttributes = new HashMap<String,String>();
-		customAttributes.put("RequesterName", user.getFirstName());
-		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientGivenName", "Hodor");
-		customAttributes.put("PatientFamilyName", "Guy");
-		customAttributes.put("PatientSSN", "123456789");
-		input.setAttributes(customAttributes);
 
 		DocumentDTO result = null;
 		if(cacheOnly == null || cacheOnly.booleanValue() == false) {
 			//get the contents that are cached for this document
-			result = docManager.getDocumentById(user, input, documentId);
+			result = docManager.getDocumentById(user, documentId);
 			auditManager.createPulseAuditEvent(AuditType.DV, documentId);
 		} else {
 			//cache the document's contents
-			result = docManager.getDocumentById(user, input, documentId);
+			result = docManager.getDocumentById(user, documentId);
 		}
 		return DtoToDomainConverter.convert(result);
 	}

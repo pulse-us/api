@@ -47,6 +47,7 @@ public class HttpRequestUserFilter extends GenericFilterBean {
 				throw new ServletException("No header found with the name 'User'");
 			} else {
 				JWTAuthenticatedUser authenticatedUser = jsonMapper.readValue(userHeader, JWTAuthenticatedUser.class);
+				logger.info("Authenticated User: " + authenticatedUser);
 				if (authenticatedUser != null){
 					SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
 					chain.doFilter(req, res); //continue

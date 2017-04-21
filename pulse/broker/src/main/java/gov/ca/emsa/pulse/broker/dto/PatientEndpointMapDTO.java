@@ -12,10 +12,11 @@ import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 public class PatientEndpointMapDTO {
 	private Long id;
 	private Long patientId;
+	private String homeCommunityId;
+	private String externalPatientRecordId; // PID + AA
+	private QueryEndpointStatus documentsQueryStatus;
 	private Long endpointId;
 	private EndpointDTO endpoint;
-	private String externalPatientRecordId;
-	private QueryEndpointStatus documentsQueryStatus;
 	private Date documentsQueryStart;
 	private Date documentsQueryEnd;
 	private List<DocumentDTO> documents;
@@ -32,6 +33,7 @@ public class PatientEndpointMapDTO {
 		if(entity.getEndpoint() != null) {
 			this.endpoint = new EndpointDTO(entity.getEndpoint());
 		}
+		this.homeCommunityId = entity.getHomeCommunityId();
 		this.externalPatientRecordId = entity.getExternalPatientRecordId();
 		if(entity.getStatus() != null) {
 			this.documentsQueryStatus = entity.getStatus().getStatus();
@@ -64,6 +66,15 @@ public class PatientEndpointMapDTO {
 	public void setEndpointId(Long endpointId) {
 		this.endpointId = endpointId;
 	}
+	
+	public String getHomeCommunityId() {
+		return homeCommunityId;
+	}
+
+	public void setHomeCommunityId(String homeCommunityId) {
+		this.homeCommunityId = homeCommunityId;
+	}
+
 	public String getExternalPatientRecordId() {
 		return externalPatientRecordId;
 	}

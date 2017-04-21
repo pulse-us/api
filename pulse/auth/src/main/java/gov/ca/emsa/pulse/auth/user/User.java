@@ -6,6 +6,7 @@ import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import java.util.Collection;
 import java.util.Set;
 
+import org.opensaml.saml2.core.Assertion;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 

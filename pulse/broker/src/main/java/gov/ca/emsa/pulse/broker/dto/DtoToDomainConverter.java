@@ -74,6 +74,7 @@ public class DtoToDomainConverter {
 			endpoint.setId(dto.getEndpointId());
 			result.setEndpoint(endpoint);
 		}
+		result.setHomeCommunityId(dto.getHomeCommunityId());
 		result.setDocumentsQueryStatus(dto.getDocumentsQueryStatus());
 		result.setDocumentsQueryStart(dto.getDocumentsQueryStart());
 		result.setDocumentsQueryEnd(dto.getDocumentsQueryEnd());

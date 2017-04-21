@@ -48,10 +48,14 @@ public class PatientRecordEntity {
 	@Column(name = "endpoint_patient_record_id")
 	private String endpointPatientRecordId;
 	
+	@Column(name = "home_community_id")
+	private String homeCommunityId;
+	
 	@Column(name = "phone_number_enc")
 	@ColumnTransformer(
 			read = "pgp_pub_decrypt(phone_number_enc, dearmor((SELECT * from private_key())))", 
 			write = "pgp_pub_encrypt(?, dearmor((SELECT * from public_key())))")
+
 	private String phoneNumber;
 	
 	@Column(name = "query_endpoint_map_id")
@@ -169,6 +173,14 @@ public class PatientRecordEntity {
 
 	public void setEndpointPatientRecordId(String endpointPatientRecordId) {
 		this.endpointPatientRecordId = endpointPatientRecordId;
+	}
+
+	public String getHomeCommunityId() {
+		return homeCommunityId;
+	}
+
+	public void setHomeCommunityId(String homeCommunityId) {
+		this.homeCommunityId = homeCommunityId;
 	}
 
 	public Set<PatientRecordAddressEntity> getPatientRecordAddress() {

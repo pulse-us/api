@@ -215,19 +215,8 @@ public class PatientManagerImpl implements PatientManager {
 		patientEndpointMapForRequery.setEndpoint(endpointForRequery);
 
 		if(patientEndpointMapForRequery != null) {
-			SAMLInput input = new SAMLInput();
-			input.setStrIssuer(user.getSubjectName());
-			input.setStrNameID("UserBrianLindsey");
-			input.setStrNameQualifier("My Website");
-			input.setSessionId("abcdedf1234567");
-			HashMap<String, String> customAttributes = new HashMap<String,String>();
-			customAttributes.put("RequesterFirstName", user.getFirstName());
-			customAttributes.put("RequestReason", "Get patient documents");
-			customAttributes.put("PatientRecordId", patientEndpointMapForRequery.getExternalPatientRecordId());
-			input.setAttributes(customAttributes);
-
 			patient.getEndpointMaps().add(patientEndpointMapForRequery);
-			docManager.queryForDocuments(user, input, patientEndpointMapForRequery);
+			docManager.queryForDocuments(user,  patientEndpointMapForRequery);
 		}
 		
 		return getPatientById(patientId);
