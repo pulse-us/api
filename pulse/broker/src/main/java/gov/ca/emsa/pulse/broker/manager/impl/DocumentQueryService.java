@@ -35,6 +35,7 @@ public class DocumentQueryService implements Runnable {
 	@Autowired private DocumentManager docManager;
 	@Autowired private AdapterFactory adapterFactory;
 	private PatientDTO toSearch;
+	private SAMLInput samlInput;
 	private CommonUser user;
 	
 	@Override
@@ -50,13 +51,12 @@ public class DocumentQueryService implements Runnable {
 			if(adapter != null) {
 				logger.info("Starting query to endpoint with external id '" + endpoint.getExternalId() + "'");
 				try {
-					searchResults = adapter.queryDocuments(user, endpoint, patientEndpointMap);
+					searchResults = adapter.queryDocuments(user, endpoint, patientEndpointMap, samlInput);
 				} catch(Exception ex) {
 					logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 					querySuccess = false;
 				}
 			}
-
 			synchronized(patientManager) {
 				patientEndpointMap = patientManager.getPatientEndpointMapById(patientEndpointMap.getId());
 				if(patientEndpointMap.getDocumentsQueryStatus() != QueryEndpointStatus.Cancelled && 

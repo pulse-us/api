@@ -156,15 +156,29 @@ public class PatientService {
 		throws SQLException, JsonProcessingException {
 		
 		CommonUser user = UserUtil.getCurrentUser();
+		//auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getSubjectName());
+				SAMLInput input = new SAMLInput();
+				input.setStrIssuer(user.getSubjectName());
+				input.setStrNameID(user.getSubjectName());
+				input.setStrNameQualifier("My Website");
+				input.setSessionId("abcdedf1234567");
+
+				HashMap<String, String> customAttributes = new HashMap<String,String>();
+				customAttributes.put("RequesterName", user.getFirstName());
+				customAttributes.put("RequestReason", "Patient is bleeding.");
+				customAttributes.put("PatientGivenName", "Hodor");
+				customAttributes.put("PatientFamilyName", "Guy");
+				customAttributes.put("PatientSSN", "123456789");
+				input.setAttributes(customAttributes);
 
 		DocumentDTO result = null;
 		if(cacheOnly == null || cacheOnly.booleanValue() == false) {
 			//get the contents that are cached for this document
-			result = docManager.getDocumentById(user, documentId);
+			result = docManager.getDocumentById(user, input, documentId);
 			auditManager.createPulseAuditEvent(AuditType.DV, documentId);
 		} else {
 			//cache the document's contents
-			result = docManager.getDocumentById(user, documentId);
+			result = docManager.getDocumentById(user, input, documentId);
 		}
 		return DtoToDomainConverter.convert(result);
 	}

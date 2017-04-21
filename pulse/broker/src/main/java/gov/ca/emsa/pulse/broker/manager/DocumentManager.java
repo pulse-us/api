@@ -12,11 +12,11 @@ import java.util.List;
 public interface DocumentManager {
 	public DocumentDTO create(DocumentDTO toCreate);
 	public DocumentDTO update(DocumentDTO toUpdate);
-	public void queryForDocuments(CommonUser user, PatientEndpointMapDTO dto);
+	public void queryForDocuments(CommonUser user, SAMLInput samlInput,  PatientEndpointMapDTO dto);
 	public void queryForDocumentContents(CommonUser user,  
 			EndpointDTO endpoint, DocumentDTO document, PatientEndpointMapDTO dto);
 	public DocumentDTO cancelDocumentContentQuery(Long documentId, Long patientId);
 	public List<DocumentDTO> getDocumentsForPatient(Long patientId);
-	public DocumentDTO getDocumentById(CommonUser user, Long documentId) throws SQLException;
+	public DocumentDTO getDocumentById(CommonUser user, SAMLInput samlInput,  Long documentId) throws SQLException;
 	public DocumentDTO getDocumentById(Long documentId) throws SQLException;
 }

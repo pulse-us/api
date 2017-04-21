@@ -185,7 +185,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public void queryForPatientRecords(PatientSearch toSearch, QueryDTO query, CommonUser user)
+	public void queryForPatientRecords(SAMLInput samlInput, PatientSearch toSearch, QueryDTO query, CommonUser user)
 			throws JsonProcessingException {
 
 		//not sure if all the query fields are filled in here... pull it out of the db
