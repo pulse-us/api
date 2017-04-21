@@ -29,6 +29,7 @@ public class DocumentRetrievalService implements Runnable {
 	//private List<DocumentDTO> documents;
 	@Autowired private DocumentManager docManager;
 	@Autowired private AdapterFactory adapterFactory;
+	private SAMLInput samlInput;
 	private CommonUser user;
 	
 	@Override
@@ -68,7 +69,7 @@ public class DocumentRetrievalService implements Runnable {
 							docManager.update(document);
 						}
 					}
-					adapter.retrieveDocumentsContents(user, endpoint, documents, patientEndpointMap);
+					adapter.retrieveDocumentsContents(user, endpoint, documents, patientEndpointMap, samlInput);
 				} catch(Exception ex) {
 					logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 					ex.printStackTrace();

@@ -21,8 +21,8 @@ import org.opensaml.xml.io.MarshallingException;
 import org.w3c.dom.DOMException;
 
 public interface Adapter {
-	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch) throws Exception;
-	public DocumentQueryResults queryDocuments(CommonUser user, EndpointDTO endpoint, PatientEndpointMapDTO patientLocationMap) throws UnknownHostException, UnsupportedEncodingException, DOMException, MarshallingException, SAMLException;
-	public void retrieveDocumentsContents(CommonUser user, EndpointDTO endpoint, List<DocumentDTO> documents, PatientEndpointMapDTO patientLocationMap) 
+	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) throws Exception;
+	public DocumentQueryResults queryDocuments(CommonUser user, EndpointDTO endpoint, PatientEndpointMapDTO patientLocationMap, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException, DOMException, MarshallingException, SAMLException;
+	public void retrieveDocumentsContents(CommonUser user, EndpointDTO endpoint, List<DocumentDTO> documents, PatientEndpointMapDTO patientLocationMap, SAMLInput samlInput) 
 			throws UnknownHostException, UnsupportedEncodingException, IheErrorException, MessagingException, IOException, Exception;
 }

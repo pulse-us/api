@@ -167,8 +167,17 @@ public class QueryService {
 			//create patient-endpoint mappings for doc discovery based on the patientrecords we are using
 			for(Long patientRecordId : request.getPatientRecordIds()) {
 				PatientEndpointMapDTO patLocMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient, patientRecordId);
+				SAMLInput input = new SAMLInput();
+				input.setStrIssuer(user.getSubjectName());
+				input.setStrNameID("UserBrianLindsey");
+				input.setStrNameQualifier("My Website");
+				input.setSessionId("abcdedf1234567");
+				HashMap<String, String> customAttributes = new HashMap<String,String>();
+				customAttributes.put("RequesterFirstName", user.getFirstName());
+				customAttributes.put("RequestReason", "Get patient documents");
+				input.setAttributes(customAttributes);
 				patient.getEndpointMaps().add(patLocMapDto);
-				docManager.queryForDocuments(user, patLocMapDto);
+				docManager.queryForDocuments(user, input, patLocMapDto);
 				//kick off document list retrieval service
 				
 			}

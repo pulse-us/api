@@ -89,9 +89,17 @@ public class JSONToSoapTest {
 	@Autowired EHealthAdapter eHealthAdapter;
 	@Autowired EHealthQueryProducerService queryProducer;
 	
-	public String getAssertion() throws IOException, ConfigurationException{
-		Resource pdFile = resourceLoader.getResource("classpath:assertion.xml");
-		return Resources.toString(pdFile.getURL(), Charsets.UTF_8);
+	public SAMLInput getAssertion() throws IOException, ConfigurationException{
+		SAMLInput input = new SAMLInput();
+		input.setStrIssuer("Brian Lindsey");
+		input.setStrNameID("UserBrianLindsey");
+		input.setStrNameQualifier("My Website");
+		input.setSessionId("abcdedf1234567");
+		HashMap<String, String> customAttributes = new HashMap<String,String>();
+		customAttributes.put("RequesterFirstName", "brian");
+		customAttributes.put("RequestReason", "Get patient documents");
+		input.setAttributes(customAttributes);
+		return input;
 	}
 
 	@Test
@@ -562,7 +570,7 @@ public class JSONToSoapTest {
 	// TODO
 	//@Test
 	public void testDocumentQueryRequestXDSTools() throws JAXBException, 
-	SAMLException, SOAPException, JWTValidationException, DOMException, MarshallingException {
+	SAMLException, SOAPException, JWTValidationException, DOMException, MarshallingException, IOException, ConfigurationException {
 		final String XCQEndpoint = "http://localhost:8080/xdstools-4.3.4/sim/default__rg_mock_hie/rg/xcq";
 		final String patientId = "P20170327093045.2^^^&1.3.6.1.4.1.21367.2005.13.20.1000&ISO";
 		PatientEndpointMapDTO plmDto = new PatientEndpointMapDTO();
@@ -592,7 +600,7 @@ public class JSONToSoapTest {
 		// CommonUser user, EndpointDTO endpoint, PatientLocationMapDTO locationMapDTO, SAMLInput samlInput
 		DocumentQueryResults dqr = null;
 		try {
-			dqr = eHealthAdapter.queryDocuments(user, endpoint, plmDto);
+			dqr = eHealthAdapter.queryDocuments(user, endpoint, plmDto, getAssertion());
 		} catch (UnknownHostException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -641,7 +649,7 @@ public class JSONToSoapTest {
 
 		//CommonUser user, EndpointDTO endpoint, PatientLocationMapDTO locationMapDTO, SAMLInput samlInput
 		try {
-			eHealthAdapter.retrieveDocumentsContents(user, endpoint, docs, plmDto);
+			eHealthAdapter.retrieveDocumentsContents(user, endpoint, docs, plmDto, getAssertion());
 		} catch (UnknownHostException | UnsupportedEncodingException | IheErrorException | MessagingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
