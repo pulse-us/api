@@ -103,7 +103,6 @@ public class SamlGeneratorImpl implements SamlGenerator {
 			// Create the NameIdentifier
 			SAMLObjectBuilder nameIdBuilder = (SAMLObjectBuilder) getSAMLBuilder().getBuilder(NameID.DEFAULT_ELEMENT_NAME);
 			NameID nameId = (NameID) nameIdBuilder.buildObject();
-			nameId.setNameQualifier(input.getStrNameQualifier());
 			nameId.setFormat(NameID.UNSPECIFIED);
 
 			// Create the SubjectConfirmation
