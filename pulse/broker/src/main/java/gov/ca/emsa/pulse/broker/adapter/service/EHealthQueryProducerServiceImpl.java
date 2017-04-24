@@ -76,6 +76,7 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.xml.transform.StringSource;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -154,15 +155,12 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		SOAPHeaderElement securityElement = message.getSOAPHeader()
 				.addHeaderElement(env.createName("Security", "wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"));
 		
-		//get the SAML assertion into the header. have to "import" it because it's created by a different Document
-				try {
-					Document owner = securityElement.getOwnerDocument();
-					org.w3c.dom.Element samlElement = samlGenerator.createSAMLElement(samlInput);
-					Node importedSamlElement = owner.importNode(samlElement, true);
-					securityElement.appendChild(importedSamlElement);
-				} catch (MarshallingException e) {
-					logger.error("Could not create SAML from input " + samlInput, e);
-				}
+		Document owner = securityElement.getOwnerDocument();
+				//org.w3c.dom.Element samlElement = samlGenerator.createSAMLElement(samlInput);
+				SOAPHeaderElement assertion = message.getSOAPHeader()
+						.addHeaderElement(env.createName("Assertion", "assert", ""));
+				Node importedSamlElement = owner.importNode(assertion, true);
+				securityElement.appendChild(importedSamlElement);
 
 		message.getSOAPHeader().addChildElement(securityElement);
 	}
@@ -192,15 +190,12 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		SOAPHeaderElement securityElement = message.getSOAPHeader()
 				.addHeaderElement(env.createName("Security", "wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"));
 		
-		//get the SAML assertion into the header. have to "import" it because it's created by a different Document
-				try {
-					Document owner = securityElement.getOwnerDocument();
-					org.w3c.dom.Element samlElement = samlGenerator.createSAMLElement(samlInput);
-					Node importedSamlElement = owner.importNode(samlElement, true);
-					securityElement.appendChild(importedSamlElement);
-				} catch (MarshallingException e) {
-					logger.error("Could not create SAML from input " + samlInput, e);
-				}
+		Document owner = securityElement.getOwnerDocument();
+				//org.w3c.dom.Element samlElement = samlGenerator.createSAMLElement(samlInput);
+				SOAPHeaderElement assertion = message.getSOAPHeader()
+						.addHeaderElement(env.createName("Assertion", "assert", ""));
+				Node importedSamlElement = owner.importNode(assertion, true);
+				securityElement.appendChild(importedSamlElement);
 
 		message.getSOAPHeader().addChildElement(securityElement);
 	}
@@ -230,15 +225,11 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		SOAPHeaderElement securityElement = message.getSOAPHeader()
 				.addHeaderElement(env.createName("Security", "wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"));
 		
-		//get the SAML assertion into the header. have to "import" it because it's created by a different Document
-				try {
-					Document owner = securityElement.getOwnerDocument();
-					org.w3c.dom.Element samlElement = samlGenerator.createSAMLElement(samlInput);
-					Node importedSamlElement = owner.importNode(samlElement, true);
-					securityElement.appendChild(importedSamlElement);
-				} catch (MarshallingException e) {
-					logger.error("Could not create SAML from input " + samlInput, e);
-				}
+		Document owner = securityElement.getOwnerDocument();
+				SOAPHeaderElement assertion = message.getSOAPHeader()
+						.addHeaderElement(env.createName("Assertion", "assert", ""));
+				Node importedSamlElement = owner.importNode(assertion, true);
+				securityElement.appendChild(importedSamlElement);
 
 		message.getSOAPHeader().addChildElement(securityElement);
 	}
