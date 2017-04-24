@@ -82,7 +82,7 @@ import java.util.UUID;
 public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 	
 	public String generateUUID(){
-		return UUID.randomUUID().toString();
+		return "urn:uid:" + UUID.randomUUID().toString();
 	}
 	
 	public String generateCreationTime(){
@@ -125,6 +125,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 	
 	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch search) {
 		PRPAIN201305UV02 request = new PRPAIN201305UV02();
+		request.setITSVersion("XML_1.0");
 		II id = new II();
 		id.setRoot(generateUUID());
 		request.setId(id);
