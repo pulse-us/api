@@ -156,9 +156,8 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 				.addHeaderElement(env.createName("Security", "wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"));
 		
 		Document owner = securityElement.getOwnerDocument();
-				//org.w3c.dom.Element samlElement = samlGenerator.createSAMLElement(samlInput);
 				SOAPHeaderElement assertion = message.getSOAPHeader()
-						.addHeaderElement(env.createName("Assertion", "assert", ""));
+						.addHeaderElement(env.createName("Assertion", "assert", "urn:oasis:names:tc:SAML:2.0:assertion"));
 				Node importedSamlElement = owner.importNode(assertion, true);
 				securityElement.appendChild(importedSamlElement);
 
@@ -191,9 +190,8 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 				.addHeaderElement(env.createName("Security", "wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"));
 		
 		Document owner = securityElement.getOwnerDocument();
-				//org.w3c.dom.Element samlElement = samlGenerator.createSAMLElement(samlInput);
 				SOAPHeaderElement assertion = message.getSOAPHeader()
-						.addHeaderElement(env.createName("Assertion", "assert", ""));
+						.addHeaderElement(env.createName("Assertion", "assert", "urn:oasis:names:tc:SAML:2.0:assertion"));
 				Node importedSamlElement = owner.importNode(assertion, true);
 				securityElement.appendChild(importedSamlElement);
 
@@ -227,7 +225,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		
 		Document owner = securityElement.getOwnerDocument();
 				SOAPHeaderElement assertion = message.getSOAPHeader()
-						.addHeaderElement(env.createName("Assertion", "assert", ""));
+						.addHeaderElement(env.createName("Assertion", "assert", "urn:oasis:names:tc:SAML:2.0:assertion"));
 				Node importedSamlElement = owner.importNode(assertion, true);
 				securityElement.appendChild(importedSamlElement);
 
