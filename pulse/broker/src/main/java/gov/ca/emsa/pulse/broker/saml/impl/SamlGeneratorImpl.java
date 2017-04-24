@@ -3,6 +3,7 @@ package gov.ca.emsa.pulse.broker.saml.impl;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -51,8 +52,16 @@ public class SamlGeneratorImpl implements SamlGenerator {
 	}
 	
 	public String createSAML(SAMLInput input) throws MarshallingException{
+		
+		SAMLInput input1 = new SAMLInput();
+		input.setStrIssuer("brian");
+		input.setStrNameQualifier("My Website");
+		input.setSessionId("brian");
+		HashMap<String, String> customAttributes = new HashMap<String,String>();
+		customAttributes.put("RequestReason", "Patient is bleeding.");
+		input.setAttributes(customAttributes);
 
-		Assertion assertion = buildDefaultAssertion(input);
+		Assertion assertion = buildDefaultAssertion(input1);
 		AssertionMarshaller marshaller = new AssertionMarshaller();
 		org.w3c.dom.Element plaintextElement = marshaller.marshall(assertion);
 		String originalAssertionString = XMLHelper.nodeToString(plaintextElement);
@@ -131,7 +140,6 @@ public class SamlGeneratorImpl implements SamlGenerator {
 			//authnStatement.setAuthenticationMethod(input.getStrAuthMethod());
 			DateTime now2 = new DateTime();
 			authnStatement.setAuthnInstant(now2);
-			authnStatement.setSessionIndex(input.getSessionId());
 			authnStatement.setSessionNotOnOrAfter(now2.plus(input.getMaxSessionTimeoutInMinutes()));
 
 			SAMLObjectBuilder authContextBuilder = (SAMLObjectBuilder) getSAMLBuilder().getBuilder(AuthnContext.DEFAULT_ELEMENT_NAME);
