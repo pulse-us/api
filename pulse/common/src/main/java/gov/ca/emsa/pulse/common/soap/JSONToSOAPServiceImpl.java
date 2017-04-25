@@ -96,13 +96,6 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		PRPAIN201310UV02 returnSOAP = new PRPAIN201310UV02();
 		List<PRPAIN201310UV02MFMIMT700711UV01Subject1> subjects = new ArrayList<PRPAIN201310UV02MFMIMT700711UV01Subject1>();
 		PRPAIN201310UV02MFMIMT700711UV01ControlActProcess cap = new PRPAIN201310UV02MFMIMT700711UV01ControlActProcess();
-		MFMIMT700711UV01AuthorOrPerformer author = new MFMIMT700711UV01AuthorOrPerformer();
-		COCTMT090300UV01AssignedDevice assignedDevice = new COCTMT090300UV01AssignedDevice();
-		II authorId = new II();
-		authorId.getNullFlavor().add("NA"); // demographic query only mode
-		assignedDevice.getId().add(authorId);
-		author.getAssignedDevice().setValue(assignedDevice);
-		cap.getAuthorOrPerformer().add(author);
 		for(PatientRecord record : patientRecords){
 			PRPAIN201310UV02MFMIMT700711UV01Subject1 subject = new PRPAIN201310UV02MFMIMT700711UV01Subject1();
 			PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent registrationEvent = new PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent();
