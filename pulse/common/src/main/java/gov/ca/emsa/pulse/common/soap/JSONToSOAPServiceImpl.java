@@ -40,6 +40,7 @@ import org.hl7.v3.ActClassControlAct;
 import org.hl7.v3.AdxpExplicitState;
 import org.hl7.v3.CD;
 import org.hl7.v3.CE;
+import org.hl7.v3.COCTMT090300UV01AssignedDevice;
 import org.hl7.v3.CS;
 import org.hl7.v3.CommunicationFunctionType;
 import org.hl7.v3.ENExplicit;
@@ -52,6 +53,7 @@ import org.hl7.v3.IVLTSExplicit;
 import org.hl7.v3.MCCIMT000100UV01Device;
 import org.hl7.v3.MCCIMT000100UV01Receiver;
 import org.hl7.v3.MCCIMT000100UV01Sender;
+import org.hl7.v3.MFMIMT700711UV01AuthorOrPerformer;
 import org.hl7.v3.PNExplicit;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201305UV02QUQIMT021001UV01ControlActProcess;
@@ -199,18 +201,26 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 				parameterList.getLivingSubjectName().add(name);
 			}
 		}
-		PRPAMT201306UV02PatientAddress patientAddress = new PRPAMT201306UV02PatientAddress();
-		ST semanticsText = new ST();
-		patientAddress.setSemanticsText(semanticsText);
-		if(search.getAddresses() != null){
+		if(search.getAddresses().get(0).getCity() != null || search.getAddresses().get(0).getState() != null ||
+				search.getAddresses().get(0).getZipcode() != null || !search.getAddresses().get(0).getLines().isEmpty()){
+			PRPAMT201306UV02PatientAddress patientAddress = new PRPAMT201306UV02PatientAddress();
+			ST semanticsText = new ST();
+			patientAddress.setSemanticsText(semanticsText);
 			for(PatientSearchAddress patientSearchAddress : search.getAddresses()){
 				ADExplicit addr = new ADExplicit();
-				addr.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","state"), String.class, patientSearchAddress.getState()));
-				addr.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","city"), String.class, patientSearchAddress.getCity()));
-				addr.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","postalCode"), String.class, patientSearchAddress.getZipcode()));
-
-				for(String line : patientSearchAddress.getLines()){
-					addr.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","streetAddressLine"), String.class, line));
+				if(search.getAddresses().get(0).getState() != null){
+					addr.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","state"), String.class, patientSearchAddress.getState()));
+				}
+				if(search.getAddresses().get(0).getCity() != null){
+					addr.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","city"), String.class, patientSearchAddress.getCity()));
+				}
+				if(search.getAddresses().get(0).getZipcode() != null){
+					addr.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","postalCode"), String.class, patientSearchAddress.getZipcode()));
+				}
+				if(!search.getAddresses().get(0).getLines().isEmpty()){
+					for(String line : patientSearchAddress.getLines()){
+						addr.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","streetAddressLine"), String.class, line));
+					}
 				}
 				patientAddress.getValue().add(addr);
 				parameterList.getPatientAddress().add(patientAddress);
