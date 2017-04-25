@@ -43,6 +43,7 @@ import org.hl7.v3.CE;
 import org.hl7.v3.CS;
 import org.hl7.v3.CommunicationFunctionType;
 import org.hl7.v3.ENExplicit;
+import org.hl7.v3.ENXP;
 import org.hl7.v3.EnExplicitFamily;
 import org.hl7.v3.EnExplicitGiven;
 import org.hl7.v3.EntityClassDevice;
@@ -82,7 +83,7 @@ import java.util.UUID;
 public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 	
 	public String generateUUID(){
-		return "urn:uid:" + UUID.randomUUID().toString();
+		return UUID.randomUUID().toString();
 	}
 	
 	public String generateCreationTime(){
@@ -152,7 +153,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		device.setDeterminerCode("INSTANCE");
 		device.setClassCode(EntityClassDevice.DEV);
 		II deviceId = new II();
-		deviceId.setRoot(""); // homeCommunityId of the receiving HIO
+		deviceId.getNullFlavor().add("NA");
 		device.getId().add(deviceId);
 		reciever.setDevice(device);
 		request.getReceiver().add(reciever);
@@ -163,7 +164,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		deviceSender.setDeterminerCode("INSTANCE");
 		deviceSender.setClassCode(EntityClassDevice.DEV);
 		II deviceIdSender = new II();
-		deviceIdSender.setRoot(""); // homeCommunityId of PULSE
+		deviceIdSender.getNullFlavor().add("NA");
 		deviceSender.getId().add(deviceIdSender);
 		sender.setDevice(deviceSender);
 		request.setSender(sender);
@@ -182,7 +183,6 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 			if(!patientName.getGivenName().isEmpty() || !StringUtils.isEmpty(patientName.getFamilyName())) {
 				PRPAMT201306UV02LivingSubjectName name = new PRPAMT201306UV02LivingSubjectName();
 				ST semanticsText = new ST();
-				semanticsText.setMediaType("LivingSubject.name");
 				name.setSemanticsText(semanticsText);
 				ENExplicit nameValue = new ENExplicit();
 				nameValue.getContent().add(new JAXBElement<String>(new QName("urn:hl7-org:v3","family"), String.class, patientName.getFamilyName()));
@@ -201,7 +201,6 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		}
 		PRPAMT201306UV02PatientAddress patientAddress = new PRPAMT201306UV02PatientAddress();
 		ST semanticsText = new ST();
-		semanticsText.setMediaType("Patient.addr");
 		patientAddress.setSemanticsText(semanticsText);
 		if(search.getAddresses() != null){
 			for(PatientSearchAddress patientSearchAddress : search.getAddresses()){
@@ -221,7 +220,6 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		if(!StringUtils.isEmpty(search.getGender())) {
 			PRPAMT201306UV02LivingSubjectAdministrativeGender gender = new PRPAMT201306UV02LivingSubjectAdministrativeGender();
 			ST semanticsTextGender = new ST();
-			semanticsTextGender.setMediaType("LivingSubject.AdministrativeGender");
 			gender.setSemanticsText(semanticsTextGender);
 			CE genderValue = new CE();
 			genderValue.setCode(search.getGender());
@@ -232,7 +230,6 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		if(!StringUtils.isEmpty(search.getDob())) {
 			PRPAMT201306UV02LivingSubjectBirthTime birthTime = new PRPAMT201306UV02LivingSubjectBirthTime();
 			ST semanticsTextDob = new ST();
-			semanticsTextDob.setMediaType("LivingSubject.BirthTime");
 			birthTime.setSemanticsText(semanticsTextDob);
 			IVLTSExplicit birthTimeValue = new IVLTSExplicit();
 			birthTimeValue.setValue(search.getDob());
@@ -243,7 +240,6 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		if(!StringUtils.isEmpty(search.getTelephone())) {
 			PRPAMT201306UV02PatientTelecom telecom = new PRPAMT201306UV02PatientTelecom();
 			ST semanticsTextTelecom = new ST();
-			semanticsTextTelecom.setMediaType("Patient.telecom");
 			telecom.setSemanticsText(semanticsTextTelecom);
 			TELExplicit telecomEx = new TELExplicit();
 			telecomEx.setValue(search.getTelephone());
@@ -254,7 +250,6 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		if(!StringUtils.isEmpty(search.getSsn())) {
 			PRPAMT201306UV02LivingSubjectId ssn = new PRPAMT201306UV02LivingSubjectId();
 			ST semanticsTextSSN = new ST();
-			semanticsTextSSN.setMediaType("LivingSubject.id");
 			ssn.setSemanticsText(semanticsTextSSN);
 			II ssnEx = new II();
 			ssnEx.setRoot("2.16.840.1.113883.4.1");
