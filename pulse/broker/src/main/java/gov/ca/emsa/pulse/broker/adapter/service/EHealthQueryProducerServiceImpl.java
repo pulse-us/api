@@ -78,6 +78,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 @Service
@@ -101,7 +102,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 	}
 	
 	private String createUUID(){
-		return "urn:uuid:" + UUID.randomUUID().toString();
+		return UUID.randomUUID().toString();
 	}
 
 	public String createSOAPFault(){
@@ -128,6 +129,40 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		String fault = new String(outputStream.toByteArray());
 
 		return fault;
+	}
+	
+	public SOAPMessage addSemanticTextValues(SOAPMessage soapMessage) throws SOAPException{
+		NodeList nodeList = soapMessage.getSOAPBody().getFirstChild().getLastChild().getChildNodes().item(1).getLastChild().getChildNodes();
+		for(int i=0;i<nodeList.getLength();i++){
+			Node node = nodeList.item(i);
+			NodeList nodeList2 = node.getChildNodes();
+			for(int j=0;j<nodeList2.getLength();j++){
+				Node node2 = nodeList2.item(j);
+				if(node2.getNodeName().equals("semanticsText")){
+					switch(node2.getParentNode().getNodeName()){
+					case "livingSubjectAdministrativeGender":
+						node2.setTextContent("LivingSubject.administrativeGender");
+						break;
+					case "livingSubjectBirthTime":
+						node2.setTextContent("LivingSubject.birthTime");
+						break;
+					case "livingSubjectId":
+						node2.setTextContent("LivingSubject.id");
+						break;
+					case "livingSubjectName":
+						node2.setTextContent("LivingSubject.name");
+						break;
+					case "patientAddress":
+						node2.setTextContent("Patient.addr");
+						break;
+					case "patientTelecom":
+						node2.setTextContent("Patient.telecom");
+						break;
+					}
+				}
+			}
+		}
+		return soapMessage;
 	}
 
 	private void createSecurityHeadingPatientDiscovery(EndpointDTO endpoint, SOAPMessage message, SAMLInput samlInput) throws SOAPException, MarshallingException, SAMLException {
@@ -244,7 +279,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return false;
 	}
 	
-	public String marshallPatientDiscoveryRequest(EndpointDTO endpoint, SAMLInput samlInput, PRPAIN201305UV02 request) throws JAXBException, MarshallingException, SAMLException{
+	public String marshallPatientDiscoveryRequest(EndpointDTO endpoint, SAMLInput samlInput, PRPAIN201305UV02 request) throws JAXBException, MarshallingException, SAMLException, SOAPException{
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -279,6 +314,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		} catch (SOAPException e1) {
 			e1.printStackTrace();
 		}
+		soapMessage = addSemanticTextValues(soapMessage);
 		OutputStream sw = new ByteArrayOutputStream();
 		try {
 			soapMessage.writeTo(sw);
