@@ -126,6 +126,14 @@ public class JSONToSoapTest {
 		toCreate1.setFamilyName("Lindsey");
 		toCreate1.setPrefix("Mr.");
 		toCreate1.setSuffix("MDS");
+		List<PatientSearchAddress> addresses = new ArrayList<PatientSearchAddress>();
+		PatientSearchAddress psa = new PatientSearchAddress();
+		psa.setCity(null);
+		psa.setState(null);
+		psa.setZipcode(null);
+		psa.setLines(new ArrayList<String>());
+		addresses.add(psa);
+		ps.setAddresses(addresses);
 
 		ArrayList<String> givens = new ArrayList<String>();
 		givens.add("Brian");
@@ -393,6 +401,14 @@ public class JSONToSoapTest {
 		toCreate1.setFamilyName("Lindsey");
 		toCreate1.setPrefix("Mr.");
 		toCreate1.setSuffix("MDS");
+		List<PatientSearchAddress> addresses = new ArrayList<PatientSearchAddress>();
+		PatientSearchAddress psa = new PatientSearchAddress();
+		psa.setCity(null);
+		psa.setState(null);
+		psa.setZipcode(null);
+		psa.setLines(new ArrayList<String>());
+		addresses.add(psa);
+		ps.setAddresses(addresses);
 
 		ArrayList<String> givens = new ArrayList<String>();
 		givens.add("Brian");
@@ -444,6 +460,14 @@ public class JSONToSoapTest {
 	public void testCreatePatientDiscoveryRequestMultipleNames() throws JAXBException, 
 	SAMLException, SOAPException, JWTValidationException, IOException, MarshallingException, ConfigurationException {
 		PatientSearch ps = new PatientSearch();
+		List<PatientSearchAddress> addresses = new ArrayList<PatientSearchAddress>();
+		PatientSearchAddress psa = new PatientSearchAddress();
+		psa.setCity(null);
+		psa.setState(null);
+		psa.setZipcode(null);
+		psa.setLines(new ArrayList<String>());
+		addresses.add(psa);
+		ps.setAddresses(addresses);
 		PatientSearchName toCreate1 = new PatientSearchName();
 		toCreate1.setFamilyName("Lindsey");
 		toCreate1.setPrefix("Mr.");
