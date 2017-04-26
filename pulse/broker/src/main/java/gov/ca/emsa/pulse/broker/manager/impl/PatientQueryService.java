@@ -36,7 +36,7 @@ public class PatientQueryService implements Runnable {
 	@Autowired private LocationManager locationManager;
 	@Autowired private AdapterFactory adapterFactory;
 	private PatientSearch toSearch;
-	private SAMLInput samlInput;
+	private String assertion;
 	private CommonUser user;
 	
 	@Override
@@ -53,7 +53,7 @@ public class PatientQueryService implements Runnable {
 			if(adapter != null) {
 				logger.info("Starting query to endpoint with external id '" + endpoint.getExternalId() + "'");
 				try {
-					searchResults = adapter.queryPatients(user, endpoint, toSearch, samlInput);
+					searchResults = adapter.queryPatients(user, endpoint, toSearch, assertion);
 					logger.info("Successfully queried endpoint with external id '" + endpoint.getExternalId() + "'");
 				} catch(Exception ex) {
 					logger.error("Exception thrown in adapter " + adapter.getClass() + ": " + ex.getMessage(), ex);

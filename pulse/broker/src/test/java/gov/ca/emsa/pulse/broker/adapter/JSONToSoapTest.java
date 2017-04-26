@@ -89,17 +89,9 @@ public class JSONToSoapTest {
 	@Autowired EHealthAdapter eHealthAdapter;
 	@Autowired EHealthQueryProducerService queryProducer;
 	
-	public SAMLInput getAssertion() throws IOException, ConfigurationException{
-		SAMLInput input = new SAMLInput();
-		input.setStrIssuer("Brian Lindsey");
-		input.setStrNameID("UserBrianLindsey");
-		input.setStrNameQualifier("My Website");
-		input.setSessionId("abcdedf1234567");
-		HashMap<String, String> customAttributes = new HashMap<String,String>();
-		customAttributes.put("RequesterFirstName", "brian");
-		customAttributes.put("RequestReason", "Get patient documents");
-		input.setAttributes(customAttributes);
-		return input;
+	public String getAssertion() throws IOException, ConfigurationException{
+		Resource pdFile = resourceLoader.getResource("classpath:assertion.xml");
+		return Resources.toString(pdFile.getURL(), Charsets.UTF_8);
 	}
 
 	@Test

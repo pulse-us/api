@@ -16,12 +16,14 @@ import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PulseUserDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.manager.PulseUserManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
@@ -68,6 +70,7 @@ public class PatientService {
 	@Autowired private DocumentManager docManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private AuditEventManager auditManager;
+	@Autowired private PulseUserManager pulseUserManager;
 	public PatientService() {
 	}
 
@@ -156,29 +159,17 @@ public class PatientService {
 		throws SQLException, JsonProcessingException {
 		
 		CommonUser user = UserUtil.getCurrentUser();
-		//auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getSubjectName());
-				SAMLInput input = new SAMLInput();
-				input.setStrIssuer(user.getSubjectName());
-				input.setStrNameID(user.getSubjectName());
-				input.setStrNameQualifier("My Website");
-				input.setSessionId("abcdedf1234567");
-
-				HashMap<String, String> customAttributes = new HashMap<String,String>();
-				customAttributes.put("RequesterName", user.getFirstName());
-				customAttributes.put("RequestReason", "Patient is bleeding.");
-				customAttributes.put("PatientGivenName", "Hodor");
-				customAttributes.put("PatientFamilyName", "Guy");
-				customAttributes.put("PatientSSN", "123456789");
-				input.setAttributes(customAttributes);
+		PulseUserDTO userDto = pulseUserManager.getById(Long.getLong(user.getPulseUserId()));
+		String assertion = userDto.getAssertion();
 
 		DocumentDTO result = null;
 		if(cacheOnly == null || cacheOnly.booleanValue() == false) {
 			//get the contents that are cached for this document
-			result = docManager.getDocumentById(user, input, documentId);
+			result = docManager.getDocumentById(user, assertion, documentId);
 			auditManager.createPulseAuditEvent(AuditType.DV, documentId);
 		} else {
 			//cache the document's contents
-			result = docManager.getDocumentById(user, input, documentId);
+			result = docManager.getDocumentById(user, assertion, documentId);
 		}
 		return DtoToDomainConverter.convert(result);
 	}

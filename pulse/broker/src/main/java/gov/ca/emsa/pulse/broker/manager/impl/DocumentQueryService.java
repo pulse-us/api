@@ -35,7 +35,7 @@ public class DocumentQueryService implements Runnable {
 	@Autowired private DocumentManager docManager;
 	@Autowired private AdapterFactory adapterFactory;
 	private PatientDTO toSearch;
-	private SAMLInput samlInput;
+	private String assertion;
 	private CommonUser user;
 	
 	@Override
@@ -51,7 +51,7 @@ public class DocumentQueryService implements Runnable {
 			if(adapter != null) {
 				logger.info("Starting query to endpoint with external id '" + endpoint.getExternalId() + "'");
 				try {
-					searchResults = adapter.queryDocuments(user, endpoint, patientEndpointMap, samlInput);
+					searchResults = adapter.queryDocuments(user, endpoint, patientEndpointMap, assertion);
 				} catch(Exception ex) {
 					logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
 					querySuccess = false;
@@ -157,4 +157,14 @@ public class DocumentQueryService implements Runnable {
 	public void setToSearch(PatientDTO toSearch) {
 		this.toSearch = toSearch;
 	}
+
+	public String getAssertion() {
+		return assertion;
+	}
+
+	public void setAssertion(String assertion) {
+		this.assertion = assertion;
+	}
+	
+	
 }

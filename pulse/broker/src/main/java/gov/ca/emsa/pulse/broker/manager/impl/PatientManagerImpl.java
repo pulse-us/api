@@ -11,11 +11,13 @@ import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.PulseUserDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.manager.PulseUserManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
@@ -48,6 +50,7 @@ public class PatientManagerImpl implements PatientManager {
 	@Autowired private DocumentManager docManager;
 	@Autowired QueryableEndpointStatusUtil endpointStatusesForQuery;
 	@Autowired private QueryDAO queryDao;
+	@Autowired private PulseUserManager pulseUserManager;
 	
 	public PatientManagerImpl() {
 	}
@@ -215,18 +218,10 @@ public class PatientManagerImpl implements PatientManager {
 		patientEndpointMapForRequery.setEndpoint(endpointForRequery);
 
 		if(patientEndpointMapForRequery != null) {
-			SAMLInput input = new SAMLInput();
-			input.setStrIssuer(user.getSubjectName());
-			input.setStrNameID("UserBrianLindsey");
-			input.setStrNameQualifier("My Website");
-			input.setSessionId("abcdedf1234567");
-			HashMap<String, String> customAttributes = new HashMap<String,String>();
-			customAttributes.put("RequesterFirstName", user.getFirstName());
-			customAttributes.put("RequestReason", "Get patient documents");
-			customAttributes.put("PatientRecordId", patientEndpointMapForRequery.getExternalPatientRecordId());
-			input.setAttributes(customAttributes);
+			PulseUserDTO userDto = pulseUserManager.getById(Long.getLong(user.getPulseUserId()));
+			String assertion = userDto.getAssertion();
 			patient.getEndpointMaps().add(patientEndpointMapForRequery);
-			docManager.queryForDocuments(user, input,  patientEndpointMapForRequery);
+			docManager.queryForDocuments(user, assertion,  patientEndpointMapForRequery);
 		}
 		
 		return getPatientById(patientId);
