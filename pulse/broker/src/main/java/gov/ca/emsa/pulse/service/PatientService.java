@@ -159,7 +159,7 @@ public class PatientService {
 		throws SQLException, JsonProcessingException {
 		
 		CommonUser user = UserUtil.getCurrentUser();
-		PulseUserDTO userDto = pulseUserManager.getById(Long.getLong(user.getPulseUserId()));
+		PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
 		String assertion = userDto.getAssertion();
 
 		DocumentDTO result = null;

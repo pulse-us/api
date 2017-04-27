@@ -122,8 +122,9 @@ public class QueryService {
         	if(queryEndpointMaps == null || queryEndpointMaps.size() == 0) {
         		throw new InvalidArgumentsException("No endpoint with ID " + endpointId + " was found for query with ID " + queryId + " that is not already closed.");
         	}
-        	
-        	Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(queryId, endpointId, user);
+        	PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
+    		String assertion = userDto.getAssertion();
+        	Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(assertion, queryId, endpointId, user);
         	if(newQueryEndpointMapId != null) {
 	        	QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(newQueryEndpointMapId);
 	        	initiatedQuery = queryManager.getById(dto.getQueryId());
@@ -170,7 +171,7 @@ public class QueryService {
 			//create patient-endpoint mappings for doc discovery based on the patientrecords we are using
 			for(Long patientRecordId : request.getPatientRecordIds()) {
 				PatientEndpointMapDTO patLocMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient, patientRecordId);
-				PulseUserDTO userDto = pulseUserManager.getById(Long.getLong(user.getPulseUserId()));
+				PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
 				String assertion = userDto.getAssertion();
 				patient.getEndpointMaps().add(patLocMapDto);
 				docManager.queryForDocuments(user, assertion, patLocMapDto);

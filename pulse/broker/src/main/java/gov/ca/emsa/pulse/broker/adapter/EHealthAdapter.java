@@ -149,7 +149,7 @@ public class EHealthAdapter implements Adapter {
 		String searchResults = null;
 		try {
 			logger.info("Querying " + endpoint.getUrl() + " with timeout " + defaultRequestTimeoutSeconds + " seconds");
-			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
+			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class); // TODO: the request that is going out here mock does not like
 		} catch(Exception ex) {
 			auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
 			throw ex;

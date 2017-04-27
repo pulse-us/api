@@ -100,6 +100,20 @@ public class PatientQueryService implements Runnable {
 		}
 	}
 	
+	
+	
+	public String getAssertion() {
+		return assertion;
+	}
+
+
+
+	public void setAssertion(String assertion) {
+		this.assertion = assertion;
+	}
+
+
+
 	public CommonUser getUser() {
 		return user;
 	}

@@ -218,7 +218,7 @@ public class PatientManagerImpl implements PatientManager {
 		patientEndpointMapForRequery.setEndpoint(endpointForRequery);
 
 		if(patientEndpointMapForRequery != null) {
-			PulseUserDTO userDto = pulseUserManager.getById(Long.getLong(user.getPulseUserId()));
+			PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
 			String assertion = userDto.getAssertion();
 			patient.getEndpointMaps().add(patientEndpointMapForRequery);
 			docManager.queryForDocuments(user, assertion,  patientEndpointMapForRequery);

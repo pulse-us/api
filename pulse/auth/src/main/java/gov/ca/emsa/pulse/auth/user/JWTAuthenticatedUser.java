@@ -226,6 +226,7 @@ public class JWTAuthenticatedUser implements User {
             "[organization: " + organization + "]" +
             "[purpose_for_use: " + purpose_for_use + "]" +
             "[role: " + role + "]" +
+            "[pulseUserId: " + pulseUserId + "]" +
             "[jwt: " + details.get("jwt") + "]";
         return ret;
     }

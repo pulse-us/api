@@ -193,6 +193,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		if(query.getEndpointMaps() != null && query.getEndpointMaps().size() > 0) {
 			for(QueryEndpointMapDTO queryEndpointMap : query.getEndpointMaps()) {
 				PatientQueryService service = getPatientQueryService();
+				service.setAssertion(assertion);
 				service.setToSearch(toSearch);
 				service.setQueryEndpointMap(queryEndpointMap);
 				service.setEndpoint(queryEndpointMap.getEndpoint());
@@ -208,7 +209,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public Long requeryForPatientRecords(Long queryId, Long endpointId, CommonUser user) 
+	public Long requeryForPatientRecords(String assertion, Long queryId, Long endpointId, CommonUser user) 
 			throws JsonProcessingException, IOException {
 		List<QueryEndpointMapDTO> queryEndpointMaps = queryDao.findQueryEndpointsByQueryAndEndpoint(queryId, endpointId);
 		QueryDTO query = queryDao.findById(queryId);
@@ -239,6 +240,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		
 		PatientQueryService service = getPatientQueryService();
 		service.setToSearch(toSearch);
+		service.setAssertion(assertion);
 		service.setQueryEndpointMap(endpointMapForRequery);
 		service.setEndpoint(endpointMapForRequery.getEndpoint());
 		service.setUser(user);

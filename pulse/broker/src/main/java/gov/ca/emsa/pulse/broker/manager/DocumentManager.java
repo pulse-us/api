@@ -13,7 +13,7 @@ public interface DocumentManager {
 	public DocumentDTO create(DocumentDTO toCreate);
 	public DocumentDTO update(DocumentDTO toUpdate);
 	public void queryForDocuments(CommonUser user, String assertion,  PatientEndpointMapDTO dto);
-	public void queryForDocumentContents(CommonUser user,  
+	public void queryForDocumentContents(String assertion, CommonUser user,  
 			EndpointDTO endpoint, DocumentDTO document, PatientEndpointMapDTO dto);
 	public DocumentDTO cancelDocumentContentQuery(Long documentId, Long patientId);
 	public List<DocumentDTO> getDocumentsForPatient(Long patientId);

@@ -21,6 +21,7 @@ import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
 @Component
 public class DocumentRetrievalService implements Runnable {
+
 	private static final Logger logger = LogManager.getLogger(DocumentRetrievalService.class);
 
 	private PatientEndpointMapDTO patientEndpointMap;
@@ -106,6 +107,14 @@ public class DocumentRetrievalService implements Runnable {
 
 	public void setUser(CommonUser user) {
 		this.user = user;
+	}
+	
+	public String getAssertion() {
+		return assertion;
+	}
+
+	public void setAssertion(String assertion) {
+		this.assertion = assertion;
 	}
 
 	public EndpointDTO getEndpoint() {

@@ -88,9 +88,10 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	@Transactional
-	public void queryForDocumentContents(CommonUser user, EndpointDTO endpoint, DocumentDTO document, PatientEndpointMapDTO patientEndpointMap) {
+	public void queryForDocumentContents(String assertion, CommonUser user, EndpointDTO endpoint, DocumentDTO document, PatientEndpointMapDTO patientEndpointMap) {
 		DocumentRetrievalService service = getDocumentRetrievalService();
 		service.setEndpoint(endpoint);
+		service.setAssertion(assertion);
 		service.setPatientEndpointMap(patientEndpointMap);
 		service.setDocument(document);
 		service.setUser(user);
@@ -151,7 +152,7 @@ public class DocumentManagerImpl implements DocumentManager {
 					docsToGet.add(resultDoc);
 				}
 				
-				queryForDocumentContents(user, documentContentsEndpoint, resultDoc, patientEndpointMap);
+				queryForDocumentContents(assertion, user, documentContentsEndpoint, resultDoc, patientEndpointMap);
 			}
 		}
 		return resultDoc;
