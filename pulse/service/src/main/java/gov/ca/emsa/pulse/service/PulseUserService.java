@@ -58,26 +58,5 @@ public class PulseUserService {
 		return returnUser;
 	}
 
-	@ApiOperation(value = "Get User by ID")
-	@RequestMapping(value = "/create", method = RequestMethod.GET)
-	public PulseUser getById(@PathVariable("userId") Long userId) throws UserRetrievalException, JsonProcessingException {
-		RestTemplate query = new RestTemplate();
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
-		ObjectMapper mapper = new ObjectMapper();
-		
-		JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
-		HttpEntity<PulseUser> response = null;
-		if(jwtUser == null){
-			logger.error("Could not find a logged in user. ");
-			throw new UserRetrievalException("Could not find a logged in user. ");
-		} else {
-			headers.add("User", mapper.writeValueAsString(jwtUser));
-			HttpEntity<PulseUser> request = new HttpEntity<PulseUser>(headers);
-			response = query.exchange(brokerUrl + "/acfs/" + userId, HttpMethod.GET, request, PulseUser.class);
-			logger.info("Request sent to broker from services REST.");
-		}
-		return response.getBody();
-	}
-
 }
 

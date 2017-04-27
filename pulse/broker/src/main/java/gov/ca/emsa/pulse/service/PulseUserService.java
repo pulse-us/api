@@ -36,12 +36,4 @@ public class PulseUserService {
 		PulseUserDTO created = pulseUserManager.create(dto);
 		return DtoToDomainConverter.convertToPulseUser(created);
 	}
-	
-	@ApiOperation(value = "Get User by ID")
-	@RequestMapping(value = "/create", method = RequestMethod.GET)
-	public PulseUser getById(@PathVariable("userId") Long userId) {
-		PulseUserDTO created = pulseUserManager.getById(userId);
-		return DtoToDomainConverter.convertToPulseUser(created);
-	}
-
 }
