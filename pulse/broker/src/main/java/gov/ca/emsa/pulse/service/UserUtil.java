@@ -26,6 +26,7 @@ public class UserUtil {
 			user.setrole(jwtAuth.getrole());
 			user.setFirstName(jwtAuth.getFirstName());
 			user.setLastName(jwtAuth.getLastName());
+			user.setPulseUserId(jwtAuth.getPulseUserId());
 			user.setAcf(jwtAuth.getAcf());
 		} 
 		return user;

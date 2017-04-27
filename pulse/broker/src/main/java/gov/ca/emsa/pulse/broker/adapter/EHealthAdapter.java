@@ -134,11 +134,11 @@ public class EHealthAdapter implements Adapter {
 	}
 	
 	@Override
-	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch, SAMLInput samlInput) throws Exception {
+	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch, String assertion) throws Exception {
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch);
 		String requestBodyXml = null;
 		try {
-			requestBodyXml = queryProducer.marshallPatientDiscoveryRequest(endpoint, samlInput, requestBody);
+			requestBodyXml = queryProducer.marshallPatientDiscoveryRequest(endpoint, assertion, requestBody);
 		} catch(JAXBException ex) {
 			logger.error(ex.getMessage(), ex);
 		}
@@ -149,7 +149,7 @@ public class EHealthAdapter implements Adapter {
 		String searchResults = null;
 		try {
 			logger.info("Querying " + endpoint.getUrl() + " with timeout " + defaultRequestTimeoutSeconds + " seconds");
-			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
+			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class); // TODO: the request that is going out here mock does not like
 		} catch(Exception ex) {
 			auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
 			throw ex;
@@ -195,12 +195,12 @@ public class EHealthAdapter implements Adapter {
 	}
 
 	@Override
-	public DocumentQueryResults queryDocuments(CommonUser user, EndpointDTO endpoint, PatientEndpointMapDTO toSearch, SAMLInput samlInput) throws UnknownHostException, UnsupportedEncodingException, DOMException, MarshallingException, SAMLException {
+	public DocumentQueryResults queryDocuments(CommonUser user, EndpointDTO endpoint, PatientEndpointMapDTO toSearch, String assertion) throws UnknownHostException, UnsupportedEncodingException, DOMException, MarshallingException, SAMLException {
 		String patientId = toSearch.getExternalPatientRecordId();
 		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientId);
 		String requestBodyXml = null;
 		try {
-			requestBodyXml = queryProducer.marshallDocumentQueryRequest(endpoint, samlInput, requestBody);
+			requestBodyXml = queryProducer.marshallDocumentQueryRequest(endpoint, assertion, requestBody);
 		} catch(JAXBException ex) {
 			logger.error(ex.getMessage(), ex);
 		}
@@ -262,7 +262,7 @@ public class EHealthAdapter implements Adapter {
 	 */
 	@Override
 
-	public void retrieveDocumentsContents(CommonUser user, EndpointDTO endpoint, List<DocumentDTO> documents, PatientEndpointMapDTO patientMap, SAMLInput samlInput) 
+	public void retrieveDocumentsContents(CommonUser user, EndpointDTO endpoint, List<DocumentDTO> documents, PatientEndpointMapDTO patientMap, String assertion) 
 			throws Exception {
 		List<Document> docsToSearch = new ArrayList<Document>();
 		for(DocumentDTO docDto : documents) {
@@ -272,7 +272,7 @@ public class EHealthAdapter implements Adapter {
 		RetrieveDocumentSetRequestType requestBody = jsonConverterService.convertToRetrieveDocumentSetRequest(docsToSearch);
 		String requestBodyXml = null;
 		try {
-			requestBodyXml = queryProducer.marshallDocumentSetRequest(endpoint, samlInput, requestBody);
+			requestBodyXml = queryProducer.marshallDocumentSetRequest(endpoint, assertion, requestBody);
 		} catch(JAXBException ex) {
 			logger.error(ex.getMessage(), ex);
 		}

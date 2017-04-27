@@ -18,14 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
+import gov.ca.emsa.pulse.broker.dao.PulseUserDAO;
 import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
+import gov.ca.emsa.pulse.broker.dto.PulseUserDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.EndpointManager;
+import gov.ca.emsa.pulse.broker.manager.PulseUserManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.util.JSONUtils;
@@ -46,6 +49,7 @@ public class SearchService {
 	@Autowired private EndpointManager endpointManager;
 	public static String dobFormat = "yyyy-MM-dd";
 	@Autowired private AuditEventManager auditManager;
+	@Autowired private PulseUserManager pulseUserManager;
 	@Autowired private QueryableEndpointStatusUtil endpointStatusesForQuery;
 	
 	public SearchService() {
@@ -58,21 +62,11 @@ public class SearchService {
     public @ResponseBody Query searchPatients(@RequestBody(required=true) PatientSearch toSearch) throws JsonProcessingException {
 
 		CommonUser user = UserUtil.getCurrentUser();
-		SAMLInput input = new SAMLInput();
-		input.setStrIssuer(user.getSubjectName());
-		input.setStrNameQualifier("My Website");
-		input.setSessionId(user.getSubjectName());
+		
+		// TODO: need to add jwt id to common user and put that id here 
+		PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
+		String assertion = userDto.getAssertion();
 
-		HashMap<String, String> customAttributes = new HashMap<String,String>();
-		customAttributes.put("RequesterFirstName", user.getFirstName());
-		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientGivenName", toSearch.getPatientNames().get(0).getGivenName().get(0));
-		customAttributes.put("PatientDOB", toSearch.getDob());
-		customAttributes.put("PatientGender", toSearch.getGender());
-		customAttributes.put("PatientHomeZip", toSearch.getZip());
-		customAttributes.put("PatientSSN", toSearch.getSsn());
-
-		input.setAttributes(customAttributes);
 		String queryTermsJson = JSONUtils.toJSON(toSearch);
 		QueryDTO initiatedQuery = null;
 
@@ -97,7 +91,7 @@ public class SearchService {
 					query.getEndpointMaps().add(queryEndpointMap);
 				}
 	
-	        	queryManager.queryForPatientRecords(input, toSearch, query, user);
+	        	queryManager.queryForPatientRecords(assertion, toSearch, query, user);
 	        	initiatedQuery = queryManager.getById(query.getId());  
 	        }
 	        return DtoToDomainConverter.convert(initiatedQuery);

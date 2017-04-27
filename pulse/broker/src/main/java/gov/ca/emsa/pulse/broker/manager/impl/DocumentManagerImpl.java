@@ -66,8 +66,9 @@ public class DocumentManagerImpl implements DocumentManager {
 	}
 	
 	@Override
-	public void queryForDocuments(CommonUser user, SAMLInput samlInput, PatientEndpointMapDTO dto) {
+	public void queryForDocuments(CommonUser user, String assertion, PatientEndpointMapDTO dto) {
 		DocumentQueryService service = getDocumentQueryService();
+		service.setAssertion(assertion);
 		service.setPatientEndpointMap(dto);
 		service.setEndpoint(dto.getEndpoint());
 		service.setUser(user);
@@ -87,9 +88,10 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	@Transactional
-	public void queryForDocumentContents(CommonUser user, EndpointDTO endpoint, DocumentDTO document, PatientEndpointMapDTO patientEndpointMap) {
+	public void queryForDocumentContents(String assertion, CommonUser user, EndpointDTO endpoint, DocumentDTO document, PatientEndpointMapDTO patientEndpointMap) {
 		DocumentRetrievalService service = getDocumentRetrievalService();
 		service.setEndpoint(endpoint);
+		service.setAssertion(assertion);
 		service.setPatientEndpointMap(patientEndpointMap);
 		service.setDocument(document);
 		service.setUser(user);
@@ -108,7 +110,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	@Transactional
-	public DocumentDTO getDocumentById(CommonUser user, SAMLInput samlInput, Long documentId) throws SQLException {		
+	public DocumentDTO getDocumentById(CommonUser user, String assertion, Long documentId) throws SQLException {		
 		DocumentDTO resultDoc = docDao.getById(documentId);
 		if(resultDoc == null) {
 			logger.error("Could not find the document with id " + documentId);
@@ -150,7 +152,7 @@ public class DocumentManagerImpl implements DocumentManager {
 					docsToGet.add(resultDoc);
 				}
 				
-				queryForDocumentContents(user, documentContentsEndpoint, resultDoc, patientEndpointMap);
+				queryForDocumentContents(assertion, user, documentContentsEndpoint, resultDoc, patientEndpointMap);
 			}
 		}
 		return resultDoc;

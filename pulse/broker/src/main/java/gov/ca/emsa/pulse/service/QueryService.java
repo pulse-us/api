@@ -7,12 +7,14 @@ import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PulseUserDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.manager.PulseUserManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
@@ -52,6 +54,7 @@ public class QueryService {
 	@Autowired DocumentManager docManager;
 	@Autowired AlternateCareFacilityManager acfManager;
 	@Autowired AuditEventManager auditManager;
+	@Autowired PulseUserManager pulseUserManager;
 
 	@ApiOperation(value = "Get all queries for the logged-in user")
 	@RequestMapping(value="", method = RequestMethod.GET)
@@ -119,8 +122,9 @@ public class QueryService {
         	if(queryEndpointMaps == null || queryEndpointMaps.size() == 0) {
         		throw new InvalidArgumentsException("No endpoint with ID " + endpointId + " was found for query with ID " + queryId + " that is not already closed.");
         	}
-        	
-        	Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(queryId, endpointId, user);
+        	PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
+    		String assertion = userDto.getAssertion();
+        	Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(assertion, queryId, endpointId, user);
         	if(newQueryEndpointMapId != null) {
 	        	QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(newQueryEndpointMapId);
 	        	initiatedQuery = queryManager.getById(dto.getQueryId());
@@ -167,17 +171,10 @@ public class QueryService {
 			//create patient-endpoint mappings for doc discovery based on the patientrecords we are using
 			for(Long patientRecordId : request.getPatientRecordIds()) {
 				PatientEndpointMapDTO patLocMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient, patientRecordId);
-				SAMLInput input = new SAMLInput();
-				input.setStrIssuer(user.getSubjectName());
-				input.setStrNameID("UserBrianLindsey");
-				input.setStrNameQualifier("My Website");
-				input.setSessionId("abcdedf1234567");
-				HashMap<String, String> customAttributes = new HashMap<String,String>();
-				customAttributes.put("RequesterFirstName", user.getFirstName());
-				customAttributes.put("RequestReason", "Get patient documents");
-				input.setAttributes(customAttributes);
+				PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
+				String assertion = userDto.getAssertion();
 				patient.getEndpointMaps().add(patLocMapDto);
-				docManager.queryForDocuments(user, input, patLocMapDto);
+				docManager.queryForDocuments(user, assertion, patLocMapDto);
 				//kick off document list retrieval service
 				
 			}

@@ -34,6 +34,8 @@ public interface User extends UserDetails , Authentication {
     public void setorganization(String organization);
     public String getpurpose_for_use ();
     public void setpurpose_for_use(String purpose_for_use);
+    public String getPulseUserId();
+    public void setPulseUserId(String purpose_for_use);
     public String getrole ();
     public void setrole(String role);
 

@@ -31,13 +31,22 @@ import gov.ca.emsa.pulse.common.domain.PatientEndpointMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.PulseUser;
 import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.common.domain.QueryEndpointMap;
 
 public class DtoToDomainConverter {
 	private static final Logger logger = LogManager.getLogger(DtoToDomainConverter.class);
 	private static final DateTimeFormatter outFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	
+	public static PulseUser convertToPulseUser(PulseUserDTO pulseUser) {
+		PulseUser result = new PulseUser();
+		result.setId(pulseUser.getId());
+		result.setAssertion(pulseUser.getAssertion());
 
+		return result;
+	}
+	
 	public static Patient convert(PatientDTO dtoObj) {
 		Patient result = new Patient();
 		result.setId(dtoObj.getId());
