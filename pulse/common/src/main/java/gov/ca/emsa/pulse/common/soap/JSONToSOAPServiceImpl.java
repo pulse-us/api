@@ -33,6 +33,8 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotListType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryError;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryErrorList;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 import org.hl7.v3.ADExplicit;
@@ -53,7 +55,10 @@ import org.hl7.v3.IVLTSExplicit;
 import org.hl7.v3.MCCIMT000100UV01Device;
 import org.hl7.v3.MCCIMT000100UV01Receiver;
 import org.hl7.v3.MCCIMT000100UV01Sender;
+import org.hl7.v3.MCCIMT000200UV01Acknowledgement;
+import org.hl7.v3.MCCIMT000300UV01Acknowledgement;
 import org.hl7.v3.MFMIMT700711UV01AuthorOrPerformer;
+import org.hl7.v3.MFMIMT700711UV01QueryAck;
 import org.hl7.v3.PNExplicit;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201305UV02QUQIMT021001UV01ControlActProcess;
@@ -124,6 +129,34 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 	
 	public JAXBElement<PRPAMT201306UV02QueryByParameter> getQueryByParameter(PRPAIN201305UV02 message){
 		return message.getControlActProcess().getQueryByParameter();
+	}
+	
+	//Case 4: The Responding Gateway Actor finds no patients anywhere close to matching the
+	//9175 criteria sent in the query parameters.
+	//AA (application accept) is returned in Acknowledgement.typeCode (transmission wrapper).
+	//NF (data found, no errors) is returned in QueryAck.queryResponseCode (control act wrapper)
+	//There is no RegistrationEvent returned in the response. The Initiating Gateway can assume this
+	//patient has no healthcare information held by the community represented by the Responding
+	//Gateway. This lack of correlation may be cached, see Section 3.55.4.2.3.1 for more information
+	//about caching.
+	public PRPAIN201310UV02 createNoPatientRecordsResponse(){
+		PRPAIN201310UV02 returnSOAP = new PRPAIN201310UV02();
+		
+		MCCIMT000300UV01Acknowledgement ack = new MCCIMT000300UV01Acknowledgement();
+		CS ackTypeCode = new CS();
+		ackTypeCode.setCode("AA");
+		ack.setTypeCode(ackTypeCode);
+		returnSOAP.getAcknowledgement().add(ack);
+		
+		MFMIMT700711UV01QueryAck queryAck = new MFMIMT700711UV01QueryAck();
+		CS queryResponseCode = new CS();
+		queryResponseCode.setCode("NF");
+		queryAck.setQueryResponseCode(queryResponseCode);
+		PRPAIN201310UV02MFMIMT700711UV01ControlActProcess cap = new PRPAIN201310UV02MFMIMT700711UV01ControlActProcess();
+		cap.setQueryAck(queryAck);
+		returnSOAP.setControlActProcess(cap);
+		
+		return returnSOAP;
 	}
 	
 	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch search) {
@@ -290,6 +323,21 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		return request;
 	}
 	
+	public AdhocQueryResponse createNoDocumentListResponse(){
+		AdhocQueryResponse response = new AdhocQueryResponse();
+		response.setStatus("urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure");
+		RegistryErrorList errorList = new RegistryErrorList();
+		errorList.setHighestSeverity("urn:oasis:names:tc:ebxml-2720 regrep:ErrorSeverityType:Error");
+		RegistryError error = new RegistryError();
+		error.setErrorCode("XDSUnknownPatientId");
+		error.setCodeContext("Patient Id referenced in metadata is not known by the receiving actor");
+		error.setLocation("");
+		error.setSeverity("urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error");
+		errorList.getRegistryError().add(error);
+		response.setRegistryErrorList(errorList);
+		return response;
+	}
+	
 	// will be adding metadata to the document object soon to fill in more response fields
 	public AdhocQueryResponse convertDocumentListToSOAPResponse(List<Document> doc, String patientId){
 		AdhocQueryResponse response = new AdhocQueryResponse();
@@ -334,6 +382,23 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 			
 			return request;
 
+	}
+	
+	public RetrieveDocumentSetResponseType createNoDocumentSetRetrieveResponse(){
+		RetrieveDocumentSetResponseType response = new RetrieveDocumentSetResponseType();
+		RegistryResponseType registryResponse = new RegistryResponseType();
+		registryResponse.setStatus("urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure");
+		RegistryErrorList errorList = new RegistryErrorList();
+		errorList.setHighestSeverity("urn:oasis:names:tc:ebxml-2720 regrep:ErrorSeverityType:Error");
+		RegistryError error = new RegistryError();
+		error.setErrorCode("XDSDocumentUniqueIdError");
+		error.setCodeContext("The document associated with the uniqueId is not available");
+		error.setLocation("");
+		error.setSeverity("urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error");
+		errorList.getRegistryError().add(error);
+		registryResponse.setRegistryErrorList(errorList);
+		response.setRegistryResponse(registryResponse);
+		return response;
 	}
 	
 	public RetrieveDocumentSetResponseType convertDocumentSetToSOAPResponse(List<DocumentWrapper> docs) {

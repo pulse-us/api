@@ -2,7 +2,6 @@ package gov.ca.emsa.pulse.common.soap;
 
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
-import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
@@ -27,4 +26,8 @@ public interface JSONToSOAPService {
 	public RetrieveDocumentSetResponseType convertDocumentSetToSOAPResponse(List<DocumentWrapper> docs);
 	public RetrieveDocumentSetRequestType convertToRetrieveDocumentSetRequest(List<Document> documents);
 	public JAXBElement<PRPAMT201306UV02QueryByParameter> getQueryByParameter(PRPAIN201305UV02 message);
+	
+	public PRPAIN201310UV02 createNoPatientRecordsResponse();
+	public AdhocQueryResponse createNoDocumentListResponse();
+	public RetrieveDocumentSetResponseType createNoDocumentSetRetrieveResponse();
 }
