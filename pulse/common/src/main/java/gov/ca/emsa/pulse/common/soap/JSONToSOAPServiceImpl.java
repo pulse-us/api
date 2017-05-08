@@ -1,74 +1,37 @@
 package gov.ca.emsa.pulse.common.soap;
 
-import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientRecord;
-import gov.ca.emsa.pulse.common.domain.PatientSearch;
-import gov.ca.emsa.pulse.common.domain.PatientSearchAddress;
-import gov.ca.emsa.pulse.common.domain.PatientSearchName;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.DocumentRequest;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
-
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.activation.DataHandler;
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-import oasis.names.tc.ebxml_regrep.xsd.query._3.ResponseOptionType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.AdhocQueryType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotListType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryError;
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryErrorList;
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
 import org.hl7.v3.ADExplicit;
 import org.hl7.v3.ActClassControlAct;
-import org.hl7.v3.AdxpExplicitState;
 import org.hl7.v3.CD;
 import org.hl7.v3.CE;
-import org.hl7.v3.COCTMT090300UV01AssignedDevice;
 import org.hl7.v3.CS;
 import org.hl7.v3.CommunicationFunctionType;
 import org.hl7.v3.ENExplicit;
-import org.hl7.v3.ENXP;
-import org.hl7.v3.EnExplicitFamily;
-import org.hl7.v3.EnExplicitGiven;
 import org.hl7.v3.EntityClassDevice;
 import org.hl7.v3.II;
 import org.hl7.v3.IVLTSExplicit;
 import org.hl7.v3.MCCIMT000100UV01Device;
 import org.hl7.v3.MCCIMT000100UV01Receiver;
 import org.hl7.v3.MCCIMT000100UV01Sender;
-import org.hl7.v3.MCCIMT000200UV01Acknowledgement;
 import org.hl7.v3.MCCIMT000300UV01Acknowledgement;
-import org.hl7.v3.MFMIMT700711UV01AuthorOrPerformer;
+import org.hl7.v3.MCCIMT000300UV01Device;
+import org.hl7.v3.MCCIMT000300UV01Receiver;
+import org.hl7.v3.MCCIMT000300UV01Sender;
 import org.hl7.v3.MFMIMT700711UV01QueryAck;
-import org.hl7.v3.PNExplicit;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201305UV02QUQIMT021001UV01ControlActProcess;
-import org.hl7.v3.PRPAIN201310UV02;
-import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01ControlActProcess;
-import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent;
-import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01Subject1;
-import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01Subject2;
-import org.hl7.v3.PRPAMT201304UV02Patient;
-import org.hl7.v3.PRPAMT201304UV02Person;
+import org.hl7.v3.PRPAIN201306UV02;
+import org.hl7.v3.PRPAIN201306UV02MFMIMT700711UV01ControlActProcess;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectAdministrativeGender;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectBirthTime;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectId;
@@ -77,7 +40,6 @@ import org.hl7.v3.PRPAMT201306UV02ParameterList;
 import org.hl7.v3.PRPAMT201306UV02PatientAddress;
 import org.hl7.v3.PRPAMT201306UV02PatientTelecom;
 import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
-import org.hl7.v3.PRPAMT201310UV02OtherIDs;
 import org.hl7.v3.ST;
 import org.hl7.v3.TELExplicit;
 import org.hl7.v3.TSExplicit;
@@ -85,7 +47,26 @@ import org.hl7.v3.XActMoodIntentEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.UUID;
+import gov.ca.emsa.pulse.common.domain.Document;
+import gov.ca.emsa.pulse.common.domain.DocumentWrapper;
+import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.PatientSearchAddress;
+import gov.ca.emsa.pulse.common.domain.PatientSearchName;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.DocumentRequest;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.ResponseOptionType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.AdhocQueryType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryError;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryErrorList;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 @Service
 public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 	
@@ -95,36 +76,6 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 	
 	public String generateCreationTime(){
 		return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-	}
-	
-	public PRPAIN201310UV02 convertPatientRecordListToSOAPResponse(List<PatientRecord> patientRecords){
-		PRPAIN201310UV02 returnSOAP = new PRPAIN201310UV02();
-		List<PRPAIN201310UV02MFMIMT700711UV01Subject1> subjects = new ArrayList<PRPAIN201310UV02MFMIMT700711UV01Subject1>();
-		PRPAIN201310UV02MFMIMT700711UV01ControlActProcess cap = new PRPAIN201310UV02MFMIMT700711UV01ControlActProcess();
-		for(PatientRecord record : patientRecords){
-			PRPAIN201310UV02MFMIMT700711UV01Subject1 subject = new PRPAIN201310UV02MFMIMT700711UV01Subject1();
-			PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent registrationEvent = new PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent();
-			PRPAIN201310UV02MFMIMT700711UV01Subject2 subject1 = new PRPAIN201310UV02MFMIMT700711UV01Subject2();
-			PRPAMT201304UV02Patient patient = new PRPAMT201304UV02Patient();
-			JAXBElement<EnExplicitGiven> given = new JAXBElement(new QName("urn:hl7-org:v3","given"), String.class, record.getPatientRecordName().get(0).getGivenName());
-			JAXBElement<EnExplicitFamily> family = new JAXBElement(new QName("urn:hl7-org:v3","family"), String.class, record.getPatientRecordName().get(0).getFamilyName());
-			PNExplicit pnGiven = new PNExplicit();
-			PNExplicit pnFamily = new PNExplicit();
-			pnGiven.getContent().add(given);
-			pnFamily.getContent().add(family);
-			PRPAMT201304UV02Person patientPerson1 = new PRPAMT201304UV02Person();
-			patientPerson1.getName().add(pnGiven);
-			patientPerson1.getName().add(pnFamily);
-			JAXBElement<PRPAMT201304UV02Person> patientPerson = new JAXBElement(new QName("urn:hl7-org:v3","patient"), PRPAMT201304UV02Person.class, patientPerson1);
-			patient.setPatientPerson(patientPerson);
-			subject1.setPatient(patient);
-			registrationEvent.setSubject1(subject1);
-			subject.setRegistrationEvent(registrationEvent);
-			subjects.add(subject);
-		}
-		cap.getSubject().addAll(subjects);
-		returnSOAP.setControlActProcess(cap);
-		return returnSOAP;
 	}
 	
 	public JAXBElement<PRPAMT201306UV02QueryByParameter> getQueryByParameter(PRPAIN201305UV02 message){
@@ -139,8 +90,50 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 	//patient has no healthcare information held by the community represented by the Responding
 	//Gateway. This lack of correlation may be cached, see Section 3.55.4.2.3.1 for more information
 	//about caching.
-	public PRPAIN201310UV02 createNoPatientRecordsResponse(){
-		PRPAIN201310UV02 returnSOAP = new PRPAIN201310UV02();
+	public PRPAIN201306UV02 createNoPatientRecordsResponse(PRPAIN201305UV02 request){
+		PRPAIN201306UV02 returnSOAP = new PRPAIN201306UV02();
+		returnSOAP.setITSVersion("XML_1.0");
+		II id = new II();
+		id.setRoot(generateUUID());
+		returnSOAP.setId(id);
+		TSExplicit creationTime = new TSExplicit();
+		creationTime.setValue(generateCreationTime());
+		returnSOAP.setCreationTime(creationTime);
+		II interactionId = new II();
+		interactionId.setExtension("PRPA_IN201306UV02");
+		interactionId.setRoot("2.16.840.1.113883");
+		returnSOAP.setInteractionId(interactionId);
+		CS processingCode = new CS();
+		processingCode.setCode("T");
+		returnSOAP.setProcessingCode(processingCode);
+		CS processingModeCode = new CS();
+		processingModeCode.setCode("T");
+		returnSOAP.setProcessingModeCode(processingModeCode);
+		CS acceptAckCode = new CS();
+		acceptAckCode.setCode("NE");
+		returnSOAP.setAcceptAckCode(acceptAckCode);
+		
+		MCCIMT000300UV01Receiver reciever = new MCCIMT000300UV01Receiver();
+		reciever.setTypeCode(CommunicationFunctionType.RCV);
+		MCCIMT000300UV01Device device = new MCCIMT000300UV01Device();
+		device.setDeterminerCode("INSTANCE");
+		device.setClassCode(EntityClassDevice.DEV);
+		II deviceId = new II();
+		deviceId.getNullFlavor().add("NA");
+		device.getId().add(deviceId);
+		reciever.setDevice(device);
+		returnSOAP.getReceiver().add(reciever);
+		
+		MCCIMT000300UV01Sender sender = new MCCIMT000300UV01Sender();
+		sender.setTypeCode(CommunicationFunctionType.SND);
+		MCCIMT000300UV01Device deviceSender = new MCCIMT000300UV01Device();
+		deviceSender.setDeterminerCode("INSTANCE");
+		deviceSender.setClassCode(EntityClassDevice.DEV);
+		II deviceIdSender = new II();
+		deviceIdSender.getNullFlavor().add("NA");
+		deviceSender.getId().add(deviceIdSender);
+		sender.setDevice(deviceSender);
+		returnSOAP.setSender(sender);
 		
 		MCCIMT000300UV01Acknowledgement ack = new MCCIMT000300UV01Acknowledgement();
 		CS ackTypeCode = new CS();
@@ -152,9 +145,21 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		CS queryResponseCode = new CS();
 		queryResponseCode.setCode("NF");
 		queryAck.setQueryResponseCode(queryResponseCode);
-		PRPAIN201310UV02MFMIMT700711UV01ControlActProcess cap = new PRPAIN201310UV02MFMIMT700711UV01ControlActProcess();
-		cap.setQueryAck(queryAck);
-		returnSOAP.setControlActProcess(cap);
+		CS queryStatusCode = new CS();
+		queryStatusCode.setCode("deliveredResponse");
+		queryAck.setStatusCode(queryStatusCode);
+		queryAck.setQueryId(request.getId());
+		
+		PRPAIN201306UV02MFMIMT700711UV01ControlActProcess controlActProcess = new PRPAIN201306UV02MFMIMT700711UV01ControlActProcess();
+		controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
+		controlActProcess.setClassCode(ActClassControlAct.CACT);
+		CD code = new CD();
+		code.setCodeSystem("2.16.840.1.113883.1.6");
+		code.setCode("PRPA_TE201306UV02");
+		controlActProcess.setCode(code);
+		controlActProcess.setQueryAck(queryAck);
+		controlActProcess.setQueryByParameter(request.getControlActProcess().getQueryByParameter());
+		returnSOAP.setControlActProcess(controlActProcess);
 		
 		return returnSOAP;
 	}

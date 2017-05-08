@@ -8,8 +8,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -17,12 +19,15 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 
@@ -32,12 +37,16 @@ import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201306UV02;
 import org.hl7.v3.PRPAIN201310UV02;
 import org.opensaml.common.SAMLException;
+import org.opensaml.xml.io.MarshallingException;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 
 @Service
 public class EHealthQueryConsumerServiceImpl implements EHealthQueryConsumerService{
@@ -82,7 +91,8 @@ public class EHealthQueryConsumerServiceImpl implements EHealthQueryConsumerServ
 		return false;
 	}
 	
-	public String marshallPatientDiscoveryResponse(PRPAIN201310UV02 response) throws JAXBException{
+	public String marshallPatientDiscoveryResponse(PRPAIN201306UV02 response) 
+			throws JAXBException, SAMLException, MarshallingException {
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -95,7 +105,8 @@ public class EHealthQueryConsumerServiceImpl implements EHealthQueryConsumerServ
 		} catch (SOAPException e) {
 			logger.error(e);
 		}
-		JAXBElement<PRPAIN201310UV02> je = new JAXBElement<PRPAIN201310UV02>(new QName("PRPAIN201310UV02"), PRPAIN201310UV02.class, response);
+
+		JAXBElement<PRPAIN201306UV02> je = new JAXBElement<PRPAIN201306UV02>(new QName("urn:hl7-org:v3", "PRPA_IN201306UV02"), PRPAIN201306UV02.class, response);
 		Document document = null;
 		try {
 			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
@@ -103,6 +114,7 @@ public class EHealthQueryConsumerServiceImpl implements EHealthQueryConsumerServ
 			e.printStackTrace();
 		}
 		Marshaller documentMarshaller = createMarshaller(createJAXBContext(response.getClass()));
+		documentMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		documentMarshaller.marshal(je, document);
 		try {
 			soapMessage.getSOAPBody().addDocument(document);
@@ -363,6 +375,10 @@ public class EHealthQueryConsumerServiceImpl implements EHealthQueryConsumerServ
 			logger.error("SOAP message does not have a SAML header");
 			throw new SAMLException();
 		}
+	}
+
+	private String createUUID(){
+		return UUID.randomUUID().toString();
 	}
 
 }
