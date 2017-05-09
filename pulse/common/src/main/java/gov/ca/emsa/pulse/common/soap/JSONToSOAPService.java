@@ -21,7 +21,7 @@ import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
 
 public interface JSONToSOAPService {
 	public PRPAIN201310UV02 convertPatientRecordListToSOAPResponse(List<PatientRecord> patientRecords);
-	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch ps);
+	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch ps, String pulseOID);
 	public AdhocQueryRequest convertToDocumentRequest(String patientId);
 	public AdhocQueryResponse convertDocumentListToSOAPResponse(List<Document> docs, String patientId);
 	public RetrieveDocumentSetResponseType convertDocumentSetToSOAPResponse(List<DocumentWrapper> docs);
