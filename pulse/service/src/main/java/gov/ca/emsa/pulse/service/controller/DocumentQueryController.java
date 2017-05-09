@@ -1,6 +1,9 @@
 package gov.ca.emsa.pulse.service.controller;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -27,14 +30,17 @@ public class DocumentQueryController {
 	//https://www.ihe.net/uploadedFiles/Documents/ITI/IHE_ITI_TF_Vol3.pdf
 	// section 4.2.4.1
 	@RequestMapping(value = "/documentQuery", method = RequestMethod.POST, produces = MediaType.APPLICATION_XML_VALUE)
-	public String queryRequest(@RequestBody String request) {
+	public String queryRequest(@RequestBody String request) 
+		throws JAXBException, SOAPException {
+		SOAPMessage soapRequest = consumerService.getSoapMessageFromXml(request);
 		AdhocQueryResponse responseObj = jsonService.createNoDocumentListResponse();
 		String response = null;
 		try {
-			response = consumerService.marshallDocumentQueryResponse(responseObj);
-		} catch (JAXBException e) {
+			response = consumerService.marshallDocumentQueryResponse(responseObj, soapRequest);
+		} catch (JAXBException |SOAPException e) {
 			e.printStackTrace();
-		}
+			throw e;
+		} 
 		logger.info("Document query Response string: " + response);
 		return response;
 	}

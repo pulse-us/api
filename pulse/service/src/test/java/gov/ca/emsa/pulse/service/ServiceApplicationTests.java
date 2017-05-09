@@ -27,6 +27,7 @@ import java.util.concurrent.Future;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
 
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
@@ -136,11 +137,12 @@ public class ServiceApplicationTests {
 		String responseString = null;
 		try {
 			responseString = consumerService.marshallPatientDiscoveryResponse(responseObj);
-		} catch (JAXBException e) {
+		} catch (JAXBException | SOAPException e) {
 			e.printStackTrace();
+			fail();
 		}
 		
-		//assertNotNull(responseString);
+		assertNotNull(responseString);
 		
 		/*if(responseString.contains("Envelope")){
 			assertTrue(true);
@@ -158,6 +160,7 @@ public class ServiceApplicationTests {
 		}catch (IOException e){
 			e.printStackTrace();
 		}
+		SOAPMessage requestSoap = consumerService.getSoapMessageFromXml(request);
 		AdhocQueryRequest requestObj = null;
 		try {
 			requestObj = consumerService.unMarshallDocumentQueryRequestObject(request);
@@ -171,8 +174,8 @@ public class ServiceApplicationTests {
 		
 		String responseString = null;
 		try {
-			responseString = consumerService.marshallDocumentQueryResponse(responseObj);
-		} catch (JAXBException e) {
+			responseString = consumerService.marshallDocumentQueryResponse(responseObj, requestSoap);
+		} catch (JAXBException |SOAPException e) {
 			e.printStackTrace();
 		}
 		assertNotNull(responseString);
@@ -193,6 +196,7 @@ public class ServiceApplicationTests {
 		}catch (IOException e){
 			e.printStackTrace();
 		}
+		SOAPMessage soapRequest = consumerService.getSoapMessageFromXml(request);
 		RetrieveDocumentSetRequestType requestObj = null;
 		try {
 			requestObj = consumerService.unMarshallDocumentSetRetrieveRequestObject(request);
@@ -206,11 +210,12 @@ public class ServiceApplicationTests {
 		
 		String responseString = null;
 		try {
-			responseString = consumerService.marshallDocumentSetResponse(responseObj);
-		} catch (JAXBException e) {
+			responseString = consumerService.marshallDocumentSetResponse(responseObj, soapRequest);
+		} catch (JAXBException | SOAPException e) {
 			e.printStackTrace();
+			fail();
 		}
-		//assertNotNull(responseString);
+		assertNotNull(responseString);
 	}
 	
 	// JSONToSOAPService tests

@@ -9,6 +9,7 @@ import java.util.UUID;
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPHeader;
 
 import org.hl7.v3.ADExplicit;
 import org.hl7.v3.ActClassControlAct;
@@ -20,11 +21,15 @@ import org.hl7.v3.ENExplicit;
 import org.hl7.v3.EntityClassDevice;
 import org.hl7.v3.II;
 import org.hl7.v3.IVLTSExplicit;
+import org.hl7.v3.MCCIMT000100UV01Agent;
 import org.hl7.v3.MCCIMT000100UV01Device;
+import org.hl7.v3.MCCIMT000100UV01Organization;
 import org.hl7.v3.MCCIMT000100UV01Receiver;
 import org.hl7.v3.MCCIMT000100UV01Sender;
 import org.hl7.v3.MCCIMT000300UV01Acknowledgement;
+import org.hl7.v3.MCCIMT000300UV01Agent;
 import org.hl7.v3.MCCIMT000300UV01Device;
+import org.hl7.v3.MCCIMT000300UV01Organization;
 import org.hl7.v3.MCCIMT000300UV01Receiver;
 import org.hl7.v3.MCCIMT000300UV01Sender;
 import org.hl7.v3.MFMIMT700711UV01QueryAck;
@@ -115,24 +120,46 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		acceptAckCode.setCode("NE");
 		returnSOAP.setAcceptAckCode(acceptAckCode);
 		
-		MCCIMT000300UV01Receiver reciever = new MCCIMT000300UV01Receiver();
-		reciever.setTypeCode(CommunicationFunctionType.RCV);
-		MCCIMT000300UV01Device device = new MCCIMT000300UV01Device();
-		device.setDeterminerCode("INSTANCE");
-		device.setClassCode(EntityClassDevice.DEV);
-		II deviceId = new II();
-		deviceId.getNullFlavor().add("NA");
-		device.getId().add(deviceId);
-		reciever.setDevice(device);
-		returnSOAP.getReceiver().add(reciever);
+		//receiver is the entity that sent the request
+		MCCIMT000300UV01Receiver receiver = new MCCIMT000300UV01Receiver();
+		receiver.setTypeCode(CommunicationFunctionType.RCV);
+		MCCIMT000100UV01Device requestDevice = request.getSender().getDevice();
+		MCCIMT000300UV01Device responseDevice = new MCCIMT000300UV01Device();
+		responseDevice.setDeterminerCode(request.getSender().getDevice().getDeterminerCode());
+		responseDevice.setClassCode(request.getSender().getDevice().getClassCode());
+		for(II deviceId : request.getSender().getDevice().getId()) {
+			responseDevice.getId().add(deviceId);
+		}
+		MCCIMT000300UV01Agent responseDeviceAgent = new MCCIMT000300UV01Agent();
+		if(requestDevice.getAsAgent() != null) {
+			MCCIMT000100UV01Agent requestAgent = requestDevice.getAsAgent().getValue();
+			responseDeviceAgent.setTypeId(requestAgent.getTypeId());
+			responseDeviceAgent.getClassCode().addAll(requestAgent.getClassCode());
+			if(requestAgent.getRepresentedOrganization() != null) {
+				MCCIMT000100UV01Organization requestOrg = requestAgent.getRepresentedOrganization().getValue();
+				MCCIMT000300UV01Organization respOrg = new MCCIMT000300UV01Organization();
+				respOrg.setClassCode(requestOrg.getClassCode());
+				respOrg.setDeterminerCode(requestOrg.getDeterminerCode());
+				respOrg.setTypeId(requestOrg.getTypeId());
+				respOrg.setNotificationParty(requestOrg.getNotificationParty());
+				respOrg.getId().addAll(requestOrg.getId());
+				responseDeviceAgent.setRepresentedOrganization(
+						new JAXBElement<MCCIMT000300UV01Organization>(new QName("urn:hl7-org:v3", "representedOrganization"), MCCIMT000300UV01Organization.class, respOrg));
+			}
+		}
+		responseDevice.setAsAgent(new JAXBElement<MCCIMT000300UV01Agent>(
+				new QName("urn:hl7-org:v3", "asAgent"), MCCIMT000300UV01Agent.class, responseDeviceAgent));
+		receiver.setDevice(responseDevice);
+		returnSOAP.getReceiver().add(receiver);
 		
+		//sender us is
 		MCCIMT000300UV01Sender sender = new MCCIMT000300UV01Sender();
 		sender.setTypeCode(CommunicationFunctionType.SND);
 		MCCIMT000300UV01Device deviceSender = new MCCIMT000300UV01Device();
 		deviceSender.setDeterminerCode("INSTANCE");
 		deviceSender.setClassCode(EntityClassDevice.DEV);
 		II deviceIdSender = new II();
-		deviceIdSender.getNullFlavor().add("NA");
+		deviceIdSender.setRoot(PULSE_ID);
 		deviceSender.getId().add(deviceIdSender);
 		sender.setDevice(deviceSender);
 		returnSOAP.setSender(sender);
@@ -160,10 +187,46 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		code.setCode("PRPA_TE201306UV02");
 		controlActProcess.setCode(code);
 		controlActProcess.setQueryAck(queryAck);
-		controlActProcess.setQueryByParameter(request.getControlActProcess().getQueryByParameter());
-		returnSOAP.setControlActProcess(controlActProcess);
 		
+		//the validator does not like the <semanticsText/> 
+		//that comes out of copying the <queryByParameter> from the request
+		//but i have no idea why or what it should be
+		controlActProcess.setQueryByParameter(request.getControlActProcess().getQueryByParameter());
+		
+		returnSOAP.setControlActProcess(controlActProcess);
 		return returnSOAP;
+	}
+	
+	public AdhocQueryResponse createNoDocumentListResponse(){
+		AdhocQueryResponse response = new AdhocQueryResponse();
+		response.setStatus("urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure");
+		RegistryErrorList errorList = new RegistryErrorList();
+		errorList.setHighestSeverity("urn:oasis:names:tc:ebxml-2720 regrep:ErrorSeverityType:Error");
+		RegistryError error = new RegistryError();
+		error.setErrorCode("XDSUnknownPatientId");
+		error.setCodeContext("Patient Id referenced in metadata is not known by the receiving actor");
+		error.setLocation("");
+		error.setSeverity("urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error");
+		errorList.getRegistryError().add(error);
+		response.setRegistryErrorList(errorList);
+		return response;
+	}
+	
+	public RetrieveDocumentSetResponseType createNoDocumentSetRetrieveResponse(){
+		RetrieveDocumentSetResponseType response = new RetrieveDocumentSetResponseType();
+		RegistryResponseType registryResponse = new RegistryResponseType();
+		registryResponse.setStatus("urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure");
+		RegistryErrorList errorList = new RegistryErrorList();
+		errorList.setHighestSeverity("urn:oasis:names:tc:ebxml-2720 regrep:ErrorSeverityType:Error");
+		RegistryError error = new RegistryError();
+		error.setErrorCode("XDSDocumentUniqueIdError");
+		error.setCodeContext("The document associated with the uniqueId is not available");
+		error.setLocation("");
+		error.setSeverity("urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error");
+		errorList.getRegistryError().add(error);
+		registryResponse.setRegistryErrorList(errorList);
+		response.setRegistryResponse(registryResponse);
+		return response;
 	}
 	
 	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch search) {
@@ -330,21 +393,6 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		return request;
 	}
 	
-	public AdhocQueryResponse createNoDocumentListResponse(){
-		AdhocQueryResponse response = new AdhocQueryResponse();
-		response.setStatus("urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure");
-		RegistryErrorList errorList = new RegistryErrorList();
-		errorList.setHighestSeverity("urn:oasis:names:tc:ebxml-2720 regrep:ErrorSeverityType:Error");
-		RegistryError error = new RegistryError();
-		error.setErrorCode("XDSUnknownPatientId");
-		error.setCodeContext("Patient Id referenced in metadata is not known by the receiving actor");
-		error.setLocation("");
-		error.setSeverity("urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error");
-		errorList.getRegistryError().add(error);
-		response.setRegistryErrorList(errorList);
-		return response;
-	}
-	
 	// will be adding metadata to the document object soon to fill in more response fields
 	public AdhocQueryResponse convertDocumentListToSOAPResponse(List<Document> doc, String patientId){
 		AdhocQueryResponse response = new AdhocQueryResponse();
@@ -389,23 +437,6 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 			
 			return request;
 
-	}
-	
-	public RetrieveDocumentSetResponseType createNoDocumentSetRetrieveResponse(){
-		RetrieveDocumentSetResponseType response = new RetrieveDocumentSetResponseType();
-		RegistryResponseType registryResponse = new RegistryResponseType();
-		registryResponse.setStatus("urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure");
-		RegistryErrorList errorList = new RegistryErrorList();
-		errorList.setHighestSeverity("urn:oasis:names:tc:ebxml-2720 regrep:ErrorSeverityType:Error");
-		RegistryError error = new RegistryError();
-		error.setErrorCode("XDSDocumentUniqueIdError");
-		error.setCodeContext("The document associated with the uniqueId is not available");
-		error.setLocation("");
-		error.setSeverity("urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error");
-		errorList.getRegistryError().add(error);
-		registryResponse.setRegistryErrorList(errorList);
-		response.setRegistryResponse(registryResponse);
-		return response;
 	}
 	
 	public RetrieveDocumentSetResponseType convertDocumentSetToSOAPResponse(List<DocumentWrapper> docs) {

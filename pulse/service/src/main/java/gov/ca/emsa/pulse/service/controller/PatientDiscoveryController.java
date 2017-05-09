@@ -29,14 +29,15 @@ public class PatientDiscoveryController {
 
 	@RequestMapping(value = "/patientDiscovery", method = RequestMethod.POST, produces = MediaType.APPLICATION_XML_VALUE)
 	public String patientDiscovery(@RequestBody String request)
-		throws SAMLException, SOAPException {
+		throws JAXBException, SOAPException, SAMLException {
 		PRPAIN201305UV02 soapRequest = consumerService.unMarshallPatientDiscoveryRequestObject(request);
 		PRPAIN201306UV02 responseObj = jsonConverter.createNoPatientRecordsResponse(soapRequest);		
 		String response = null;
 		try {
 			response = consumerService.marshallPatientDiscoveryResponse(responseObj);
-		} catch (JAXBException | MarshallingException | SAMLException e) {
+		} catch (JAXBException | SOAPException e) {
 			e.printStackTrace();
+			throw e;
 		}
 		logger.info("Patient discovery Response string: " + response);
 		return response;
