@@ -70,6 +70,8 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 @Service
 public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 	
+	private static final String PULSE_ID = "2.16.840.1.113883.9.224";
+	
 	public String generateUUID(){
 		return UUID.randomUUID().toString();
 	}
@@ -204,7 +206,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		deviceSender.setDeterminerCode("INSTANCE");
 		deviceSender.setClassCode(EntityClassDevice.DEV);
 		II deviceIdSender = new II();
-		deviceIdSender.getNullFlavor().add("NA");
+		deviceIdSender.setRoot(PULSE_ID);
 		deviceSender.getId().add(deviceIdSender);
 		sender.setDevice(deviceSender);
 		request.setSender(sender);
