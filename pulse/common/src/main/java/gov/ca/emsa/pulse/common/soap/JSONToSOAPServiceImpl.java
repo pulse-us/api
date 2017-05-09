@@ -86,8 +86,6 @@ import java.util.UUID;
 @Service
 public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 	
-	private static final String PULSE_ID = "2.16.840.1.113883.9.224";
-	
 	public String generateUUID(){
 		return UUID.randomUUID().toString();
 	}
@@ -130,7 +128,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		return message.getControlActProcess().getQueryByParameter();
 	}
 	
-	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch search) {
+	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch search, String pulseOID) {
 		PRPAIN201305UV02 request = new PRPAIN201305UV02();
 		request.setITSVersion("XML_1.0");
 		II id = new II();
@@ -175,7 +173,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		repOrg.setClassCode("ORG");
 		repOrg.setDeterminerCode("INSTANCE");
 		II repOrgId = new II();
-		repOrgId.setRoot(PULSE_ID);
+		repOrgId.setRoot(pulseOID);
 		repOrg.setTypeId(repOrgId);
 		JAXBElement<MCCIMT000100UV01Organization> repOrgJaxb = new JAXBElement<MCCIMT000100UV01Organization>(new QName("asAgent"), MCCIMT000100UV01Organization.class, repOrg);
 		agent.setRepresentedOrganization(repOrgJaxb);
@@ -184,7 +182,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		deviceSender.setDeterminerCode("INSTANCE");
 		deviceSender.setClassCode(EntityClassDevice.DEV);
 		II deviceIdSender = new II();
-		deviceIdSender.setRoot(PULSE_ID);
+		deviceIdSender.setRoot(pulseOID);
 		deviceSender.getId().add(deviceIdSender);
 		sender.setDevice(deviceSender);
 		request.setSender(sender);
