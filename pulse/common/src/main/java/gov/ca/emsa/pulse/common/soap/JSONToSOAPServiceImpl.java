@@ -50,7 +50,9 @@ import org.hl7.v3.EnExplicitGiven;
 import org.hl7.v3.EntityClassDevice;
 import org.hl7.v3.II;
 import org.hl7.v3.IVLTSExplicit;
+import org.hl7.v3.MCCIMT000100UV01Agent;
 import org.hl7.v3.MCCIMT000100UV01Device;
+import org.hl7.v3.MCCIMT000100UV01Organization;
 import org.hl7.v3.MCCIMT000100UV01Receiver;
 import org.hl7.v3.MCCIMT000100UV01Sender;
 import org.hl7.v3.MFMIMT700711UV01AuthorOrPerformer;
@@ -165,6 +167,20 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
 		sender.setTypeCode(CommunicationFunctionType.SND);
 		MCCIMT000100UV01Device deviceSender = new MCCIMT000100UV01Device();
+		
+		MCCIMT000100UV01Agent agent = new MCCIMT000100UV01Agent();
+		agent.getClassCode().add("AGNT");
+		
+		MCCIMT000100UV01Organization repOrg = new MCCIMT000100UV01Organization();
+		repOrg.setClassCode("ORG");
+		repOrg.setDeterminerCode("INSTANCE");
+		II repOrgId = new II();
+		repOrgId.setRoot(PULSE_ID);
+		repOrg.setTypeId(repOrgId);
+		JAXBElement<MCCIMT000100UV01Organization> repOrgJaxb = new JAXBElement<MCCIMT000100UV01Organization>(new QName("asAgent"), MCCIMT000100UV01Organization.class, repOrg);
+		agent.setRepresentedOrganization(repOrgJaxb);
+		JAXBElement<MCCIMT000100UV01Agent> agentJaxb = new JAXBElement<MCCIMT000100UV01Agent>(new QName("asAgent"), MCCIMT000100UV01Agent.class, agent);
+		deviceSender.setAsAgent(agentJaxb);
 		deviceSender.setDeterminerCode("INSTANCE");
 		deviceSender.setClassCode(EntityClassDevice.DEV);
 		II deviceIdSender = new II();
