@@ -115,6 +115,9 @@ public class EHealthAdapter implements Adapter {
 	@Value("${defaultConnectTimeoutSeconds}")
 	private Long defaultConnectTimeoutSeconds;
 	
+	@Value("${pulseOID}")
+	private String pulseOID;
+	
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
 	@Autowired EHealthQueryProducerService queryProducer;
@@ -135,7 +138,7 @@ public class EHealthAdapter implements Adapter {
 	
 	@Override
 	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch, String assertion) throws Exception {
-		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch);
+		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch, pulseOID);
 		String requestBodyXml = null;
 		try {
 			requestBodyXml = queryProducer.marshallPatientDiscoveryRequest(endpoint, assertion, requestBody);

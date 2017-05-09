@@ -49,6 +49,7 @@ import org.hl7.v3.ST;
 import org.hl7.v3.TELExplicit;
 import org.hl7.v3.TSExplicit;
 import org.hl7.v3.XActMoodIntentEvent;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -75,7 +76,8 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 @Service
 public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 	
-	private static final String PULSE_ID = "2.16.840.1.113883.9.224";
+	@Value("${pulseOID}")
+	private String pulseOID;
 	
 	public String generateUUID(){
 		return UUID.randomUUID().toString();
@@ -159,7 +161,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		deviceSender.setDeterminerCode("INSTANCE");
 		deviceSender.setClassCode(EntityClassDevice.DEV);
 		II deviceIdSender = new II();
-		deviceIdSender.setRoot(PULSE_ID);
+		deviceIdSender.setRoot(pulseOID);
 		deviceSender.getId().add(deviceIdSender);
 		sender.setDevice(deviceSender);
 		returnSOAP.setSender(sender);
@@ -229,7 +231,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		return response;
 	}
 	
-	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch search) {
+	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch search, String pulseOID) {
 		PRPAIN201305UV02 request = new PRPAIN201305UV02();
 		request.setITSVersion("XML_1.0");
 		II id = new II();
@@ -266,10 +268,24 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
 		sender.setTypeCode(CommunicationFunctionType.SND);
 		MCCIMT000100UV01Device deviceSender = new MCCIMT000100UV01Device();
+		
+		MCCIMT000100UV01Agent agent = new MCCIMT000100UV01Agent();
+		agent.getClassCode().add("AGNT");
+		
+		MCCIMT000100UV01Organization repOrg = new MCCIMT000100UV01Organization();
+		repOrg.setClassCode("ORG");
+		repOrg.setDeterminerCode("INSTANCE");
+		II repOrgId = new II();
+		repOrgId.setRoot(pulseOID);
+		repOrg.setTypeId(repOrgId);
+		JAXBElement<MCCIMT000100UV01Organization> repOrgJaxb = new JAXBElement<MCCIMT000100UV01Organization>(new QName("asAgent"), MCCIMT000100UV01Organization.class, repOrg);
+		agent.setRepresentedOrganization(repOrgJaxb);
+		JAXBElement<MCCIMT000100UV01Agent> agentJaxb = new JAXBElement<MCCIMT000100UV01Agent>(new QName("asAgent"), MCCIMT000100UV01Agent.class, agent);
+		deviceSender.setAsAgent(agentJaxb);
 		deviceSender.setDeterminerCode("INSTANCE");
 		deviceSender.setClassCode(EntityClassDevice.DEV);
 		II deviceIdSender = new II();
-		deviceIdSender.setRoot(PULSE_ID);
+		deviceIdSender.setRoot(pulseOID);
 		deviceSender.getId().add(deviceIdSender);
 		sender.setDevice(deviceSender);
 		request.setSender(sender);
