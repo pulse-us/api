@@ -45,7 +45,7 @@ queryCacheCleanupMinutes=10
 patientCacheCleanupMinutes=10
 acfCacheCleanupMinutes=30
 
-pulseOID=2.16.840.1.113883.9.224
+pulseOID=PULSE_OID_HERE
 
 
 #allow detailed health information to come back without authentication

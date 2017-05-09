@@ -39,7 +39,7 @@ directoryRefreshSeconds=20
 #how long is something valid in the cache
 queryCacheExpireMinutes=240
 
-pulseOID=2.16.840.1.113883.9.224
+pulseOID=PULSE_OID_HERE
 
 #how often do we check the cache to clean up expired entries
 queryCacheCleanupMinutes=10
