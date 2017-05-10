@@ -21,3 +21,5 @@ endpoints.health.sensitive=false
 #interval for polling broker about /search results
 delaySeconds=1
 timeout=10
+
+pulseOID=PULSE_OID_HERE
