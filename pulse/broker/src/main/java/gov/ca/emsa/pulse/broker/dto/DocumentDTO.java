@@ -5,7 +5,7 @@ import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 
 public class DocumentDTO {
 	private long id;
-	private byte[] contents;
+	private String contents;
 	private Long patientEndpointMapId;
 	private Long statusId;
 	private QueryEndpointStatus status;
@@ -25,6 +25,21 @@ public class DocumentDTO {
 	private String documentUniqueId;
 		
 	public DocumentDTO() {
+	}
+	
+	public DocumentDTO(DocumentDTO otherDoc) {
+		this.name = otherDoc.getName();
+		this.format = otherDoc.getFormat();
+		this.className = otherDoc.getClassName();
+		this.confidentiality = otherDoc.getConfidentiality();
+		this.description = otherDoc.getDescription();
+		this.size = otherDoc.getSize();
+		this.creationTime = otherDoc.getCreationTime();
+		this.homeCommunityId = otherDoc.getHomeCommunityId();
+		this.repositoryUniqueId = otherDoc.getRepositoryUniqueId();
+		this.documentUniqueId = otherDoc.getDocumentUniqueId();
+		this.contents = otherDoc.getContents();
+		this.patientEndpointMapId = otherDoc.getPatientEndpointMapId();
 	}
 	
 	public DocumentDTO(DocumentEntity entity) {
@@ -70,11 +85,11 @@ public class DocumentDTO {
 		this.format = format;
 	}
 
-	public byte[] getContents() {
+	public String getContents() {
 		return contents;
 	}
 
-	public void setContents(byte[] contents) {
+	public void setContents(String contents) {
 		this.contents = contents;
 	}
 

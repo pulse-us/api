@@ -15,15 +15,23 @@ import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
+import gov.ca.emsa.pulse.broker.dto.PulseUserDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.manager.PulseUserManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.saml.SamlGenerator;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.domain.Query;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,6 +49,7 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,11 +66,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RequestMapping("/patients")
 public class PatientService {
 	private static final Logger logger = LogManager.getLogger(PatientService.class);
-	@Autowired SamlGenerator samlGenerator;
 	@Autowired private PatientManager patientManager;
 	@Autowired private DocumentManager docManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
 	@Autowired private AuditEventManager auditManager;
+	@Autowired private PulseUserManager pulseUserManager;
 	public PatientService() {
 	}
 
@@ -86,7 +95,6 @@ public class PatientService {
 	@RequestMapping("/{patientId}/documents")
 	public List<Document> getDocumentListForPatient(@PathVariable("patientId")Long patientId) {
 		CommonUser user = UserUtil.getCurrentUser();
-		//auditManager.addAuditEntry(QueryType.SEARCH_DOCUMENT, "/" + patientId + "/documents", user.getSubjectName());
 		List<DocumentDTO> docDtos = docManager.getDocumentsForPatient(patientId);
 		List<Document> results = new ArrayList<Document>(docDtos.size());
 		for(DocumentDTO docDto : docDtos) {
@@ -95,37 +103,84 @@ public class PatientService {
 		return results;
 	}
 
-	@ApiOperation(value="Retrieve a specific document from a location.")
+	@ApiOperation(value = "Cancel a request to an endpoint for a list of documents")
+	@RequestMapping(value = "/{patientId}/endpoints/{endpointId}/cancel", method = RequestMethod.POST)
+	public Patient cancelDocumentListQuery(@PathVariable(value="patientId") Long patientId, 
+			@PathVariable(value="endpointId") Long endpointId) 
+			throws InvalidArgumentsException, SQLException {
+		synchronized (patientManager) {
+			List<PatientEndpointMapDTO> patientMapsForDocuments = patientManager.getPatientEndpointMaps(patientId, endpointId);
+			if(patientMapsForDocuments == null || patientMapsForDocuments.size() == 0){
+				throw new InvalidArgumentsException("No document query was found for patient " + patientId + " and endpoint " + endpointId);
+			} else {
+				//make sure there is at least one active/non-closed request
+				boolean hasOpenRequest = false;
+				for(PatientEndpointMapDTO dto : patientMapsForDocuments) {
+					if(dto.getDocumentsQueryStatus() != null && 
+						dto.getDocumentsQueryStatus() == QueryEndpointStatus.Active) {
+						hasOpenRequest = true;
+					}
+				}
+				if(!hasOpenRequest) {
+					throw new InvalidArgumentsException("There are no Active requests between patient " + patientId + " and endpoint " + endpointId + " eligible for cancellation.");
+				}
+			}
+			
+			patientManager.cancelQueryForDocuments(patientId, endpointId);
+			PatientDTO patientWithCancelledDocumentRequest = patientManager.getPatientById(patientId);
+			return DtoToDomainConverter.convert(patientWithCancelledDocumentRequest);
+		}
+	}
+	
+	@ApiOperation(value = "Re-run a request to an endpoint for a list of documents")
+	@RequestMapping(value = "/{patientId}/endpoints/{endpointId}/requery", method = RequestMethod.POST)
+	public Patient redoDocumentListQuery(@PathVariable(value="patientId") Long patientId, 
+			@PathVariable(value="endpointId") Long endpointId) 
+			throws InvalidArgumentsException, SQLException {
+		CommonUser user = UserUtil.getCurrentUser();
+
+		synchronized (patientManager) {
+			List<PatientEndpointMapDTO> patientMapsForDocuments = patientManager.getPatientEndpointMaps(patientId, endpointId);
+			if(patientMapsForDocuments == null || patientMapsForDocuments.size() == 0){
+				throw new InvalidArgumentsException("No document query was found for patient " + patientId + " and endpoint " + endpointId);
+			} 
+			
+			patientManager.requeryForDocuments(patientId, endpointId, user);
+			PatientDTO patientWithCancelledDocumentRequest = patientManager.getPatientById(patientId);
+			return DtoToDomainConverter.convert(patientWithCancelledDocumentRequest);
+		}
+	}
+	
+	@ApiOperation(value="Retrieve a specific document from an endpoint.")
 	@RequestMapping(value = "/{patientId}/documents/{documentId}")
-	public @ResponseBody String getDocumentContents(@PathVariable("patientId") Long patientId,
+	public @ResponseBody Document getDocumentContents(@PathVariable("patientId") Long patientId,
 			@PathVariable("documentId") Long documentId,
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) 
 		throws SQLException, JsonProcessingException {
 		
 		CommonUser user = UserUtil.getCurrentUser();
-		//auditManager.addAuditEntry(QueryType.CACHE_DOCUMENT, "/" + patientId + "/documents/" + documentId, user.getSubjectName());
-		SAMLInput input = new SAMLInput();
-		input.setStrIssuer(user.getSubjectName());
-		input.setStrNameID(user.getSubjectName());
-		input.setStrNameQualifier("My Website");
-		input.setSessionId("abcdedf1234567");
+		PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
+		String assertion = userDto.getAssertion();
 
-		HashMap<String, String> customAttributes = new HashMap<String,String>();
-		customAttributes.put("RequesterName", user.getFirstName());
-		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientGivenName", "Hodor");
-		customAttributes.put("PatientFamilyName", "Guy");
-		customAttributes.put("PatientSSN", "123456789");
-		input.setAttributes(customAttributes);
-
-		String result = "";
+		DocumentDTO result = null;
 		if(cacheOnly == null || cacheOnly.booleanValue() == false) {
-			result = docManager.getDocumentById(user, input, documentId);
+			//get the contents that are cached for this document
+			result = docManager.getDocumentById(user, assertion, documentId);
 			auditManager.createPulseAuditEvent(AuditType.DV, documentId);
 		} else {
-			docManager.getDocumentById(user, input, documentId);
+			//cache the document's contents
+			result = docManager.getDocumentById(user, assertion, documentId);
 		}
-		return result;
+		return DtoToDomainConverter.convert(result);
+	}
+	
+	@ApiOperation(value="Cancel the retrieval of a specific document from an endpoint.")
+	@RequestMapping(value = "/{patientId}/documents/{documentId}/cancel", method=RequestMethod.POST)
+	public void cancelDocumentContentQuery(@PathVariable("patientId") Long patientId,
+			@PathVariable("documentId") Long documentId) 
+		throws SQLException, JsonProcessingException {
+		
+		docManager.cancelDocumentContentQuery(documentId, patientId);
 	}
 	
 	@ApiOperation(value = "Edit a patient's information")

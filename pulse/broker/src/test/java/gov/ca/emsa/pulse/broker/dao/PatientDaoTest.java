@@ -106,13 +106,15 @@ public class PatientDaoTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testCreatePatientNoAddress() throws SQLException {		
+		String fullName = "Brian Lindsey";
+		
 		PatientDTO toCreate = new PatientDTO();
 		toCreate.setAcf(acf);
 		ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
 		GivenNameDTO given = new GivenNameDTO();
 		given.setGivenName("Jonathon");
 		givens.add(given);
-		toCreate.setFullName("Brian Lindsey");
+		toCreate.setFullName(fullName);
 		toCreate.setFriendlyName("Bri");
 		NameTypeDTO nameTypeDTO = new NameTypeDTO();
 		nameTypeDTO.setCode("L");
@@ -127,6 +129,7 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(created.getAcf());
 		assertNotNull(created.getAcf().getId());
 		assertEquals(created.getAcf().getId().longValue(), acf.getId().longValue());
+		assertEquals(fullName, created.getFullName());
 		
 		PatientDTO selected = patientDao.getById(created.getId());
 		assertNotNull(selected);
@@ -136,7 +139,7 @@ public class PatientDaoTest extends TestCase {
 		assertNotNull(selected.getAcf().getId());
 		assertEquals(selected.getAcf().getId().longValue(), acf.getId().longValue());
 		assertEquals(0, selected.getEndpointMaps().size());
-		assertEquals(toCreate.getFullName(), selected.getFullName());
+		assertEquals(fullName, selected.getFullName());
 	}
 	
 	@Test

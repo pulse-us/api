@@ -1,36 +1,56 @@
 package gov.ca.emsa.pulse.broker.manager.impl;
 
+import gov.ca.emsa.pulse.auth.user.CommonUser;
+import gov.ca.emsa.pulse.broker.adapter.EHealthAdapter;
 import gov.ca.emsa.pulse.broker.cache.CacheCleanupException;
 import gov.ca.emsa.pulse.broker.dao.EndpointDAO;
 import gov.ca.emsa.pulse.broker.dao.PatientDAO;
 import gov.ca.emsa.pulse.broker.dao.QueryDAO;
-import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
-import gov.ca.emsa.pulse.broker.dto.LocationDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
+import gov.ca.emsa.pulse.broker.dto.PulseUserDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
+import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
+import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.manager.PulseUserManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
+import gov.ca.emsa.pulse.service.UserUtil;
 
+import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PatientManagerImpl implements PatientManager {
+	private static final Logger logger = LogManager.getLogger(PatientManagerImpl.class);
+
 	@Autowired private PatientDAO patientDao;
 	@Autowired private EndpointDAO endpointDao;
 	@Autowired private QueryManager queryManager;
+	@Autowired private AuditEventManager auditManager;
 	@Autowired private AlternateCareFacilityManager acfManager;
+	@Autowired private DocumentManager docManager;
+	@Autowired QueryableEndpointStatusUtil endpointStatusesForQuery;
 	@Autowired private QueryDAO queryDao;
+	@Autowired private PulseUserManager pulseUserManager;
 	
 	public PatientManagerImpl() {
 	}
@@ -45,8 +65,27 @@ public class PatientManagerImpl implements PatientManager {
 	@Override
 	@Transactional	
 	public List<PatientDTO> getPatientsAtAcf(Long acfId) {
-		List<PatientDTO> results = patientDao.getPatientsAtAcf(acfId);
+		List<QueryEndpointStatus> documentOpenStatuses = new ArrayList<QueryEndpointStatus>();
+		documentOpenStatuses.add(QueryEndpointStatus.Active);
+		documentOpenStatuses.add(QueryEndpointStatus.Successful);
+		documentOpenStatuses.add(QueryEndpointStatus.Failed);
+		documentOpenStatuses.add(QueryEndpointStatus.Cancelled);
+		
+		List<PatientDTO> results = patientDao.getPatientsAtAcf(acfId, documentOpenStatuses);
 		return results;
+	}
+	
+	@Override
+	@Transactional	
+	public List<PatientEndpointMapDTO> getPatientEndpointMaps(Long patientId, Long endpointId) {
+		List<PatientEndpointMapDTO> results = patientDao.getPatientEndpointMaps(patientId, endpointId);
+		return results;
+	}
+	
+	@Override
+	@Transactional	
+	public PatientEndpointMapDTO getPatientEndpointMapById(Long id) {
+		return patientDao.getPatientEndpointMapById(id);
 	}
 	
 	@Override
@@ -89,7 +128,7 @@ public class PatientManagerImpl implements PatientManager {
 
 	@Override
 	@Transactional
-	public PatientEndpointMapDTO updatePatientEndpointMap(PatientEndpointMapDTO toUpdate)
+	public synchronized PatientEndpointMapDTO updatePatientEndpointMap(PatientEndpointMapDTO toUpdate)
 			throws SQLException{
 		return patientDao.updatePatientEndpointMap(toUpdate);
 	}
@@ -113,13 +152,8 @@ public class PatientManagerImpl implements PatientManager {
 			//we assume that any locations which share this patient discovery endpoint
 			//will also have the same document query and document retrieve endpoints
 			EndpointDTO patientDiscoveryEndpoint = endpointDao.findById(patientDiscoveryEndpointId);
-			if(patientDiscoveryEndpoint != null) {
-				List<LocationDTO> relatedLocations = patientDiscoveryEndpoint.getLocations();
-				if(relatedLocations != null && relatedLocations.size() > 0) {
-					LocationDTO firstRelatedLocation = relatedLocations.get(0);
-					documentDiscoveryEndpoint = endpointDao.findByLocationIdAndType(firstRelatedLocation.getId(), EndpointStatusEnum.ACTIVE, EndpointTypeEnum.DOCUMENT_DISCOVERY);
-				}
-			}
+			documentDiscoveryEndpoint = endpointDao.findByManagingOrganizationAndType(patientDiscoveryEndpoint.getManagingOrganization(), 
+					endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_DISCOVERY);
 			
 			if(documentDiscoveryEndpoint != null) {
 				patientEndpointMapToCreate.setEndpointId(documentDiscoveryEndpoint.getId());	
@@ -128,5 +162,68 @@ public class PatientManagerImpl implements PatientManager {
 			}
 		}
 		return result;
+	}
+	
+	@Override
+	@Transactional
+	public synchronized PatientDTO cancelQueryForDocuments(Long patientId, Long endpointId) throws SQLException {
+		EndpointDTO endpoint = endpointDao.findById(endpointId);
+		String endpointUrl = null;
+		if(endpoint != null) {
+			endpointUrl = endpoint.getUrl();
+		}
+		
+		List<PatientEndpointMapDTO> patientEndpointMaps = patientDao.getPatientEndpointMaps(patientId, endpointId);
+		for(PatientEndpointMapDTO patientEndpointMapToCancel : patientEndpointMaps) {
+			if(patientEndpointMapToCancel.getDocumentsQueryStatus() == QueryEndpointStatus.Active) {
+				patientEndpointMapToCancel.setDocumentsQueryStatus(QueryEndpointStatus.Cancelled);
+				patientDao.updatePatientEndpointMap(patientEndpointMapToCancel);
+			}
+		}
+
+		try {
+			auditManager.createAuditEventIG("CANCELLED" , UserUtil.getCurrentUser(), endpointUrl, "", EHealthAdapter.HOME_COMMUNITY_ID);
+		} catch(UnsupportedEncodingException ex) {
+			logger.warn("Could not add audit record for cancelling document list request to endpoint " + endpointUrl + " for patient " + patientId + ": " + ex.getMessage(), ex);
+		} catch(UnknownHostException ex) {
+			logger.warn("Could not add audit record for cancelling document list request to endpoint " + endpointUrl + " for patient " + patientId + ": " + ex.getMessage(), ex);
+		} catch(Exception ex) {
+			logger.warn("Could not add audit record for cancelleing document listrequest to endpoint " +endpointUrl + " for patient " + patientId + ": " + ex.getMessage(), ex);
+		}
+
+		return getPatientById(patientId);
+	}
+	
+	@Override
+	@Transactional
+	public PatientDTO requeryForDocuments(Long patientId, Long endpointId, CommonUser user) throws SQLException {
+		PatientDTO patient = patientDao.getById(patientId);
+		
+		//set all document list requests for this patient+endpoint to closed
+		String externalPatientRecordId = "";
+		List<PatientEndpointMapDTO> patientEndpointMaps = patientDao.getPatientEndpointMaps(patientId, endpointId);
+		for(PatientEndpointMapDTO patientEndpointMapToCancel : patientEndpointMaps) {
+			externalPatientRecordId = patientEndpointMapToCancel.getExternalPatientRecordId();
+			patientEndpointMapToCancel.setDocumentsQueryStatus(QueryEndpointStatus.Closed);
+			patientDao.updatePatientEndpointMap(patientEndpointMapToCancel);
+		}
+
+		//make the new request
+		PatientEndpointMapDTO patientEndpointMapForRequery = new PatientEndpointMapDTO();
+		patientEndpointMapForRequery.setPatientId(patientId);
+		patientEndpointMapForRequery.setExternalPatientRecordId(externalPatientRecordId);
+		patientEndpointMapForRequery.setEndpointId(endpointId);
+		patientEndpointMapForRequery = patientDao.createPatientEndpointMap(patientEndpointMapForRequery);
+		EndpointDTO endpointForRequery = endpointDao.findById(endpointId);
+		patientEndpointMapForRequery.setEndpoint(endpointForRequery);
+
+		if(patientEndpointMapForRequery != null) {
+			PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
+			String assertion = userDto.getAssertion();
+			patient.getEndpointMaps().add(patientEndpointMapForRequery);
+			docManager.queryForDocuments(user, assertion,  patientEndpointMapForRequery);
+		}
+		
+		return getPatientById(patientId);
 	}
 }

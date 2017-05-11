@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.AdapterFactory;
@@ -30,6 +31,9 @@ import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.saml.SAMLInput;
+import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
+import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
+import gov.ca.emsa.pulse.common.domain.QueryStatus;
 
 @Service
 public class DocumentManagerImpl implements DocumentManager {
@@ -41,6 +45,7 @@ public class DocumentManagerImpl implements DocumentManager {
 	@Autowired private PatientDAO patientDao;
 	@Autowired private EndpointDAO endpointDao;
 	@Autowired private AdapterFactory adapterFactory;
+	@Autowired private QueryableEndpointStatusUtil endpointStatusesForQuery;
 
 	private final ExecutorService pool;
 
@@ -55,9 +60,15 @@ public class DocumentManagerImpl implements DocumentManager {
 	}
 	
 	@Override
-	public void queryForDocuments(CommonUser user, SAMLInput samlInput, PatientEndpointMapDTO dto) {
+	@Transactional
+	public DocumentDTO update(DocumentDTO toCreate) {
+		return docDao.update(toCreate);
+	}
+	
+	@Override
+	public void queryForDocuments(CommonUser user, String assertion, PatientEndpointMapDTO dto) {
 		DocumentQueryService service = getDocumentQueryService();
-		service.setSamlInput(samlInput);
+		service.setAssertion(assertion);
 		service.setPatientEndpointMap(dto);
 		service.setEndpoint(dto.getEndpoint());
 		service.setUser(user);
@@ -66,36 +77,48 @@ public class DocumentManagerImpl implements DocumentManager {
 	
 	@Override
 	public List<DocumentDTO> getDocumentsForPatient(Long patientId) {
-		return docDao.getByPatientId(patientId);
+		List<QueryEndpointStatus> openStatuses = new ArrayList<QueryEndpointStatus>();
+		openStatuses.add(QueryEndpointStatus.Active);
+		openStatuses.add(QueryEndpointStatus.Successful);
+		openStatuses.add(QueryEndpointStatus.Failed);
+		openStatuses.add(QueryEndpointStatus.Cancelled);
+
+		return docDao.getDocumentsWithStatusForPatient(patientId, openStatuses);
 	}
 	
-	//for the time being, we want this method to be synchronous 
-	//we are using it to get just one document at a time but it could accept
-	//multiple documents from the same organization if we want to do that in the future
 	@Override
 	@Transactional
-	public void queryForDocumentContents(CommonUser user, SAMLInput samlInput, EndpointDTO endpoint, List<DocumentDTO> docsFromEndpoints, PatientEndpointMapDTO patientEndpointMap) {
+	public void queryForDocumentContents(String assertion, CommonUser user, EndpointDTO endpoint, DocumentDTO document, PatientEndpointMapDTO patientEndpointMap) {
 		DocumentRetrievalService service = getDocumentRetrievalService();
-		service.setSamlInput(samlInput);
 		service.setEndpoint(endpoint);
+		service.setAssertion(assertion);
 		service.setPatientEndpointMap(patientEndpointMap);
-		service.setDocuments(docsFromEndpoints);
+		service.setDocument(document);
 		service.setUser(user);
 		pool.execute(service);
 	}
 	
 	@Override
-	public String getDocumentById(CommonUser user, SAMLInput samlInput, Long documentId) throws SQLException {
-		String docContents = "";		
+	@Transactional
+	public synchronized DocumentDTO cancelDocumentContentQuery(Long documentId, Long patientId) {
+		DocumentDTO documentToCancel = docDao.getById(documentId);
+		documentToCancel.setStatus(QueryEndpointStatus.Cancelled);
+		docDao.update(documentToCancel);
 		
-		DocumentDTO cachedDoc = docDao.getById(documentId);
-		if(cachedDoc == null) {
+		return docDao.getById(documentId);
+	}
+	
+	@Override
+	@Transactional
+	public DocumentDTO getDocumentById(CommonUser user, String assertion, Long documentId) throws SQLException {		
+		DocumentDTO resultDoc = docDao.getById(documentId);
+		if(resultDoc == null) {
 			logger.error("Could not find the document with id " + documentId);
 			return null;
 		}
 		
 		//update patient last read time when document is cached or viewed
-		PatientEndpointMapDTO patientEndpointMap = patientDao.getPatientEndpointMapById(cachedDoc.getPatientEndpointMapId());
+		PatientEndpointMapDTO patientEndpointMap = patientDao.getPatientEndpointMapById(resultDoc.getPatientEndpointMapId());
 		PatientDTO patient = patientDao.getById(patientEndpointMap.getPatientId());
 		patient.setLastReadDate(new Date());
 		patientManager.update(patient);
@@ -104,35 +127,40 @@ public class DocumentManagerImpl implements DocumentManager {
 			acfManager.updateLastModifiedDate(patient.getAcf().getId());
 		}
 		
-		if(cachedDoc.getContents() != null && cachedDoc.getContents().length > 0) {
-			docContents = new String(cachedDoc.getContents());
-		} else {
+		if(StringUtils.isEmpty(resultDoc.getContents())) {
 			EndpointDTO documentContentsEndpoint = null;
 			EndpointDTO documentDiscoveryEndpoint = endpointDao.findById(patientEndpointMap.getEndpointId());
 			if(documentDiscoveryEndpoint != null) {
-				List<LocationDTO> relatedLocations = documentDiscoveryEndpoint.getLocations();
-				if(relatedLocations != null && relatedLocations.size() > 0) {
-					LocationDTO firstRelatedLocation = relatedLocations.get(0);
-					documentContentsEndpoint = endpointDao.findByLocationIdAndType(firstRelatedLocation.getId(), EndpointStatusEnum.ACTIVE, EndpointTypeEnum.DOCUMENT_RETRIEVE);
-				}
+				String managingOrganizationName = documentDiscoveryEndpoint.getManagingOrganization();
+				documentContentsEndpoint = endpointDao.findByManagingOrganizationAndType(managingOrganizationName, endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_RETRIEVE);
 			}
 			
 			if(documentContentsEndpoint != null) {
 				List<DocumentDTO> docsToGet = new ArrayList<DocumentDTO>();
-				docsToGet.add(cachedDoc);
-				queryForDocumentContents(user, samlInput, documentContentsEndpoint, docsToGet, patientEndpointMap);
-				byte[] retrievedContents = docsToGet.get(0).getContents();
-				docContents = retrievedContents == null ? "" : new String(retrievedContents);
+				if(resultDoc.getStatus() != null && 
+					(resultDoc.getStatus() == QueryEndpointStatus.Cancelled ||
+					resultDoc.getStatus() == QueryEndpointStatus.Failed)) {
+					
+					resultDoc.setStatus(QueryEndpointStatus.Closed);
+					docDao.update(resultDoc);
+					
+					DocumentDTO newDocRequest = new DocumentDTO(resultDoc);
+					newDocRequest.setStatus(QueryEndpointStatus.Active);
+					resultDoc = docDao.create(newDocRequest);
+					docsToGet.add(resultDoc);
+				} else {
+					docsToGet.add(resultDoc);
+				}
+				
+				queryForDocumentContents(assertion, user, documentContentsEndpoint, resultDoc, patientEndpointMap);
 			}
 		}
-		return docContents;
+		return resultDoc;
 	}
 	
 	@Override
-	public DocumentDTO getDocumentObjById(Long documentId) throws SQLException {		
-		DocumentDTO doc = docDao.getById(documentId);
-		
-		return doc;
+	public DocumentDTO getDocumentById(Long documentId) throws SQLException{
+		return docDao.getById(documentId);
 	}
 	
 	@Lookup

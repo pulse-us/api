@@ -42,6 +42,9 @@ public class PatientEndpointMapEntity {
 	
 	@Column(name = "endpoint_patient_record_id")
 	private String externalPatientRecordId;
+	
+	@Column(name = "home_community_id")
+	private String homeCommunityId;
 
 	@Column(name = "documents_query_status_id")
 	private Long documentsQueryStatusId;
@@ -89,6 +92,14 @@ public class PatientEndpointMapEntity {
 
 	public void setEndpoint(EndpointEntity endpoint) {
 		this.endpoint = endpoint;
+	}
+
+	public String getHomeCommunityId() {
+		return homeCommunityId;
+	}
+
+	public void setHomeCommunityId(String homeCommunityId) {
+		this.homeCommunityId = homeCommunityId;
 	}
 
 	public String getExternalPatientRecordId() {

@@ -24,6 +24,8 @@ locationDirectoryUrl=http://localhost:9080/mock/Location
 endpointDirectoryUrl=http://localhost:9080/mock/Endpoint
 #endpointDirectoryUrl=https://cten-staging.ca-hie.net:8443/fhir/Endpoint
 
+endpointStatusesToQuery=Active,Test
+
 #default timeout to connect to external organizations 
 #"ping time" (should typically be a smaller number than request timeout)
 defaultConnectTimeoutSeconds=10
@@ -36,6 +38,8 @@ directoryRefreshSeconds=20
 
 #how long is something valid in the cache
 queryCacheExpireMinutes=240
+
+pulseOID=PULSE_OID_HERE
 
 #how often do we check the cache to clean up expired entries
 queryCacheCleanupMinutes=10

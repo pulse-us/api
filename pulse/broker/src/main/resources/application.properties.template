@@ -20,6 +20,11 @@ locationDirectoryUrl=https://localhost:9080/mock/Location
 endpointDirectoryUrl=https://localhost:9080/mock/Endpoint
 #endpointDirectoryUrl=https://cten-staging.ca-hie.net:8443/fhir/Endpoint
 
+#what statuses of endpoints should we use? Comma-separated list here,
+#any value from http://build.fhir.org/valueset-endpoint-status.html
+#defaults to Active if nothing is specified
+endpointStatusesToQuery=Active,Test
+
 #default timeout to connect to external organizations 
 #"ping time" (should typically be a smaller number than request timeout)
 defaultConnectTimeoutSeconds=10
@@ -39,6 +44,8 @@ acfCacheExpireMinutes=120
 queryCacheCleanupMinutes=10
 patientCacheCleanupMinutes=10
 acfCacheCleanupMinutes=30
+
+pulseOID=PULSE_OID_HERE
 
 
 #allow detailed health information to come back without authentication

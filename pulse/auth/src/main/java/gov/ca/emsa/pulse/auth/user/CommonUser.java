@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.opensaml.saml2.core.Assertion;
+
 public class CommonUser implements User{
 
 	private static final long serialVersionUID = -4255948572251487878L;
@@ -15,22 +17,29 @@ public class CommonUser implements User{
 	private String subjectName;
 	private String firstName;
 	private String lastName;
-    private String email;
+	private String email;
 
-    // SAML components
-    private String user_id;
-    private String username;
-    private String auth_source;
-    private String full_name;
-    private String organization;
-    private String purpose_for_use;
-    private String role;
+	// SAML components
+	private String user_id;
+	private String username;
+	private String auth_source;
+	private String full_name;
+	private String organization;
+	private String purpose_for_use;
+	private String pulseUserId;
+
+	private String role;
 
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private boolean authenticated = true;
-    private String jwt;
-    private AlternateCareFacility acf;
-
+	private String jwt;
+	private AlternateCareFacility acf;
+	public String getPulseUserId() {
+		return pulseUserId;
+	}
+	public void setPulseUserId(String pulseUserId) {
+		this.pulseUserId = pulseUserId;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -61,49 +70,49 @@ public class CommonUser implements User{
 	public void setEmail(String email) {
 		this.email = email;
 	}
-    public String getuser_id() {
-        return user_id;
-    }
-    public void setuser_id(String user_id) {
-        this.user_id = user_id;
-    }
-    @Override
-    public String getUsername () {
-        return username;
-    }
-    public void setusername(String username) {
-        this.username = username;
-    }
-    public String getauth_source () {
-        return auth_source;
-    }
-    public void setauth_source(String auth_source) {
-        this.auth_source = auth_source;
-    }
-    public String getfull_name () {
-        return full_name;
-    }
-    public void setfull_name(String full_name) {
-        this.full_name = full_name;
-    }
-    public String getorganization () {
-        return organization;
-    }
-    public void setorganization(String organization) {
-        this.organization = organization;
-    }
-    public String getpurpose_for_use () {
-        return purpose_for_use;
-    }
-    public void setpurpose_for_use(String purpose_for_use) {
-        this.purpose_for_use = purpose_for_use;
-    }
-    public String getrole () {
-        return role;
-    }
-    public void setrole(String role) {
-        this.role = role;
-    }
+	public String getuser_id() {
+		return user_id;
+	}
+	public void setuser_id(String user_id) {
+		this.user_id = user_id;
+	}
+	@Override
+	public String getUsername () {
+		return username;
+	}
+	public void setusername(String username) {
+		this.username = username;
+	}
+	public String getauth_source () {
+		return auth_source;
+	}
+	public void setauth_source(String auth_source) {
+		this.auth_source = auth_source;
+	}
+	public String getfull_name () {
+		return full_name;
+	}
+	public void setfull_name(String full_name) {
+		this.full_name = full_name;
+	}
+	public String getorganization () {
+		return organization;
+	}
+	public void setorganization(String organization) {
+		this.organization = organization;
+	}
+	public String getpurpose_for_use () {
+		return purpose_for_use;
+	}
+	public void setpurpose_for_use(String purpose_for_use) {
+		this.purpose_for_use = purpose_for_use;
+	}
+	public String getrole () {
+		return role;
+	}
+	public void setrole(String role) {
+		this.role = role;
+	}
 	public Set<GrantedPermission> getPermissions() {
 		return permissions;
 	}

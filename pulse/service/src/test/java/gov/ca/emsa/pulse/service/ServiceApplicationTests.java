@@ -27,17 +27,21 @@ import java.util.concurrent.Future;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
 
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201306UV02;
 import org.hl7.v3.PRPAIN201310UV02;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.opensaml.common.SAMLException;
+import org.opensaml.xml.ConfigurationException;
+import org.opensaml.xml.io.MarshallingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -110,7 +114,8 @@ public class ServiceApplicationTests {
 	}
 
 	@Test
-	public void testConsumerServicePatientDiscoveryRequest(){
+	public void testConsumerServicePatientDiscoveryRequest() 
+			throws MarshallingException, SAMLException, IOException, ConfigurationException {
 		Resource documentsFile = resourceLoader.getResource("classpath:" + PATIENT_DISCOVERY_REQUEST_RESOURCE_FILE_NAME);
 		String request = null;
 		try {
@@ -127,16 +132,17 @@ public class ServiceApplicationTests {
 		
 		assertNotNull(requestObj);
 		
-		PRPAIN201310UV02 responseObj = createPatientDiscoveryResponse();
+		PRPAIN201306UV02 responseObj = createPatientDiscoveryResponse();
 		
 		String responseString = null;
 		try {
 			responseString = consumerService.marshallPatientDiscoveryResponse(responseObj);
-		} catch (JAXBException e) {
+		} catch (JAXBException | SOAPException e) {
 			e.printStackTrace();
+			fail();
 		}
 		
-		//assertNotNull(responseString);
+		assertNotNull(responseString);
 		
 		/*if(responseString.contains("Envelope")){
 			assertTrue(true);
@@ -154,6 +160,7 @@ public class ServiceApplicationTests {
 		}catch (IOException e){
 			e.printStackTrace();
 		}
+		SOAPMessage requestSoap = consumerService.getSoapMessageFromXml(request);
 		AdhocQueryRequest requestObj = null;
 		try {
 			requestObj = consumerService.unMarshallDocumentQueryRequestObject(request);
@@ -167,8 +174,8 @@ public class ServiceApplicationTests {
 		
 		String responseString = null;
 		try {
-			responseString = consumerService.marshallDocumentQueryResponse(responseObj);
-		} catch (JAXBException e) {
+			responseString = consumerService.marshallDocumentQueryResponse(responseObj, requestSoap);
+		} catch (JAXBException |SOAPException e) {
 			e.printStackTrace();
 		}
 		assertNotNull(responseString);
@@ -189,6 +196,7 @@ public class ServiceApplicationTests {
 		}catch (IOException e){
 			e.printStackTrace();
 		}
+		SOAPMessage soapRequest = consumerService.getSoapMessageFromXml(request);
 		RetrieveDocumentSetRequestType requestObj = null;
 		try {
 			requestObj = consumerService.unMarshallDocumentSetRetrieveRequestObject(request);
@@ -202,19 +210,18 @@ public class ServiceApplicationTests {
 		
 		String responseString = null;
 		try {
-			responseString = consumerService.marshallDocumentSetResponse(responseObj);
-		} catch (JAXBException e) {
+			responseString = consumerService.marshallDocumentSetResponse(responseObj, soapRequest);
+		} catch (JAXBException | SOAPException e) {
 			e.printStackTrace();
+			fail();
 		}
-		//assertNotNull(responseString);
+		assertNotNull(responseString);
 	}
 	
 	// JSONToSOAPService tests
 	@Test 
 	public void testConsumerServicePatientDiscoveryResponse(){
-		List<PatientRecord> patientRecords = createPatientRecordList();
-		PRPAIN201310UV02 responseObj = JSONconverter.convertPatientRecordListToSOAPResponse(patientRecords);
-		
+		PRPAIN201306UV02 responseObj = JSONconverter.createNoPatientRecordsResponse(createPatientDiscoveryRequest());		
 		assertNotNull(responseObj);
 	}
 	
@@ -301,29 +308,6 @@ public class ServiceApplicationTests {
 		return patientSearch;
 	}
 
-	public List<PatientRecord> createPatientRecordList(){
-		List<PatientRecord> records = new ArrayList<PatientRecord>();
-		PatientRecord pr1 = new PatientRecord();
-		PatientRecord pr2 = new PatientRecord();
-		PatientRecordName name1 = new PatientRecordName();
-		PatientRecordName name2 = new PatientRecordName();
-		pr1.setDateOfBirth("2016-09-19");
-		name1.setFamilyName("Lindsey");
-		name1.getGivenName().add("Brian");
-		pr1.getPatientRecordName().add(name1);
-		PatientGender pg = new PatientGender();
-		pg.setCode("M");
-		pr1.setGender(pg);
-		pr2.setDateOfBirth("2016-09-19");
-		name2.setFamilyName("Lindsay");
-		name2.getGivenName().add("John");
-		pr2.getPatientRecordName().add(name2);
-		pr2.setGender(pg);
-		records.add(pr1);
-		records.add(pr2);
-		return records;
-	}
-
 	public PRPAIN201305UV02 createPatientDiscoveryRequest(){
 		Resource documentsFile = resourceLoader.getResource("classpath:" + PATIENT_DISCOVERY_REQUEST_RESOURCE_FILE_NAME);
 		String request = null;
@@ -407,9 +391,8 @@ public class ServiceApplicationTests {
 		return requestObj;
 	}
 	
-	public PRPAIN201310UV02 createPatientDiscoveryResponse(){
-		List<PatientRecord> patientRecords = createPatientRecordList();
-		PRPAIN201310UV02 responseObj = JSONconverter.convertPatientRecordListToSOAPResponse(patientRecords);
+	public PRPAIN201306UV02 createPatientDiscoveryResponse(){
+		PRPAIN201306UV02 responseObj = JSONconverter.createNoPatientRecordsResponse(createPatientDiscoveryRequest());
 		return responseObj;
 	}
 	
@@ -423,5 +406,10 @@ public class ServiceApplicationTests {
 		List<DocumentWrapper> docs = createDocumentWrapperList();
 		RetrieveDocumentSetResponseType responseObj = JSONconverter.convertDocumentSetToSOAPResponse(docs);
 		return responseObj;
+	}
+	
+	public String getAssertion() throws IOException, ConfigurationException{
+		Resource pdFile = resourceLoader.getResource("classpath:assertion.xml");
+		return Resources.toString(pdFile.getURL(), Charsets.UTF_8);
 	}
 }

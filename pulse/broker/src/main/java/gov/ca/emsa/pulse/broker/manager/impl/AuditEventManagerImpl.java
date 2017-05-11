@@ -279,7 +279,7 @@ public class AuditEventManagerImpl implements AuditEventManager{
 			jsonInString = mapper.writeValueAsString(acfAuditObj);
 			break;
 		case DV:
-			DocumentDTO docDto = documentManager.getDocumentObjById(id);
+			DocumentDTO docDto = documentManager.getDocumentById(id);
 			DocumentAudit docAuditObj = DtoToDomainConverter.convertToAuditDoc(docDto);
 			jsonInString = mapper.writeValueAsString(docAuditObj);
 			break;

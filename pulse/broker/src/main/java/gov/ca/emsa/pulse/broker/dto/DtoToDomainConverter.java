@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,13 +31,22 @@ import gov.ca.emsa.pulse.common.domain.PatientEndpointMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
+import gov.ca.emsa.pulse.common.domain.PulseUser;
 import gov.ca.emsa.pulse.common.domain.Query;
 import gov.ca.emsa.pulse.common.domain.QueryEndpointMap;
 
 public class DtoToDomainConverter {
 	private static final Logger logger = LogManager.getLogger(DtoToDomainConverter.class);
 	private static final DateTimeFormatter outFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	
+	public static PulseUser convertToPulseUser(PulseUserDTO pulseUser) {
+		PulseUser result = new PulseUser();
+		result.setId(pulseUser.getId());
+		result.setAssertion(pulseUser.getAssertion());
 
+		return result;
+	}
+	
 	public static Patient convert(PatientDTO dtoObj) {
 		Patient result = new Patient();
 		result.setId(dtoObj.getId());
@@ -73,6 +83,7 @@ public class DtoToDomainConverter {
 			endpoint.setId(dto.getEndpointId());
 			result.setEndpoint(endpoint);
 		}
+		result.setHomeCommunityId(dto.getHomeCommunityId());
 		result.setDocumentsQueryStatus(dto.getDocumentsQueryStatus());
 		result.setDocumentsQueryStart(dto.getDocumentsQueryStart());
 		result.setDocumentsQueryEnd(dto.getDocumentsQueryEnd());
@@ -252,6 +263,7 @@ public class DtoToDomainConverter {
 		Endpoint result = new Endpoint();
 		result.setId(dto.getId());
 		result.setAdapter(dto.getAdapter());
+		result.setManagingOrganization(dto.getManagingOrganization());
 		if(dto.getEndpointStatus() != null) {
 			EndpointStatus status = new EndpointStatus();
 			status.setId(dto.getEndpointStatus().getId());
@@ -299,9 +311,10 @@ public class DtoToDomainConverter {
 		result.setStatus(dtoObj.getStatus());
 		result.setName(dtoObj.getName());
 		result.setFormat(dtoObj.getFormat());
-		result.setCached(dtoObj.getContents() != null && dtoObj.getContents().length > 0);
+		result.setCached(!StringUtils.isEmpty(dtoObj.getContents()));
+		result.setContents(dtoObj.getContents());
 		result.setEndpointMapId(dtoObj.getPatientEndpointMapId());
-
+		
 		result.setClassName(dtoObj.getClassName());
 		result.setConfidentiality(dtoObj.getConfidentiality());
 		result.setCreationTime(dtoObj.getCreationTime());
@@ -313,6 +326,7 @@ public class DtoToDomainConverter {
 		docId.setHomeCommunityId(dtoObj.getHomeCommunityId());
 		docId.setRepositoryUniqueId(dtoObj.getRepositoryUniqueId());
 		result.setIdentifier(docId);
+		
 		return result;
 	}
 	
