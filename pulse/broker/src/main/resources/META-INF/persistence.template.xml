@@ -41,6 +41,7 @@
 		<class>gov.ca.emsa.pulse.broker.entity.PatientRecordNameEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.PulseEventActionCodeEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.PulseEventActionEntity</class>
+		<class>gov.ca.emsa.pulse.broker.entity.PulseUserEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.QueryEndpointMapEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.QueryEndpointStatusEntity</class>
 		<class>gov.ca.emsa.pulse.broker.entity.QueryEntity</class>
@@ -48,7 +49,7 @@
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
 			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
-			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.show_sql" value="true" /> <!-- TODO: -->
 			<property name="hibernate.connection.username" value="pulse" />
 			<property name="hibernate.connection.password" value="pulse" />
 			<property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/pulse" />

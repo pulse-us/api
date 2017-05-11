@@ -12,6 +12,9 @@ import gov.ca.emsa.pulse.broker.manager.impl.DocumentQueryService;
 import gov.ca.emsa.pulse.broker.manager.impl.DocumentRetrievalService;
 import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.util.List;
 import java.util.Timer;
 
 import org.apache.log4j.LogManager;
@@ -35,6 +38,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class BrokerApplication {
 	
 	public static void main(String[] args) {
+		System.setProperty("javax.net.ssl.keyStore", "");
+		System.setProperty("javax.net.ssl.keyStorePassword", "");
 		SpringApplication.run(BrokerApplication.class, args);
 	}
 	

@@ -19,12 +19,23 @@ import gov.ca.emsa.pulse.common.domain.Location;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientRecordName;
+import gov.ca.emsa.pulse.common.domain.PulseUser;
 
 public class DomainToDtoConverter {
 	private static final Logger logger = LogManager.getLogger(DomainToDtoConverter.class);
 	@Autowired static NameTypeDAO nameTypeDao;
 	@Autowired static NameRepresentationDAO nameRepDao;
 	@Autowired static NameAssemblyDAO nameAssemblyDao;
+	
+	public static PulseUserDTO convertToPulseUser(PulseUser pulseUser) {
+		PulseUserDTO result = new PulseUserDTO();
+		if(pulseUser.getId() != null) {
+			result.setId(new Long(pulseUser.getId()));
+		}
+		result.setAssertion(pulseUser.getAssertion());
+
+		return result;
+	}
 	
 	public static PatientDTO convertToPatient(Patient domainObj) {
 		PatientDTO result = new PatientDTO();
@@ -96,6 +107,7 @@ public class DomainToDtoConverter {
 
 		result.setPhoneNumber(domainObj.getPhoneNumber());
 		result.setSsn(domainObj.getSsn());
+		result.setHomeCommunityId(domainObj.getHomeCommunityId());
 		
 		List<PatientRecordAddressDTO> praDto = new ArrayList<PatientRecordAddressDTO>();
 		for(Address pra : domainObj.getAddress()){

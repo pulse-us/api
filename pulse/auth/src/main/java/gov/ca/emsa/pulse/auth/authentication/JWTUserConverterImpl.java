@@ -11,14 +11,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.opensaml.xml.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 
 @Service
 public class JWTUserConverterImpl implements JWTUserConverter {
@@ -80,6 +85,10 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             String organization = identityInfo.get(4);
             String purpose_for_use = identityInfo.get(5);
             String role = identityInfo.get(6);
+            String pulseUserId = null;
+            if(identityInfo.size() > 7){
+            	pulseUserId = identityInfo.get(7);
+            }
 
             user.setuser_id(user_id);
             user.setusername(username);
@@ -88,9 +97,12 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             user.setorganization(organization);
             user.setpurpose_for_use(purpose_for_use);
             user.setrole(role);
+            if(identityInfo.size() > 7){
+            	user.setPulseUserId(pulseUserId);
+			}
 
-            if (identityInfo.size() > 7) {
-                String acfObjStr = identityInfo.get(7);
+            if (identityInfo.size() > 8) {
+                String acfObjStr = identityInfo.get(8);
             	try {
 	            	ObjectReader reader = new ObjectMapper().reader().forType(AlternateCareFacility.class);
 	            	AlternateCareFacility acf = reader.readValue(acfObjStr);

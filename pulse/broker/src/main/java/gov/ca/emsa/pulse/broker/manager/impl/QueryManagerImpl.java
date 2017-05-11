@@ -185,7 +185,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public void queryForPatientRecords(SAMLInput samlInput, PatientSearch toSearch, QueryDTO query, CommonUser user)
+	public void queryForPatientRecords(String assertion, PatientSearch toSearch, QueryDTO query, CommonUser user)
 			throws JsonProcessingException {
 
 		//not sure if all the query fields are filled in here... pull it out of the db
@@ -193,7 +193,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		if(query.getEndpointMaps() != null && query.getEndpointMaps().size() > 0) {
 			for(QueryEndpointMapDTO queryEndpointMap : query.getEndpointMaps()) {
 				PatientQueryService service = getPatientQueryService();
-				service.setSamlInput(samlInput);
+				service.setAssertion(assertion);
 				service.setToSearch(toSearch);
 				service.setQueryEndpointMap(queryEndpointMap);
 				service.setEndpoint(queryEndpointMap.getEndpoint());
@@ -209,7 +209,7 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 
 	@Override
 	@Transactional
-	public Long requeryForPatientRecords(Long queryId, Long endpointId, CommonUser user) 
+	public Long requeryForPatientRecords(String assertion, Long queryId, Long endpointId, CommonUser user) 
 			throws JsonProcessingException, IOException {
 		List<QueryEndpointMapDTO> queryEndpointMaps = queryDao.findQueryEndpointsByQueryAndEndpoint(queryId, endpointId);
 		QueryDTO query = queryDao.findById(queryId);
@@ -234,26 +234,13 @@ public class QueryManagerImpl implements QueryManager, ApplicationContextAware {
 		query.getEndpointMaps().add(endpointMapForRequery);
 			
 		PatientSearch toSearch = JSONUtils.fromJSON(query.getTerms(), PatientSearch.class);
-		SAMLInput input = new SAMLInput();
-		input.setStrIssuer(user.getSubjectName());
-		input.setStrNameQualifier("My Website");
-		input.setSessionId(user.getSubjectName());
-		HashMap<String, String> customAttributes = new HashMap<String,String>();
-		customAttributes.put("RequesterFirstName", user.getFirstName());
-		customAttributes.put("RequestReason", "Patient is bleeding.");
-		customAttributes.put("PatientGivenName", toSearch.getPatientNames().get(0).getGivenName().get(0));
-		customAttributes.put("PatientDOB", toSearch.getDob());
-		customAttributes.put("PatientGender", toSearch.getGender());
-		customAttributes.put("PatientHomeZip", toSearch.getZip());
-		customAttributes.put("PatientSSN", toSearch.getSsn());
-		input.setAttributes(customAttributes);
 
 		List<EndpointTypeEnum> relevantEndpointTypes = new ArrayList<EndpointTypeEnum>();
 		relevantEndpointTypes.add(EndpointTypeEnum.PATIENT_DISCOVERY);
 		
 		PatientQueryService service = getPatientQueryService();
-		service.setSamlInput(input);
 		service.setToSearch(toSearch);
+		service.setAssertion(assertion);
 		service.setQueryEndpointMap(endpointMapForRequery);
 		service.setEndpoint(endpointMapForRequery.getEndpoint());
 		service.setUser(user);
