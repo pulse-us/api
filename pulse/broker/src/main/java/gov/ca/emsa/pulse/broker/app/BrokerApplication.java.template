@@ -38,6 +38,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class BrokerApplication {
 	
 	public static void main(String[] args) {
+		System.setProperty("javax.net.ssl.keyStore", "");
+		System.setProperty("javax.net.ssl.keyStorePassword", "");
 		SpringApplication.run(BrokerApplication.class, args);
 	}
 	
