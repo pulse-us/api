@@ -147,7 +147,7 @@ public class EHealthAdapter implements Adapter {
 		}
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_XML);   
+		headers.set("Content-Type", "application/soap+xml; charset=utf-8");   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
 		String searchResults = null;
 		try {
