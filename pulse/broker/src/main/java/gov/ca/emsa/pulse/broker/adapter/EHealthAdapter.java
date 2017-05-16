@@ -106,7 +106,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 
 @Component
 public class EHealthAdapter implements Adapter {
-	public static final String HOME_COMMUNITY_ID = "urn:oid:1.2.3.928.955";
+	public static final String HOME_COMMUNITY_ID = "2.16.840.1.113883.9.224";
 	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
 	
 	@Value("${defaultRequestTimeoutSeconds}")
@@ -117,6 +117,15 @@ public class EHealthAdapter implements Adapter {
 	
 	@Value("${pulseOID}")
 	private String pulseOID;
+	
+	@Value("${ocprhioOID}")
+	private String ocprhioOID;
+	
+	@Value("${schieOID}")
+	private String santaCruzOID;
+	
+	@Value("${ucdavisOID}")
+	private String ucdavisOID;
 	
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
@@ -136,9 +145,22 @@ public class EHealthAdapter implements Adapter {
 		rf.setReadTimeout(defaultRequestTimeoutSeconds.intValue() * 1000);
 	}
 	
+	public String getOrganizationOID(String managingOrganization){
+		if(managingOrganization.contains("Santa Cruz")){
+			return santaCruzOID;
+		}else if(managingOrganization.contains("OCPRHIO")){
+			return ocprhioOID;
+		}else if(managingOrganization.contains("UC Davis")){
+			return ucdavisOID;
+		}else{
+			return HOME_COMMUNITY_ID;
+		}
+	}
+	
 	@Override
 	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch, String assertion) throws Exception {
-		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch, pulseOID);
+		String orgOID = getOrganizationOID(endpoint.getManagingOrganization());
+		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch, pulseOID, orgOID);
 		String requestBodyXml = null;
 		try {
 			requestBodyXml = queryProducer.marshallPatientDiscoveryRequest(endpoint, assertion, requestBody);
