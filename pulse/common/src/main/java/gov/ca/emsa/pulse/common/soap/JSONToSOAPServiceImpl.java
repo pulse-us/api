@@ -231,7 +231,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		return response;
 	}
 	
-	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch search, String pulseOID) {
+	public PRPAIN201305UV02 convertFromPatientSearch(PatientSearch search, String pulseOID, String orgOID) {
 		PRPAIN201305UV02 request = new PRPAIN201305UV02();
 		request.setITSVersion("XML_1.0");
 		II id = new II();
@@ -260,7 +260,7 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		device.setDeterminerCode("INSTANCE");
 		device.setClassCode(EntityClassDevice.DEV);
 		II deviceId = new II();
-		deviceId.getNullFlavor().add("NA");
+		deviceId.setRoot(orgOID);
 		device.getId().add(deviceId);
 		reciever.setDevice(device);
 		request.getReceiver().add(reciever);

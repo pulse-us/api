@@ -91,6 +91,19 @@ public class JSONToSoapTest {
 	@Value("${pulseOID}")
 	private String PULSE_ID;
 	
+	public static final String HOME_COMMUNITY_ID = "2.16.840.1.113883.9.224";
+	private static final String UCDAVIS_MANAGE_ORG = "UC Davis Health";
+	private static final String SCHIE_MANAGE_ORG = "Santa Cruz Health Information Exchange";
+	private static final String OCPRHIO_MANAGE_ORG = "OCPRHIO";
+	@Value("${ocprhioOID}")
+	private String ocprhioOID;
+	
+	@Value("${schieOID}")
+	private String santaCruzOID;
+	
+	@Value("${ucdavisOID}")
+	private String ucdavisOID;
+	
 	public String getAssertion() throws IOException, ConfigurationException{
 		Resource pdFile = resourceLoader.getResource("classpath:assertion.xml");
 		return Resources.toString(pdFile.getURL(), Charsets.UTF_8);
@@ -145,8 +158,10 @@ public class JSONToSoapTest {
 
 		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
-
-		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps,PULSE_ID);
+		endpoint.setManagingOrganization(OCPRHIO_MANAGE_ORG);
+		String orgOID = eHealthAdapter.getOrganizationOID(endpoint.getManagingOrganization());
+		assertEquals(orgOID,ocprhioOID);
+		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps,PULSE_ID, orgOID);
 		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, getAssertion(), request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
@@ -200,8 +215,10 @@ public class JSONToSoapTest {
 		input.setAttributes(customAttributes);
 		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
-
-		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps, PULSE_ID);
+		endpoint.setManagingOrganization(SCHIE_MANAGE_ORG);
+		String orgOID = eHealthAdapter.getOrganizationOID(endpoint.getManagingOrganization());
+		assertEquals(orgOID,santaCruzOID);
+		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps, PULSE_ID, orgOID);
 		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, getAssertion(), request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
@@ -271,8 +288,10 @@ public class JSONToSoapTest {
 		input.setAttributes(customAttributes);
 		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
-
-		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps, PULSE_ID);
+		endpoint.setManagingOrganization(UCDAVIS_MANAGE_ORG);
+		String orgOID = eHealthAdapter.getOrganizationOID(endpoint.getManagingOrganization());
+		assertEquals(orgOID,ucdavisOID);
+		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps, PULSE_ID, orgOID);
 		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, getAssertion(), request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
@@ -357,8 +376,10 @@ public class JSONToSoapTest {
 		input.setAttributes(customAttributes);
 		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
-
-		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps, PULSE_ID);
+		endpoint.setManagingOrganization("Sutter Health");
+		String orgOID = eHealthAdapter.getOrganizationOID(endpoint.getManagingOrganization());
+		assertEquals(orgOID,HOME_COMMUNITY_ID);
+		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps, PULSE_ID, PULSE_ID);
 		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, getAssertion(), request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
@@ -433,7 +454,7 @@ public class JSONToSoapTest {
 		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
 
-		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps, PULSE_ID);
+		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps, PULSE_ID, PULSE_ID);
 		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, getAssertion(), request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
@@ -510,7 +531,7 @@ public class JSONToSoapTest {
 		EndpointDTO endpoint = new EndpointDTO();
 		endpoint.setUrl("http://someihe/endpointTransaction");
 
-		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps, PULSE_ID);
+		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps, PULSE_ID, PULSE_ID);
 		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, getAssertion(), request);
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
