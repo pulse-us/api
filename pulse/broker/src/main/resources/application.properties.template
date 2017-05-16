@@ -50,9 +50,6 @@ ocprhioOID=OCPRHIO_OID_HERE
 schieOID=SCHIE_OID_HERE
 ucdavisOID=UCDAVIS_OID_HERE
 
-javax.net.ssl.keyStore=keystore_here
-javax.net.ssl.keyStorePassword=keystorepassword_here
-
 #allow detailed health information to come back without authentication
 management.security.enabled=false
 endpoints.health.sensitive=false

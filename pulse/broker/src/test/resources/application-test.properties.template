@@ -44,8 +44,5 @@ ocprhioOID=OCPRHIO_OID_HERE
 schieOID=SCHIE_OID_HERE
 ucdavisOID=UCDAVIS_OID_HERE
 
-javax.net.ssl.keyStore=keystore_here
-javax.net.ssl.keyStorePassword=keystorepassword_here
-
 #how often do we check the cache to clean up expired entries
 queryCacheCleanupMinutes=10
