@@ -108,6 +108,9 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 	@Value("${server.ssl.keyAlias}")
 	private String keystorealias;
 	
+	@Value("${timeToLiveTimestamp}")
+	private String ttl;
+	
 	class BinaryDataSource implements DataSource {
 	    InputStream _is;
 
@@ -148,7 +151,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		}
 		
 		WSSecTimestamp timestamp = new WSSecTimestamp();
-		timestamp.setTimeToLive(300);
+		timestamp.setTimeToLive(Integer.parseInt(ttl));
 		Document createdDoc = timestamp.build(document, secHeader);
 		
 		WSEncryptionPart encP =
