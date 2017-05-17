@@ -1,8 +1,5 @@
 package gov.ca.emsa.pulse.broker.adapter;
 
-import org.opensaml.xml.XMLObjectBuilder;
-import org.opensaml.xml.XMLObjectBuilderFactory;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -29,36 +26,37 @@ import gov.ca.emsa.pulse.cten.IheStatus;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.soap.SOAPException;
 
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
+import org.apache.wss4j.common.crypto.Crypto;
+import org.apache.wss4j.common.crypto.CryptoFactory;
+import org.apache.wss4j.common.ext.WSSecurityException;
+import org.apache.wss4j.common.util.XMLUtils;
+import org.apache.wss4j.dom.engine.WSSecurityEngine;
+import org.apache.wss4j.dom.handler.RequestData;
+import org.apache.wss4j.dom.handler.WSHandlerResult;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opensaml.Configuration;
-import org.opensaml.DefaultBootstrap;
 import org.opensaml.common.SAMLException;
-import org.opensaml.common.SAMLObjectBuilder;
-import org.opensaml.saml2.core.Assertion;
-import org.opensaml.saml2.core.Issuer;
-import org.opensaml.saml2.core.impl.AssertionBuilder;
-import org.opensaml.saml2.core.impl.AssertionMarshaller;
-import org.opensaml.saml2.core.impl.IssuerBuilder;
 import org.opensaml.xml.ConfigurationException;
 import org.opensaml.xml.io.MarshallingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,12 +68,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.Assert;
 import org.w3c.dom.DOMException;
+import org.xml.sax.InputSource;
+import org.yaml.snakeyaml.reader.StreamReader;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-
-import org.opensaml.common.SAMLObjectBuilder;
-import org.opensaml.common.SAMLVersion;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = BrokerApplicationTestConfig.class)
@@ -87,6 +84,9 @@ public class JSONToSoapTest {
 	@Autowired private ResourceLoader resourceLoader;
 	@Autowired EHealthAdapter eHealthAdapter;
 	@Autowired EHealthQueryProducerService queryProducer;
+	
+	 private WSSecurityEngine secEngine = new WSSecurityEngine();
+	 private Crypto crypto;
 	
 	@Value("${pulseOID}")
 	private String PULSE_ID;
@@ -104,9 +104,49 @@ public class JSONToSoapTest {
 	@Value("${ucdavisOID}")
 	private String ucdavisOID;
 	
+	public static final String SAMPLE_SOAP_MSG = 
+	        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" 
+	        + "<SOAP-ENV:Envelope "
+	        +   "xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+	        +   "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" "
+	        +   "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" 
+	        +   "<SOAP-ENV:Body>" 
+	        +       "<add xmlns=\"http://ws.apache.org/counter/counter_port_type\">" 
+	        +           "<value xmlns=\"\">15</value>" 
+	        +       "</add>" 
+	        +   "</SOAP-ENV:Body>" 
+	        + "</SOAP-ENV:Envelope>";
+	
+	
 	public String getAssertion() throws IOException, ConfigurationException{
 		Resource pdFile = resourceLoader.getResource("classpath:assertion.xml");
 		return Resources.toString(pdFile.getURL(), Charsets.UTF_8);
+	}
+	
+	 private WSHandlerResult verify(org.w3c.dom.Document doc) throws Exception {
+		 try {
+				crypto = CryptoFactory.getInstance();
+			} catch (WSSecurityException e1) {
+				e1.printStackTrace();
+			}
+		 return secEngine.processSecurityHeader(doc,null, null, crypto);
+	}
+	
+	public static org.w3c.dom.Document toSOAPPart(String xml) throws Exception {
+		InputSource in = new InputSource(new StringReader(xml));
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setNamespaceAware(true);
+        DocumentBuilder docBuilder = builderFactory.newDocumentBuilder();
+        return (org.w3c.dom.Document) docBuilder.parse(in);
+    }
+	
+	@Test
+	public void testSignedHeader() throws Exception {
+		org.w3c.dom.Document document = toSOAPPart(SAMPLE_SOAP_MSG);
+		queryProducer.addSignedSecurityHeading(document, "1");
+		String outputString = XMLUtils.prettyDocumentToString(document);
+		System.out.println(outputString);
+		verify(document);
 	}
 
 	@Test
@@ -126,8 +166,7 @@ public class JSONToSoapTest {
 	}
 
 	@Test
-	public void testCreatePatientDiscoveryRequest() throws JAXBException, 
-	SAMLException, SOAPException, JWTValidationException, IOException, ConfigurationException, MarshallingException {
+	public void testCreatePatientDiscoveryRequest() throws Exception {
 		PatientSearch ps = new PatientSearch();
 		PatientSearchName toCreate1 = new PatientSearchName();
 		toCreate1.setFamilyName("Lindsey");
@@ -163,6 +202,7 @@ public class JSONToSoapTest {
 		assertEquals(orgOID,ocprhioOID);
 		PRPAIN201305UV02 request = service.convertFromPatientSearch(ps,PULSE_ID, orgOID);
 		String requestXml = ehealthService.marshallPatientDiscoveryRequest(endpoint, getAssertion(), request);
+		//verify(toSOAPPart(requestXml));
 		Assert.notNull(requestXml);
 		System.out.println(requestXml);
 		PRPAIN201305UV02 unmarshalledRequest = ehealthService.unMarshallPatientDiscoveryRequestObject(requestXml);
@@ -180,12 +220,24 @@ public class JSONToSoapTest {
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
 	}
 	
-	//@Test
+	@Test
 	public void testCreatePatientDiscoveryXDSToolsRequest() throws JAXBException, 
-	SAMLException, SOAPException, JWTValidationException, IOException, MarshallingException, ConfigurationException {
+	SAMLException, SOAPException, JWTValidationException, IOException, MarshallingException, ConfigurationException, WSSecurityException {
 		PatientSearch ps = new PatientSearch();
 		PatientSearchName toCreate1 = new PatientSearchName();
 		toCreate1.setFamilyName("Lindsey");
+		
+		PatientSearchAddress psa = new PatientSearchAddress();
+		psa.setCity("Bel AIr");
+		psa.setState("MD");
+		psa.setZipcode("21015");
+		ArrayList<String> lines = new ArrayList<String>();
+		lines.add("406 Main Street");
+		lines.add("Apt 6B");
+		psa.setLines(lines);
+		ArrayList<PatientSearchAddress> addresses = new ArrayList<PatientSearchAddress>();
+		addresses.add(psa);
+		ps.setAddresses(addresses);
 
 		ArrayList<String> givens = new ArrayList<String>();
 		givens.add("Brian");
@@ -239,7 +291,7 @@ public class JSONToSoapTest {
 
 	@Test
 	public void testCreatePatientDiscoveryRequestWithAddress() throws JAXBException, 
-	SAMLException, SOAPException, JWTValidationException, IOException, MarshallingException, ConfigurationException {
+	SAMLException, SOAPException, JWTValidationException, IOException, MarshallingException, ConfigurationException, WSSecurityException {
 		PatientSearch ps = new PatientSearch();
 		PatientSearchName toCreate1 = new PatientSearchName();
 		toCreate1.setFamilyName("Lindsey");
@@ -317,7 +369,7 @@ public class JSONToSoapTest {
 
 	@Test
 	public void testCreatePatientDiscoveryRequestWithMultipleAddress() throws JAXBException, 
-	SAMLException, SOAPException, JWTValidationException, IOException, MarshallingException, ConfigurationException {
+	SAMLException, SOAPException, JWTValidationException, IOException, MarshallingException, ConfigurationException, WSSecurityException {
 		PatientSearch ps = new PatientSearch();
 		PatientSearchName toCreate1 = new PatientSearchName();
 		toCreate1.setFamilyName("Lindsey");
@@ -410,7 +462,7 @@ public class JSONToSoapTest {
 
 	@Test
 	public void testCreatePatientDiscoveryRequestWithoutOptionalparams() throws JAXBException, 
-	SAMLException, SOAPException, JWTValidationException, IOException, MarshallingException, ConfigurationException {
+	SAMLException, SOAPException, JWTValidationException, IOException, MarshallingException, ConfigurationException, WSSecurityException {
 		PatientSearch ps = new PatientSearch();
 		PatientSearchName toCreate1 = new PatientSearchName();
 		toCreate1.setFamilyName("Lindsey");
@@ -473,7 +525,7 @@ public class JSONToSoapTest {
 
 	@Test
 	public void testCreatePatientDiscoveryRequestMultipleNames() throws JAXBException, 
-	SAMLException, SOAPException, JWTValidationException, IOException, MarshallingException, ConfigurationException {
+	SAMLException, SOAPException, JWTValidationException, IOException, MarshallingException, ConfigurationException, WSSecurityException {
 		PatientSearch ps = new PatientSearch();
 		List<PatientSearchAddress> addresses = new ArrayList<PatientSearchAddress>();
 		PatientSearchAddress psa = new PatientSearchAddress();
@@ -583,7 +635,7 @@ public class JSONToSoapTest {
 
 	@Test
 	public void testCreateDocumentQueryRequest() throws JAXBException, 
-	SAMLException, SOAPException, JWTValidationException, IOException, ConfigurationException, DOMException, MarshallingException {
+	SAMLException, SOAPException, JWTValidationException, IOException, ConfigurationException, DOMException, MarshallingException, WSSecurityException {
 		Patient patient = new Patient();
 		patient.setExternalPatientId("11.5.4.4.6667.110");
 		SAMLInput input = new SAMLInput();
@@ -736,7 +788,7 @@ public class JSONToSoapTest {
 
 	@Test
 	public void testCreateDocumentRetrieveRequest() throws JAXBException, 
-	SAMLException, SOAPException, JWTValidationException, IOException, ConfigurationException, DOMException, MarshallingException {
+	SAMLException, SOAPException, JWTValidationException, IOException, ConfigurationException, DOMException, MarshallingException, WSSecurityException {
 		List<Document> docs = new ArrayList<Document>();
 		Document doc = new Document();
 		DocumentIdentifier docId = new DocumentIdentifier();

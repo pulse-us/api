@@ -36,6 +36,7 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.message.MessageImpl;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.wss4j.common.ext.WSSecurityException;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.opensaml.common.SAMLException;
@@ -227,7 +228,7 @@ public class EHealthAdapter implements Adapter {
 		String requestBodyXml = null;
 		try {
 			requestBodyXml = queryProducer.marshallDocumentQueryRequest(endpoint, assertion, requestBody);
-		} catch(JAXBException ex) {
+		} catch(JAXBException | WSSecurityException ex) {
 			logger.error(ex.getMessage(), ex);
 		}
 
