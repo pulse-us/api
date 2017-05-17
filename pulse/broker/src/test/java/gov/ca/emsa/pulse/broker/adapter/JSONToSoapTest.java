@@ -220,12 +220,24 @@ public class JSONToSoapTest {
 		assertEquals(ps.getGender(), unmarshalledSearch.getGender());
 	}
 	
-	//@Test
+	@Test
 	public void testCreatePatientDiscoveryXDSToolsRequest() throws JAXBException, 
 	SAMLException, SOAPException, JWTValidationException, IOException, MarshallingException, ConfigurationException, WSSecurityException {
 		PatientSearch ps = new PatientSearch();
 		PatientSearchName toCreate1 = new PatientSearchName();
 		toCreate1.setFamilyName("Lindsey");
+		
+		PatientSearchAddress psa = new PatientSearchAddress();
+		psa.setCity("Bel AIr");
+		psa.setState("MD");
+		psa.setZipcode("21015");
+		ArrayList<String> lines = new ArrayList<String>();
+		lines.add("406 Main Street");
+		lines.add("Apt 6B");
+		psa.setLines(lines);
+		ArrayList<PatientSearchAddress> addresses = new ArrayList<PatientSearchAddress>();
+		addresses.add(psa);
+		ps.setAddresses(addresses);
 
 		ArrayList<String> givens = new ArrayList<String>();
 		givens.add("Brian");
@@ -623,7 +635,7 @@ public class JSONToSoapTest {
 
 	@Test
 	public void testCreateDocumentQueryRequest() throws JAXBException, 
-	SAMLException, SOAPException, JWTValidationException, IOException, ConfigurationException, DOMException, MarshallingException {
+	SAMLException, SOAPException, JWTValidationException, IOException, ConfigurationException, DOMException, MarshallingException, WSSecurityException {
 		Patient patient = new Patient();
 		patient.setExternalPatientId("11.5.4.4.6667.110");
 		SAMLInput input = new SAMLInput();
@@ -776,7 +788,7 @@ public class JSONToSoapTest {
 
 	@Test
 	public void testCreateDocumentRetrieveRequest() throws JAXBException, 
-	SAMLException, SOAPException, JWTValidationException, IOException, ConfigurationException, DOMException, MarshallingException {
+	SAMLException, SOAPException, JWTValidationException, IOException, ConfigurationException, DOMException, MarshallingException, WSSecurityException {
 		List<Document> docs = new ArrayList<Document>();
 		Document doc = new Document();
 		DocumentIdentifier docId = new DocumentIdentifier();
