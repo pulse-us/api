@@ -15,6 +15,7 @@ import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 import org.apache.wss4j.common.ext.WSSecurityException;
+import org.apache.wss4j.dom.message.WSSecHeader;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
@@ -31,11 +32,11 @@ public interface EHealthQueryProducerService {
 	public RetrieveDocumentSetResponseType unMarshallDocumentSetRetrieveResponseObject(String searchResults) throws SAMLException, JAXBException, SOAPException;
 	public String marshallPatientDiscoveryRequest(EndpointDTO endpoint, String assertion, PRPAIN201305UV02 response) throws JAXBException, MarshallingException, SAMLException, SOAPException, WSSecurityException;
 	public String createSOAPFault();
-	public String marshallDocumentQueryRequest(EndpointDTO endpoint, String assertion, AdhocQueryRequest request) throws JAXBException, DOMException, MarshallingException, SAMLException, WSSecurityException;
-	public String marshallDocumentSetRequest(EndpointDTO endpoint, String assertion, RetrieveDocumentSetRequestType requestObj) throws JAXBException, DOMException, MarshallingException, SAMLException, WSSecurityException;
+	public String marshallDocumentQueryRequest(EndpointDTO endpoint, String assertion, AdhocQueryRequest request) throws JAXBException, DOMException, MarshallingException, SAMLException, WSSecurityException, SOAPException;
+	public String marshallDocumentSetRequest(EndpointDTO endpoint, String assertion, RetrieveDocumentSetRequestType requestObj) throws JAXBException, DOMException, MarshallingException, SAMLException, WSSecurityException, SOAPException;
 	public PRPAIN201305UV02 unMarshallPatientDiscoveryRequestObject(String xml) throws SOAPException, SAMLException;
 	public AdhocQueryRequest unMarshallDocumentQueryRequestObject(String xml) throws SAMLException;
 	public RetrieveDocumentSetRequestType unMarshallDocumentSetRetrieveRequestObject(String xml) throws SAMLException;
 	public String marshallQueryByParameter(PRPAMT201306UV02QueryByParameter request) throws JAXBException;
-	public void addSignedSecurityHeading(Document document, String samlID);
+	public WSSecHeader addSignedSecurityHeading(Document document, String samlID);
 }
