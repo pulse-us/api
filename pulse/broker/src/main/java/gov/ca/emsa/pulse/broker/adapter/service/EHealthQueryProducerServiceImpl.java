@@ -47,6 +47,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
@@ -56,6 +57,7 @@ import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 import org.apache.wss4j.common.crypto.Crypto;
 import org.apache.wss4j.common.crypto.CryptoFactory;
 import org.apache.wss4j.common.ext.WSSecurityException;
+import org.apache.wss4j.common.saml.SamlAssertionWrapper;
 import org.apache.wss4j.common.token.SecurityTokenReference;
 import org.apache.wss4j.common.util.XMLUtils;
 import org.apache.wss4j.common.*;
@@ -64,6 +66,7 @@ import org.apache.wss4j.dom.engine.WSSConfig;
 import org.apache.wss4j.dom.message.WSSecHeader;
 import org.apache.wss4j.dom.message.WSSecSignature;
 import org.apache.wss4j.dom.message.WSSecTimestamp;
+import org.apache.wss4j.dom.saml.WSSecSignatureSAML;
 import org.apache.wss4j.dom.util.WSSecurityUtil;
 import org.apache.commons.io.output.XmlStreamWriter;
 import org.apache.log4j.LogManager;
@@ -125,7 +128,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 	    }
 	}
 	
-	public void addSignedSecurityHeading(Document document, String samlID){
+	public WSSecHeader addSignedSecurityHeading(Document document, String samlID){
 		WSSConfig.init();
 		try {
 			crypto = CryptoFactory.getInstance();
@@ -173,6 +176,8 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
         ((Element)timestampNode).setAttributeNS(
             WSConstants.XMLNS_NS, "xmlns", WSConstants.WSU_NS
         );
+        
+        return secHeader;
 	}
 	
 	private String createUUID(){
@@ -240,7 +245,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		return soapMessage;
 	}
 
-	private void createSecurityHeadingPatientDiscovery(EndpointDTO endpoint, SOAPMessage message, String assertion) throws SOAPException, MarshallingException, SAMLException, WSSecurityException {
+	private WSSecHeader createSecurityHeadingPatientDiscovery(EndpointDTO endpoint, SOAPMessage message, Document assertion) throws SOAPException, MarshallingException, SAMLException, WSSecurityException {
 		SOAPEnvelope env = message.getSOAPPart().getEnvelope();
 		
 		SOAPHeaderElement header1 = message.getSOAPHeader()
@@ -259,18 +264,18 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		header3.setAttributeNS("http://www.w3.org/2003/05/soap-envelope", "env:mustUnderstand", "1");
 		header3.setValue(endpoint.getUrl());
 		message.getSOAPHeader().addChildElement(header3);
-
-		//TODO: there are other elements in the sample - do we need them?
 		
 		Document owner = header3.getOwnerDocument();
-		Document assertionDoc = unMarshallAssertionObject(assertion);
-		addSignedSecurityHeading(owner, assertionDoc.getFirstChild().getAttributes().getNamedItem("ID").getNodeValue());
+		Document assertionDoc = assertion;
+		WSSecHeader secHeader = addSignedSecurityHeading(owner, assertionDoc.getFirstChild().getAttributes().getNamedItem("ID").getNodeValue());
 		Node importedSamlElement = owner.importNode(assertionDoc.getFirstChild(), true);
 		Element securityElement = WSSecurityUtil.findWsseSecurityHeaderBlock(owner, owner.getDocumentElement(), false);
 		securityElement.appendChild(importedSamlElement);
+		
+		return secHeader;
 	}
 	
-	private void createSecurityHeadingDocumentQuery(EndpointDTO endpoint, SOAPMessage message, String assertion) throws SOAPException, DOMException, MarshallingException, SAMLException, WSSecurityException {
+	private WSSecHeader createSecurityHeadingDocumentQuery(EndpointDTO endpoint, SOAPMessage message, Document assertion) throws SOAPException, DOMException, MarshallingException, SAMLException, WSSecurityException {
 		SOAPEnvelope env = message.getSOAPPart().getEnvelope();
 		
 		SOAPHeaderElement header1 = message.getSOAPHeader()
@@ -289,18 +294,18 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		header3.setAttributeNS("http://www.w3.org/2003/05/soap-envelope", "env:mustUnderstand", "1");
 		header3.setValue(endpoint.getUrl());
 		message.getSOAPHeader().addChildElement(header3);
-
-		//TODO: there are other elements in the sample - do we need them?
 		
 		Document owner = header3.getOwnerDocument();
-		Document assertionDoc = unMarshallAssertionObject(assertion);
-		addSignedSecurityHeading(owner, assertionDoc.getFirstChild().getAttributes().getNamedItem("ID").getNodeValue());
+		Document assertionDoc = assertion;
+		WSSecHeader secHeader = addSignedSecurityHeading(owner, assertionDoc.getFirstChild().getAttributes().getNamedItem("ID").getNodeValue());
 		Node importedSamlElement = owner.importNode(assertionDoc.getFirstChild(), true);
 		Element securityElement = WSSecurityUtil.findWsseSecurityHeaderBlock(owner, owner.getDocumentElement(), false);
 		securityElement.appendChild(importedSamlElement);
+		
+		return secHeader;
 	}
 	
-	private void createSecurityHeadingDocumentRetrieve(EndpointDTO endpoint, SOAPMessage message, String assertion) throws SOAPException, DOMException, MarshallingException, SAMLException, WSSecurityException {
+	private WSSecHeader createSecurityHeadingDocumentRetrieve(EndpointDTO endpoint, SOAPMessage message, Document assertion) throws SOAPException, DOMException, MarshallingException, SAMLException, WSSecurityException {
 		SOAPEnvelope env = message.getSOAPPart().getEnvelope();
 		SOAPHeaderElement header1 = message.getSOAPHeader()
 				.addHeaderElement(env.createName("Action", "a", "http://www.w3.org/2005/08/addressing"));
@@ -318,15 +323,15 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		header3.setAttributeNS("http://www.w3.org/2003/05/soap-envelope", "env:mustUnderstand", "1");
 		header3.setValue(endpoint.getUrl());
 		message.getSOAPHeader().addChildElement(header3);
-
-		//TODO: there are other elements in the sample - do we need them?
 		
 		Document owner = header3.getOwnerDocument();
-		Document assertionDoc = unMarshallAssertionObject(assertion);
-		addSignedSecurityHeading(owner, assertionDoc.getFirstChild().getAttributes().getNamedItem("ID").getNodeValue());
+		Document assertionDoc = assertion;
+		WSSecHeader secHeader = addSignedSecurityHeading(owner, assertionDoc.getFirstChild().getAttributes().getNamedItem("ID").getNodeValue());
 		Node importedSamlElement = owner.importNode(assertionDoc.getFirstChild(), true);
 		Element securityElement = WSSecurityUtil.findWsseSecurityHeaderBlock(owner, owner.getDocumentElement(), false);
 		securityElement.appendChild(importedSamlElement);
+		
+		return secHeader;
 	}
 	
 	public boolean checkSecurityHeading(SaajSoapMessage saajSoap){
@@ -354,9 +359,10 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		} catch (SOAPException e) {
 			logger.error(e);
 		}
-		
+		Document assertionDoc = unMarshallAssertionObject(assertion);
+		WSSecHeader secHeader = null;
 		try {
-			createSecurityHeadingPatientDiscovery(endpoint, soapMessage, assertion);
+			secHeader = createSecurityHeadingPatientDiscovery(endpoint, soapMessage, assertionDoc);
 		} catch(SOAPException soap) {
 			logger.error(soap);
 		}
@@ -382,13 +388,22 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		}
 		soapMessage = addSemanticTextValues(soapMessage);
 		
-		OutputStream sw = new ByteArrayOutputStream();
+		WSSecSignature wsSign = new WSSecSignature();
+        wsSign.setUserInfo(keystorealias, keystorepass);
+        wsSign.setKeyIdentifierType(WSConstants.X509_KEY_IDENTIFIER);
+        
+        Document doc = soapMessage.getSOAPPart().getEnvelope().getOwnerDocument();
+        
+		Document signedDoc =  wsSign.build(doc, crypto, secHeader);
+		String signedStringDoc = null;
 		try {
-			soapMessage.writeTo(sw);
-		} catch (IOException | SOAPException e) {
-			e.printStackTrace();
+			signedStringDoc = XMLUtils.prettyDocumentToString(signedDoc);
+		} catch (IOException | TransformerException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		return sw.toString();
+		
+		return signedStringDoc;
 	}
 	
 	public String marshallQueryByParameter(PRPAMT201306UV02QueryByParameter request) throws JAXBException{
@@ -401,7 +416,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		
 	}
 	
-	public String marshallDocumentQueryRequest(EndpointDTO endpoint, String assertion, AdhocQueryRequest request) throws JAXBException, DOMException, MarshallingException, SAMLException, WSSecurityException{
+	public String marshallDocumentQueryRequest(EndpointDTO endpoint, String assertion, AdhocQueryRequest request) throws JAXBException, DOMException, MarshallingException, SAMLException, WSSecurityException, SOAPException{
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -414,9 +429,10 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		} catch (SOAPException e) {
 			logger.error(e);
 		}
-		
+		Document assertionDoc = unMarshallAssertionObject(assertion);
+		WSSecHeader secHeader = null;
 		try {
-			createSecurityHeadingDocumentQuery(endpoint, soapMessage, assertion);
+			secHeader = createSecurityHeadingDocumentQuery(endpoint, soapMessage, assertionDoc);
 		} catch(SOAPException soap) {
 			logger.error(soap);
 		}
@@ -434,16 +450,25 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		} catch (SOAPException e1) {
 			e1.printStackTrace();
 		}
-		OutputStream sw = new ByteArrayOutputStream();
+		WSSecSignature wsSign = new WSSecSignature();
+        wsSign.setUserInfo(keystorealias, keystorepass);
+        wsSign.setKeyIdentifierType(WSConstants.X509_KEY_IDENTIFIER);
+        
+        Document doc = soapMessage.getSOAPPart().getEnvelope().getOwnerDocument();
+        
+		Document signedDoc =  wsSign.build(doc, crypto, secHeader);
+		String signedStringDoc = null;
 		try {
-			soapMessage.writeTo(sw);
-		} catch (IOException | SOAPException e) {
-			e.printStackTrace();
+			signedStringDoc = XMLUtils.prettyDocumentToString(signedDoc);
+		} catch (IOException | TransformerException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		return sw.toString();
+		
+		return signedStringDoc;
 	}
 	
-	public String marshallDocumentSetRequest(EndpointDTO endpoint, String assertion, RetrieveDocumentSetRequestType request) throws JAXBException, DOMException, MarshallingException, SAMLException, WSSecurityException{
+	public String marshallDocumentSetRequest(EndpointDTO endpoint, String assertion, RetrieveDocumentSetRequestType request) throws JAXBException, DOMException, MarshallingException, SAMLException, WSSecurityException, SOAPException{
 		MessageFactory factory = null;
 		try {
 			factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
@@ -456,9 +481,10 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		} catch (SOAPException e) {
 			logger.error(e);
 		}
-		
+		Document assertionDoc = unMarshallAssertionObject(assertion);
+		WSSecHeader secHeader = null;
 		try {
-			createSecurityHeadingDocumentRetrieve(endpoint, soapMessage, assertion);
+			secHeader = createSecurityHeadingDocumentRetrieve(endpoint, soapMessage, assertionDoc);
 		} catch(SOAPException soap) {
 			logger.error(soap);
 		}
@@ -477,13 +503,22 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		} catch (SOAPException e1) {
 			e1.printStackTrace();
 		}
-		OutputStream sw = new ByteArrayOutputStream();
+		WSSecSignature wsSign = new WSSecSignature();
+        wsSign.setUserInfo(keystorealias, keystorepass);
+        wsSign.setKeyIdentifierType(WSConstants.X509_KEY_IDENTIFIER);
+        
+        Document doc = soapMessage.getSOAPPart().getEnvelope().getOwnerDocument();
+        
+		Document signedDoc =  wsSign.build(doc, crypto, secHeader);
+		String signedStringDoc = null;
 		try {
-			soapMessage.writeTo(sw);
-		} catch (IOException | SOAPException e) {
-			e.printStackTrace();
+			signedStringDoc = XMLUtils.prettyDocumentToString(signedDoc);
+		} catch (IOException | TransformerException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		return sw.toString();
+		
+		return signedStringDoc;
 	}
 	
 	public Marshaller createMarshaller(JAXBContext jc){
