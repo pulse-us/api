@@ -46,7 +46,12 @@ patientCacheCleanupMinutes=10
 acfCacheCleanupMinutes=30
 
 pulseOID=PULSE_OID_HERE
+ocprhioOID=OCPRHIO_OID_HERE
+schieOID=SCHIE_OID_HERE
+ucdavisOID=UCDAVIS_OID_HERE
 
+//timestamp difference between created and expired in seconds
+timeToLiveTimestamp=timetoliveinseconds
 
 #allow detailed health information to come back without authentication
 management.security.enabled=false

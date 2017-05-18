@@ -36,6 +36,7 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.message.MessageImpl;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.wss4j.common.ext.WSSecurityException;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.opensaml.common.SAMLException;
@@ -106,7 +107,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 
 @Component
 public class EHealthAdapter implements Adapter {
-	public static final String HOME_COMMUNITY_ID = "urn:oid:1.2.3.928.955";
+	public static final String HOME_COMMUNITY_ID = "2.16.840.1.113883.9.224";
 	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
 	
 	@Value("${defaultRequestTimeoutSeconds}")
@@ -117,6 +118,15 @@ public class EHealthAdapter implements Adapter {
 	
 	@Value("${pulseOID}")
 	private String pulseOID;
+	
+	@Value("${ocprhioOID}")
+	private String ocprhioOID;
+	
+	@Value("${schieOID}")
+	private String santaCruzOID;
+	
+	@Value("${ucdavisOID}")
+	private String ucdavisOID;
 	
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
@@ -136,9 +146,22 @@ public class EHealthAdapter implements Adapter {
 		rf.setReadTimeout(defaultRequestTimeoutSeconds.intValue() * 1000);
 	}
 	
+	public String getOrganizationOID(String managingOrganization){
+		if(managingOrganization.contains("Santa Cruz")){
+			return santaCruzOID;
+		}else if(managingOrganization.contains("OCPRHIO")){
+			return ocprhioOID;
+		}else if(managingOrganization.contains("UC Davis")){
+			return ucdavisOID;
+		}else{
+			return HOME_COMMUNITY_ID;
+		}
+	}
+	
 	@Override
 	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch, String assertion) throws Exception {
-		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch, pulseOID);
+		String orgOID = getOrganizationOID(endpoint.getManagingOrganization());
+		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch, pulseOID, orgOID);
 		String requestBodyXml = null;
 		try {
 			requestBodyXml = queryProducer.marshallPatientDiscoveryRequest(endpoint, assertion, requestBody);
@@ -153,6 +176,7 @@ public class EHealthAdapter implements Adapter {
 		try {
 			logger.info("Querying " + endpoint.getUrl() + " with timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class); // TODO: the request that is going out here mock does not like
+			logger.info("Search results for " + endpoint.getUrl() + ": " + searchResults);
 		} catch(Exception ex) {
 			auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
 			throw ex;
@@ -204,7 +228,7 @@ public class EHealthAdapter implements Adapter {
 		String requestBodyXml = null;
 		try {
 			requestBodyXml = queryProducer.marshallDocumentQueryRequest(endpoint, assertion, requestBody);
-		} catch(JAXBException ex) {
+		} catch(JAXBException | WSSecurityException ex) {
 			logger.error(ex.getMessage(), ex);
 		}
 
