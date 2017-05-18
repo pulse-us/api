@@ -264,8 +264,6 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		header3.setAttributeNS("http://www.w3.org/2003/05/soap-envelope", "env:mustUnderstand", "1");
 		header3.setValue(endpoint.getUrl());
 		message.getSOAPHeader().addChildElement(header3);
-
-		//TODO: there are other elements in the sample - do we need them?
 		
 		Document owner = header3.getOwnerDocument();
 		Document assertionDoc = assertion;
@@ -296,8 +294,6 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		header3.setAttributeNS("http://www.w3.org/2003/05/soap-envelope", "env:mustUnderstand", "1");
 		header3.setValue(endpoint.getUrl());
 		message.getSOAPHeader().addChildElement(header3);
-
-		//TODO: there are other elements in the sample - do we need them?
 		
 		Document owner = header3.getOwnerDocument();
 		Document assertionDoc = assertion;
@@ -327,8 +323,6 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		header3.setAttributeNS("http://www.w3.org/2003/05/soap-envelope", "env:mustUnderstand", "1");
 		header3.setValue(endpoint.getUrl());
 		message.getSOAPHeader().addChildElement(header3);
-
-		//TODO: there are other elements in the sample - do we need them?
 		
 		Document owner = header3.getOwnerDocument();
 		Document assertionDoc = assertion;
