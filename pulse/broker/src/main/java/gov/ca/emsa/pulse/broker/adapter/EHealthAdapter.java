@@ -222,7 +222,7 @@ public class EHealthAdapter implements Adapter {
 	}
 
 	@Override
-	public DocumentQueryResults queryDocuments(CommonUser user, EndpointDTO endpoint, PatientEndpointMapDTO toSearch, String assertion) throws UnknownHostException, UnsupportedEncodingException, DOMException, MarshallingException, SAMLException {
+	public DocumentQueryResults queryDocuments(CommonUser user, EndpointDTO endpoint, PatientEndpointMapDTO toSearch, String assertion) throws UnknownHostException, UnsupportedEncodingException, DOMException, MarshallingException, SAMLException, SOAPException {
 		String patientId = toSearch.getExternalPatientRecordId();
 		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientId);
 		String requestBodyXml = null;
