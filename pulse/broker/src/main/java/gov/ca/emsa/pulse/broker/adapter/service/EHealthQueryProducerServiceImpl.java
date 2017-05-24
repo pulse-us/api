@@ -390,7 +390,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		
 		WSSecSignature wsSign = new WSSecSignature();
         wsSign.setUserInfo(keystorealias, keystorepass);
-        wsSign.setKeyIdentifierType(WSConstants.X509_KEY_IDENTIFIER);
+        wsSign.setKeyIdentifierType(WSConstants.SKI_KEY_IDENTIFIER);
         
         Document doc = soapMessage.getSOAPPart().getEnvelope().getOwnerDocument();
         
