@@ -275,12 +275,13 @@ public class JSONToSOAPServiceImpl implements JSONToSOAPService{
 		MCCIMT000100UV01Organization repOrg = new MCCIMT000100UV01Organization();
 		repOrg.setClassCode("ORG");
 		repOrg.setDeterminerCode("INSTANCE");
+		
+		JAXBElement<MCCIMT000100UV01Organization> repOrgJaxb = new JAXBElement<MCCIMT000100UV01Organization>(new QName("urn:hl7-org:v3","representedOrganization"), MCCIMT000100UV01Organization.class, repOrg);
 		II repOrgId = new II();
 		repOrgId.setRoot(pulseOID);
-		repOrg.setTypeId(repOrgId);
-		JAXBElement<MCCIMT000100UV01Organization> repOrgJaxb = new JAXBElement<MCCIMT000100UV01Organization>(new QName("urn:hl7-org:v3","asAgent"), MCCIMT000100UV01Organization.class, repOrg);
+		repOrg.getId().add(repOrgId);
 		agent.setRepresentedOrganization(repOrgJaxb);
-		JAXBElement<MCCIMT000100UV01Agent> agentJaxb = new JAXBElement<MCCIMT000100UV01Agent>(new QName("asAgent"), MCCIMT000100UV01Agent.class, agent);
+		JAXBElement<MCCIMT000100UV01Agent> agentJaxb = new JAXBElement<MCCIMT000100UV01Agent>(new QName("urn:hl7-org:v3","asAgent"), MCCIMT000100UV01Agent.class, agent);
 		deviceSender.setAsAgent(agentJaxb);
 		deviceSender.setDeterminerCode("INSTANCE");
 		deviceSender.setClassCode(EntityClassDevice.DEV);
