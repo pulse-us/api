@@ -57,6 +57,8 @@ timeToLiveTimestamp=timetoliveinseconds
 management.security.enabled=false
 endpoints.health.sensitive=false
 
+mtomMutltipartRequest
+
 server.ssl.key-store: src/main/resources/keystore.p12
 server.ssl.key-store-password: <insert password>
 server.ssl.keyStoreType: PKCS12

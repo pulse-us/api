@@ -110,6 +110,9 @@ public class EHealthAdapter implements Adapter {
 	public static final String HOME_COMMUNITY_ID = "2.16.840.1.113883.9.224";
 	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
 	
+	@Value("${mtomMutltipartRequest}")
+	private String mtomMutltipartRequest;
+	
 	@Value("${defaultRequestTimeoutSeconds}")
 	private Long defaultRequestTimeoutSeconds;
 	
@@ -303,18 +306,24 @@ public class EHealthAdapter implements Adapter {
 		} catch(JAXBException ex) {
 			logger.error(ex.getMessage(), ex);
 		}
-		String boundary = UUID.randomUUID().toString().replace("-", "");
-		
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Content-Type", "multipart/related;" + " boundary=" + boundary + "; " + "start=\"<" + boundary + ">\"; type=\"application/xop+xml\"");
-		
-		String part0Header = "Content-Type: application/soap+xml\n" +
-							 "Content-ID: <" + boundary + ">\n";
-		String requestStringXml = "--" + boundary + "\n" +
-									part0Header + "\n" +
-									requestBodyXml + "\n" +
-									"--" + boundary + "--";
-		HttpEntity<String> request = new HttpEntity<String>(requestStringXml, headers);
+		HttpEntity<String> request = null;
+		if(Boolean.getBoolean(mtomMutltipartRequest)){
+			String boundary = UUID.randomUUID().toString().replace("-", "");
+
+			headers.set("Content-Type", "multipart/related;" + " boundary=" + boundary + "; " + "start=\"<" + boundary + ">\"; type=\"application/xop+xml\"");
+
+			String part0Header = "Content-Type: application/soap+xml\n" +
+					"Content-ID: <" + boundary + ">\n";
+			String requestStringXml = "--" + boundary + "\n" +
+					part0Header + "\n" +
+					requestBodyXml + "\n" +
+					"--" + boundary + "--";
+			request = new HttpEntity<String>(requestStringXml, headers);
+		}else{
+			headers.set("Content-Type", "application/soap+xml");
+			request = new HttpEntity<String>(requestBodyXml, headers);
+		}
 		ResponseEntity<String> searchResults = null;
 		String returnBody = null;
 		String returnEnvelope = null;
