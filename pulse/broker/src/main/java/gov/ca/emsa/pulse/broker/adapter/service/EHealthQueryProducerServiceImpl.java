@@ -310,7 +310,7 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 		SOAPHeaderElement header1 = message.getSOAPHeader()
 				.addHeaderElement(env.createName("Action", "a", "http://www.w3.org/2005/08/addressing"));
 		header1.setAttributeNS("http://www.w3.org/2003/05/soap-envelope", "env:mustUnderstand", "1");
-		header1.setValue("urn:ihe:iti:2007:RetrieveDocumentSet");
+		header1.setValue("urn:ihe:iti:2007:CrossGatewayRetrieve");
 		message.getSOAPHeader().addChildElement(header1);
 
 		SOAPHeaderElement header2 = message.getSOAPHeader()
