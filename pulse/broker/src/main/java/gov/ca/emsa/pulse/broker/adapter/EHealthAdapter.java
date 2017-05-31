@@ -109,28 +109,28 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 public class EHealthAdapter implements Adapter {
 	public static final String HOME_COMMUNITY_ID = "2.16.840.1.113883.9.224";
 	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
-	
+
 	@Value("${mtomMutltipartRequest}")
 	private String mtomMutltipartRequest;
-	
+
 	@Value("${defaultRequestTimeoutSeconds}")
 	private Long defaultRequestTimeoutSeconds;
-	
+
 	@Value("${defaultConnectTimeoutSeconds}")
 	private Long defaultConnectTimeoutSeconds;
-	
+
 	@Value("${pulseOID}")
 	private String pulseOID;
-	
+
 	@Value("${ocprhioOID}")
 	private String ocprhioOID;
-	
+
 	@Value("${schieOID}")
 	private String santaCruzOID;
-	
+
 	@Value("${ucdavisOID}")
 	private String ucdavisOID;
-	
+
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
 	@Autowired EHealthQueryProducerService queryProducer;
@@ -139,16 +139,16 @@ public class EHealthAdapter implements Adapter {
 	private RestTemplate restTemplate;
 	class MyMultiValueMap extends LinkedMultiValueMap<String, Object>
 	{}
-	
+
 	@PostConstruct
 	public void initRestTemplate() {
 		restTemplate = new RestTemplate();
 		SimpleClientHttpRequestFactory rf =
-			    (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
+				(SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
 		rf.setConnectTimeout(defaultConnectTimeoutSeconds.intValue() * 1000);
 		rf.setReadTimeout(defaultRequestTimeoutSeconds.intValue() * 1000);
 	}
-	
+
 	public String getOrganizationOID(String managingOrganization){
 		if(managingOrganization.contains("Santa Cruz")){
 			return santaCruzOID;
@@ -160,7 +160,7 @@ public class EHealthAdapter implements Adapter {
 			return HOME_COMMUNITY_ID;
 		}
 	}
-	
+
 	@Override
 	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch, String assertion) throws Exception {
 		String orgOID = getOrganizationOID(endpoint.getManagingOrganization());
@@ -184,7 +184,7 @@ public class EHealthAdapter implements Adapter {
 			auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
 			throw ex;
 		}
-		
+
 		PatientRecordResults results = new PatientRecordResults();
 		results.setStatus(IheStatus.Success);
 		if(!StringUtils.isEmpty(searchResults)) {
@@ -206,7 +206,7 @@ public class EHealthAdapter implements Adapter {
 				ex.printStackTrace();
 				results.setStatus(IheStatus.Failure);
 			}
-			
+
 			if(results.getStatus() != IheStatus.Success) {
 				logger.info("Trying to unmarshal response as an AdHocQueryRequest object to look for errors.");
 				try {
@@ -235,48 +235,48 @@ public class EHealthAdapter implements Adapter {
 			logger.error(ex.getMessage(), ex);
 		}
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.set("Content-Type", "application/soap+xml");
-			headers.set("action", "urn:ihe:iti:2007:CrossGatewayQuery");
-			HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
-			
-			String searchResults = null;
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Content-Type", "application/soap+xml");
+		headers.set("action", "urn:ihe:iti:2007:CrossGatewayQuery");
+		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
+
+		String searchResults = null;
+		try {
+			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
+			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
+		} catch(Exception ex) {
+			logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
+			auditManager.createAuditEventDCXGatewayQuery("FAILURE", user, endpoint.getUrl(),"", "", patientId);
+			throw ex;
+		}
+
+		DocumentQueryResults results = new DocumentQueryResults();
+		results.setStatus(IheStatus.Success);
+		if(!StringUtils.isEmpty(searchResults)) {
 			try {
-				logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
-				searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
+				AdhocQueryResponse resultObj = queryProducer.unMarshallDocumentQueryResponseObject(searchResults);
+				List<Document> documentResults = soapConverterService.convertToDocumentQueryResponse(resultObj);
+				for(int i = 0; i < documentResults.size(); i++) {
+					DocumentDTO record = DomainToDtoConverter.convert(documentResults.get(i));
+					auditManager.createAuditEventDCXGatewayQuery("SUCCESS", user, endpoint.getUrl(),record.getRepositoryUniqueId(), record.getDocumentUniqueId(), patientId);
+					results.getResults().add(record);
+				}
 			} catch(Exception ex) {
-				logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
-				auditManager.createAuditEventDCXGatewayQuery("FAILURE", user, endpoint.getUrl(),"", "", patientId);
-				throw ex;
+				logger.error("Exception unmarshalling document discovery response", ex);
+				results.setStatus(IheStatus.Failure);
 			}
 
-			DocumentQueryResults results = new DocumentQueryResults();
-			results.setStatus(IheStatus.Success);
-			if(!StringUtils.isEmpty(searchResults)) {
+			if(results.getStatus() != IheStatus.Success) {
+				logger.error("Trying to unmarshal response as an AdHocQueryRequest object to look for errors.");
 				try {
-					AdhocQueryResponse resultObj = queryProducer.unMarshallDocumentQueryResponseObject(searchResults);
-					List<Document> documentResults = soapConverterService.convertToDocumentQueryResponse(resultObj);
-					for(int i = 0; i < documentResults.size(); i++) {
-						DocumentDTO record = DomainToDtoConverter.convert(documentResults.get(i));
-						auditManager.createAuditEventDCXGatewayQuery("SUCCESS", user, endpoint.getUrl(),record.getRepositoryUniqueId(), record.getDocumentUniqueId(), patientId);
-						results.getResults().add(record);
-					}
+					AdhocQueryResponse resultObj = queryProducer.unmarshallErrorQueryResponse(searchResults);
+					results.setStatus(soapConverterService.getErrorStatus(resultObj));
+					logger.error("Got error back from " + endpoint.getUrl() + ". Status: " + results.getStatus().name());
+					auditManager.createAuditEventDCXGatewayQuery("FAILURE", user, endpoint.getUrl(),"", "", patientId);
 				} catch(Exception ex) {
-					logger.error("Exception unmarshalling document discovery response", ex);
-					results.setStatus(IheStatus.Failure);
+					logger.error("Exception unmarshalling documents discovery response as error", ex);
 				}
-
-				if(results.getStatus() != IheStatus.Success) {
-					logger.error("Trying to unmarshal response as an AdHocQueryRequest object to look for errors.");
-					try {
-						AdhocQueryResponse resultObj = queryProducer.unmarshallErrorQueryResponse(searchResults);
-						results.setStatus(soapConverterService.getErrorStatus(resultObj));
-						logger.error("Got error back from " + endpoint.getUrl() + ". Status: " + results.getStatus().name());
-						auditManager.createAuditEventDCXGatewayQuery("FAILURE", user, endpoint.getUrl(),"", "", patientId);
-					} catch(Exception ex) {
-						logger.error("Exception unmarshalling documents discovery response as error", ex);
-					}
-				}
+			}
 		}
 		return results;
 	}
@@ -328,6 +328,7 @@ public class EHealthAdapter implements Adapter {
 		String returnBody = null;
 		String returnEnvelope = null;
 		String ct = null;
+		AttachmentDeserializer deserializer = null;
 		try {
 			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForEntity(endpoint.getUrl(), request, String.class);
@@ -337,12 +338,12 @@ public class EHealthAdapter implements Adapter {
 			MessageImpl msg = new MessageImpl();
 			msg.put(Message.CONTENT_TYPE, ct);
 			msg.setContent(InputStream.class, is);
-			AttachmentDeserializer deserializer = new AttachmentDeserializer(msg);
-		    deserializer.initializeAttachments();
-		    InputStream attBody = msg.getContent(InputStream.class);
-		    ByteArrayOutputStream out = new ByteArrayOutputStream();
-		    IOUtils.copy(attBody, out);
-		    returnEnvelope = out.toString();
+			deserializer = new AttachmentDeserializer(msg);
+			deserializer.initializeAttachments();
+			InputStream attBody = msg.getContent(InputStream.class);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			IOUtils.copy(attBody, out);
+			returnEnvelope = out.toString();
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
 			for(Document doc : docsToSearch){
@@ -371,29 +372,22 @@ public class EHealthAdapter implements Adapter {
 
 					if(matchingDto != null) {
 						//read the binary document data from this DocumentResponse
-						DataHandler dataHandler = docResponse.getDocument();
 						InputStream in = null;
-						try {
-							in = dataHandler.getDataSource().getInputStream();
-							StringWriter writer = new StringWriter();
-							IOUtils.copy(in, writer, Charset.forName("UTF-8"));
-							String dataStr = writer.toString(); 
-							logger.debug("Converted binary to " + dataStr);
-							matchingDto.setContents(new String(dataStr.getBytes()));
-						} catch(IOException e) {
-							e.printStackTrace();
-						} finally {
-							try {
-								if(in != null) { in.close(); }
-							} catch(Exception ignore) {}
+						if(deserializer.hasNext()){
+							in = deserializer.readNext().getDataHandler().getDataSource().getInputStream();
 						}
+						StringWriter writer = new StringWriter();
+						IOUtils.copy(in, writer, Charset.forName("UTF-8"));
+						String dataStr = writer.toString();
+						logger.debug("Converted binary to " + dataStr);
+						matchingDto.setContents(new String(dataStr.getBytes()));
 					}
 				}
 			} catch(Exception ex) {
 				logger.error("Exception unmarshalling document retrieve response", ex);
 				resultStatus = IheStatus.Failure;
 			}
-			
+
 			if(resultStatus != IheStatus.Success) {
 				logger.error("Trying to unmarshal response as an AdHocQueryRequest object to look for errors.");
 				try {
