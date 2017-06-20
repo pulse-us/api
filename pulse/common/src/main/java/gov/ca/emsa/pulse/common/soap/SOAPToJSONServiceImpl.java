@@ -300,9 +300,11 @@ public class SOAPToJSONServiceImpl implements SOAPToJSONService {
 						doc.setName(docNameLocals.get(0).getValue());
 					}
 					//description
-					List<LocalizedStringType> descLocals = extObj.getDescription().getLocalizedString();
-					if(descLocals != null && descLocals.size() > 0) {
-						doc.setDescription(descLocals.get(0).getValue());
+					if(extObj.getDescription() != null){
+						List<LocalizedStringType> descLocals = extObj.getDescription().getLocalizedString();
+						if(descLocals != null && descLocals.size() > 0) {
+							doc.setDescription(descLocals.get(0).getValue());
+						}
 					}
 					
 					//slots
