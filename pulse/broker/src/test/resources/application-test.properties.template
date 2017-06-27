@@ -48,5 +48,8 @@ timeToLiveTimestamp=300
 
 mtomMutltipartRequest
 
+soapKeystorePass=<insertSoapCertPassToSign>
+soapKeystoreAlias=<insertSoapCertKeystoreToSign>
+
 #how often do we check the cache to clean up expired entries
 queryCacheCleanupMinutes=10
