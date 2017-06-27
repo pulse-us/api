@@ -105,10 +105,10 @@ public class EHealthQueryProducerServiceImpl implements EHealthQueryProducerServ
 	@Autowired private SamlGenerator samlGenerator;
 	private Crypto crypto;
 	
-	@Value("${server.ssl.key-store-password}")
+	@Value("${soapKeystorePass}")
 	private String keystorepass;
 	
-	@Value("${server.ssl.keyAlias}")
+	@Value("${soapKeystoreAlias}")
 	private String keystorealias;
 	
 	@Value("${timeToLiveTimestamp}")
