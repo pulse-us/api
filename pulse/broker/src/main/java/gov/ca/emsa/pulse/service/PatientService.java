@@ -171,7 +171,10 @@ public class PatientService {
 			//cache the document's contents
 			result = docManager.getDocumentById(user, assertion, documentId);
 		}
-		return DtoToDomainConverter.convert(result);
+		Document cachedDoc = DtoToDomainConverter.convert(result);
+		//this is the only place the contents should be returned to the caller, ever!
+		cachedDoc.setContents(result.getContents());
+		return cachedDoc;
 	}
 	
 	@ApiOperation(value="Cancel the retrieval of a specific document from an endpoint.")
