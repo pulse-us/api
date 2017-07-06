@@ -40,6 +40,16 @@ directoryRefreshSeconds=20
 queryCacheExpireMinutes=240
 
 pulseOID=PULSE_OID_HERE
+ocprhioOID=OCPRHIO_OID_HERE
+schieOID=SCHIE_OID_HERE
+ucdavisOID=UCDAVIS_OID_HERE
+
+timeToLiveTimestamp=300
+
+mtomMutltipartRequest
+
+soapKeystorePass=<insertSoapCertPassToSign>
+soapKeystoreAlias=<insertSoapCertKeystoreToSign>
 
 #how often do we check the cache to clean up expired entries
 queryCacheCleanupMinutes=10

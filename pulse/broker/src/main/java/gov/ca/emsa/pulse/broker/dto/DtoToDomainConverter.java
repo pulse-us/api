@@ -312,7 +312,6 @@ public class DtoToDomainConverter {
 		result.setName(dtoObj.getName());
 		result.setFormat(dtoObj.getFormat());
 		result.setCached(!StringUtils.isEmpty(dtoObj.getContents()));
-		result.setContents(dtoObj.getContents());
 		result.setEndpointMapId(dtoObj.getPatientEndpointMapId());
 		
 		result.setClassName(dtoObj.getClassName());
