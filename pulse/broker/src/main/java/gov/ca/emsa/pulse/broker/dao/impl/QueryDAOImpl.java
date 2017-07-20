@@ -194,13 +194,17 @@ public class QueryDAOImpl extends BaseDAOImpl implements QueryDAO {
 	}
 	
 	@Override
-	public void deleteItemsOlderThan(Date oldestDate) {		
+	public void deleteItemsOlderThan(Date oldestDate) {	
+		QueryStatusEntity closedStatus = statusDao.getQueryStatusByName(QueryStatus.Closed.name());
+
 		//this was originally deleting queries but since we want to  keep
 		//them around for statistics, it's just marking them as Closed instead
 		Query query = entityManager.createQuery( "from QueryEntity qe "
-				+ " WHERE qe.lastReadDate <= :cacheDate");
+				+ " WHERE qe.lastReadDate <= :cacheDate "
+				+ "AND qe.statusId != :closedStatus ");
 		
 		query.setParameter("cacheDate", oldestDate);
+		query.setParameter("closedStatus", closedStatus.getId());
 		List<QueryEntity> oldQueries = query.getResultList();
 		if(oldQueries.size() > 0) {
 			for(QueryEntity oldQuery : oldQueries) {

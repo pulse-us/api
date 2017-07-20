@@ -177,9 +177,9 @@ public class EHealthAdapter implements Adapter {
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
 		String searchResults = null;
 		try {
-			logger.info("Querying " + endpoint.getUrl() + " with timeout " + defaultRequestTimeoutSeconds + " seconds");
+			logger.trace("Querying " + endpoint.getUrl() + " with timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class); // TODO: the request that is going out here mock does not like
-			logger.info("Search results for " + endpoint.getUrl() + ": " + searchResults);
+			logger.trace("Search results for " + endpoint.getUrl() + ": " + searchResults);
 		} catch(Exception ex) {
 			auditManager.createAuditEventIG("FAILURE" , user, endpoint.getUrl(), queryProducer.marshallQueryByParameter(jsonConverterService.getQueryByParameter(requestBody).getValue()), HOME_COMMUNITY_ID);
 			throw ex;
@@ -242,8 +242,9 @@ public class EHealthAdapter implements Adapter {
 
 		String searchResults = null;
 		try {
-			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
+			logger.trace("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class);
+			logger.trace("Search results for " + endpoint.getUrl() + ": " + searchResults);
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
 			auditManager.createAuditEventDCXGatewayQuery("FAILURE", user, endpoint.getUrl(),"", "", patientId);
@@ -330,7 +331,7 @@ public class EHealthAdapter implements Adapter {
 		String ct = null;
 		AttachmentDeserializer deserializer = null;
 		try {
-			logger.info("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
+			logger.trace("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForEntity(endpoint.getUrl(), request, String.class);
 			returnBody = searchResults.getBody();
 			ct = searchResults.getHeaders().getFirst("Content-Type");
@@ -344,6 +345,7 @@ public class EHealthAdapter implements Adapter {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			IOUtils.copy(attBody, out);
 			returnEnvelope = out.toString();
+			logger.trace("Search results for " + endpoint.getUrl() + ": " + returnEnvelope);
 		} catch(Exception ex) {
 			logger.error("Exception when querying " + endpoint.getUrl() + ": " + ex.getMessage(), ex);
 			for(Document doc : docsToSearch){
@@ -379,7 +381,7 @@ public class EHealthAdapter implements Adapter {
 						StringWriter writer = new StringWriter();
 						IOUtils.copy(in, writer, Charset.forName("UTF-8"));
 						String dataStr = writer.toString();
-						logger.debug("Converted binary to " + dataStr);
+						logger.trace("Converted binary to " + dataStr);
 						matchingDto.setContents(new String(dataStr.getBytes()));
 					}
 				}
