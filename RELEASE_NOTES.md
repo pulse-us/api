@@ -1,6 +1,6 @@
 # Release Notes
 
-## Version 0.0.1
-_TBD_
+## Version 1.0.0
+_15 August 2017_
 
-First release
+## First release
