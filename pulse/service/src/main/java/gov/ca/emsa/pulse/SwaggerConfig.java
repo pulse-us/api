@@ -45,7 +45,7 @@ public class SwaggerConfig implements EnvironmentAware {
 
     private ApiInfo apiInfo() {
     	return new ApiInfo("PULSE", "Patient Unified Lookup System for Emergencies", "0.0.1",
-                           "http://termsofservice.com", new Contact("Brian Lindsey", "www.ainq.com", "blindsey@ainq.com"), "License Text", "LICENSE");
+                           "http://termsofservice.com", new Contact("Audacious Inquiry", "www.ainq.com", "pulse@ainq.com"), "License Text", "LICENSE");
     }
 
     private PathProvider pathProvider() {
