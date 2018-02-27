@@ -1,5 +1,5 @@
 #for embedded gradle tomcat
-server.port=9090
+server.port=8090
 
 #spring boot properties
 spring.datasource.url= jdbc:postgresql://localhost:5432/pulse

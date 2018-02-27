@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
@@ -21,8 +22,10 @@ import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 		"gov.ca.emsa.pulse.broker.manager.**",
 		"gov.ca.emsa.pulse.broker.saml.**",
 		"gov.ca.emsa.pulse.broker.util.**",
+		"gov.ca.emsa.pulse.broker.auth.**",
 		"gov.ca.emsa.pulse.service.**",
 		"gov.ca.emsa.pulse.common.soap.**"})
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class BrokerApplicationTestConfig implements EnvironmentAware {
 	
 	private Environment env;

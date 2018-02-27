@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -42,6 +44,7 @@ public class AlternateCareFacilityService {
 	// POST - create an alternate care facility
 	@ApiOperation(value = "Create a new ACF")
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_ORG_ADMIN", "ROLE_PROVIDER"})
 	public AlternateCareFacility createACF(@RequestBody AlternateCareFacility acf) 
 			throws UserRetrievalException, JsonProcessingException {
 
@@ -65,8 +68,9 @@ public class AlternateCareFacilityService {
 	}
 
 	// GET all acfs
-	@ApiOperation(value="Get the list of all alternate care facilities (ACFs)")
+	@ApiOperation(value="Get the list of all alternate care facilities (ACFs) for the PULSE organization of the logged in user")
 	@RequestMapping(value = "", method = RequestMethod.GET)
+	@Secured({"ROLE_ADMIN", "ROLE_ORG_ADMIN", "ROLE_PROVIDER"})
 	public ArrayList<AlternateCareFacility> getACFs() throws UserRetrievalException, JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
@@ -92,6 +96,7 @@ public class AlternateCareFacilityService {
 	// get acf by its id
 	@ApiOperation(value="Get information about a specific ACF")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	@Secured({"ROLE_ADMIN", "ROLE_ORG_ADMIN", "ROLE_PROVIDER"})
 	public AlternateCareFacility getACFById(@PathVariable Long id) 
 			throws UserRetrievalException, JsonProcessingException {
 
@@ -116,6 +121,7 @@ public class AlternateCareFacilityService {
 		// edit an acf by its id
 	@ApiOperation(value = "Edit an existing ACF")
 	@RequestMapping(value = "/{acfId}/edit", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_ORG_ADMIN"})
 	public AlternateCareFacility editACFById(@PathVariable Long acfId, 
 			@RequestBody AlternateCareFacility acf) throws UserRetrievalException, JsonProcessingException {
 

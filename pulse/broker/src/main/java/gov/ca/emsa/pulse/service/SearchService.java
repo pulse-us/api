@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,7 +60,8 @@ public class SearchService {
 			+ "which can later be used to get the results.")
 	@RequestMapping(path="/search", method = RequestMethod.POST,
 		produces="application/json; charset=utf-8",consumes="application/json")
-    public @ResponseBody Query searchPatients(@RequestBody(required=true) PatientSearch toSearch) throws JsonProcessingException {
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
+   public @ResponseBody Query searchPatients(@RequestBody(required=true) PatientSearch toSearch) throws JsonProcessingException {
 
 		CommonUser user = UserUtil.getCurrentUser();
 		

@@ -28,6 +28,9 @@ public class JWTAuthenticatedUser implements User {
     private String role;
     private String pulseUserId;
 
+    private Long liferayStateId;
+    private Long liferayAcfId;
+       
 	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private AlternateCareFacility acf;
     private HashMap<String,String> details = new HashMap<String,String>();
@@ -215,7 +218,23 @@ public class JWTAuthenticatedUser implements User {
 		this.acf = acf;
 	}
 
-    @Override
+    public Long getLiferayStateId() {
+		return liferayStateId;
+	}
+
+	public void setLiferayStateId(Long liferayStateId) {
+		this.liferayStateId = liferayStateId;
+	}
+
+	public Long getLiferayAcfId() {
+		return liferayAcfId;
+	}
+
+	public void setLiferayAcfId(Long liferayAcfId) {
+		this.liferayAcfId = liferayAcfId;
+	}
+
+	@Override
     public String toString() {
         String ret = "{User: " +
             "[subjectName: " + subjectName + "]" +

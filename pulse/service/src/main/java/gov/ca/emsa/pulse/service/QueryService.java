@@ -18,6 +18,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +44,7 @@ public class QueryService {
 	// get all queries that belong to the logged in user
 	@ApiOperation(value="Get all queries that belong to the logged in user.")
 	@RequestMapping(value = "", method = RequestMethod.GET)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public List<Query> getQueries() throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
@@ -66,6 +69,7 @@ public class QueryService {
 	// get the query that has the id = queryId
 	@ApiOperation(value="Get the query that has the given id.")
 	@RequestMapping(value = "/{queryId}", method = RequestMethod.GET)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public Query getQueryWithId(@PathVariable Long queryId) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
@@ -88,6 +92,7 @@ public class QueryService {
 
 	@ApiOperation(value="Delete the specified query and any associated results.")
 	@RequestMapping(value="/{queryId}/delete", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public Void deleteQuery(@PathVariable(value="queryId") Long queryId) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
@@ -110,6 +115,7 @@ public class QueryService {
 	
 	@ApiOperation(value = "Cancel part of a patient discovery query that's going to a specific endpoint")
 	@RequestMapping(value = "/{queryId}/endpoint/{endpointId}/cancel", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public Query cancelPatientDiscoveryRequestToEndpoint(@PathVariable(value="queryId") Long queryId,
 			@PathVariable(value="endpointId") Long endpointId) throws JsonProcessingException {
 		RestTemplate query = new RestTemplate();
@@ -132,6 +138,7 @@ public class QueryService {
 	
 	@ApiOperation(value="Re-run a patient search from a specific endpoint.")
 	@RequestMapping(path="/{queryId}/endpoint/{endpointId}/requery", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
 			@PathVariable("endpointId") Long endpointId) throws JsonProcessingException {
 		HttpHeaders headers = new HttpHeaders();
@@ -155,6 +162,7 @@ public class QueryService {
 	// stages a patient in the database from a query id
 	@ApiOperation(value="Stages a patient in the database from a query id.")
 	@RequestMapping(value = "/{queryId}/stage", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public Patient stagePatientFromQueryResults(@RequestBody CreatePatientRequest request, @PathVariable Long queryId) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();

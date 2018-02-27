@@ -14,6 +14,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +31,7 @@ public class PulseUserService {
 	
 	@ApiOperation(value = "Create a new User")
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_ORG_ADMIN"})
 	public PulseUser create(@RequestBody(required=true) PulseUser toCreate) {
 		
 		PulseUserDTO dto = DomainToDtoConverter.convertToPulseUser(toCreate);

@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,6 +40,7 @@ public class LocationService {
 	// get all locations
 	@ApiOperation(value="Get all locations.")
 	@RequestMapping(value = "/locations", method = RequestMethod.GET)
+	@Secured({"ROLE_ADMIN", "ROLE_ORG_ADMIN"})
 	public ArrayList<Location> getLocations() throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
@@ -62,6 +65,7 @@ public class LocationService {
 	// get all location statistics
 	@ApiOperation(value="Get query time statistics for all locations.")
 	@RequestMapping(value = "/locations/statistics", method = RequestMethod.GET)
+	@Secured({"ROLE_ADMIN", "ROLE_ORG_ADMIN"})
 	public ArrayList<LocationStatistics> getLocationRequestStatistics(
 			@RequestParam(name="start", required=false) Long startMillis, 
 			@RequestParam(name="end", required=false) Long endMillis) throws JsonProcessingException {

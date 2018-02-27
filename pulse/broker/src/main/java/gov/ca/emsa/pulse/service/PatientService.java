@@ -50,6 +50,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,12 +78,20 @@ public class PatientService {
 
 	@ApiOperation(value="Get all patients at the logged-in user's ACF")
 	@RequestMapping("")
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public List<Patient> getPatientsAtAcf() throws InvalidParameterException, UnknownHostException {
 		CommonUser user = UserUtil.getCurrentUser();
-		if(user.getAcf() == null || user.getAcf().getId() == null) {
+		//if(user.getAcf() == null || user.getAcf().getId() == null) {
+		if (user.getLiferayAcfId() == null) {
 			throw new InvalidParameterException("There was no ACF supplied in the User header, or the ACF had a null ID.");
 		}
-		List<PatientDTO> queryResults = patientManager.getPatientsAtAcf(user.getAcf().getId());
+		
+		AlternateCareFacilityDTO acf = acfManager.getByLiferayAcfId(user.getLiferayAcfId());
+		if (acf == null) {
+			throw new InvalidParameterException("There was no ACF supplied in the User header, or the ACF had a null ID.");
+		}
+
+		List<PatientDTO> queryResults = patientManager.getPatientsAtAcf(acf.getId());
 		List<Patient> results = new ArrayList<Patient>(queryResults.size());
         for(PatientDTO patientDto : queryResults) {
         	Patient patient = DtoToDomainConverter.convert(patientDto);
@@ -93,6 +103,7 @@ public class PatientService {
 
 	@ApiOperation(value="Get a list of documents associated with the given patient")
 	@RequestMapping("/{patientId}/documents")
+	@PreAuthorize("hasPermissionForPatient(#patientId)")
 	public List<Document> getDocumentListForPatient(@PathVariable("patientId")Long patientId) {
 		CommonUser user = UserUtil.getCurrentUser();
 		List<DocumentDTO> docDtos = docManager.getDocumentsForPatient(patientId);
@@ -105,6 +116,7 @@ public class PatientService {
 
 	@ApiOperation(value = "Cancel a request to an endpoint for a list of documents")
 	@RequestMapping(value = "/{patientId}/endpoints/{endpointId}/cancel", method = RequestMethod.POST)
+	@PreAuthorize("hasPermissionForPatient(#patientId)")
 	public Patient cancelDocumentListQuery(@PathVariable(value="patientId") Long patientId, 
 			@PathVariable(value="endpointId") Long endpointId) 
 			throws InvalidArgumentsException, SQLException {
@@ -134,6 +146,7 @@ public class PatientService {
 	
 	@ApiOperation(value = "Re-run a request to an endpoint for a list of documents")
 	@RequestMapping(value = "/{patientId}/endpoints/{endpointId}/requery", method = RequestMethod.POST)
+	@PreAuthorize("hasPermissionForPatient(#patientId)")
 	public Patient redoDocumentListQuery(@PathVariable(value="patientId") Long patientId, 
 			@PathVariable(value="endpointId") Long endpointId) 
 			throws InvalidArgumentsException, SQLException {
@@ -153,6 +166,7 @@ public class PatientService {
 	
 	@ApiOperation(value="Retrieve a specific document from an endpoint.")
 	@RequestMapping(value = "/{patientId}/documents/{documentId}")
+	@PreAuthorize("hasPermissionForPatient(#patientId)")
 	public @ResponseBody Document getDocumentContents(@PathVariable("patientId") Long patientId,
 			@PathVariable("documentId") Long documentId,
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) 
@@ -179,6 +193,7 @@ public class PatientService {
 	
 	@ApiOperation(value="Cancel the retrieval of a specific document from an endpoint.")
 	@RequestMapping(value = "/{patientId}/documents/{documentId}/cancel", method=RequestMethod.POST)
+	@PreAuthorize("hasPermissionForPatient(#patientId)")
 	public void cancelDocumentContentQuery(@PathVariable("patientId") Long patientId,
 			@PathVariable("documentId") Long documentId) 
 		throws SQLException, JsonProcessingException {
@@ -188,6 +203,7 @@ public class PatientService {
 	
 	@ApiOperation(value = "Edit a patient's information")
 	@RequestMapping(value = "/{patientId}/edit", method = RequestMethod.POST)
+	@PreAuthorize("hasPermissionForPatient(#patientId)")
 	public Patient update(@PathVariable("patientId") Long patientId, 
 			@RequestBody(required=true) Patient toUpdate) throws SQLException {
 		
@@ -199,6 +215,7 @@ public class PatientService {
 	
 	@ApiOperation(value = "Delete a patient")
 	@RequestMapping(value="/{patientId}/delete", method = RequestMethod.POST)
+	@PreAuthorize("hasPermissionForPatient(#patientId)")
 	public void deletePatient(@PathVariable(value="patientId") Long patientId) 
 	 throws SQLException, JsonProcessingException {
 		auditManager.createPulseAuditEvent(AuditType.PD, patientId);

@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +33,7 @@ public class LocationService {
 
 	@ApiOperation(value="Get the list of locations")
 	@RequestMapping(value="", method=RequestMethod.GET)
+	@Secured({"ROLE_ADMIN", "ROLE_ORG_ADMIN"})
     public List<Location> getAll() {
 		CommonUser user = UserUtil.getCurrentUser();
 		//auditManager.addAuditEventEntry(QueryType.GET_ALL_ORGANIZATIONS, "/locations", user.getSubjectName());
@@ -46,6 +49,7 @@ public class LocationService {
 	@ApiOperation(value = "Get dynamically calculated statistics on how quickly each location is responding to requests. "
 			+ "Either startDate, endDate, or both may be null.")
 	@RequestMapping(value="/statistics", method=RequestMethod.GET)
+	@Secured({"ROLE_ADMIN", "ROLE_ORG_ADMIN"})
 	public List<LocationStatistics> getPatientDiscoveryRequestStatistics(
 			@RequestParam(name="start", required=false) Long startMillis, 
 			@RequestParam(name="end", required=false) Long endMillis) {

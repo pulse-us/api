@@ -34,6 +34,11 @@ public class CommonUser implements User{
 	private boolean authenticated = true;
 	private String jwt;
 	private AlternateCareFacility acf;
+    private Long liferayStateId;
+    private Long liferayAcfId;
+
+    
+    
 	public String getPulseUserId() {
 		return pulseUserId;
 	}
@@ -136,6 +141,18 @@ public class CommonUser implements User{
 	}
 	public void setAcf(AlternateCareFacility acf) {
 		this.acf = acf;
+	}
+	public Long getLiferayStateId() {
+		return liferayStateId;
+	}
+	public void setLiferayStateId(Long liferayStateId) {
+		this.liferayStateId = liferayStateId;
+	}
+	public Long getLiferayAcfId() {
+		return liferayAcfId;
+	}
+	public void setLiferayAcfId(Long liferayAcfId) {
+		this.liferayAcfId = liferayAcfId;
 	}
 	@Override
 	public String getPassword() {

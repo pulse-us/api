@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -38,6 +40,7 @@ public class PulseUserService {
 
 	@ApiOperation(value = "Create a new User")
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_ORG_ADMIN"})
 	public PulseUser create(@RequestBody(required=true) PulseUser toCreate) throws JsonProcessingException, UserRetrievalException {
 
 		RestTemplate query = new RestTemplate();

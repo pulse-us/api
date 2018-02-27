@@ -8,8 +8,11 @@ import gov.ca.emsa.pulse.auth.user.User;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opensaml.xml.ConfigurationException;
 import org.slf4j.Logger;
@@ -30,6 +33,10 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 
 	@Autowired
 	private JWTConsumer jwtConsumer;
+	
+	final String PULSE_PFX = "pulse_";
+	final String PULSE_US = "pulse_us";
+
 
 	private static final Logger LOG = LoggerFactory.getLogger(JWTUserConverterImpl.class);
 
@@ -72,11 +79,28 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 
 			List<String> authorities = (List<String>) validatedClaims.get("Authorities");
 			List<String> identityInfo = (List<String>) validatedClaims.get("Identity");
+			String orgsString =  (String) validatedClaims.get("Orgs");
+			ObjectReader reader2 = new ObjectMapper().reader().forType(new HashMap<String, Long>().getClass());
+			HashMap<String, Long> orgsInfo = null;
+			
+			try {
+				orgsInfo = reader2.readValue(orgsString);
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			user.setLiferayStateId(getLiferayStateId(orgsInfo));
+			user.setLiferayAcfId(getLiferayACFId(orgsInfo));
 
 			for (String claim: authorities){
                 //				GrantedPermission permission = new GrantedPermission(claim);
 				user.addPermission(claim);
 			}
+			
 
             String user_id = identityInfo.get(0);
             String username = identityInfo.get(1);
@@ -118,4 +142,23 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 		}
 		return user;
 	}
+	
+	private Long getLiferayStateId(Map<String, Long> orgs) {
+		Set<Long> stateOrgIds = orgs.entrySet().stream()
+				.filter(entry -> !entry.getKey().equals(PULSE_US) && entry.getKey().startsWith(PULSE_PFX))
+				.map(map -> map.getValue())
+				.collect(Collectors.toSet());
+		assert(stateOrgIds.size() == 1);
+		return stateOrgIds.size() > 0 ? stateOrgIds.toArray(new Long[0])[0] : null;
+	}
+
+	private Long getLiferayACFId(Map<String, Long> orgs) {
+		Set<Long> acfOrgIds = orgs.entrySet().stream()
+				.filter(entry -> !entry.getKey().startsWith(PULSE_PFX))
+				.map(map -> map.getValue())
+				.collect(Collectors.toSet());
+		assert(acfOrgIds.size() == 1);
+		return acfOrgIds.size() > 0 ? acfOrgIds.toArray(new Long[0])[0] : null;
+	}
+
 }

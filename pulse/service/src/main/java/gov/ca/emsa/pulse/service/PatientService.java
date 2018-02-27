@@ -24,6 +24,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -49,6 +51,7 @@ public class PatientService {
 
 	@ApiOperation(value="Search for patients that match the parameters.")
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_ORG_ADMIN", "ROLE_PROVIDER"})
 	public @ResponseBody Query searchPatients(@RequestBody PatientSearch patientSearchTerms) throws JsonProcessingException {
 		Query returnQuery;
 		
@@ -81,6 +84,7 @@ public class PatientService {
 	// get all patients from the logged in users ACF
 	@ApiOperation(value="get all patients from the logged in users ACF.")
 	@RequestMapping(value = "/patients", method = RequestMethod.GET)
+	@Secured({"ROLE_PROVIDER", "ROLE_ADMIN"})
 	public ArrayList<Patient> getAllPatientsAtACF() throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();
@@ -104,6 +108,7 @@ public class PatientService {
 	
 	@ApiOperation(value = "Edit a patient's information")
 	@RequestMapping(value = "/patients/{patientId}/edit", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public Patient update(@PathVariable("patientId") Long patientId, 
 			@RequestBody(required=true) Patient toUpdate)throws JsonProcessingException, UserRetrievalException, SQLException {
 
@@ -128,6 +133,7 @@ public class PatientService {
 	
 	@ApiOperation(value="Delete the specified patient and all associated documents.")
 	@RequestMapping(value="/patients/{patientId}/delete", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public Void deletePatient(@PathVariable(value="patientId") Long patientId) throws JsonProcessingException {
 
 		RestTemplate query = new RestTemplate();

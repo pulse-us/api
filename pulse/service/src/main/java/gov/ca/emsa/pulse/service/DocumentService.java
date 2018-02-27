@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -41,6 +43,7 @@ public class DocumentService {
 	private String brokerUrl;
 
 	@ApiOperation(value="Search Documents for the given patient id.")
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	@RequestMapping(value = "/patients/{id}/documents", method = RequestMethod.GET)
 	public List<Document> searchDocuments(@PathVariable Long id) throws Exception {
 
@@ -65,6 +68,7 @@ public class DocumentService {
 
 	@ApiOperation(value = "Cancel a request to an endpoint for a list of documents")
 	@RequestMapping(value = "/patients/{patientId}/endpoints/{endpointId}/cancel", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public Patient cancelDocumentListQuery(@PathVariable(value="patientId") Long patientId, 
 			@PathVariable(value="endpointId") Long endpointId) throws Exception {
 		RestTemplate query = new RestTemplate();
@@ -88,6 +92,7 @@ public class DocumentService {
 	
 	@ApiOperation(value = "Re-run a request to an endpoint for a list of documents")
 	@RequestMapping(value = "/patients/{patientId}/endpoints/{endpointId}/requery", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public Patient redoDocumentListQuery(@PathVariable(value="patientId") Long patientId, 
 			@PathVariable(value="endpointId") Long endpointId) throws Exception { 
 		RestTemplate query = new RestTemplate();
@@ -111,6 +116,7 @@ public class DocumentService {
 	
 	@ApiOperation(value="Retrieve a specific Document from an endpoint.")
 	@RequestMapping(value = "/patients/{patientId}/documents/{documentId}", method = RequestMethod.GET)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public Document getDocumentContents(@PathVariable("documentId") Long documentId,
 			@PathVariable("patientId") Long patientId,
 			@RequestParam(value="cacheOnly", required= false, defaultValue="true") Boolean cacheOnly) throws JsonProcessingException {
@@ -135,6 +141,7 @@ public class DocumentService {
 	
 	@ApiOperation(value="Cancel the retrieval of a specific document from an endpoint.")
 	@RequestMapping(value = "/patients/{patientId}/documents/{documentId}/cancel", method=RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public void cancelDocumentContentQuery(@PathVariable("patientId") Long patientId,
 			@PathVariable("documentId") Long documentId) throws Exception {
 		RestTemplate query = new RestTemplate();

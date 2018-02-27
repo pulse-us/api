@@ -26,6 +26,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +35,8 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,6 +61,7 @@ public class QueryService {
 
 	@ApiOperation(value = "Get all queries for the logged-in user")
 	@RequestMapping(value="", method = RequestMethod.GET)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public List<Query> getQueries() {
 		CommonUser user = UserUtil.getCurrentUser();
 
@@ -73,6 +77,7 @@ public class QueryService {
 
 	@ApiOperation(value="Get the status of a query")
 	@RequestMapping(value="/{queryId}", method = RequestMethod.GET)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
     public Query getQueryStatus(@PathVariable(value="queryId") Long queryId) {
 		synchronized(queryManager) {
 	       QueryDTO initiatedQuery = queryManager.getById(queryId);
@@ -82,6 +87,7 @@ public class QueryService {
 
 	@ApiOperation(value = "Cancel part of a query that's going to a specific endpoint")
 	@RequestMapping(value = "/{queryId}/endpoint/{endpointId}/cancel", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public Query cancelPatientDiscoveryQuery(@PathVariable(value="queryId") Long queryId, 
 			@PathVariable(value="endpointId") Long endpointId) throws InvalidArgumentsException {
 		synchronized (queryManager) {
@@ -107,6 +113,7 @@ public class QueryService {
 			+ "This runs asynchronously and returns a query object which can later be used to get the results.")
 	@RequestMapping(path="/{queryId}/endpoint/{endpointId}/requery", method = RequestMethod.POST,
 		produces="application/json; charset=utf-8")
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
     public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
     		@PathVariable("endpointId") Long endpointId) throws JsonProcessingException, InvalidArgumentsException, IOException {
 		CommonUser user = UserUtil.getCurrentUser();
@@ -135,6 +142,7 @@ public class QueryService {
 	
 	@ApiOperation(value = "Delete a query")
 	@RequestMapping(value="/{queryId}/delete", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public void deleteQuery(@PathVariable(value="queryId") Long queryId) {
 		synchronized(queryManager) {
 			queryManager.close(queryId);
@@ -143,6 +151,7 @@ public class QueryService {
 	
 	@ApiOperation(value="Create a Patient from multiple PatientRecords")
 	@RequestMapping(value="/{queryId}/stage", method = RequestMethod.POST)
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
     public Patient stagePatientFromResults(@PathVariable(value="queryId") Long queryId,
     		@RequestBody CreatePatientRequest request) throws InvalidArgumentsException, SQLException, JsonProcessingException {
 		CommonUser user = UserUtil.getCurrentUser();
@@ -158,10 +167,17 @@ public class QueryService {
 		if(StringUtils.isEmpty(StringUtils.isEmpty(patientToCreate.getFullName()))) {
 			throw new InvalidArgumentsException("Patient full name is required.");
 		}
-		if(user.getAcf() == null || user.getAcf().getId() == null) {
+		//if(user.getAcf() == null || user.getAcf().getId() == null) {
+		//AlternateCareFacilityDTO acfDto = acfManager.getById(user.getAcf().getId());
+		
+		if (user.getLiferayAcfId() == null) {
 			throw new InvalidArgumentsException("There was no ACF supplied in the User header or the ACF ID was null.");
 		}
-		AlternateCareFacilityDTO acfDto = acfManager.getById(user.getAcf().getId());
+		AlternateCareFacilityDTO acfDto = acfManager.getByLiferayAcfId(user.getLiferayAcfId());
+		if (acfDto == null) {
+			throw new InvalidParameterException("There was no ACF supplied in the User header, or the ACF had a null ID.");
+		}
+
 		patientToCreate.setAcf(acfDto);
 
 		PatientDTO patient = patientManager.create(patientToCreate);

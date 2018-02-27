@@ -9,6 +9,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class UserUtil {
 
+	public static JWTAuthenticatedUser getJWTUser(){
+		return (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+	}
+	
 	public static CommonUser getCurrentUser(){
 		CommonUser user = new CommonUser();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -29,6 +33,13 @@ public class UserUtil {
 			user.setPulseUserId(jwtAuth.getPulseUserId());
 			user.setAcf(jwtAuth.getAcf());
 		} 
+
+		if(auth instanceof JWTAuthenticatedUser) {
+			JWTAuthenticatedUser jwtAuth = (JWTAuthenticatedUser) auth;
+			user.setLiferayAcfId(jwtAuth.getLiferayAcfId());
+			user.setLiferayStateId(jwtAuth.getLiferayStateId());
+		}
+
 		return user;
 	}
 }
