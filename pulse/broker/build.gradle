@@ -20,6 +20,14 @@ springBoot {
   executable = true
 }
 
+apply plugin: 'checkstyle'
+
+checkstyle {
+    configFile = file("${project.rootDir}/checkstyle.xml")
+    toolVersion = '6.7'
+    ignoreFailures = true
+}
+
 jar {
   baseName = 'broker'
   version = '0.0.1-SNAPSHOT'
