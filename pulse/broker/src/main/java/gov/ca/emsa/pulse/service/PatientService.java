@@ -174,7 +174,7 @@ public class PatientService {
 		
 		CommonUser user = UserUtil.getCurrentUser();
 		PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
-		String assertion = userDto.getAssertion();
+		String assertion = userDto == null ? "" : userDto.getAssertion();
 
 		DocumentDTO result = null;
 		if(cacheOnly == null || cacheOnly.booleanValue() == false) {

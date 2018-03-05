@@ -168,6 +168,8 @@ public class DomainToDtoConverter {
 			result.setState(domainObj.getAddress().getState());
 			result.setZipcode(domainObj.getAddress().getZipcode());
 		}
+		result.setLiferayAcfId(domainObj.getLiferayAcfId());
+		result.setLiferayStateId(domainObj.getLiferayStateId());
 		return result;
 	}
 	

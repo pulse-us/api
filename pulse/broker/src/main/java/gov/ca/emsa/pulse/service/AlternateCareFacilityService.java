@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
+import gov.ca.emsa.pulse.auth.user.User;
 import gov.ca.emsa.pulse.broker.domain.QueryType;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
@@ -48,7 +49,7 @@ public class AlternateCareFacilityService {
 		List<AlternateCareFacilityDTO> dtos = acfManager.getAll();
 		List<AlternateCareFacility> results = new ArrayList<AlternateCareFacility>();
 		for(AlternateCareFacilityDTO dto : dtos) {
-			if (dto.getLiferayStateId().equals(userStateOrg))
+			if (user.isRoleAdmin() || (dto.getLiferayStateId() != null  && dto.getLiferayStateId().equals(userStateOrg)))
 				results.add(DtoToDomainConverter.convert(dto));
 		}
        return results;
@@ -75,11 +76,11 @@ public class AlternateCareFacilityService {
 		
 		CommonUser user = UserUtil.getCurrentUser();
 		//auditManager.addAuditEntry(QueryType.CREATE_ACF, "/create", user.getSubjectName());
-		Long jwtAcfId = user.getId();
-		Long jwtStateId = user.getId();
+		Long jwtAcfId = user.getLiferayAcfId();
+		Long jwtStateId = user.getLiferayStateId();
 		
 		toCreate.setLiferayAcfId(jwtAcfId);
-		toCreate.setLiferayAcfId(jwtStateId);
+		toCreate.setLiferayStateId(jwtStateId);
 		
 		AlternateCareFacilityDTO dto = DomainToDtoConverter.convert(toCreate);
 		if(StringUtils.isEmpty(dto.getIdentifier())) {

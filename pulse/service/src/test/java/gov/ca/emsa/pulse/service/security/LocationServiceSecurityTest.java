@@ -1,9 +1,10 @@
-package gov.ca.emsa.pulse.service.auth;
+package gov.ca.emsa.pulse.service.security;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.sql.SQLException;
+
 import gov.ca.emsa.pulse.ServiceApplicationTestConfig;
-import gov.ca.emsa.pulse.ServiceExceptionControllerAdvice;
 import gov.ca.emsa.pulse.service.LocationService;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,21 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=ServiceApplicationTestConfig.class)
 @WebAppConfiguration
-public class LocationServiceSecurityTest {
+public class LocationServiceSecurityTest extends BaseSecurityTest {
 	@Autowired LocationService locationServiceController;
-	protected MockMvc mockMvc;
 
 	@Before
-	public void setUp() {
-		this.mockMvc = MockMvcBuilders.standaloneSetup(locationServiceController)
-                .setControllerAdvice(new ServiceExceptionControllerAdvice())
-                .build();
+	public void setUp() throws JsonProcessingException, SQLException {
+		super.setUp(locationServiceController);
+
 	}
 	
 	@Test

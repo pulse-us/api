@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.service;
 
+import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.auth.user.User;
@@ -32,6 +33,9 @@ public class UserUtil {
 			user.setLastName(jwtAuth.getLastName());
 			user.setPulseUserId(jwtAuth.getPulseUserId());
 			user.setAcf(jwtAuth.getAcf());
+			for (GrantedPermission p : jwtAuth.getAuthorities()) {
+				user.addPermission(p);
+			}
 		} 
 
 		if(auth instanceof JWTAuthenticatedUser) {

@@ -228,7 +228,7 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	private List<AlternateCareFacilityEntity> getEntityByLiferayAcfId(Long acfId) {
 		Query query = entityManager.createQuery( "SELECT DISTINCT a "
 				+ "FROM AlternateCareFacilityEntity a "
-				+ "where (a.liferay_acf_id = :identifier)"
+				+ "where (a.liferayAcfId = :identifier)"
 				, AlternateCareFacilityEntity.class );
 		query.setParameter("identifier", acfId);
 		return query.getResultList();

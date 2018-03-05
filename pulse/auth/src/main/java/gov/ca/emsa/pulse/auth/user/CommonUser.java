@@ -37,6 +37,9 @@ public class CommonUser implements User{
     private Long liferayStateId;
     private Long liferayAcfId;
 
+    public final static String ROLE_ADMIN = "ROLE_ADMIN";
+    public final static String ROLE_ORG_ADMIN = "ROLE_ORG_ADMIN";
+    public final static String ROLE_PROVIDER = "ROLE_PROVIDER";
     
     
 	public String getPulseUserId() {
@@ -186,16 +189,15 @@ public class CommonUser implements User{
 	}
 	@Override
 	public void addPermission(GrantedPermission permission) {
-		// TODO Auto-generated method stub
+		permissions.add(permission);
 	}
 	@Override
 	public void removePermission(String permissionValue) {
-		// TODO Auto-generated method stub
+		permissions.remove(permissionValue);
 	}
 	@Override
 	public Collection<GrantedPermission> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+		return permissions;
 	}
 	@Override
 	public Object getDetails() {
@@ -212,5 +214,15 @@ public class CommonUser implements User{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	    
+    public static boolean userHasAuthority(User auth, String authority)
+    {
+    	return auth.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals(authority));
+    }
+    
+    public boolean isRoleAdmin() {
+    	return userHasAuthority(this, ROLE_ADMIN);
+    }
+	
 
 }

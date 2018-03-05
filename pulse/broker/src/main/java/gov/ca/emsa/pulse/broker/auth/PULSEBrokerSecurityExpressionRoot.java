@@ -4,6 +4,8 @@ import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.auth.user.User;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
@@ -16,17 +18,7 @@ public class PULSEBrokerSecurityExpressionRoot extends SecurityExpressionRoot im
     private Object returnObject;
 
     private AlternateCareFacilityManager acfManager;
-    private PatientManager patientManager;
-    
-    final String ROLE_ADMIN = "ROLE_ADMIN";
-    final String ROLE_ORG_ADMIN = "ROLE_ORG_ADMIN";
-    final String ROLE_PROVIDER = "ROLE_PROVIDER";
-    
-    public static boolean userHasAuthority(User auth, String authority)
-    {
-    	return auth.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals(authority));
-    }
-
+    private PatientManager patientManager;    
     
 	public PULSEBrokerSecurityExpressionRoot(Authentication authentication, AlternateCareFacilityManager acfManager, PatientManager patientManager) {
 		super(authentication);
@@ -44,11 +36,11 @@ public class PULSEBrokerSecurityExpressionRoot extends SecurityExpressionRoot im
 			if (patient != null) {
 				AlternateCareFacilityDTO acf = patient.getAcf();
 				if (acf != null) {
-					if (userHasAuthority(jwtUser, ROLE_ADMIN)) {
+					if (CommonUser.userHasAuthority(jwtUser, CommonUser.ROLE_ADMIN)) {
 						hasPermission = true;
-					} else if (userHasAuthority(jwtUser, ROLE_ORG_ADMIN)) {
+					} else if (CommonUser.userHasAuthority(jwtUser, CommonUser.ROLE_ORG_ADMIN)) {
 						hasPermission = false; //getLiferayStateOrg(jwtUser).equals(getLiferayStateOrg(acf));
-					} else if (userHasAuthority(jwtUser, ROLE_PROVIDER)) {
+					} else if (CommonUser.userHasAuthority(jwtUser,CommonUser.ROLE_PROVIDER)) {
 						hasPermission = jwtUser.getLiferayAcfId().equals(acf.getLiferayAcfId());
 					}	
 				}
@@ -65,11 +57,11 @@ public class PULSEBrokerSecurityExpressionRoot extends SecurityExpressionRoot im
 		if (acfId != null) {
 			AlternateCareFacilityDTO acf = acfManager.getById(acfId);
 			if (acf != null) {
-				if (userHasAuthority(jwtUser, ROLE_ADMIN)) {
+				if (CommonUser.userHasAuthority(jwtUser, CommonUser.ROLE_ADMIN)) {
 					hasPermission = true;
-				} else if (userHasAuthority(jwtUser, ROLE_ORG_ADMIN)) {
+				} else if (CommonUser.userHasAuthority(jwtUser, CommonUser.ROLE_ORG_ADMIN)) {
 					hasPermission = jwtUser.getLiferayStateId().equals(acf.getLiferayStateId());
-				} else if (userHasAuthority(jwtUser, ROLE_PROVIDER)) {
+				} else if (CommonUser.userHasAuthority(jwtUser, CommonUser.ROLE_PROVIDER)) {
 					hasPermission = jwtUser.getLiferayAcfId().equals(acf.getLiferayAcfId());
 				}					
 			}

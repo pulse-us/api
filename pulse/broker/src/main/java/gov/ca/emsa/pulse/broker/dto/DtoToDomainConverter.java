@@ -104,6 +104,8 @@ public class DtoToDomainConverter {
 		acf.setName(acfDto.getName());
 		acf.setPhoneNumber(acfDto.getPhoneNumber());
 		acf.setLastRead(acfDto.getLastReadDate());
+		acf.setLiferayAcfId(acfDto.getLiferayAcfId());
+		acf.setLiferayStateId(acfDto.getLiferayStateId());
 		
 		if(acfDto.hasAddressParts())  {
 			Address acfAddr = new Address();

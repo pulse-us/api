@@ -4,6 +4,8 @@ import java.sql.SQLException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,4 +44,16 @@ public class ApiExceptionControllerAdvice {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
+	@ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+	public ResponseEntity<ErrorJSONObject> exception(AuthenticationCredentialsNotFoundException e) {
+		e.printStackTrace();
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Access denied: " + e.getMessage()), HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ErrorJSONObject> exception(AccessDeniedException e) {
+		e.printStackTrace();
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Access denied: " + e.getMessage()), HttpStatus.UNAUTHORIZED);
+	}
+
 }
