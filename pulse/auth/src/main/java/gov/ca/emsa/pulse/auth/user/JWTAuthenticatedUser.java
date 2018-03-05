@@ -21,11 +21,7 @@ public class JWTAuthenticatedUser implements User {
     // Provided by SAML assertion
     private String user_id;
     private String username;
-    private String auth_source;
     private String full_name;
-    private String organization;
-    private String purpose_for_use;
-    private String role;
     private String pulseUserId;
 
     private Long liferayStateId;
@@ -69,44 +65,12 @@ public class JWTAuthenticatedUser implements User {
         this.username = username;
     }
 
-    public String getauth_source () {
-        return auth_source;
-    }
-
-    public void setauth_source(String auth_source) {
-        this.auth_source = auth_source;
-    }
-
     public String getfull_name () {
         return full_name;
     }
 
     public void setfull_name(String full_name) {
         this.full_name = full_name;
-    }
-
-    public String getorganization () {
-        return organization;
-    }
-
-    public void setorganization(String organization) {
-        this.organization = organization;
-    }
-
-    public String getpurpose_for_use () {
-        return purpose_for_use;
-    }
-
-    public void setpurpose_for_use(String purpose_for_use) {
-        this.purpose_for_use = purpose_for_use;
-    }
-
-    public String getrole () {
-        return role;
-    }
-
-    public void setrole(String role) {
-        this.role = role;
     }
 
 	public Set<GrantedPermission> getPermissions() {
@@ -237,14 +201,9 @@ public class JWTAuthenticatedUser implements User {
 	@Override
     public String toString() {
         String ret = "{User: " +
-            "[subjectName: " + subjectName + "]" +
             "[user_id: " + user_id + "]" +
             "[username: " + username + "]" +
-            "[auth_source: " + auth_source + "]" +
             "[full_name: " + full_name + "]" +
-            "[organization: " + organization + "]" +
-            "[purpose_for_use: " + purpose_for_use + "]" +
-            "[role: " + role + "]" +
             "[pulseUserId: " + pulseUserId + "]" +
             "[jwt: " + details.get("jwt") + "]";
         return ret;

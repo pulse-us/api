@@ -62,17 +62,17 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			Object notBefore = validatedClaims.remove("nbf");
 			Object expires = validatedClaims.remove("exp");
 			Object jti = validatedClaims.remove("jti");
-            //			Object typ = validatedClaims.remove("typ");
+            //Object typ = validatedClaims.remove("typ");
 
 			String subject = (String) validatedClaims.remove("sub");
 
             LOG.info( "jwt claims" );
             LOG.info( issuer.toString() );
             LOG.info( audience.toString() );
-            LOG.info( issuedAt.toString() );
-            LOG.info( notBefore.toString() );
+            //LOG.info( issuedAt.toString() );
+            //LOG.info( notBefore.toString() );
             LOG.info( expires.toString() );
-            LOG.info( jti.toString() );
+            //LOG.info( jti.toString() );
             //            LOG.info( typ.toString());
 
 			user.setSubjectName(subject);
@@ -97,36 +97,28 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			user.setLiferayAcfId(getLiferayACFId(orgsInfo));
 
 			for (String claim: authorities){
-                //				GrantedPermission permission = new GrantedPermission(claim);
+                //GrantedPermission permission = new GrantedPermission(claim);
 				user.addPermission(claim);
 			}
 			
 
             String user_id = identityInfo.get(0);
             String username = identityInfo.get(1);
-            String auth_source = identityInfo.get(2);
-            String full_name = identityInfo.get(3);
-            String organization = identityInfo.get(4);
-            String purpose_for_use = identityInfo.get(5);
-            String role = identityInfo.get(6);
+            String full_name = identityInfo.get(2);
             String pulseUserId = null;
-            if(identityInfo.size() > 7){
-            	pulseUserId = identityInfo.get(7);
+            if(identityInfo.size() > 3) {
+                pulseUserId = identityInfo.get(3);
             }
 
             user.setuser_id(user_id);
             user.setusername(username);
-            user.setauth_source(auth_source);
             user.setfull_name(full_name);
-            user.setorganization(organization);
-            user.setpurpose_for_use(purpose_for_use);
-            user.setrole(role);
-            if(identityInfo.size() > 7){
+            if(identityInfo.size() > 3) {
             	user.setPulseUserId(pulseUserId);
 			}
 
-            if (identityInfo.size() > 8) {
-                String acfObjStr = identityInfo.get(8);
+            if (identityInfo.size() > 4) {
+                String acfObjStr = identityInfo.get(4);
             	try {
 	            	ObjectReader reader = new ObjectMapper().reader().forType(AlternateCareFacility.class);
 	            	AlternateCareFacility acf = reader.readValue(acfObjStr);

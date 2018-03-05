@@ -24,11 +24,11 @@ public class UserUtil {
 			user.setSubjectName(jwtAuth.getSubjectName());
 			user.setusername(jwtAuth.getUsername());
 			user.setEmail(jwtAuth.getEmail());
-			user.setauth_source(jwtAuth.getauth_source());
+            user.setauth_source("username/password");
 			user.setfull_name(jwtAuth.getfull_name());
-			user.setorganization(jwtAuth.getorganization());
-			user.setpurpose_for_use(jwtAuth.getpurpose_for_use());
-			user.setrole(jwtAuth.getrole());
+            user.setorganization("pulse");
+            user.setpurpose_for_use("treatment");
+            user.setrole("provider");
 			user.setFirstName(jwtAuth.getFirstName());
 			user.setLastName(jwtAuth.getLastName());
 			user.setPulseUserId(jwtAuth.getPulseUserId());
