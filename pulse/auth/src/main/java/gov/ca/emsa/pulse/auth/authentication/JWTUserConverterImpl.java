@@ -79,22 +79,22 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 
 			List<String> authorities = (List<String>) validatedClaims.get("Authorities");
 			List<String> identityInfo = (List<String>) validatedClaims.get("Identity");
-			String orgsString =  (String) validatedClaims.get("Orgs");
-			ObjectReader reader2 = new ObjectMapper().reader().forType(new HashMap<String, Long>().getClass());
+			/*String orgsString =  (String) validatedClaims.get("Orgs");
 			HashMap<String, Long> orgsInfo = null;
 			
 			try {
-				orgsInfo = reader2.readValue(orgsString);
+				ObjectReader orgsReader = new ObjectMapper().reader().forType(new HashMap<String, Long>().getClass());
+				orgsInfo = orgsReader.readValue(orgsString);
+				user.setLiferayStateId(getLiferayStateId(orgsInfo));
+				user.setLiferayAcfId(getLiferayACFId(orgsInfo));
 			} catch (JsonProcessingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 			
-			user.setLiferayStateId(getLiferayStateId(orgsInfo));
-			user.setLiferayAcfId(getLiferayACFId(orgsInfo));
 
 			for (String claim: authorities){
                 //GrantedPermission permission = new GrantedPermission(claim);
