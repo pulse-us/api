@@ -39,6 +39,8 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 		}
 		
 		AlternateCareFacilityEntity toInsert = new AlternateCareFacilityEntity();
+		toInsert.setLiferayStateId(dto.getLiferayStateId());
+		toInsert.setLiferayAcfId(dto.getLiferayAcfId());
 		toInsert.setIdentifier(dto.getIdentifier());
 		toInsert.setName(dto.getName());
 		toInsert.setPhoneNumber(dto.getPhoneNumber());
@@ -66,6 +68,8 @@ public class AlternateCareFacilityDAOImpl extends BaseDAOImpl implements Alterna
 	@Override
 	public AlternateCareFacilityDTO update(AlternateCareFacilityDTO dto) throws SQLException {
 		AlternateCareFacilityEntity toUpdate = this.getEntityById(dto.getId());
+		toUpdate.setLiferayStateId(dto.getLiferayStateId());
+		toUpdate.setLiferayAcfId(dto.getLiferayAcfId());
 		toUpdate.setIdentifier(dto.getIdentifier());
 		toUpdate.setName(dto.getName());
 		toUpdate.setPhoneNumber(dto.getPhoneNumber());

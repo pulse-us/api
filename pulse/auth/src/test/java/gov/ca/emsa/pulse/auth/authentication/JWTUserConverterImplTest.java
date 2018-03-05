@@ -25,17 +25,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(classes = { gov.ca.emsa.pulse.auth.TestConfig.class })
 public class JWTUserConverterImplTest {
 
-	@Autowired
-	private JWTUserConverterImpl converter;
+    @Autowired
+    private JWTUserConverterImpl converter;
 
-	@Autowired
-	private JWTAuthorRsaJoseJImpl jwtAuthor;
+    @Autowired
+    private JWTAuthorRsaJoseJImpl jwtAuthor;
 
-	// Logger
-	private static final Logger LOG = LoggerFactory.getLogger(JWTUserConverterImplTest.class);
+    // Logger
+    private static final Logger LOG = LoggerFactory.getLogger(JWTUserConverterImplTest.class);
 
-	@Test
-	public void converterConvertsJWTToUser() throws JWTCreationException, JWTValidationException{
+    @Test
+    public void converterConvertsJWTToUser() throws JWTCreationException, JWTValidationException{
 
         String userId = "user";
         Map<String, List<String>> jwtAuthorities = new HashMap<String, List<String>>();
@@ -44,36 +44,32 @@ public class JWTUserConverterImplTest {
         jwtAuthorities.put("Identity", new ArrayList<String>());
         jwtAuthorities.get("Identity").add("user_id");
         jwtAuthorities.get("Identity").add("username");
-        jwtAuthorities.get("Identity").add("auth_source");
         jwtAuthorities.get("Identity").add("full_name");
-        jwtAuthorities.get("Identity").add("organization");
-        jwtAuthorities.get("Identity").add("purpose_for_use");
-        jwtAuthorities.get("Identity").add("role");
 
-		String jwt = jwtAuthor.createJWT(userId, jwtAuthorities);
-		User user = converter.getAuthenticatedUser(jwt);
+        String jwt = jwtAuthor.createJWT(userId, jwtAuthorities);
+        User user = converter.getAuthenticatedUser(jwt);
 
         assertNotNull(user);
 
-		assertEquals(user.getuser_id(), "user_id");
-		assertEquals(user.getfull_name(), "full_name");
-		//assertEquals(user.getSubjectName(), testUser.getSubjectName());
-	}
+        assertEquals(user.getuser_id(), "user_id");
+        assertEquals(user.getfull_name(), "full_name");
+        //assertEquals(user.getSubjectName(), testUser.getSubjectName());
+    }
 
-	@Test
-	public void converterConvertsRejectsInvalidStringForJWTToUser(){
+    @Test
+    public void converterConvertsRejectsInvalidStringForJWTToUser(){
 
-		String garbage = "Garbage In";
+        String garbage = "Garbage In";
 
-		Boolean throwsException = false;
+        Boolean throwsException = false;
 
         try {
             User user = converter.getAuthenticatedUser(garbage);
-		} catch (JWTValidationException e) {
+        } catch (JWTValidationException e) {
             LOG.info("JWT Validation Exception", e);
             LOG.debug("JWT Validation Exception", e);
-			throwsException = true;
-		}
-		assertTrue(throwsException);
-	}
+            throwsException = true;
+        }
+        assertTrue(throwsException);
+    }
 }
