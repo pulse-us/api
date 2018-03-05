@@ -51,7 +51,7 @@ public class PatientService {
 
 	@ApiOperation(value="Search for patients that match the parameters.")
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
-	@Secured({"ROLE_ADMIN", "ROLE_ORG_ADMIN", "ROLE_PROVIDER"})
+	@Secured({"ROLE_ADMIN", "ROLE_PROVIDER"})
 	public @ResponseBody Query searchPatients(@RequestBody PatientSearch patientSearchTerms) throws JsonProcessingException {
 		Query returnQuery;
 		
