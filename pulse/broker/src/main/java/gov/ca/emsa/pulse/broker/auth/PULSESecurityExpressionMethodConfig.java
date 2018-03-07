@@ -8,9 +8,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @Configuration
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 class PULSESecurityExpressionMethodConfig {
-	@Autowired
-	private PULSESecurityExpresionHandler customMethodSecurityExpressionHandler;
-	
+    @Autowired
+    private PULSESecurityExpresionHandler customMethodSecurityExpressionHandler;
+
     protected MethodSecurityExpressionHandler createExpressionHandler() {
         return customMethodSecurityExpressionHandler;
     }

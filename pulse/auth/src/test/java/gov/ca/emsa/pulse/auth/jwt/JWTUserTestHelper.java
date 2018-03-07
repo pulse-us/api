@@ -1,11 +1,11 @@
-package gov.ca.emsa.pulse.service.security;
+package gov.ca.emsa.pulse.auth.jwt;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 
-public class TestUsers {
+public class JWTUserTestHelper {
     public static void setCurrentUser(String permission, Long liferayStateId, Long liferayAcfId) {
         JWTAuthenticatedUser jwt = new JWTAuthenticatedUser();
         jwt.setId(1L);

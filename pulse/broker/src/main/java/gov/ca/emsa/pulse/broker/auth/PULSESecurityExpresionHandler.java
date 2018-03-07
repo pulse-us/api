@@ -13,16 +13,22 @@ import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 
 @Component
-public class PULSESecurityExpresionHandler  extends DefaultMethodSecurityExpressionHandler {
-	@Autowired @Lazy private AlternateCareFacilityManager acfManager;
-	@Autowired @Lazy private PatientManager patientManager;
+public class PULSESecurityExpresionHandler extends DefaultMethodSecurityExpressionHandler {
+    @Autowired
+    @Lazy
+    private AlternateCareFacilityManager acfManager;
+    @Autowired
+    @Lazy
+    private PatientManager patientManager;
 
-	@Override
-	protected MethodSecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication, MethodInvocation invocation) {
-		PULSEBrokerSecurityExpressionRoot root = new PULSEBrokerSecurityExpressionRoot(authentication, acfManager, patientManager);
-		root.setPermissionEvaluator(getPermissionEvaluator());
-		root.setTrustResolver( new AuthenticationTrustResolverImpl());
-		root.setRoleHierarchy(getRoleHierarchy());
-		return root;
-	}
+    @Override
+    protected MethodSecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication,
+            MethodInvocation invocation) {
+        PULSEBrokerSecurityExpressionRoot root = new PULSEBrokerSecurityExpressionRoot(authentication, acfManager,
+                patientManager);
+        root.setPermissionEvaluator(getPermissionEvaluator());
+        root.setTrustResolver(new AuthenticationTrustResolverImpl());
+        root.setRoleHierarchy(getRoleHierarchy());
+        return root;
+    }
 }

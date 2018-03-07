@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,95 +11,68 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 //import io.jsonwebtoken.Jwts;
 //import io.jsonwebtoken.SignatureAlgorithm;
 
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration(classes = { gov.ca.emsa.pulse.auth.TestConfig.class })
+import gov.ca.emsa.pulse.auth.authentication.JWTUserConverter;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {
+        gov.ca.emsa.pulse.auth.TestConfig.class
+})
 public class JWTConsumerTest {
 
-	@Autowired
-	private JWTAuthor jwtAuthor;
+    @Autowired
+    private JWTAuthor jwtAuthor;
 
-	@Autowired
-	private JWTConsumer jwtConsumer;
-	
-	@Autowired Environment env;
-	@Autowired JSONWebKey jsonWebKey;
+    @Autowired
+    private JWTConsumer jwtConsumer;
 
-	@Test
-	public void consumerIsNotNull(){
-		assertNotNull(jwtConsumer);
-	}
+    @Autowired
+    @Qualifier("RsaJose4JWebKey")
+    JSONWebKey jwk;
+
+    @Autowired
+    JWTUserConverter jwtUserConverter;
+
+    @Autowired
+    Environment env;
+    @Autowired
+    JSONWebKey jsonWebKey;
+
+    @Test
+    public void consumerIsNotNull() {
+        assertNotNull(jwtConsumer);
+    }
 
     @Test
     public void testConsumer() throws Exception {
 
-		Map<String, List<String> > claims = new HashMap<String, List<String> >();
-		List<String> authorities = new ArrayList<String>();
-		authorities.add("ROLE_SUPERSTAR");
+        Map<String, Object> claims = new HashMap<String, Object>();
+        List<String> authorities = new ArrayList<String>();
+        authorities.add("ROLE_SUPERSTAR");
 
-		claims.put("Authorities", authorities);
-		String jwt = jwtAuthor.createJWT("testsubject" ,claims);
+        claims.put(JWTUserConverter.AUTHORITIES, authorities);
+        Map<String, Long> orgs = new HashMap<String, Long>();
+        orgs.put("pulse_us", 1L);
+        orgs.put("pulse_va", 2L);
+        orgs.put("va_acf", 3L);
+        claims.put(JWTUserConverter.ORGANIZATIONS, orgs);
 
-		Map<String, Object> claimObjects = jwtConsumer.consume(jwt);
+        String jwt = jwtAuthor.createJWT("testsubject", claims);
+        Map<String, Object> claimObjects = jwtConsumer.consume(jwt);
 
-		List<String> recoveredAuthorities = (List<String>) claimObjects.get("Authorities");
-		assertEquals(authorities.get(0), recoveredAuthorities.get(0));
+        List<String> recoveredAuthorities = (List<String>) claimObjects.get(JWTUserConverter.AUTHORITIES);
+        assertEquals(authorities.get(0), recoveredAuthorities.get(0));
+
+        Map<String, Object> recoveredOrgs = (Map<String, Object>) claimObjects.get(JWTUserConverter.ORGANIZATIONS);
+        assertEquals(orgs.get(0), recoveredOrgs.get(0));
+        assertEquals(orgs.get(1), recoveredOrgs.get(1));
+        assertEquals(orgs.get(2), recoveredOrgs.get(2));
     }
-    
-    
-    @Test
-    public void testLiferayConsumer() throws Exception {
-
-    	String jwt = buildLiferayJWT();
-    	System.out.println(jwt);
-		Map<String, Object> claimObjects = jwtConsumer.consume(/*"Bearer " +*/ jwt);
-    }
-    
-    String buildLiferayJWT() {
-	
-		Map<String, Object> jwtClaims = new HashMap<String, Object>();
-	
-		List<String> identity = new ArrayList<String>();
-	
-		identity.add(String.valueOf(1));
-		identity.add("test@liferay.com");
-		identity.add("test user");
-		
-		List<String> jwtAuthorities = new ArrayList<String>();
-		jwtAuthorities.add("ROLE_PROVIDER");
-		
-		Map<String, Long> orgs = new HashMap<String, Long>();
-		orgs.put("pulse_us", 1L);
-		orgs.put("pulse_fl", 2L);
-		orgs.put("acf_1", 3L);
-	
-		jwtClaims.put("Orgs", orgs);
-		jwtClaims.put("Identity", identity);
-		jwtClaims.put("Authorities", jwtAuthorities);
-		
-		Calendar c = Calendar.getInstance();
-		c.add(Calendar.HOUR, 1);  // number of days to add
-		Date expires = c.getTime();
-	
-		String cJwtTest = "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";
-		String cLocalLiferay = "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";
-		String jwt = "";
-		/*String jwt = Jwts.builder()
-		  .setSubject("test@liferay.com")
-		  .setExpiration(expires)
-		  .addClaims(jwtClaims)
-		  .signWith(SignatureAlgorithm.HS512, Base64.decode(cJwtTest.getBytes())).compact();*/
-		
-
-	    String jwtJSON = "{\"token\": \""+ jwt +"\"}";
-	    
-	    return jwt;
-}
 
 }
