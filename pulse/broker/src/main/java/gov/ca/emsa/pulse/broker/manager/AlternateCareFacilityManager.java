@@ -1,9 +1,9 @@
 package gov.ca.emsa.pulse.broker.manager;
 
-import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
-
 import java.sql.SQLException;
 import java.util.List;
+
+import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 
 public interface AlternateCareFacilityManager extends CachedDataManager {
 	public List<AlternateCareFacilityDTO> getAll();

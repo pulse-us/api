@@ -23,12 +23,9 @@ import gov.ca.emsa.pulse.common.domain.PulseUser;
 
 public class DomainToDtoConverter {
     private static final Logger logger = LogManager.getLogger(DomainToDtoConverter.class);
-    @Autowired
-    static NameTypeDAO nameTypeDao;
-    @Autowired
-    static NameRepresentationDAO nameRepDao;
-    @Autowired
-    static NameAssemblyDAO nameAssemblyDao;
+    @Autowired static NameTypeDAO nameTypeDao;
+    @Autowired static NameRepresentationDAO nameRepDao;
+    @Autowired static NameAssemblyDAO nameAssemblyDao;
 
     public static PulseUserDTO convertToPulseUser(PulseUser pulseUser) {
         PulseUserDTO result = new PulseUserDTO();

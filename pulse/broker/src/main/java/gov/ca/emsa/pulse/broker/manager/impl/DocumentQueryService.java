@@ -23,40 +23,41 @@ import gov.ca.emsa.pulse.broker.manager.QueryManager;
 import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 import gov.ca.emsa.pulse.cten.IheStatus;
 
-@Component
+/**
+ * Manages Document Queries.
+ * @author alarned
+ *
+ */
+@Component("DocumentQueryManager")
 public class DocumentQueryService implements Runnable {
-    private static final Logger logger = LogManager.getLogger(DocumentQueryService.class);
+    private static final Logger LOGGER = LogManager.getLogger(DocumentQueryService.class);
 
     private PatientEndpointMapDTO patientEndpointMap;
     private EndpointDTO endpoint;
-    @Autowired
-    private QueryManager queryManager;
-    @Autowired
-    private PatientManager patientManager;
-    @Autowired
-    private DocumentManager docManager;
-    @Autowired
-    private AdapterFactory adapterFactory;
+    @Autowired private QueryManager queryManager;
+    @Autowired private PatientManager patientManager;
+    @Autowired private DocumentManager docManager;
+    @Autowired private AdapterFactory adapterFactory;
     private PatientDTO toSearch;
     private String assertion;
     private CommonUser user;
 
     @Override
     public void run() {
-        // query this organization directly for
+        //query this organization directly for
         boolean querySuccess = true;
         DocumentQueryResults searchResults = null;
         if (endpoint == null) {
-            logger.error("There is no active document discovery endpoint to query for documents.");
+            LOGGER.error("There is no active document discovery endpoint to query for documents.");
             querySuccess = false;
         } else {
             Adapter adapter = adapterFactory.getAdapter(endpoint);
             if (adapter != null) {
-                logger.info("Starting query to endpoint with external id '" + endpoint.getExternalId() + "'");
+                LOGGER.info("Starting query to endpoint with external id '" + endpoint.getExternalId() + "'");
                 try {
                     searchResults = adapter.queryDocuments(user, endpoint, patientEndpointMap, assertion);
                 } catch (Exception ex) {
-                    logger.error("Exception thrown in adapter " + adapter.getClass(), ex);
+                    LOGGER.error("Exception thrown in adapter " + adapter.getClass(), ex);
                     querySuccess = false;
                 }
             }
@@ -64,26 +65,26 @@ public class DocumentQueryService implements Runnable {
                 patientEndpointMap = patientManager.getPatientEndpointMapById(patientEndpointMap.getId());
                 if (patientEndpointMap.getDocumentsQueryStatus() != QueryEndpointStatus.Cancelled
                         && patientEndpointMap.getDocumentsQueryStatus() != QueryEndpointStatus.Closed) {
-                    // store the returned document info
+                    //store the returned document info
                     if (searchResults != null && searchResults.getStatus() == IheStatus.Success) {
                         List<DocumentDTO> docs = searchResults.getResults();
                         if (docs != null && docs.size() > 0) {
                             for (DocumentDTO doc : docs) {
                                 doc.setPatientEndpointMapId(patientEndpointMap.getId());
-                                // save document
+                                //save document
                                 docManager.create(doc);
                             }
                         } else {
-                            logger.info("Got 0 document results from query to endpoint with external id '"
-                                    + endpoint.getExternalId() + "'");
+                            LOGGER.info("Got 0 document results from query to endpoint with external id '"
+                        + endpoint.getExternalId() + "'");
                         }
                     } else if (searchResults != null && searchResults.getStatus() == IheStatus.Failure) {
                         querySuccess = false;
                     } else {
-                        logger.error("Got a null response back from query to endpoint with external id '"
-                                + endpoint.getExternalId() + "'");
+                        LOGGER.error("Got a null response back from query to endpoint with external id '"
+                    + endpoint.getExternalId() + "'");
                     }
-                    logger.info("Completed query to endpoint with external id '" + endpoint.getExternalId() + "'");
+                    LOGGER.info("Completed query to endpoint with external id '" + endpoint.getExternalId() + "'");
                 }
 
                 patientEndpointMap.setDocumentsQueryEnd(new Date());
@@ -93,15 +94,15 @@ public class DocumentQueryService implements Runnable {
                     patientEndpointMap.setDocumentsQueryStatus(QueryEndpointStatus.Failed);
                 }
 
-                // update mapping of our staged patient to the endpoint just
-                // queried
+                //update mapping of our staged patient to the endpoint just queried
                 try {
                     patientManager.updatePatientEndpointMap(patientEndpointMap);
                 } catch (SQLException ex) {
-                    logger.error("Could not update patient endpoint map with " + "[id: " + patientEndpointMap.getId()
-                            + ", " + "externalPatientRecordId: " + patientEndpointMap.getExternalPatientRecordId()
-                            + ", " + "endpointId: " + patientEndpointMap.getEndpointId() + ", " + "patientId: "
-                            + patientEndpointMap.getPatientId() + "]");
+                    LOGGER.error("Could not update patient endpoint map with "
+                            + "[id: " + patientEndpointMap.getId() + ", "
+                            + "externalPatientRecordId: " + patientEndpointMap.getExternalPatientRecordId() + ", "
+                            + "endpointId: " + patientEndpointMap.getEndpointId() + ", "
+                            + "patientId: " + patientEndpointMap.getPatientId() + "]");
                 }
             }
         }
@@ -111,7 +112,7 @@ public class DocumentQueryService implements Runnable {
         return user;
     }
 
-    public void setUser(CommonUser user) {
+    public void setUser(final CommonUser user) {
         this.user = user;
     }
 
@@ -119,7 +120,7 @@ public class DocumentQueryService implements Runnable {
         return endpoint;
     }
 
-    public void setEndpoint(EndpointDTO endpoint) {
+    public void setEndpoint(final EndpointDTO endpoint) {
         this.endpoint = endpoint;
     }
 
@@ -127,7 +128,7 @@ public class DocumentQueryService implements Runnable {
         return queryManager;
     }
 
-    public void setQueryManager(QueryManager queryManager) {
+    public void setQueryManager(final QueryManager queryManager) {
         this.queryManager = queryManager;
     }
 
@@ -135,7 +136,7 @@ public class DocumentQueryService implements Runnable {
         return patientManager;
     }
 
-    public void setPatientManager(PatientManager patientManager) {
+    public void setPatientManager(final PatientManager patientManager) {
         this.patientManager = patientManager;
     }
 
@@ -143,7 +144,7 @@ public class DocumentQueryService implements Runnable {
         return adapterFactory;
     }
 
-    public void setAdapterFactory(AdapterFactory adapterFactory) {
+    public void setAdapterFactory(final AdapterFactory adapterFactory) {
         this.adapterFactory = adapterFactory;
     }
 
@@ -151,7 +152,7 @@ public class DocumentQueryService implements Runnable {
         return patientEndpointMap;
     }
 
-    public void setPatientEndpointMap(PatientEndpointMapDTO patientEndpointMap) {
+    public void setPatientEndpointMap(final PatientEndpointMapDTO patientEndpointMap) {
         this.patientEndpointMap = patientEndpointMap;
     }
 
@@ -159,7 +160,7 @@ public class DocumentQueryService implements Runnable {
         return toSearch;
     }
 
-    public void setToSearch(PatientDTO toSearch) {
+    public void setToSearch(final PatientDTO toSearch) {
         this.toSearch = toSearch;
     }
 
@@ -167,8 +168,7 @@ public class DocumentQueryService implements Runnable {
         return assertion;
     }
 
-    public void setAssertion(String assertion) {
+    public void setAssertion(final String assertion) {
         this.assertion = assertion;
     }
-
 }
