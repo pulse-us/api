@@ -29,7 +29,7 @@ public class DomainToDtoConverter {
 
     public static PulseUserDTO convertToPulseUser(PulseUser pulseUser) {
         PulseUserDTO result = new PulseUserDTO();
-        if(pulseUser.getId() != null) {
+        if (pulseUser.getId() != null) {
             result.setId(new Long(pulseUser.getId()));
         }
         result.setAssertion(pulseUser.getAssertion());
@@ -39,7 +39,7 @@ public class DomainToDtoConverter {
 
     public static PatientDTO convertToPatient(Patient domainObj) {
         PatientDTO result = new PatientDTO();
-        if(domainObj.getId() != null) {
+        if (domainObj.getId() != null) {
             result.setId(new Long(domainObj.getId()));
         }
         result.setFriendlyName(domainObj.getFriendlyName());
@@ -48,7 +48,7 @@ public class DomainToDtoConverter {
         result.setDateOfBirth(domainObj.getDateOfBirth());
         result.setSsn(domainObj.getSsn());
         result.setCreationDate(domainObj.getCreationDate());
-        if(domainObj.getAcf() != null) {
+        if (domainObj.getAcf() != null) {
             AlternateCareFacilityDTO acf = convert(domainObj.getAcf());
             result.setAcf(acf);
         }
@@ -58,43 +58,45 @@ public class DomainToDtoConverter {
 
     public static PatientRecordDTO convertToPatientRecord(PatientRecord domainObj) {
         PatientRecordDTO result = new PatientRecordDTO();
-        if(domainObj.getId() != null) {
+        if (domainObj.getId() != null) {
             result.setId(new Long(domainObj.getId()));
         }
         result.setEndpointPatientRecordId(domainObj.getLocationPatientRecordId());
-        if(domainObj.getPatientRecordName() != null){
-            for(PatientRecordName patientRecordName : domainObj.getPatientRecordName()){
+        if (domainObj.getPatientRecordName() != null) {
+            for (PatientRecordName patientRecordName : domainObj.getPatientRecordName()) {
                 PatientRecordNameDTO patientRecordNameDTO = new PatientRecordNameDTO();
                 patientRecordNameDTO.setFamilyName(patientRecordName.getFamilyName());
                 ArrayList<GivenNameDTO> givens = new ArrayList<GivenNameDTO>();
-                for(String given : patientRecordName.getGivenName()){
+                for (String given : patientRecordName.getGivenName()) {
                     GivenNameDTO givenName = new GivenNameDTO();
                     givenName.setGivenName(given);
                     givens.add(givenName);
                 }
                 patientRecordNameDTO.setGivenName(givens);
-                if(patientRecordName.getSuffix() != null)
+                if (patientRecordName.getSuffix() != null)
                     patientRecordNameDTO.setSuffix(patientRecordName.getSuffix());
-                if(patientRecordName.getPrefix() != null)
+                if (patientRecordName.getPrefix() != null)
                     patientRecordNameDTO.setPrefix(patientRecordName.getPrefix());
-                if(patientRecordName.getNameType() != null){
+                if (patientRecordName.getNameType() != null) {
                     NameTypeDTO nameType = nameTypeDao.getByCode(patientRecordName.getNameType().getCode());
                     patientRecordNameDTO.setNameType(nameType);
                     patientRecordNameDTO.setNameTypeId(nameType.getId());
                 }
-                if(patientRecordName.getNameRepresentation() != null){
-                    NameRepresentationDTO nameRep = nameRepDao.getByCode(patientRecordName.getNameRepresentation().getCode());
+                if (patientRecordName.getNameRepresentation() != null) {
+                    NameRepresentationDTO nameRep = nameRepDao
+                            .getByCode(patientRecordName.getNameRepresentation().getCode());
                     patientRecordNameDTO.setNameRepresentation(nameRep);
                     patientRecordNameDTO.setNameTypeId(nameRep.getId());
                 }
-                if(patientRecordName.getNameAssembly() != null){
-                    NameAssemblyDTO nameAssembly = nameAssemblyDao.getByCode(patientRecordName.getNameAssembly().getCode());
+                if (patientRecordName.getNameAssembly() != null) {
+                    NameAssemblyDTO nameAssembly = nameAssemblyDao
+                            .getByCode(patientRecordName.getNameAssembly().getCode());
                     patientRecordNameDTO.setNameAssembly(nameAssembly);
                     patientRecordNameDTO.setNameTypeId(nameAssembly.getId());
                 }
-                if(patientRecordName.getEffectiveDate() != null)
+                if (patientRecordName.getEffectiveDate() != null)
                     patientRecordNameDTO.setEffectiveDate(patientRecordName.getEffectiveDate());
-                if(patientRecordName.getExpirationDate() != null)
+                if (patientRecordName.getExpirationDate() != null)
                     patientRecordNameDTO.setExpirationDate(patientRecordName.getExpirationDate());
                 result.getPatientRecordName().add(patientRecordNameDTO);
             }
@@ -110,10 +112,10 @@ public class DomainToDtoConverter {
         result.setHomeCommunityId(domainObj.getHomeCommunityId());
 
         List<PatientRecordAddressDTO> praDto = new ArrayList<PatientRecordAddressDTO>();
-        for(Address pra : domainObj.getAddress()){
+        for (Address pra : domainObj.getAddress()) {
             PatientRecordAddressDTO address = new PatientRecordAddressDTO();
             List<PatientRecordAddressLineDTO> lines = new ArrayList<PatientRecordAddressLineDTO>();
-            for(int i=0; i<pra.getLines().size(); i++){
+            for (int i = 0; i < pra.getLines().size(); i++) {
                 PatientRecordAddressLineDTO pralDto = new PatientRecordAddressLineDTO();
                 pralDto.setLine(pra.getLines().get(i));
                 pralDto.setLineOrder(i);
@@ -142,7 +144,7 @@ public class DomainToDtoConverter {
         result.setSize(domainObj.getSize());
         result.setPatientEndpointMapId(domainObj.getEndpointMapId());
 
-        if(domainObj.getIdentifier() != null) {
+        if (domainObj.getIdentifier() != null) {
             result.setDocumentUniqueId(domainObj.getIdentifier().getDocumentUniqueId());
             result.setHomeCommunityId(domainObj.getIdentifier().getHomeCommunityId());
             result.setRepositoryUniqueId(domainObj.getIdentifier().getRepositoryUniqueId());
@@ -152,7 +154,9 @@ public class DomainToDtoConverter {
 
     /**
      * Converts domain object to DTO.
-     * @param domainObj incoming ACF domain object
+     * 
+     * @param domainObj
+     *            incoming ACF domain object
      * @return DTO containing ACF
      */
     public static AlternateCareFacilityDTO convert(final AlternateCareFacility domainObj) {
@@ -178,14 +182,14 @@ public class DomainToDtoConverter {
         return result;
     }
 
-    public static LocationDTO convert(Location domain){
+    public static LocationDTO convert(Location domain) {
         LocationDTO result = new LocationDTO();
         result.setId(domain.getId());
         result.setName(domain.getName());
 
-        if(domain.getAddress() != null) {
-            if(domain.getAddress().getLines() != null) {
-                for(String line : domain.getAddress().getLines()) {
+        if (domain.getAddress() != null) {
+            if (domain.getAddress().getLines() != null) {
+                for (String line : domain.getAddress().getLines()) {
                     AddressLineDTO addrLine = new AddressLineDTO();
                     addrLine.setLine(line);
                     result.getLines().add(addrLine);
@@ -195,7 +199,7 @@ public class DomainToDtoConverter {
             result.setState(domain.getAddress().getState());
             result.setZipcode(domain.getAddress().getZipcode());
         }
-        if(domain.getStatus() != null) {
+        if (domain.getStatus() != null) {
             LocationStatusDTO status = new LocationStatusDTO();
             status.setId(domain.getStatus().getId());
             status.setName(domain.getStatus().getName());
@@ -216,13 +220,13 @@ public class DomainToDtoConverter {
         result.setId(domain.getId());
         result.setAdapter(domain.getAdapter());
         result.setManagingOrganization(domain.getManagingOrganization());
-        if(domain.getEndpointStatus() != null) {
+        if (domain.getEndpointStatus() != null) {
             EndpointStatusDTO status = new EndpointStatusDTO();
             status.setId(domain.getEndpointStatus().getId());
             status.setName(domain.getEndpointStatus().getName());
             result.setEndpointStatus(status);
         }
-        if(domain.getEndpointType() != null) {
+        if (domain.getEndpointType() != null) {
             EndpointTypeDTO type = new EndpointTypeDTO();
             type.setId(domain.getEndpointType().getId());
             type.setName(domain.getEndpointType().getName());
@@ -230,14 +234,14 @@ public class DomainToDtoConverter {
             result.setEndpointType(type);
         }
         result.setExternalId(domain.getExternalId());
-        if(domain.getMimeTypes() != null && domain.getMimeTypes().size() > 0) {
-            for(EndpointMimeType domainMimeType : domain.getMimeTypes()) {
+        if (domain.getMimeTypes() != null && domain.getMimeTypes().size() > 0) {
+            for (EndpointMimeType domainMimeType : domain.getMimeTypes()) {
                 result.getMimeTypes().add(convert(domainMimeType));
             }
         }
 
-        if(domain.getLocations() != null && domain.getLocations().size() > 0) {
-            for(Location location : domain.getLocations()) {
+        if (domain.getLocations() != null && domain.getLocations().size() > 0) {
+            for (Location location : domain.getLocations()) {
                 result.getLocations().add(convert(location));
             }
         }

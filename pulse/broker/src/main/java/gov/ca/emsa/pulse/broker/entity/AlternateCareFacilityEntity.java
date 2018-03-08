@@ -37,7 +37,7 @@ public class AlternateCareFacilityEntity {
 	@Column(name = "phone_number")
 	private String phoneNumber;
 	
- 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "acfId"  )
+ 	@OneToMany( fetch = FetchType.EAGER, mappedBy = "acfId"  )
 	@Column( name = "alternate_care_facility_id", nullable = false  )
 	private List<AlternateCareFacilityAddressLineEntity> lines = new ArrayList<AlternateCareFacilityAddressLineEntity>();
  	

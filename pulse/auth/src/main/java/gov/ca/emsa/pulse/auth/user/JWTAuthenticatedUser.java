@@ -1,16 +1,15 @@
 package gov.ca.emsa.pulse.auth.user;
 
-import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
-import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.opensaml.saml2.core.Assertion;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
+import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JWTAuthenticatedUser implements User {
 
@@ -24,12 +23,15 @@ public class JWTAuthenticatedUser implements User {
     private String full_name;
     private String pulseUserId;
 
+    private Long liferayStateId;
+    private Long liferayAcfId;
+
     private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
     private AlternateCareFacility acf;
-    private HashMap<String,String> details = new HashMap<String,String>();
+    private HashMap<String, String> details = new HashMap<String, String>();
     private boolean authenticated = true;
 
-    public JWTAuthenticatedUser(){
+    public JWTAuthenticatedUser() {
         this.subjectName = null;
     }
 
@@ -54,7 +56,7 @@ public class JWTAuthenticatedUser implements User {
     }
 
     @Override
-    public String getUsername () {
+    public String getUsername() {
         return username;
     }
 
@@ -62,7 +64,7 @@ public class JWTAuthenticatedUser implements User {
         this.username = username;
     }
 
-    public String getfull_name () {
+    public String getfull_name() {
         return full_name;
     }
 
@@ -74,7 +76,7 @@ public class JWTAuthenticatedUser implements User {
         return this.permissions;
     }
 
-    public void addPermission(GrantedPermission permission){
+    public void addPermission(GrantedPermission permission) {
         this.permissions.add(permission);
     }
 
@@ -84,7 +86,7 @@ public class JWTAuthenticatedUser implements User {
     }
 
     @Override
-    public void removePermission(String permissionValue){
+    public void removePermission(String permissionValue) {
         this.permissions.remove(new GrantedPermission(permissionValue));
     }
 
@@ -148,7 +150,7 @@ public class JWTAuthenticatedUser implements User {
     }
 
     public void setJwt(String jwt) {
-        details.put("jwt",jwt);
+        details.put("jwt", jwt);
     }
 
     @Override
@@ -156,12 +158,26 @@ public class JWTAuthenticatedUser implements User {
         return subjectName;
     }
 
-    public void setFirstName(String firstName) {};
-    public String getFirstName() { return "N/A"; };
-    public void setLastName(String lastName) {};
-    public String getLastName() { return "N/A"; };
-    public void setEmail(String email) {};
-    public String getEmail() { return "N/A"; }
+    public void setFirstName(String firstName) {
+    };
+
+    public String getFirstName() {
+        return "N/A";
+    };
+
+    public void setLastName(String lastName) {
+    };
+
+    public String getLastName() {
+        return "N/A";
+    };
+
+    public void setEmail(String email) {
+    };
+
+    public String getEmail() {
+        return "N/A";
+    }
 
     public Long getId() {
         return id;
@@ -179,14 +195,26 @@ public class JWTAuthenticatedUser implements User {
         this.acf = acf;
     }
 
+    public Long getLiferayStateId() {
+        return liferayStateId;
+    }
+
+    public void setLiferayStateId(Long liferayStateId) {
+        this.liferayStateId = liferayStateId;
+    }
+
+    public Long getLiferayAcfId() {
+        return liferayAcfId;
+    }
+
+    public void setLiferayAcfId(Long liferayAcfId) {
+        this.liferayAcfId = liferayAcfId;
+    }
+
     @Override
     public String toString() {
-        String ret = "{User: " +
-            "[user_id: " + user_id + "]" +
-            "[username: " + username + "]" +
-            "[full_name: " + full_name + "]" +
-            "[pulseUserId: " + pulseUserId + "]" +
-            "[jwt: " + details.get("jwt") + "]";
+        String ret = "{User: " + "[user_id: " + user_id + "]" + "[username: " + username + "]" + "[full_name: "
+                + full_name + "]" + "[pulseUserId: " + pulseUserId + "]" + "[jwt: " + details.get("jwt") + "]";
         return ret;
     }
 

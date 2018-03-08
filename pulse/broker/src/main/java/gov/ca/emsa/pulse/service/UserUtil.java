@@ -1,19 +1,24 @@
 package gov.ca.emsa.pulse.service;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.auth.user.User;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 public class UserUtil {
 
-    public static CommonUser getCurrentUser(){
+    public static JWTAuthenticatedUser getJWTUser() {
+        return (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+    }
+
+    public static CommonUser getCurrentUser() {
         CommonUser user = new CommonUser();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if(auth instanceof User) {
+        if (auth instanceof User) {
             User jwtAuth = (User) auth;
             user.setuser_id(jwtAuth.getuser_id());
             user.setSubjectName(jwtAuth.getSubjectName());
@@ -28,7 +33,17 @@ public class UserUtil {
             user.setLastName(jwtAuth.getLastName());
             user.setPulseUserId(jwtAuth.getPulseUserId());
             user.setAcf(jwtAuth.getAcf());
+            for (GrantedPermission p : jwtAuth.getAuthorities()) {
+                user.addPermission(p);
+            }
         }
+
+        if (auth instanceof JWTAuthenticatedUser) {
+            JWTAuthenticatedUser jwtAuth = (JWTAuthenticatedUser) auth;
+            user.setLiferayAcfId(jwtAuth.getLiferayAcfId());
+            user.setLiferayStateId(jwtAuth.getLiferayStateId());
+        }
+
         return user;
     }
 }

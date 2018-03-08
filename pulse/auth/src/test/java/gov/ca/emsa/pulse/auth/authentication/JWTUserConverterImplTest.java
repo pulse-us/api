@@ -3,10 +3,6 @@ package gov.ca.emsa.pulse.auth.authentication;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import gov.ca.emsa.pulse.auth.jwt.JWTAuthorRsaJoseJImpl;
-import gov.ca.emsa.pulse.auth.jwt.JWTCreationException;
-import gov.ca.emsa.pulse.auth.jwt.JWTValidationException;
-import gov.ca.emsa.pulse.auth.user.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,8 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import gov.ca.emsa.pulse.auth.jwt.JWTAuthorRsaJoseJImpl;
+import gov.ca.emsa.pulse.auth.jwt.JWTCreationException;
+import gov.ca.emsa.pulse.auth.jwt.JWTValidationException;
+import gov.ca.emsa.pulse.auth.user.User;
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.ca.emsa.pulse.auth.TestConfig.class })
+@ContextConfiguration(classes = {
+        gov.ca.emsa.pulse.auth.TestConfig.class
+})
 public class JWTUserConverterImplTest {
 
     @Autowired
@@ -35,16 +38,22 @@ public class JWTUserConverterImplTest {
     private static final Logger LOG = LoggerFactory.getLogger(JWTUserConverterImplTest.class);
 
     @Test
-    public void converterConvertsJWTToUser() throws JWTCreationException, JWTValidationException{
+    public void converterConvertsJWTToUser() throws JWTCreationException, JWTValidationException {
 
         String userId = "user";
-        Map<String, List<String>> jwtAuthorities = new HashMap<String, List<String>>();
-        jwtAuthorities.put("Authorities", new ArrayList<String>());
-        jwtAuthorities.get("Authorities").add("ROLE_USER");
-        jwtAuthorities.put("Identity", new ArrayList<String>());
-        jwtAuthorities.get("Identity").add("user_id");
-        jwtAuthorities.get("Identity").add("username");
-        jwtAuthorities.get("Identity").add("full_name");
+        Map<String, Object> jwtAuthorities = new HashMap<String, Object>();
+        List<String> auths = new ArrayList<String>();
+        auths.add("ROLE_USER");
+        jwtAuthorities.put(JWTUserConverter.AUTHORITIES, auths);
+        List<String> ids = new ArrayList<String>();
+        ids.add("user_id");
+        ids.add("username");
+        ids.add("auth_source");
+        ids.add("full_name");
+        ids.add("organization");
+        ids.add("purpose_for_use");
+        ids.add("role");
+        jwtAuthorities.put(JWTUserConverter.IDENTITY, ids);
 
         String jwt = jwtAuthor.createJWT(userId, jwtAuthorities);
         User user = converter.getAuthenticatedUser(jwt);
@@ -53,11 +62,11 @@ public class JWTUserConverterImplTest {
 
         assertEquals(user.getuser_id(), "user_id");
         assertEquals(user.getfull_name(), "full_name");
-        //assertEquals(user.getSubjectName(), testUser.getSubjectName());
+        // assertEquals(user.getSubjectName(), testUser.getSubjectName());
     }
 
     @Test
-    public void converterConvertsRejectsInvalidStringForJWTToUser(){
+    public void converterConvertsRejectsInvalidStringForJWTToUser() {
 
         String garbage = "Garbage In";
 

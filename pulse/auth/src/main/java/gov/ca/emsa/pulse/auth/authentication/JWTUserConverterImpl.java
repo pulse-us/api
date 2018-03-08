@@ -1,29 +1,27 @@
 package gov.ca.emsa.pulse.auth.authentication;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+
 import gov.ca.emsa.pulse.auth.jwt.JWTConsumer;
 import gov.ca.emsa.pulse.auth.jwt.JWTValidationException;
 //import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.auth.user.User;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import org.opensaml.xml.ConfigurationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 
 @Service
 public class JWTUserConverterImpl implements JWTUserConverter {
@@ -33,7 +31,8 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JWTUserConverterImpl.class);
 
-    public JWTUserConverterImpl(){}
+    public JWTUserConverterImpl() {
+    }
 
     public User getAuthenticatedUser(String jwt) throws JWTValidationException {
 
@@ -42,12 +41,13 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 
         Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
 
-        if (validatedClaims == null){
+        if (validatedClaims == null) {
             throw new JWTValidationException("Invalid authentication token.");
         } else {
             /*
              * Handle the standard claim types. These won't be lists of Strings,
-             * which we'll be expecting from the claims we are creating ourselves
+             * which we'll be expecting from the claims we are creating
+             * ourselves
              */
             Object issuer = validatedClaims.remove("iss");
             Object audience = validatedClaims.remove("aud");
@@ -55,26 +55,32 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             Object notBefore = validatedClaims.remove("nbf");
             Object expires = validatedClaims.remove("exp");
             Object jti = validatedClaims.remove("jti");
-            //Object typ = validatedClaims.remove("typ");
+            // Object typ = validatedClaims.remove("typ");
 
             String subject = (String) validatedClaims.remove("sub");
 
-            LOG.info( "jwt claims" );
-            LOG.info( issuer.toString() );
-            LOG.info( audience.toString() );
-            //LOG.info( issuedAt.toString() );
-            //LOG.info( notBefore.toString() );
-            LOG.info( expires.toString() );
-            //LOG.info( jti.toString() );
-            //            LOG.info( typ.toString());
+            LOG.info("jwt claims");
+            LOG.info(issuer.toString());
+            LOG.info(audience.toString());
+            // LOG.info( issuedAt.toString() );
+            // LOG.info( notBefore.toString() );
+            LOG.info(expires.toString());
+            // LOG.info( jti.toString() );
+            // LOG.info( typ.toString());
 
             user.setSubjectName(subject);
 
-            List<String> authorities = (List<String>) validatedClaims.get("Authorities");
-            List<String> identityInfo = (List<String>) validatedClaims.get("Identity");
+            List<String> authorities = (List<String>) validatedClaims.get(AUTHORITIES);
+            List<String> identityInfo = (List<String>) validatedClaims.get(IDENTITY);
+            HashMap<String, Long> orgsInfo = (HashMap<String, Long>) validatedClaims.get(ORGANIZATIONS);
 
-            for (String claim: authorities){
-                //GrantedPermission permission = new GrantedPermission(claim);
+            if (orgsInfo != null) {
+                user.setLiferayStateId(getLiferayStateId(orgsInfo));
+                user.setLiferayAcfId(getLiferayACFId(orgsInfo));
+            }
+
+            for (String claim : authorities) {
+                // GrantedPermission permission = new GrantedPermission(claim);
                 user.addPermission(claim);
             }
 
@@ -82,14 +88,14 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             String username = identityInfo.get(1);
             String full_name = identityInfo.get(2);
             String pulseUserId = null;
-            if(identityInfo.size() > 3) {
+            if (identityInfo.size() > 3) {
                 pulseUserId = identityInfo.get(3);
             }
 
             user.setuser_id(user_id);
             user.setusername(username);
             user.setfull_name(full_name);
-            if(identityInfo.size() > 3) {
+            if (identityInfo.size() > 3) {
                 user.setPulseUserId(pulseUserId);
             }
 
@@ -99,9 +105,9 @@ public class JWTUserConverterImpl implements JWTUserConverter {
                     ObjectReader reader = new ObjectMapper().reader().forType(AlternateCareFacility.class);
                     AlternateCareFacility acf = reader.readValue(acfObjStr);
                     user.setAcf(acf);
-                } catch(JsonProcessingException ex) {
+                } catch (JsonProcessingException ex) {
                     LOG.error("Could not read '" + acfObjStr + "' as AlternateCareFacility", ex);
-                } catch(IOException io) {
+                } catch (IOException io) {
                     LOG.error("Could not read '" + acfObjStr + "' as AlternateCareFacility", io);
                 }
             }
@@ -110,4 +116,20 @@ public class JWTUserConverterImpl implements JWTUserConverter {
         }
         return user;
     }
+
+    public static Long getLiferayStateId(Map<String, Long> orgs) {
+        Set<Long> stateOrgIds = orgs.entrySet().stream()
+                .filter(entry -> !entry.getKey().equals(PULSE_US) && entry.getKey().startsWith(PULSE_PFX))
+                .map(map -> map.getValue()).collect(Collectors.toSet());
+        assert (stateOrgIds.size() == 1);
+        return stateOrgIds.size() > 0 ? stateOrgIds.toArray(new Long[0])[0] : null;
+    }
+
+    public static Long getLiferayACFId(Map<String, Long> orgs) {
+        Set<Long> acfOrgIds = orgs.entrySet().stream().filter(entry -> !entry.getKey().startsWith(PULSE_PFX))
+                .map(map -> map.getValue()).collect(Collectors.toSet());
+        assert (acfOrgIds.size() == 1);
+        return acfOrgIds.size() > 0 ? acfOrgIds.toArray(new Long[0])[0] : null;
+    }
+
 }
