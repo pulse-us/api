@@ -1,0 +1,1425 @@
+{
+  "type" : "searchset",
+  "total" : 72,
+  "resourceType" : "Bundle",
+  "link" : [ {
+    "relation" : "self",
+    "url" : "https://cten.ca-hie.net:8443/fhir/Endpoint?_count=50"
+  }, {
+    "relation" : "last",
+    "url" : "https://cten.ca-hie.net:8443/fhir/Endpoint?_page=2&_count=50"
+  }, {
+    "relation" : "next",
+    "url" : "https://cten.ca-hie.net:8443/fhir/Endpoint?_page=2&_count=50"
+  } ],
+  "entry" : [ {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:33:30.000+0000",
+        "versionId" : "115131000104763780"
+      },
+      "name" : "OCPRHIO / SCHIO Test Patient Discovery",
+      "address" : "https://ocprhio.test.myhie.com:9070/Gateway/PatientDiscovery/1_0/NhinService/NhinPatientDiscovery",
+      "managingOrganization" : {
+        "display" : "OCPRHIO and Santa Cruz HIO",
+        "reference" : "Organization/19"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "1"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/1",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:33:35.000+0000",
+        "versionId" : "215131000152237718"
+      },
+      "name" : "OCPRHIO / SCHIO Test Query for Documents",
+      "address" : "https://ocprhio.test.myhie.com:9071/Gateway/DocumentQuery/2_0/NhinService/RespondingGateway_Query_Service/DocQuery",
+      "managingOrganization" : {
+        "display" : "OCPRHIO and Santa Cruz HIO",
+        "reference" : "Organization/19"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "2"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/2",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:33:40.000+0000",
+        "versionId" : "315131000202207231"
+      },
+      "name" : "OCPRHIO / SCHIO Test Retrieve Documents",
+      "address" : "https://ocprhio.test.myhie.com:9072/Gateway/DocumentRetrieve/2_0/NhinService/RespondingGateway_Retrieve_Service/DocRetrieve",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "OCPRHIO and Santa Cruz HIO",
+        "reference" : "Organization/19"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "3"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/3",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "suspended",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:33:45.000+0000",
+        "versionId" : "415131000254220928"
+      },
+      "name" : "Santa Cruz HIE Test Patient Discovery",
+      "address" : "https://nonprod.santacruzhie.org:9005/Gateway/PatientDiscovery/1_0/NhinService/NhinPatientDiscovery",
+      "managingOrganization" : {
+        "display" : "Santa Cruz Health Information Exchange",
+        "reference" : "Organization/2"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "4"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/4",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "suspended",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:33:51.000+0000",
+        "versionId" : "515131000307087920"
+      },
+      "name" : "Santa Cruz HIE Test Query for Documents",
+      "address" : "https://nonprod.santacruzhie.org:9003/Gateway/DocumentQuery/2_0/NhinService/RespondingGateway_Query_Service/DocQuery",
+      "managingOrganization" : {
+        "display" : "Santa Cruz Health Information Exchange",
+        "reference" : "Organization/2"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "5"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/5",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "suspended",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:33:58.000+0000",
+        "versionId" : "615131000375894807"
+      },
+      "name" : "Santa Cruz HIE Test Retrieve Documents",
+      "address" : "https://nonprod.santacruzhie.org:9004/Gateway/DocumentRetrieve/2_0/NhinService/RespondingGateway_Retrieve_Service/DocRetrieve",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "Santa Cruz Health Information Exchange",
+        "reference" : "Organization/2"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "6"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/6",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-04-27T22:39:45.000+0000",
+        "versionId" : "1014933327846966770"
+      },
+      "name" : "UC Davis Health Test Patient Discovery",
+      "address" : "https://mycharttst.ucdmc.ucdavis.edu/interconnect-IC-CE-DEV-15/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc",
+      "managingOrganization" : {
+        "display" : "UC Davis Health",
+        "reference" : "Organization/4"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "10"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/10",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-06-05T20:35:57.000+0000",
+        "versionId" : "1114966949566009183"
+      },
+      "name" : "UC Davis Health Test Query for Documents",
+      "address" : "https://mycharttst.ucdmc.ucdavis.edu/interconnect-IC-CE-DEV-15/wcf/epic.community.hie/respondinggateway.svc",
+      "managingOrganization" : {
+        "display" : "UC Davis Health",
+        "reference" : "Organization/4"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "11"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/11",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-04-27T22:40:41.000+0000",
+        "versionId" : "1214933328413973420"
+      },
+      "name" : "UC Davis Health Test Retrieve Documents",
+      "address" : "https://mycharttst.ucdmc.ucdavis.edu/interconnect-IC-CE-DEV-15/wcf/epic.community.hie/respondinggateway.svc/mtom",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "UC Davis Health",
+        "reference" : "Organization/4"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "12"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/12",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "active",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:31:20.000+0000",
+        "versionId" : "1315130998804168250"
+      },
+      "name" : "OCPRHIO / SCHIO Patient Discovery",
+      "address" : "https://ocprhio.prod.myhie.com:9070/Gateway/PatientDiscovery/1_0/NhinService/NhinPatientDiscovery",
+      "managingOrganization" : {
+        "display" : "OCPRHIO and Santa Cruz HIO",
+        "reference" : "Organization/19"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "13"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/13",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "active",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:31:28.000+0000",
+        "versionId" : "1415130998875878492"
+      },
+      "name" : "OCPRHIO / SCHIO Query for Documents",
+      "address" : "https://ocprhio.prod.myhie.com:9071/Gateway/DocumentQuery/2_0/NhinService/RespondingGateway_Query_Service/DocQuery",
+      "managingOrganization" : {
+        "display" : "OCPRHIO and Santa Cruz HIO",
+        "reference" : "Organization/19"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "14"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/14",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "active",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:31:33.000+0000",
+        "versionId" : "1515130998930536430"
+      },
+      "name" : "OCPRHIO / SCHIO Retrieve Documents",
+      "address" : "https://ocprhio.prod.myhie.com:9072/Gateway/DocumentRetrieve/2_0/NhinService/RespondingGateway_Retrieve_Service/DocRetrieve",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "OCPRHIO and Santa Cruz HIO",
+        "reference" : "Organization/19"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "15"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/15",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:34:38.000+0000",
+        "versionId" : "1615131000781689502"
+      },
+      "name" : "PULSE Staging Patient Discovery",
+      "address" : "https://www.pulsedemo.org/rest/patientDiscovery",
+      "managingOrganization" : {
+        "display" : "California Emergency Medical Services Authority",
+        "reference" : "Organization/1"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ " application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "16"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/16",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:34:45.000+0000",
+        "versionId" : "1715131000846280368"
+      },
+      "name" : "PULSE Staging Query for Documents",
+      "address" : "https://www.pulsedemo.org/rest/documentQuery",
+      "managingOrganization" : {
+        "display" : "California Emergency Medical Services Authority",
+        "reference" : "Organization/1"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ " application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "17"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/17",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:34:51.000+0000",
+        "versionId" : "1815131000911911238"
+      },
+      "name" : "PULSE Staging Retrieve Documents",
+      "address" : "https://www.pulsedemo.org/rest/retrieveDocumentSet",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "California Emergency Medical Services Authority",
+        "reference" : "Organization/1"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "18"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/18",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-05-16T17:43:51.000+0000",
+        "versionId" : "1914949566306502571"
+      },
+      "name" : "Test Patient Discovery Endpoint",
+      "address" : "https://test.org/PatientDiscovery",
+      "managingOrganization" : {
+        "display" : "Test Organization",
+        "reference" : "Organization/6"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "resourceType" : "Endpoint",
+      "id" : "19"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/19",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-05-16T17:44:09.000+0000",
+        "versionId" : "2014949566488151199"
+      },
+      "name" : "Test Query for Documents Endpoint",
+      "address" : "https://test.org/QueryForDocuments",
+      "managingOrganization" : {
+        "display" : "Test Organization",
+        "reference" : "Organization/6"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "resourceType" : "Endpoint",
+      "id" : "20"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/20",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-11-17T23:44:11.000+0000",
+        "versionId" : "2115109622506484636"
+      },
+      "name" : "Test Retrieve Documents Endpoint",
+      "address" : "https://test.org/RetrieveDocuments",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "Test Organization",
+        "reference" : "Organization/6"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "resourceType" : "Endpoint",
+      "id" : "21"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/21",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "suspended",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:45:46.000+0000",
+        "versionId" : "2215139899458911832"
+      },
+      "name" : "PULSE Patient Discovery",
+      "address" : "https://pulse.emsa.ca.gov/rest/patientDiscovery",
+      "managingOrganization" : {
+        "display" : "California Emergency Medical Services Authority",
+        "reference" : "Organization/1"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "22"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/22",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "suspended",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:45:52.000+0000",
+        "versionId" : "2315139899519274481"
+      },
+      "name" : "PULSE Query for Documents",
+      "address" : "https://pulse.emsa.ca.gov/rest/documentQuery",
+      "managingOrganization" : {
+        "display" : "California Emergency Medical Services Authority",
+        "reference" : "Organization/1"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "23"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/23",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "suspended",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:45:56.000+0000",
+        "versionId" : "2415139899564755435"
+      },
+      "name" : "PULSE Retrieve Documents",
+      "address" : "https://pulse.emsa.ca.gov/rest/retrieveDocumentSet",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "California Emergency Medical Services Authority",
+        "reference" : "Organization/1"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "24"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/24",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:35:37.000+0000",
+        "versionId" : "2515131001369953632"
+      },
+      "name" : "Sutter Health Test Patient Discovery",
+      "address" : "https://careqa.sutterhealth.org/interconnect-ce-dev/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc",
+      "managingOrganization" : {
+        "display" : "Sutter Health",
+        "reference" : "Organization/5"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "25"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/25",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:35:44.000+0000",
+        "versionId" : "2615131001444152052"
+      },
+      "name" : "Sutter Health Test Query for Documents",
+      "address" : "https://careqa.sutterhealth.org/interconnect-ce-dev/wcf/epic.community.hie/respondinggateway.svc",
+      "managingOrganization" : {
+        "display" : "Sutter Health",
+        "reference" : "Organization/5"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "26"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/26",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:35:50.000+0000",
+        "versionId" : "2715131001495132313"
+      },
+      "name" : "Sutter Health Test Retrieve Documents",
+      "address" : "https://careqa.sutterhealth.org/interconnect-ce-dev/wcf/epic.community.hie/respondinggateway.svc/mtom",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "Sutter Health",
+        "reference" : "Organization/5"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "27"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/27",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "suspended",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:36:16.000+0000",
+        "versionId" : "2815131001760051647"
+      },
+      "name" : "Santa Cruz HIE Patient Discovery",
+      "address" : "https://portal.santacruzhie.org:9005/Gateway/PatientDiscovery/1_0/NhinService/NhinPatientDiscovery",
+      "managingOrganization" : {
+        "display" : "Santa Cruz Health Information Exchange",
+        "reference" : "Organization/2"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "28"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/28",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "suspended",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:36:21.000+0000",
+        "versionId" : "2915131001809978761"
+      },
+      "name" : "Santa Cruz HIE Query for Documents",
+      "address" : "https://portal.santacruzhie.org:9003/Gateway/DocumentQuery/2_0/NhinService/RespondingGateway_Query_Service/DocQuery",
+      "managingOrganization" : {
+        "display" : "Santa Cruz Health Information Exchange",
+        "reference" : "Organization/2"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "29"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/29",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "suspended",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:36:27.000+0000",
+        "versionId" : "3015131001866726368"
+      },
+      "name" : "Santa Cruz HIE Retrieve Documents",
+      "address" : "https://portal.santacruzhie.org:9004/Gateway/DocumentRetrieve/2_0/NhinService/RespondingGateway_Retrieve_Service/DocRetrieve",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "Santa Cruz Health Information Exchange",
+        "reference" : "Organization/2"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "30"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/30",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "suspended",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:45:13.000+0000",
+        "versionId" : "3115139899128413963"
+      },
+      "name" : "UC Davis Health Patient Discovery",
+      "address" : "https://mychart.ucdavis.edu/ce/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc/Pulse",
+      "managingOrganization" : {
+        "display" : "UC Davis Health",
+        "reference" : "Organization/4"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "31"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/31",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "suspended",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:45:20.000+0000",
+        "versionId" : "3215139899196055108"
+      },
+      "name" : "UC Davis Health Query for Documents",
+      "address" : "https://mychart.ucdavis.edu/ce/wcf/epic.community.hie/respondinggateway.svc/Pulse",
+      "managingOrganization" : {
+        "display" : "UC Davis Health",
+        "reference" : "Organization/4"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "32"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/32",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "suspended",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:45:24.000+0000",
+        "versionId" : "3315139899236838410"
+      },
+      "name" : "UC Davis Health Retrieve Documents",
+      "address" : "https://mychart.ucdavis.edu/ce/wcf/epic.community.hie/respondinggateway.svc/mtom-Pulse",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "UC Davis Health",
+        "reference" : "Organization/4"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "33"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/33",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-10-31T22:38:29.000+0000",
+        "versionId" : "3415094895093109288"
+      },
+      "name" : "SacValley MedShare Test Patient Discovery",
+      "address" : "https://xds.icacareexchange.com:443/svhieuat/Gateway",
+      "managingOrganization" : {
+        "display" : "SacValley MedShare",
+        "reference" : "Organization/20"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ " application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "34"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/34",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-10-31T22:40:31.000+0000",
+        "versionId" : "3515094896308724598"
+      },
+      "name" : "SacValley MedShare Test Query for Documents",
+      "address" : "https://xds.icacareexchange.com:443/svhieuat/Gateway",
+      "managingOrganization" : {
+        "display" : "SacValley MedShare",
+        "reference" : "Organization/20"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "35"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/35",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-11-17T23:42:24.000+0000",
+        "versionId" : "3615109621440310856"
+      },
+      "name" : "SacValley MedShare Test Retrieve Documents",
+      "address" : "https://xds.icacareexchange.com:443/svhieuat/Gateway",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "SacValley MedShare",
+        "reference" : "Organization/20"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "36"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/36",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:36:57.000+0000",
+        "versionId" : "3715131002165887296"
+      },
+      "name" : "San Diego Health Connect Test Patient Discovery",
+      "address" : "https://test.sdbeacon.org:4437/Gateway/PatientDiscovery/1_0/NhinService/NhinPatientDiscovery",
+      "managingOrganization" : {
+        "display" : "San Diego Health Connect",
+        "reference" : "Organization/21"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "37"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/37",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:37:02.000+0000",
+        "versionId" : "3815131002217700215"
+      },
+      "name" : "San Diego Health Connect Test Query for Documents",
+      "address" : "https://test.sdbeacon.org:4437/Gateway/DocumentQuery/2_0/NhinService/RespondingGateway_Query_Service/DocQuery",
+      "managingOrganization" : {
+        "display" : "San Diego Health Connect",
+        "reference" : "Organization/21"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "38"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/38",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "test",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:37:07.000+0000",
+        "versionId" : "3915131002269274157"
+      },
+      "name" : "San Diego Health Connect Test Retrieve Documents",
+      "address" : "https://test.sdbeacon.org:4437/Gateway/DocumentRetrieve/2_0/NhinService/RespondingGateway_Retrieve_Service/DocRetrieve",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "San Diego Health Connect",
+        "reference" : "Organization/21"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "39"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/39",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "active",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:32:27.000+0000",
+        "versionId" : "4015130999465793609"
+      },
+      "name" : "San Diego Health Connect Patient Discovery",
+      "address" : "https://sdbeacon.org:4437/Gateway/PatientDiscovery/1_0/NhinService/NhinPatientDiscovery",
+      "managingOrganization" : {
+        "display" : "San Diego Health Connect",
+        "reference" : "Organization/21"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "40"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/40",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "active",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:32:34.000+0000",
+        "versionId" : "4115130999540282803"
+      },
+      "name" : "San Diego Health Connect Query for Documents",
+      "address" : "https://sdbeacon.org:4437/Gateway/DocumentQuery/2_0/NhinService/RespondingGateway_Query_Service/DocQuery",
+      "managingOrganization" : {
+        "display" : "San Diego Health Connect",
+        "reference" : "Organization/21"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "41"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/41",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "active",
+      "meta" : {
+        "lastUpdated" : "2017-12-12T17:32:39.000+0000",
+        "versionId" : "4215130999589036818"
+      },
+      "name" : "San Diego Health Connect Retrieve Documents",
+      "address" : "https://sdbeacon.org:4437/Gateway/DocumentRetrieve/2_0/NhinService/RespondingGateway_Retrieve_Service/DocRetrievee",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "San Diego Health Connect",
+        "reference" : "Organization/21"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "42"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/42",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-12-10T00:18:25.000+0000",
+        "versionId" : "4315128651051473201"
+      },
+      "name" : "UC Davis Health eHX Patient Discovery",
+      "address" : "https://hie.ucdmc.ucdavis.edu/ce/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc",
+      "managingOrganization" : {
+        "display" : "UC Davis Health",
+        "reference" : "Organization/4"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "43"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/43",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-12-10T00:18:14.000+0000",
+        "versionId" : "4415128650942489046"
+      },
+      "name" : "UC Davis Health eHX Query for Documents",
+      "address" : "https://hie.ucdmc.ucdavis.edu/ce/wcf/epic.community.hie/respondinggateway.svc",
+      "managingOrganization" : {
+        "display" : "UC Davis Health",
+        "reference" : "Organization/4"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "44"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/44",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-12-10T00:18:06.000+0000",
+        "versionId" : "4515128650863812552"
+      },
+      "name" : "UC Davis Health eHX Retrieve Documents",
+      "address" : "https://hie.ucdmc.ucdavis.edu/ce/wcf/epic.community.hie/respondinggateway.svc/mtom",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "UC Davis Health",
+        "reference" : "Organization/4"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ "application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "45"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/45",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:42:25.000+0000",
+        "versionId" : "4615139897451496736"
+      },
+      "name" : "Kaiser Permanente eHX Patient Discovery",
+      "address" : "https://ehie-en.kp.org/eHIE2011PatientDiscovery",
+      "managingOrganization" : {
+        "display" : "Kaiser Permanente",
+        "reference" : "Organization/22"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ " application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "46"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/46",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:42:29.000+0000",
+        "versionId" : "4715139897490230651"
+      },
+      "name" : "Kaiser Permanente eHX Query for Documents",
+      "address" : "https://ehie-en.kp.org/eHIE2011DocQuery",
+      "managingOrganization" : {
+        "display" : "Kaiser Permanente",
+        "reference" : "Organization/22"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ " application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "47"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/47",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:44:43.000+0000",
+        "versionId" : "4815139898831384686"
+      },
+      "name" : "Kaiser Permanente eHX Retrieve Documents",
+      "address" : "https://ehie-en.kp.org/eHIE2011DocRetrieve",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "Kaiser Permanente",
+        "reference" : "Organization/22"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ " application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "48"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/48",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:42:20.000+0000",
+        "versionId" : "4915139897399486377"
+      },
+      "name" : "Dignity Health eHX Patient Discovery",
+      "address" : "https://hwdignityhealthsync.hiedirectconnect.org:14430/ihe/services/NHINConnector",
+      "managingOrganization" : {
+        "display" : "Dignity Health",
+        "reference" : "Organization/8"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ " application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "49"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/49",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:42:43.000+0000",
+        "versionId" : "5015139897629246279"
+      },
+      "name" : "Dignity Health eHX Query for Documents",
+      "address" : "https://hwdignityhealthsync.hiedirectconnect.org:14430/ihe/services/NHINConnector",
+      "managingOrganization" : {
+        "display" : "Dignity Health",
+        "reference" : "Organization/8"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ " application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "50"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/50",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:42:47.000+0000",
+        "versionId" : "5115139897669574018"
+      },
+      "name" : "Dignity Health eHX Retrieve Documents",
+      "address" : "https://hwdignityhealthsync.hiedirectconnect.org:14430/ihe/services/NHINConnector",
+      "payloadType" : [ {
+        "coding" : [ {
+          "system" : "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+          "code" : "urn:hl7-org:sdwg:ccda-structuredBody:1.1",
+          "display" : "For documents following C-CDA constraints using a structured body."
+        } ]
+      } ],
+      "managingOrganization" : {
+        "display" : "Dignity Health",
+        "reference" : "Organization/8"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-retrieve",
+        "display" : "NwHIN Retrieve Documents"
+      },
+      "payloadMimeType" : [ " application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "51"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/51",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:42:53.000+0000",
+        "versionId" : "5215139897725172101"
+      },
+      "name" : "Cottage Health eHX Patient Discovery",
+      "address" : "https://EPARP.sbch.org:4437/Interconnect-CareEverywhere/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc/ehex",
+      "managingOrganization" : {
+        "display" : "Cottage Health",
+        "reference" : "Organization/23"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xcpd",
+        "display" : "NwHIN Patient Discovery"
+      },
+      "payloadMimeType" : [ " application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "52"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/52",
+    "search" : {
+      "mode" : "match"
+    }
+  }, {
+    "resource" : {
+      "status" : "off",
+      "meta" : {
+        "lastUpdated" : "2017-12-23T00:42:58.000+0000",
+        "versionId" : "5315139897781196823"
+      },
+      "name" : "Cottage Health eHX Query for Documents",
+      "address" : "https://EPARP.sbch.org:4437/Interconnect-CareEverywhere/wcf/epic.community.hie/respondinggateway.svc/ehex",
+      "managingOrganization" : {
+        "display" : "Cottage Health",
+        "reference" : "Organization/23"
+      },
+      "connectionType" : {
+        "system" : "http://ca-hie.net/fhir/endpoint-connection-type",
+        "code" : "nwhin-xca-query",
+        "display" : "NwHIN Query for Documents"
+      },
+      "payloadMimeType" : [ " application/soap+xml" ],
+      "resourceType" : "Endpoint",
+      "id" : "53"
+    },
+    "fullUrl" : "https://cten.ca-hie.net:8443/fhir/Endpoint/53",
+    "search" : {
+      "mode" : "match"
+    }
+  } ]
+}

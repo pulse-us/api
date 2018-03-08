@@ -239,6 +239,19 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 		return result;
 	}
 	
+	private EndpointTypeEntity getEndpointTypeByName(String name) {
+		EndpointTypeEntity result = null;
+		Query query = entityManager.createQuery("from EndpointTypeEntity where name LIKE :name",
+				EndpointTypeEntity.class);
+		query.setParameter("name", name);
+		List<EndpointTypeEntity> results = query.getResultList();
+		if(results == null || results.size() == 0) {
+			return null;
+		}
+		result = results.get(0);
+		return result;
+	}
+	
 	private void deleteEndpointMimeTypes(Long endpointId) {
 		Query query = entityManager.createQuery("from EndpointMimeTypeEntity "
 				+ "WHERE endpointId = :endpointId ",
@@ -366,10 +379,14 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 			if(endpointDto.getEndpointType().getId() != null) {
 				endpointEntity.setEndpointTypeId(endpointDto.getEndpointType().getId());
 			} else if(!StringUtils.isEmpty(endpointDto.getEndpointType().getCode())) {
-				EndpointTypeEntity typeEntity = getEndpointTypeByCode(endpointDto.getEndpointType().getCode());
-				if(typeEntity != null) {
-					endpointEntity.setEndpointTypeId(typeEntity.getId());
-					endpointEntity.setEndpointType(typeEntity);
+				EndpointTypeEntity typeEntityCode = getEndpointTypeByCode(endpointDto.getEndpointType().getCode());
+				EndpointTypeEntity typeEntityName = getEndpointTypeByName(endpointDto.getEndpointType().getName());
+				if(typeEntityCode != null) {
+					endpointEntity.setEndpointTypeId(typeEntityCode.getId());
+					endpointEntity.setEndpointType(typeEntityCode);
+				} else if(typeEntityName != null){
+					endpointEntity.setEndpointTypeId(typeEntityName.getId());
+					endpointEntity.setEndpointType(typeEntityName);
 				} else {
 					logger.error("Could not find endpoint type with code " + endpointDto.getEndpointType().getCode());
 				}

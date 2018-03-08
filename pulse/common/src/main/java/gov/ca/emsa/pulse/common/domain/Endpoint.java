@@ -137,6 +137,20 @@ public class Endpoint {
 	public void setManagingOrganization(String managingOrganization) {
 		this.managingOrganization = managingOrganization;
 	}
+
+	@Override
+	public String toString() {
+		return "Endpoint [id=" + id + ", externalId=" + externalId
+				+ ", endpointType=" + endpointType.toString() + ", endpointStatus="
+				+ endpointStatus + ", managingOrganization="
+				+ managingOrganization + ", adapter=" + adapter
+				+ ", mimeTypes=" + mimeTypes + ", payloadType=" + payloadType
+				+ ", publicKey=" + publicKey + ", url=" + url
+				+ ", externalLastUpdateDate=" + externalLastUpdateDate
+				+ ", locations=" + locations + ", creationDate=" + creationDate
+				+ ", lastModifiedDate=" + lastModifiedDate + "]";
+	}
+	
 	
 	
 }
