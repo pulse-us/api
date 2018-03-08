@@ -7,12 +7,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -21,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
@@ -35,9 +30,6 @@ import gov.ca.emsa.pulse.common.domain.Endpoint;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.service.ApiExceptionControllerAdvice;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = BrokerApplicationTestConfig.class)
-@WebAppConfiguration
 public class BaseSecurityTest {
     @Autowired
     private AlternateCareFacilityManager acfManager;

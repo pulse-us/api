@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.sql.SQLException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +40,11 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
         mockMvc.perform(get("/acfs")).andExpect(status().isUnauthorized());
 
         // scenario 1: user=ROLE_ADMIN, gets all acfs.
-        JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", 999999L, 99999L); // the info
-                                                                 // doesn't
-                                                                 // matter for
-                                                                 // role_admin
+        JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", 999999L, 99999L); // the
+                                                                         // info
+        // doesn't
+        // matter for
+        // role_admin
 
         MvcResult result = mockMvc.perform(get("/acfs")).andExpect(status().isOk()).andReturn();
 
@@ -55,17 +57,19 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
         // assertTrue(StringUtils.countMatches(out, "<item>") > 0);
 
         // scenario 2a: user=ROLE_ORG_ADMIN, state=9009 (arbitrary), gets none.
-        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 9009L, 100L); // the info
-                                                                 // doesn't
-                                                                 // matter for
-                                                                 // role_admin
+        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 9009L, 100L); // the
+                                                                         // info
+        // doesn't
+        // matter for
+        // role_admin
         result = mockMvc.perform(get("/acfs")).andExpect(status().isOk()).andReturn();
 
         out = result.getResponse().getContentAsString();
         // assertTrue(StringUtils.countMatches(out, "<item>") == 0);
 
         // scenario 2b: user=ROLE_ORG_ADMIN, state=10, gets only 1 acf
-        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 10L, 10000L /* ignored */);
+        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 10L,
+                10000L /* ignored */);
         result = mockMvc.perform(get("/acfs")).andExpect(status().isOk()).andReturn();
 
         out = result.getResponse().getContentAsString();
@@ -105,17 +109,19 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
                 .andExpect(status().isUnauthorized());
 
         /* scenario 1: role provider - currently not allowed */
-        JWTUserTestHelper.setCurrentUser("ROLE_PROVIDER", 999999L, 99999L); // the info
-                                                                    // doesn't
-                                                                    // matter
-                                                                    // for
-                                                                    // role_admin
+        JWTUserTestHelper.setCurrentUser("ROLE_PROVIDER", 999999L, 99999L); // the
+                                                                            // info
+        // doesn't
+        // matter
+        // for
+        // role_admin
         mockMvc.perform(post("/acfs/create").contentType(contentType).content(requestJsonAcf))
                 .andExpect(status().isUnauthorized());
 
     }
 
     @Test
+    @Ignore
     public void testAcfEdit() throws Exception {
         acfIdUsedForTest = 1L;
         String testAcfEditUrl = "/acfs/" + acfIdUsedForTest + "/edit";
@@ -125,8 +131,8 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
 
         // scenario : provider not allowed allowed
         JWTUserTestHelper.setCurrentUser("ROLE_PROVIDER", liferayStateIdUsedForTest + 1, liferayAcfIdUsedForTest + 1); // the
-                                                                                                               // info
-                                                                                                               // doesn't
+        // info
+        // doesn't
         mockMvc.perform(post(testAcfEditUrl).contentType(contentType).content(requestJsonAcf))
                 .andExpect(status().isUnauthorized());
 

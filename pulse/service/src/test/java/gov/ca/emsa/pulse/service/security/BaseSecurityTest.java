@@ -4,11 +4,7 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
-import org.junit.runner.RunWith;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -17,16 +13,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import gov.ca.emsa.pulse.ServiceApplicationTestConfig;
 import gov.ca.emsa.pulse.ServiceExceptionControllerAdvice;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Endpoint;
 import gov.ca.emsa.pulse.common.domain.Patient;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ServiceApplicationTestConfig.class)
-@WebAppConfiguration
 public class BaseSecurityTest {
     protected MockMvc mockMvc;
 

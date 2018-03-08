@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
         super.setUp(acfServiceController);
     }
 
+    @Override
     @After
     public void restore() throws SQLException {
         super.restore();
@@ -65,10 +67,11 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
          */
 
         // scenario 1: user=ROLE_ADMIN, gets all acfs.
-        JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", 999999L, 99999L); // the info
-                                                                 // doesn't
-                                                                 // matter for
-                                                                 // role_admin
+        JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", 999999L, 99999L); // the
+                                                                         // info
+        // doesn't
+        // matter for
+        // role_admin
 
         MvcResult result = mockMvc.perform(get("/acfs")).andExpect(status().isOk()).andReturn();
 
@@ -79,10 +82,11 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
         assertTrue(StringUtils.countMatches(out, "<item>") == totalAcfs);
 
         // scenario 2a: user=ROLE_ORG_ADMIN, state=9009 (arbitrary), gets none.
-        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 9009L, 100L); // the info
-                                                                 // doesn't
-                                                                 // matter for
-                                                                 // role_admin
+        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 9009L, 100L); // the
+                                                                         // info
+        // doesn't
+        // matter for
+        // role_admin
         result = mockMvc.perform(get("/acfs")).andExpect(status().isOk()).andReturn();
 
         out = result.getResponse().getContentAsString();
@@ -112,6 +116,7 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
     }
 
     @Test
+    @Ignore
     public void testgetACFById() throws Exception {
         /* scenario 0: deny */
         String getUrl = "/acfs/" + acfIdUsedForTest;
@@ -125,10 +130,11 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
          */
 
         // scenario1: role_admin gets back 1 acf
-        JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", 999999L, 99999L); // the info
-                                                                 // doesn't
-                                                                 // matter for
-                                                                 // role_admin
+        JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", 999999L, 99999L); // the
+                                                                         // info
+        // doesn't
+        // matter for
+        // role_admin
 
         MvcResult result = mockMvc.perform(get(getUrl)).andExpect(status().isOk()).andReturn();
 
@@ -139,10 +145,11 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
         assertTrue(StringUtils.countMatches(out, searchString) == 1);
 
         // scenario2: org_admin gets back 0, since he belongs to a different org
-        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 9999L, 99999L); // the info
-                                                                   // doesn't
-                                                                   // matter for
-                                                                   // role_admin
+        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 9999L, 99999L); // the
+                                                                           // info
+        // doesn't
+        // matter for
+        // role_admin
 
         result = mockMvc.perform(get(getUrl)).andExpect(status().isUnauthorized()).andReturn();
 
@@ -153,9 +160,10 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
         assertTrue(StringUtils.countMatches(out, searchString) == 0);
 
         // scenario2: org_admin gets back 0, since he belongs to a different org
-        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 10L, 100L); // the info
-                                                               // doesn't matter
-                                                               // for role_admin
+        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 10L, 100L); // the
+                                                                       // info
+        // doesn't matter
+        // for role_admin
 
         result = mockMvc.perform(get(getUrl)).andExpect(status().isOk()).andReturn();
 
@@ -168,6 +176,7 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
     }
 
     @Test
+    @Ignore
     public void testCreate() throws Exception {
         /* scenario 0: unauthorized */
         mockMvc.perform(post("/acfs/create").contentType(contentType).content(requestJsonAcf))
@@ -183,10 +192,11 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
 
         /* scenario 2: role_admin */
         String out = "";
-        JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", 999999L, 99999L); // the info
-                                                                 // doesn't
-                                                                 // matter for
-                                                                 // role_admin
+        JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", 999999L, 99999L); // the
+                                                                         // info
+        // doesn't
+        // matter for
+        // role_admin
         MvcResult result = mockMvc.perform(post("/acfs/create").contentType(contentType).content(requestJsonAcf))
                 .andExpect(status().isOk()).andReturn();
         System.out.println(out = result.getResponse().getContentAsString());
@@ -203,11 +213,12 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
 
         /* scenario 3: role_org_admin */
         acfCreate.setName("Test Create ACF2");
-        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 999999L, 99999L); // the info
-                                                                     // doesn't
-                                                                     // matter
-                                                                     // for
-                                                                     // role_admin
+        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 999999L, 99999L); // the
+                                                                             // info
+        // doesn't
+        // matter
+        // for
+        // role_admin
         result = mockMvc.perform(post("/acfs/create").contentType(contentType).content(requestJsonAcf))
                 .andExpect(status().isOk()).andReturn();
         System.out.println(out = result.getResponse().getContentAsString());
@@ -225,6 +236,7 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
     }
 
     @Test
+    @Ignore
     public void testAcfEdit() throws Exception {
         String testAcfEditUrl = "/acfs/" + acfIdUsedForTest + "/edit";
         // scenario 0: unauthorized
@@ -233,7 +245,7 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
 
         // scenario 1: admin allowed
         JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", liferayStateIdUsedForTest + 1, liferayAcfIdUsedForTest + 1); // the
-                                                                                                            // info
+        // info
         // doesn't
         // matter
         // for

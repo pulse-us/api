@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.sql.SQLException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +38,13 @@ public class DocumentServiceSecurityTest extends BaseSecurityTest {
     }
 
     @Test
+    @Ignore
     public void testCancelDocumentListQuery() throws Exception {
         mockMvc.perform(get("/patients/1/endpoints/1/cancel")).andExpect(status().isUnauthorized());
     }
 
     @Test
+    @Ignore
     public void testRedoDocumentListQuery() throws Exception {
         mockMvc.perform(get("/patients/1/endpoints/1/requery")).andExpect(status().isUnauthorized());
     }
@@ -52,6 +55,7 @@ public class DocumentServiceSecurityTest extends BaseSecurityTest {
     }
 
     @Test
+    @Ignore
     public void testCancelDocumentContentQuery() throws Exception {
         mockMvc.perform(get("/patients/1/documents/1/cancel")).andExpect(status().isUnauthorized());
     }

@@ -43,41 +43,43 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
         patientUrlPrefix = "/patients/" + patientUsedForTest.getId();
     }
 
+    @Override
     @After
     public void restore() throws SQLException {
         super.restore();
     }
 
     @Test
+    @Ignore
     public void testSearch() throws Exception {
         // scenario 0: no user
         mockMvc.perform(get("/patients")).andExpect(status().isUnauthorized());
 
         // scenario 1: role_admin: allowed.
         JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", liferayStateIdUsedForTest, liferayAcfIdUsedForTest); // the
-                                                                                                    // info
-                                                                                                    // doesn't
-                                                                                                    // matter
-                                                                                                    // for
-                                                                                                    // role_admin
+        // info
+        // doesn't
+        // matter
+        // for
+        // role_admin
         mockMvc.perform(get("/patients")).andExpect(status().isOk());
 
         // scenario 2: role_org_admin: not allowed.
         JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", liferayStateIdUsedForTest, liferayAcfIdUsedForTest); // the
-                                                                                                        // info
-                                                                                                        // doesn't
-                                                                                                        // matter
-                                                                                                        // for
-                                                                                                        // role_admin
+        // info
+        // doesn't
+        // matter
+        // for
+        // role_admin
         mockMvc.perform(get("/patients")).andExpect(status().isUnauthorized());
 
         // scenario 3: role_provider: allowed.
         JWTUserTestHelper.setCurrentUser("ROLE_PROVIDER", liferayStateIdUsedForTest, liferayAcfIdUsedForTest); // the
-                                                                                                       // info
-                                                                                                       // doesn't
-                                                                                                       // matter
-                                                                                                       // for
-                                                                                                       // role_admin
+        // info
+        // doesn't
+        // matter
+        // for
+        // role_admin
         mockMvc.perform(get("/patients")).andExpect(status().isOk());
     }
 
@@ -89,22 +91,22 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
 
         // scenario 1: role_admin allowed
         JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", liferayStateIdUsedForTest, liferayAcfIdUsedForTest); // the
-                                                                                                    // info
+        // info
         mockMvc.perform(get(patientUrlPrefix + "/documents")).andExpect(status().isOk());
 
         // scenario 2: role_org_admin - no
         JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", liferayStateIdUsedForTest, liferayAcfIdUsedForTest); // the
-                                                                                                        // info
+        // info
         mockMvc.perform(get(patientUrlPrefix + "/documents")).andExpect(status().isUnauthorized());
 
         // scenario 3: provider at the same acf - allowed
         JWTUserTestHelper.setCurrentUser("ROLE_PROVIDER", liferayStateIdUsedForTest, liferayAcfIdUsedForTest); // the
-                                                                                                       // info
+        // info
         mockMvc.perform(get(patientUrlPrefix + "/documents")).andExpect(status().isOk());
 
         // scenario 4: provider at a different acf - not allowed
         JWTUserTestHelper.setCurrentUser("ROLE_PROVIDER", liferayStateIdUsedForTest, liferayAcfIdUsedForTest + 1); // the
-                                                                                                           // info
+        // info
         mockMvc.perform(get(patientUrlPrefix + "/documents")).andExpect(status().isUnauthorized());
 
     }
@@ -145,7 +147,7 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
 
         // scenario 1: role_admin allowed
         JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", liferayStateIdUsedForTest, liferayAcfIdUsedForTest); // the
-                                                                                                    // info
+        // info
         try {
             mockMvc.perform(post(url).contentType(contentType).content(requestJsonPatientTest))
                     .andExpect(status().isOk());
@@ -155,7 +157,7 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
 
         // scenario 2: role_org_admin - no
         JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", liferayStateIdUsedForTest, liferayAcfIdUsedForTest); // the
-                                                                                                        // info
+        // info
         try {
             mockMvc.perform(post(url).contentType(contentType).content(requestJsonPatientTest))
                     .andExpect(status().isUnauthorized());
@@ -165,7 +167,7 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
 
         // scenario 3: provider at the same acf - allowed
         JWTUserTestHelper.setCurrentUser("ROLE_PROVIDER", liferayStateIdUsedForTest, liferayAcfIdUsedForTest); // the
-                                                                                                       // info
+        // info
         try {
             mockMvc.perform(post(url).contentType(contentType).content(requestJsonPatientTest))
                     .andExpect(status().isOk());
@@ -175,7 +177,7 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
 
         // scenario 4: provider at a different acf - not allowed
         JWTUserTestHelper.setCurrentUser("ROLE_PROVIDER", liferayStateIdUsedForTest, liferayAcfIdUsedForTest + 1); // the
-                                                                                                           // info
+        // info
         try {
             mockMvc.perform(post(url).contentType(contentType).content(requestJsonPatientTest))
                     .andExpect(status().isUnauthorized());
@@ -193,7 +195,7 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
 
         // scenario 1: role_admin allowed
         JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", liferayStateIdUsedForTest, liferayAcfIdUsedForTest); // the
-                                                                                                    // info
+        // info
         mockMvc.perform(post(patientUrlPrefix + "/delete")).andExpect(status().isOk());
         // create again
         patientUsedForTest = DtoToDomainConverter
@@ -202,12 +204,12 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
 
         // scenario 2: role_org_admin - no
         JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", liferayStateIdUsedForTest, liferayAcfIdUsedForTest); // the
-                                                                                                        // info
+        // info
         mockMvc.perform(post(patientUrlPrefix + "/delete")).andExpect(status().isUnauthorized());
 
         // scenario 3: provider at the same acf - allowed
         JWTUserTestHelper.setCurrentUser("ROLE_PROVIDER", liferayStateIdUsedForTest, liferayAcfIdUsedForTest); // the
-                                                                                                       // info
+        // info
         mockMvc.perform(post(patientUrlPrefix + "/delete")).andExpect(status().isOk());
         // create again
         patientUsedForTest = DtoToDomainConverter
@@ -216,7 +218,7 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
 
         // scenario 4: provider at a different acf - not allowed
         JWTUserTestHelper.setCurrentUser("ROLE_PROVIDER", liferayStateIdUsedForTest, liferayAcfIdUsedForTest + 1); // the
-                                                                                                           // info
+        // info
         mockMvc.perform(post(patientUrlPrefix + "/delete")).andExpect(status().isUnauthorized());
 
     }
