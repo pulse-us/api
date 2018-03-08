@@ -68,8 +68,9 @@ public class SearchService {
         CommonUser user = UserUtil.getCurrentUser();
 
         // TODO: need to add jwt id to common user and put that id here
-        PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
-        String assertion = userDto != null ? userDto.getAssertion() : "";
+//        PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
+//        String assertion = userDto != null ? userDto.getAssertion() : "";
+        String assertion = "assertion TBD";
 
         String queryTermsJson = JSONUtils.toJSON(toSearch);
         QueryDTO initiatedQuery = null;

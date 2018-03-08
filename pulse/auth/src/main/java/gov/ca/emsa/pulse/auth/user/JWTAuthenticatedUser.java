@@ -21,7 +21,6 @@ public class JWTAuthenticatedUser implements User {
     private String user_id;
     private String username;
     private String full_name;
-    private String pulseUserId;
 
     private Long liferayStateId;
     private Long liferayAcfId;
@@ -214,15 +213,7 @@ public class JWTAuthenticatedUser implements User {
     @Override
     public String toString() {
         String ret = "{User: " + "[user_id: " + user_id + "]" + "[username: " + username + "]" + "[full_name: "
-                + full_name + "]" + "[pulseUserId: " + pulseUserId + "]" + "[jwt: " + details.get("jwt") + "]";
+                + full_name + "]" + "[jwt: " + details.get("jwt") + "]";
         return ret;
-    }
-
-    public String getPulseUserId() {
-        return pulseUserId;
-    }
-
-    public void setPulseUserId(String pulseUserId) {
-        this.pulseUserId = pulseUserId;
     }
 }

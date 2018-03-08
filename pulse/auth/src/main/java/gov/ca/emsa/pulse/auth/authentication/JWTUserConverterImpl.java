@@ -34,7 +34,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
     public JWTUserConverterImpl() {
     }
 
-    public User getAuthenticatedUser(String jwt) throws JWTValidationException {
+    public JWTAuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException {
 
         JWTAuthenticatedUser user = new JWTAuthenticatedUser();
         user.setAuthenticated(true);
@@ -51,10 +51,10 @@ public class JWTUserConverterImpl implements JWTUserConverter {
              */
             Object issuer = validatedClaims.remove("iss");
             Object audience = validatedClaims.remove("aud");
-            Object issuedAt = validatedClaims.remove("iat");
-            Object notBefore = validatedClaims.remove("nbf");
+//            Object issuedAt = validatedClaims.remove("iat");
+//            Object notBefore = validatedClaims.remove("nbf");
             Object expires = validatedClaims.remove("exp");
-            Object jti = validatedClaims.remove("jti");
+//            Object jti = validatedClaims.remove("jti");
             // Object typ = validatedClaims.remove("typ");
 
             String subject = (String) validatedClaims.remove("sub");
@@ -87,20 +87,13 @@ public class JWTUserConverterImpl implements JWTUserConverter {
             String user_id = identityInfo.get(0);
             String username = identityInfo.get(1);
             String full_name = identityInfo.get(2);
-            String pulseUserId = null;
-            if (identityInfo.size() > 3) {
-                pulseUserId = identityInfo.get(3);
-            }
 
             user.setuser_id(user_id);
             user.setusername(username);
             user.setfull_name(full_name);
-            if (identityInfo.size() > 3) {
-                user.setPulseUserId(pulseUserId);
-            }
 
-            if (identityInfo.size() > 4) {
-                String acfObjStr = identityInfo.get(4);
+            if (identityInfo.size() > 3) {
+                String acfObjStr = identityInfo.get(3);
                 try {
                     ObjectReader reader = new ObjectMapper().reader().forType(AlternateCareFacility.class);
                     AlternateCareFacility acf = reader.readValue(acfObjStr);
@@ -121,14 +114,12 @@ public class JWTUserConverterImpl implements JWTUserConverter {
         Set<Long> stateOrgIds = orgs.entrySet().stream()
                 .filter(entry -> !entry.getKey().equals(PULSE_US) && entry.getKey().startsWith(PULSE_PFX))
                 .map(map -> map.getValue()).collect(Collectors.toSet());
-        assert (stateOrgIds.size() == 1);
         return stateOrgIds.size() > 0 ? stateOrgIds.toArray(new Long[0])[0] : null;
     }
 
     public static Long getLiferayACFId(Map<String, Long> orgs) {
         Set<Long> acfOrgIds = orgs.entrySet().stream().filter(entry -> !entry.getKey().startsWith(PULSE_PFX))
                 .map(map -> map.getValue()).collect(Collectors.toSet());
-        assert (acfOrgIds.size() == 1);
         return acfOrgIds.size() > 0 ? acfOrgIds.toArray(new Long[0])[0] : null;
     }
 
