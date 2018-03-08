@@ -20,7 +20,6 @@ import gov.ca.emsa.pulse.auth.jwt.JWTConsumer;
 import gov.ca.emsa.pulse.auth.jwt.JWTValidationException;
 //import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
-import gov.ca.emsa.pulse.auth.user.User;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 
 @Service
@@ -34,7 +33,8 @@ public class JWTUserConverterImpl implements JWTUserConverter {
     public JWTUserConverterImpl() {
     }
 
-    public JWTAuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException {
+    @Override
+    public JWTAuthenticatedUser getAuthenticatedUser(final String jwt) throws JWTValidationException {
 
         JWTAuthenticatedUser user = new JWTAuthenticatedUser();
         user.setAuthenticated(true);
@@ -51,10 +51,10 @@ public class JWTUserConverterImpl implements JWTUserConverter {
              */
             Object issuer = validatedClaims.remove("iss");
             Object audience = validatedClaims.remove("aud");
-//            Object issuedAt = validatedClaims.remove("iat");
-//            Object notBefore = validatedClaims.remove("nbf");
+            // Object issuedAt = validatedClaims.remove("iat");
+            // Object notBefore = validatedClaims.remove("nbf");
             Object expires = validatedClaims.remove("exp");
-//            Object jti = validatedClaims.remove("jti");
+            // Object jti = validatedClaims.remove("jti");
             // Object typ = validatedClaims.remove("typ");
 
             String subject = (String) validatedClaims.remove("sub");
@@ -110,14 +110,14 @@ public class JWTUserConverterImpl implements JWTUserConverter {
         return user;
     }
 
-    public static Long getLiferayStateId(Map<String, Long> orgs) {
+    public static Long getLiferayStateId(final Map<String, Long> orgs) {
         Set<Long> stateOrgIds = orgs.entrySet().stream()
                 .filter(entry -> !entry.getKey().equals(PULSE_US) && entry.getKey().startsWith(PULSE_PFX))
                 .map(map -> map.getValue()).collect(Collectors.toSet());
         return stateOrgIds.size() > 0 ? stateOrgIds.toArray(new Long[0])[0] : null;
     }
 
-    public static Long getLiferayACFId(Map<String, Long> orgs) {
+    public static Long getLiferayACFId(final Map<String, Long> orgs) {
         Set<Long> acfOrgIds = orgs.entrySet().stream().filter(entry -> !entry.getKey().startsWith(PULSE_PFX))
                 .map(map -> map.getValue()).collect(Collectors.toSet());
         return acfOrgIds.size() > 0 ? acfOrgIds.toArray(new Long[0])[0] : null;
