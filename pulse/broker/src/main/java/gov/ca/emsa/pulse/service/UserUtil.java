@@ -31,7 +31,6 @@ public class UserUtil {
             user.setrole("provider");
             user.setFirstName(jwtAuth.getFirstName());
             user.setLastName(jwtAuth.getLastName());
-            user.setPulseUserId(jwtAuth.getPulseUserId());
             user.setAcf(jwtAuth.getAcf());
             for (GrantedPermission p : jwtAuth.getAuthorities()) {
                 user.addPermission(p);

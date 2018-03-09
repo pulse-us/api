@@ -24,7 +24,6 @@ public class CommonUser implements User {
     private String full_name;
     private String organization;
     private String purpose_for_use;
-    private String pulseUserId;
 
     private String role;
 
@@ -38,14 +37,6 @@ public class CommonUser implements User {
     public final static String ROLE_ADMIN = "ROLE_ADMIN";
     public final static String ROLE_ORG_ADMIN = "ROLE_ORG_ADMIN";
     public final static String ROLE_PROVIDER = "ROLE_PROVIDER";
-
-    public String getPulseUserId() {
-        return pulseUserId;
-    }
-
-    public void setPulseUserId(String pulseUserId) {
-        this.pulseUserId = pulseUserId;
-    }
 
     public Long getId() {
         return id;

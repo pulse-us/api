@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import gov.ca.emsa.pulse.auth.jwt.JWTAuthorRsaJoseJImpl;
 import gov.ca.emsa.pulse.auth.jwt.JWTCreationException;
 import gov.ca.emsa.pulse.auth.jwt.JWTValidationException;
+import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.auth.user.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,26 +44,28 @@ public class JWTUserConverterImplTest {
         String userId = "user";
         Map<String, Object> jwtAuthorities = new HashMap<String, Object>();
         List<String> auths = new ArrayList<String>();
-        auths.add("ROLE_USER");
-        jwtAuthorities.put(JWTUserConverter.AUTHORITIES, auths);
+        HashMap<String, Long> orgsInfo = new HashMap<String, Long>();
         List<String> ids = new ArrayList<String>();
+        auths.add("ROLE_USER");
         ids.add("user_id");
         ids.add("username");
-        ids.add("auth_source");
         ids.add("full_name");
-        ids.add("organization");
-        ids.add("purpose_for_use");
         ids.add("role");
+        orgsInfo.put("pulse-ca", 1L);
+        orgsInfo.put("acf-1", 2L);
+        jwtAuthorities.put(JWTUserConverter.AUTHORITIES, auths);
         jwtAuthorities.put(JWTUserConverter.IDENTITY, ids);
+        jwtAuthorities.put(JWTUserConverter.ORGANIZATIONS, orgsInfo);
 
         String jwt = jwtAuthor.createJWT(userId, jwtAuthorities);
-        User user = converter.getAuthenticatedUser(jwt);
+        JWTAuthenticatedUser user = converter.getAuthenticatedUser(jwt);
 
         assertNotNull(user);
 
-        assertEquals(user.getuser_id(), "user_id");
-        assertEquals(user.getfull_name(), "full_name");
-        // assertEquals(user.getSubjectName(), testUser.getSubjectName());
+        assertEquals("user_id", user.getuser_id());
+        assertEquals("full_name", user.getfull_name());
+        assertEquals(1L, user.getLiferayStateId().longValue());
+        assertEquals(2L, user.getLiferayAcfId().longValue());
     }
 
     @Test

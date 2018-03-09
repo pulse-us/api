@@ -1,19 +1,18 @@
 package gov.ca.emsa.pulse.broker.service;
 
 import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.junit.runner.RunWith;
+import org.hamcrest.CoreMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
@@ -35,9 +33,6 @@ import gov.ca.emsa.pulse.common.domain.Endpoint;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.service.ApiExceptionControllerAdvice;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = BrokerApplicationTestConfig.class)
-@WebAppConfiguration
 public class BaseSecurityTest {
     @Autowired
     private AlternateCareFacilityManager acfManager;
@@ -71,6 +66,7 @@ public class BaseSecurityTest {
     protected MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
+    protected final ResultMatcher authorized = status().is(CoreMatchers.not(CoreMatchers.is(401)));
     protected static final Pattern p = Pattern.compile("<id>([0-9]+)</id>");
 
     public void setUp(Object controller) throws SQLException, JsonProcessingException {

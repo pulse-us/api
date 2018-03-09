@@ -9,7 +9,6 @@ public class TestUsers {
     public static void setCurrentUser(String permission, Long liferayStateId, Long liferayAcfId) {
         JWTAuthenticatedUser jwt = new JWTAuthenticatedUser();
         jwt.setId(1L);
-        jwt.setPulseUserId("1");
         jwt.setAuthenticated(true);
         jwt.addPermission(new GrantedPermission(permission));
         jwt.setLiferayStateId(liferayStateId);

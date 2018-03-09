@@ -39,10 +39,6 @@ public interface User extends UserDetails, Authentication {
 
     public void setfull_name(String full_name);
 
-    public String getPulseUserId();
-
-    public void setPulseUserId(String purpose_for_use);
-
     public void setAcf(AlternateCareFacility acf);
 
     public AlternateCareFacility getAcf();

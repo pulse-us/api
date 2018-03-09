@@ -146,9 +146,10 @@ public class QueryService {
                 throw new InvalidArgumentsException("No endpoint with ID " + endpointId
                         + " was found for query with ID " + queryId + " that is not already closed.");
             }
-            PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
-            String assertion = userDto.getAssertion();
-            Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(assertion, queryId, endpointId, user);
+//            PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
+//            String assertion = userDto.getAssertion();
+//            Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(assertion, queryId, endpointId, user);
+            Long newQueryEndpointMapId = queryManager.requeryForPatientRecords("assertion TBD", queryId, endpointId, user);
             if (newQueryEndpointMapId != null) {
                 QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(newQueryEndpointMapId);
                 initiatedQuery = queryManager.getById(dto.getQueryId());
@@ -212,10 +213,11 @@ public class QueryService {
             for (Long patientRecordId : request.getPatientRecordIds()) {
                 PatientEndpointMapDTO patLocMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient,
                         patientRecordId);
-                PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
-                String assertion = userDto.getAssertion();
+//                PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
+//                String assertion = userDto.getAssertion();
                 patient.getEndpointMaps().add(patLocMapDto);
-                docManager.queryForDocuments(user, assertion, patLocMapDto);
+//                docManager.queryForDocuments(user, assertion, patLocMapDto);
+                docManager.queryForDocuments(user, "assertion TBD", patLocMapDto);
                 // kick off document list retrieval service
 
             }
