@@ -19,7 +19,6 @@ import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
 import gov.ca.emsa.pulse.broker.manager.PulseUserManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
-import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
 import gov.ca.emsa.pulse.common.domain.QueryEndpointStatus;
 import gov.ca.emsa.pulse.service.UserUtil;

@@ -30,7 +30,6 @@ import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.EndpointManager;
 import gov.ca.emsa.pulse.broker.manager.PulseUserManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
-import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.broker.util.JSONUtils;
 import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
