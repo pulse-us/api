@@ -68,6 +68,7 @@ dependencies {
   compile('commons-io:commons-io:2.5')
   compile project(':common')
   compile project(':auth')
+  testCompile 'org.hamcrest:hamcrest-library:1.3'
 }
 
 eclipse {

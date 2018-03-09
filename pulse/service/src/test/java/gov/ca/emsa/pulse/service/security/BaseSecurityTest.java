@@ -1,11 +1,15 @@
 package gov.ca.emsa.pulse.service.security;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
+import org.hamcrest.CoreMatchers;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,9 +22,11 @@ import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Endpoint;
 import gov.ca.emsa.pulse.common.domain.Patient;
+import gov.ca.emsa.pulse.common.util.SimpleHttpServer;
 
 public class BaseSecurityTest {
     protected MockMvc mockMvc;
+    protected SimpleHttpServer mockBroker;
 
     protected Long acfIdUsedForTest = 1L;
     protected Patient patientUsedForTest;
@@ -41,6 +47,8 @@ public class BaseSecurityTest {
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
     protected static final Pattern p = Pattern.compile("<id>([0-9]+)</id>");
+
+    protected final ResultMatcher authorized = status().is(CoreMatchers.not(CoreMatchers.is(401)));
 
     public void setUp(Object controller) throws SQLException, JsonProcessingException {
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
@@ -88,6 +96,11 @@ public class BaseSecurityTest {
         /*
          * restore data set acf 1 liferay_state_id 1 liferay_state_id
          */
+
+        if (this.mockBroker != null) {
+            this.mockBroker.stop();
+        }
+
     }
 
 }
