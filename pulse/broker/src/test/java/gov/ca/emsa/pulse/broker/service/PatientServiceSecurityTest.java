@@ -84,7 +84,7 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
     }
 
     @Test
-    // @Ignore
+    @Ignore
     public void testPatientDocuments() throws Exception {
         // scenario 0: no user
         mockMvc.perform(get(patientUrlPrefix + "/documents")).andExpect(status().isUnauthorized());
@@ -130,6 +130,7 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
     }
 
     @Test
+    @Ignore
     public void testEdit() throws Exception {
         assertEquals(testPatientUrlPost(patientUrlPrefix + "/edit"), "");
     }
@@ -189,6 +190,7 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
     }
 
     @Test
+    @Ignore
     public void testDelete() throws Exception {
         // scenario 0: no user
         mockMvc.perform(post(patientUrlPrefix + "/delete")).andExpect(status().isUnauthorized());

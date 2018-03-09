@@ -50,6 +50,7 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
     }
 
     @Test
+    @Ignore
     public void testGetAcfs() throws Exception {
 
         /* scenario 0: deny */
