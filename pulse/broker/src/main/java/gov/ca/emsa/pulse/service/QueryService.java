@@ -14,8 +14,8 @@ import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
-import gov.ca.emsa.pulse.broker.manager.PulseUserManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.saml.SamlUtil;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
@@ -53,7 +53,6 @@ public class QueryService {
 	@Autowired DocumentManager docManager;
 	@Autowired AlternateCareFacilityManager acfManager;
 	@Autowired AuditEventManager auditManager;
-	@Autowired PulseUserManager pulseUserManager;
 
 	@ApiOperation(value = "Get all queries for the logged-in user")
 	@RequestMapping(value="", method = RequestMethod.GET)
@@ -121,8 +120,7 @@ public class QueryService {
         	if(queryEndpointMaps == null || queryEndpointMaps.size() == 0) {
         		throw new InvalidArgumentsException("No endpoint with ID " + endpointId + " was found for query with ID " + queryId + " that is not already closed.");
         	}
-        	PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
-    		String assertion = userDto.getAssertion();
+    		String assertion = SamlUtil.signAndBuildStringAssertion(user);
         	Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(assertion, queryId, endpointId, user);
         	if(newQueryEndpointMapId != null) {
 	        	QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(newQueryEndpointMapId);
@@ -170,8 +168,7 @@ public class QueryService {
 			//create patient-endpoint mappings for doc discovery based on the patientrecords we are using
 			for(Long patientRecordId : request.getPatientRecordIds()) {
 				PatientEndpointMapDTO patLocMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient, patientRecordId);
-				PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
-				String assertion = userDto.getAssertion();
+				String assertion = SamlUtil.signAndBuildStringAssertion(user);
 				patient.getEndpointMaps().add(patLocMapDto);
 				docManager.queryForDocuments(user, assertion, patLocMapDto);
 				//kick off document list retrieval service

@@ -1,14 +1,11 @@
 package gov.ca.emsa.pulse.service;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,18 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
-import gov.ca.emsa.pulse.broker.dao.PulseUserDAO;
-import gov.ca.emsa.pulse.broker.domain.EndpointStatusEnum;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
-import gov.ca.emsa.pulse.broker.dto.PulseUserDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.EndpointManager;
-import gov.ca.emsa.pulse.broker.manager.PulseUserManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.saml.SamlUtil;
 import gov.ca.emsa.pulse.broker.util.JSONUtils;
 import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -48,7 +42,6 @@ public class SearchService {
 	@Autowired private EndpointManager endpointManager;
 	public static String dobFormat = "yyyy-MM-dd";
 	@Autowired private AuditEventManager auditManager;
-	@Autowired private PulseUserManager pulseUserManager;
 	@Autowired private QueryableEndpointStatusUtil endpointStatusesForQuery;
 	
 	public SearchService() {
@@ -62,9 +55,7 @@ public class SearchService {
 
 		CommonUser user = UserUtil.getCurrentUser();
 		
-		// TODO: need to add jwt id to common user and put that id here 
-		PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
-		String assertion = userDto.getAssertion();
+		String assertion = SamlUtil.signAndBuildStringAssertion(user);
 
 		String queryTermsJson = JSONUtils.toJSON(toSearch);
 		QueryDTO initiatedQuery = null;

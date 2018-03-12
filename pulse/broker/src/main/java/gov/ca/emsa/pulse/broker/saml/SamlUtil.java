@@ -5,15 +5,12 @@ import gov.ca.emsa.pulse.auth.user.CommonUser;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-
 import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -23,7 +20,6 @@ import net.shibboleth.utilities.java.support.security.RandomIdentifierGeneration
 
 import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLVersion;
-import org.opensaml.saml.common.SignableSAMLObject;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
 import org.opensaml.core.criterion.EntityIdCriterion;
@@ -50,7 +46,7 @@ import org.opensaml.saml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 import org.opensaml.security.credential.BasicCredential;
 import org.opensaml.security.credential.impl.KeyStoreCredentialResolver;
-import org.opensaml.xml.security.credential.Credential;
+import org.opensaml.xml.util.XMLHelper;
 import org.opensaml.xmlsec.keyinfo.KeyInfoGenerator;
 import org.opensaml.xmlsec.keyinfo.impl.X509KeyInfoGeneratorFactory;
 import org.opensaml.xmlsec.signature.KeyInfo;
@@ -58,9 +54,7 @@ import org.opensaml.xmlsec.signature.Signature;
 import org.opensaml.xmlsec.signature.support.SignatureConstants;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.opensaml.xmlsec.signature.support.Signer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.saml.key.KeyManager;
 import org.springframework.stereotype.Service;
 
 
@@ -179,6 +173,19 @@ public class SamlUtil{
 
         return keyInfoGenerator.generate(basicCredential);
     }
+	
+	public static String signAndBuildStringAssertion(CommonUser user){
+		Assertion assertion = buildAssertion(user);
+		signAssertion(assertion);
+		String stringAssertion = null;
+		try {
+			stringAssertion = XMLHelper.nodeToString(XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(assertion).marshall(assertion));
+		} catch (MarshallingException e) {
+			e.printStackTrace();
+		}
+		
+		return stringAssertion;
+	}
     
     public static void signAssertion(Assertion assertion) {
     	
@@ -210,6 +217,7 @@ public class SamlUtil{
         } catch (SignatureException e) {
             throw new RuntimeException(e);
         }
+        
     }
 
     public static Assertion buildAssertion(CommonUser user) {
