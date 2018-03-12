@@ -218,7 +218,8 @@ public class PatientManagerImpl implements PatientManager {
 		if(patientEndpointMapForRequery != null) {
 			String assertion = SamlUtil.signAndBuildStringAssertion(user);
 			patient.getEndpointMaps().add(patientEndpointMapForRequery);
-			docManager.queryForDocuments(user, assertion,  patientEndpointMapForRequery);
+//            docManager.queryForDocuments(user, assertion,  patientEndpointMapForRequery);
+            docManager.queryForDocuments(user, "assertion TBD",  patientEndpointMapForRequery);
 		}
 		
 		return getPatientById(patientId);

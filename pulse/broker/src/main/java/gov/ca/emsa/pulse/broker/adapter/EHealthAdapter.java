@@ -129,6 +129,18 @@ public class EHealthAdapter implements Adapter {
 
 	@Value("${ucdavisOID}")
 	private String ucdavisOID;
+	
+	@Value("${kaiserOID}")
+	private String kaiserOID;
+	
+	@Value("${cottageOID}")
+	private String cottageOID;
+	
+	@Value("${vaOID}")
+	private String vaOID;
+	
+	@Value("${cvsOID}")
+	private String cvsOID;
 
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
@@ -155,6 +167,14 @@ public class EHealthAdapter implements Adapter {
 			return ocprhioOID;
 		}else if(managingOrganization.contains("UC Davis")){
 			return ucdavisOID;
+		}else if(managingOrganization.contains("Kaiser Permanente")){
+			return kaiserOID;
+		}else if(managingOrganization.contains("Cottage")){
+			return cottageOID;
+		}else if(managingOrganization.contains("VA Veterans")){
+			return vaOID;
+		}else if(managingOrganization.contains("CVS")){
+			return cvsOID;
 		}else{
 			return HOME_COMMUNITY_ID;
 		}
