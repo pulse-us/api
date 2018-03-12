@@ -34,8 +34,8 @@ import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.DocumentManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
-import gov.ca.emsa.pulse.broker.manager.PulseUserManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.saml.SamlUtil;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.Query;
@@ -59,7 +59,6 @@ public class QueryService {
     @Autowired
     AuditEventManager auditManager;
     @Autowired
-    PulseUserManager pulseUserManager;
 
     @ApiOperation(value = "Get all queries for the logged-in user")
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -132,31 +131,26 @@ public class QueryService {
             throws JsonProcessingException, InvalidArgumentsException, IOException {
         CommonUser user = UserUtil.getCurrentUser();
         QueryDTO initiatedQuery = null;
-        synchronized (queryManager) {
-            QueryDTO query = queryManager.getById(queryId);
-            if (query == null) {
-                throw new InvalidArgumentsException("No query was found with id " + queryId);
-            } else if (query.getStatus() == null || query.getStatus() == QueryStatus.Closed) {
-                throw new InvalidArgumentsException("Query with id " + queryId
-                        + " is already marked as Closed and cannot be requeried. Please start over with a new query.");
-            }
-            List<QueryEndpointMapDTO> queryEndpointMaps = queryManager.getQueryEndpointMapByQueryAndEndpoint(queryId,
-                    endpointId);
-            if (queryEndpointMaps == null || queryEndpointMaps.size() == 0) {
-                throw new InvalidArgumentsException("No endpoint with ID " + endpointId
-                        + " was found for query with ID " + queryId + " that is not already closed.");
-            }
-//            PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
-//            String assertion = userDto.getAssertion();
-//            Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(assertion, queryId, endpointId, user);
-            Long newQueryEndpointMapId = queryManager.requeryForPatientRecords("assertion TBD", queryId, endpointId, user);
-            if (newQueryEndpointMapId != null) {
-                QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(newQueryEndpointMapId);
-                initiatedQuery = queryManager.getById(dto.getQueryId());
-            }
+        synchronized(queryManager) {
+        	QueryDTO query = queryManager.getById(queryId);
+        	if(query == null) {
+        		throw new InvalidArgumentsException("No query was found with id " + queryId);
+        	} else if(query.getStatus() == null || query.getStatus() == QueryStatus.Closed) {
+        		throw new InvalidArgumentsException("Query with id " + queryId + " is already marked as Closed and cannot be requeried. Please start over with a new query.");
+        	}
+        	List<QueryEndpointMapDTO> queryEndpointMaps = queryManager.getQueryEndpointMapByQueryAndEndpoint(queryId, endpointId);
+        	if(queryEndpointMaps == null || queryEndpointMaps.size() == 0) {
+        		throw new InvalidArgumentsException("No endpoint with ID " + endpointId + " was found for query with ID " + queryId + " that is not already closed.");
+        	}
+    		String assertion = SamlUtil.signAndBuildStringAssertion(user);
+        	Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(assertion, queryId, endpointId, user);
+        	if(newQueryEndpointMapId != null) {
+	        	QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(newQueryEndpointMapId);
+	        	initiatedQuery = queryManager.getById(dto.getQueryId());
+        	}
         }
         return DtoToDomainConverter.convert(initiatedQuery);
-    }
+   }
 
     @ApiOperation(value = "Delete a query")
     @RequestMapping(value = "/{queryId}/delete", method = RequestMethod.POST)
