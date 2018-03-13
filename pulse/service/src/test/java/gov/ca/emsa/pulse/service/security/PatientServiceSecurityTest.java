@@ -17,6 +17,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.ServiceApplicationTestConfig;
+import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.service.PatientService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -30,6 +31,25 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
     public void setUp() throws JsonProcessingException, SQLException {
         super.setUp(patientServiceController);
 
+    }
+
+    @Test
+    public void testAllEndpoints() throws Exception {
+        String[] endpointsGet = {
+                "/patients",
+        };
+
+        String[] endpointsPost = {
+                "/search", "/patients/1/edit", "/patients/1/delete"
+
+        };
+
+        for (String endpoint : endpointsGet) {
+            testPatternProvider(endpoint, true);
+        }
+        for (String endpoint : endpointsPost) {
+            testPatternProvider(endpoint, false, new Patient());
+        }
     }
 
     @Test

@@ -1,8 +1,5 @@
 package gov.ca.emsa.pulse.service.security;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.sql.SQLException;
 
 import org.junit.Before;
@@ -32,13 +29,13 @@ public class LocationServiceSecurityTest extends BaseSecurityTest {
     }
 
     @Test
-    public void testGetLocations() throws Exception {
-        mockMvc.perform(get("/locations")).andExpect(status().isUnauthorized());
-    }
+    public void testAllEndpoints() throws Exception {
+        String[] endpoints = {
+                "/locations", "/locations/statistics"
+        };
 
-    @Test
-    public void testGetPatientDiscoveryRequestStatistics() throws Exception {
-        mockMvc.perform(get("/locations/statistics")).andExpect(status().isUnauthorized());
+        for (String endpoint : endpoints) {
+            testPatternOrgAdmin(endpoint, true);
+        }
     }
-
 }
