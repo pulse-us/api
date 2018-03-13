@@ -70,6 +70,14 @@ timeToLiveTimestamp=timetoliveinseconds
 management.security.enabled=false
 endpoints.health.sensitive=false
 
+keystorePath=<keystore_path>
+keystorePassword=<keystore_password>
+keystoreUsername=<alias_name>
+
+saml.issuer=CN = *.pulse-us.org
+saml.issuer.format=urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName
+saml.id.entityId=urn:test:ainq:baltimore:pulse-us:dev
+
 mtomMutltipartRequest
 
 server.ssl.key-store: src/main/resources/keystore.p12
