@@ -87,7 +87,6 @@ import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordResults;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
-import gov.ca.emsa.pulse.broker.saml.SAMLInput;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.common.domain.PatientEndpointMap;
@@ -130,6 +129,18 @@ public class EHealthAdapter implements Adapter {
 
 	@Value("${ucdavisOID}")
 	private String ucdavisOID;
+	
+	@Value("${kaiserOID}")
+	private String kaiserOID;
+	
+	@Value("${cottageOID}")
+	private String cottageOID;
+	
+	@Value("${vaOID}")
+	private String vaOID;
+	
+	@Value("${cvsOID}")
+	private String cvsOID;
 
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
@@ -156,6 +167,14 @@ public class EHealthAdapter implements Adapter {
 			return ocprhioOID;
 		}else if(managingOrganization.contains("UC Davis")){
 			return ucdavisOID;
+		}else if(managingOrganization.contains("Kaiser Permanente")){
+			return kaiserOID;
+		}else if(managingOrganization.contains("Cottage")){
+			return cottageOID;
+		}else if(managingOrganization.contains("VA Veterans")){
+			return vaOID;
+		}else if(managingOrganization.contains("CVS")){
+			return cvsOID;
 		}else{
 			return HOME_COMMUNITY_ID;
 		}
