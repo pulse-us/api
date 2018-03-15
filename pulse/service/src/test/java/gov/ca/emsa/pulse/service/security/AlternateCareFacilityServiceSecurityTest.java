@@ -39,55 +39,19 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
         mockMvc.perform(get("/acfs")).andExpect(status().isUnauthorized());
 
         // scenario 1: user=ROLE_ADMIN, gets all acfs.
-        JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", 999999L, 99999L); // the
-                                                                         // info
-        // doesn't
-        // matter for
-        // role_admin
-
+        setAdmin();
         MvcResult result = mockMvc.perform(get("/acfs")).andExpect(authorized).andReturn();
-
-        // we need to setup the db - this is done in the broker level
-        String out = result.getResponse().getContentAsString();
-
-        // System.out.println(result.getResponse().getContentAsString());
-        // System.out.println("Matches = " + StringUtils.countMatches(out,
-        // "<item>"));
-        // assertTrue(StringUtils.countMatches(out, "<item>") > 0);
-
         // scenario 2a: user=ROLE_ORG_ADMIN, state=9009 (arbitrary), gets none.
-        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 9009L, 100L); // the
-                                                                         // info
+        // info
         // doesn't
         // matter for
         // role_admin
-
+        setOrgAdmin();
         result = mockMvc.perform(get("/acfs")).andExpect(authorized).andReturn();
-
-        out = result.getResponse().getContentAsString();
-        // assertTrue(StringUtils.countMatches(out, "<item>") == 0);
-
-        // scenario 2b: user=ROLE_ORG_ADMIN, state=10, gets only 1 acf
-        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 10L,
-                10000L /* ignored */);
-        result = mockMvc.perform(get("/acfs")).andExpect(authorized).andReturn();
-
-        out = result.getResponse().getContentAsString();
-        // assertTrue(StringUtils.countMatches(out, "<item>") == 1);
-
-        // scenario 3a: user=ROLE_PROVIDER, state=9009, gets none.
-        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 9009L, 100L);
-        result = mockMvc.perform(get("/acfs")).andExpect(authorized).andReturn();
-
-        out = result.getResponse().getContentAsString();
-        // assertTrue(StringUtils.countMatches(out, "<item>") == 0);
 
         // scenario 3b: user=ROLE_PROVIDER, state=10, gets only 1 acf.
-        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 10L, 100L);
+        setProvider();
         result = mockMvc.perform(get("/acfs")).andExpect(authorized).andReturn();
-
-        out = result.getResponse().getContentAsString();
-        // assertTrue(StringUtils.countMatches(out, "<item>") == 1);
     }
 
     @Test

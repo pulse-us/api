@@ -1,5 +1,7 @@
 package gov.ca.emsa.pulse.service.security;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.Charset;
@@ -18,15 +20,14 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import gov.ca.emsa.pulse.ServiceExceptionControllerAdvice;
+import gov.ca.emsa.pulse.auth.jwt.JWTUserTestHelper;
 import gov.ca.emsa.pulse.common.domain.AlternateCareFacility;
 import gov.ca.emsa.pulse.common.domain.Document;
 import gov.ca.emsa.pulse.common.domain.Endpoint;
 import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.util.SimpleHttpServer;
 
 public class BaseSecurityTest {
     protected MockMvc mockMvc;
-    protected SimpleHttpServer mockBroker;
 
     protected Long acfIdUsedForTest = 1L;
     protected Patient patientUsedForTest;
@@ -42,6 +43,8 @@ public class BaseSecurityTest {
     protected String requestJsonAcfTest;
     protected String requestJsonPatientTest;
     protected AlternateCareFacility acfCreate;
+
+    ObjectWriter ow;
 
     protected MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
@@ -59,7 +62,7 @@ public class BaseSecurityTest {
          */
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        ow = mapper.writer().withDefaultPrettyPrinter();
         acfCreate = new AlternateCareFacility();
         acfCreate.setName("Test Create ACF");
         acfCreate.setLiferayAcfId(1001L);
@@ -96,11 +99,73 @@ public class BaseSecurityTest {
         /*
          * restore data set acf 1 liferay_state_id 1 liferay_state_id
          */
+    }
 
-        if (this.mockBroker != null) {
-            this.mockBroker.stop();
-        }
+    protected void setNullUser() {
+        JWTUserTestHelper.setNullUser();// the
+    }
 
+    protected void setAdmin() {
+        JWTUserTestHelper.setCurrentUser("ROLE_ADMIN", 999999L, 99999L); // the
+    }
+
+    protected void setOrgAdmin() {
+        JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", 9009L, 100L); // the
+    }
+
+    protected void setProvider() {
+        JWTUserTestHelper.setCurrentUser("ROLE_PROVIDER", 9009L, 100L); // the
+    }
+
+    void testPatternProvider(String url, boolean isGet) throws Exception {
+        testPatternProvider(url, isGet, null);
+    }
+
+    void testPatternOrgAdmin(String url, boolean isGet) throws Exception {
+        testPatternOrgAdmin(url, isGet, null);
+    }
+
+    void testPatternProvider(String url, boolean isGet, Object content) throws Exception {
+        setNullUser();
+        mockMvc.perform(isGet ? get(url)
+                : content == null ? post(url)
+                        : post(url).contentType(contentType).content(ow.writeValueAsString(content)))
+                .andExpect(status().isUnauthorized());
+        setAdmin();
+        mockMvc.perform(isGet ? get(url)
+                : content == null ? post(url)
+                        : post(url).contentType(contentType).content(ow.writeValueAsString(content)))
+                .andExpect(authorized);
+        setOrgAdmin();
+        mockMvc.perform(isGet ? get(url)
+                : content == null ? post(url)
+                        : post(url).contentType(contentType).content(ow.writeValueAsString(content)))
+                .andExpect(status().isUnauthorized());
+        setProvider();
+        mockMvc.perform(isGet ? get(url)
+                : content == null ? post(url)
+                        : post(url).contentType(contentType).content(ow.writeValueAsString(content)))
+                .andExpect(authorized);
+    }
+
+    void testPatternOrgAdmin(String url, boolean isGet, Object content) throws Exception {
+        setNullUser();
+        mockMvc.perform(isGet ? get(url)
+                : content == null ? post(url)
+                        : post(url).contentType(contentType).content(ow.writeValueAsString(content)))
+                .andExpect(status().isUnauthorized());
+        setAdmin();
+        mockMvc.perform(
+                isGet ? get(url) : content == null ? post(url) : post(url).contentType(ow.writeValueAsString(content)))
+                .andExpect(authorized);
+        setOrgAdmin();
+        mockMvc.perform(
+                isGet ? get(url) : content == null ? post(url) : post(url).contentType(ow.writeValueAsString(content)))
+                .andExpect(authorized);
+        setProvider();
+        mockMvc.perform(
+                isGet ? get(url) : content == null ? post(url) : post(url).contentType(ow.writeValueAsString(content)))
+                .andExpect(status().isUnauthorized());
     }
 
 }
