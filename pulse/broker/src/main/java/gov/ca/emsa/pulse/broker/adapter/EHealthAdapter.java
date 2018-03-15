@@ -194,6 +194,7 @@ public class EHealthAdapter implements Adapter {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Content-Type", "application/soap+xml; charset=utf-8");   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
+		System.out.println("Query Patient Request--->"+request);
 		String searchResults = null;
 		try {
 			logger.trace("Querying " + endpoint.getUrl() + " with timeout " + defaultRequestTimeoutSeconds + " seconds");
@@ -258,7 +259,7 @@ public class EHealthAdapter implements Adapter {
 		headers.set("Content-Type", "application/soap+xml");
 		headers.set("action", "urn:ihe:iti:2007:CrossGatewayQuery");
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
-
+		System.out.println("Query Document Request--->"+request);
 		String searchResults = null;
 		try {
 			logger.trace("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
@@ -344,6 +345,7 @@ public class EHealthAdapter implements Adapter {
 			headers.set("Content-Type", "application/soap+xml");
 			request = new HttpEntity<String>(requestBodyXml, headers);
 		}
+		System.out.println("Retrieve Document Request--->"+request);
 		ResponseEntity<String> searchResults = null;
 		String returnBody = null;
 		String returnEnvelope = null;
