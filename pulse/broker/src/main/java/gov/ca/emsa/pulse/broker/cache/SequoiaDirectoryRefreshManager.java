@@ -43,9 +43,7 @@ public class SequoiaDirectoryRefreshManager {
 		//these mappings aren't referenced by other tables so it should be ok if any need to get deleted
 		List<LocationEndpointMapDTO> locationEndpointMappings = new ArrayList<LocationEndpointMapDTO>();
 		for(Location ctenLocation : locations) {
-			System.out.println(ctenLocation.getEndpoints().size());
 			for(Endpoint ctenEndpoint : ctenLocation.getEndpoints()) {
-				System.out.println(ctenLocation.getName() + ": " + ctenEndpoint.getUrl());
 				//find location with same external id
 				LocationDTO locationToMap = locationManager.getByExternalId(ctenLocation.getExternalId());
 				//find the endpoint with the same external id
