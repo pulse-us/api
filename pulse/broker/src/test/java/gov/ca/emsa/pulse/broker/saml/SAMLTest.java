@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opensaml.saml.saml2.core.Assertion;
@@ -19,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class SAMLTest {
 	
 	@Test
+	@Ignore
 	public void testSAML() throws SignatureException{
 		
 		CommonUser user = new CommonUser();

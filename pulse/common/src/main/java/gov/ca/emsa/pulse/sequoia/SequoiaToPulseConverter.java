@@ -106,7 +106,7 @@ public class SequoiaToPulseConverter {
 		Endpoint result = new Endpoint();
 		SequoiaEndpointResource sequoiaResource = sequoiaEndpoint.getEndpoint();
 		result.setExternalId(sequoiaResource.getId());
-		result.setAdapter("CareQuality");
+		result.setAdapter("eHealth");
 		EndpointType resultType = new EndpointType();
 		resultType.setName(sequoiaResource.getName());
 		resultType.setCode(sequoiaResource.getConnectionType());
