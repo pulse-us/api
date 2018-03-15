@@ -1,5 +1,6 @@
 package gov.ca.emsa.pulse.broker.saml;
 
+import gov.ca.emsa.pulse.auth.permission.GrantedPermission;
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 
 import java.io.FileInputStream;
@@ -11,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -72,6 +74,7 @@ public class SamlUtil{
 	private static final String SAML_SUBJECTID_STRING = "urn:oasis:names:tc:xspa:1.0:subject:subject-id";
 	private static final String SAML_ROLE_STRING = "urn:oasis:names:tc:xacml:2.0:subject:role";
 	private static final String SAML_PURPOSEOFUSE_STRING = "urn:oasis:names:tc:xspa:1.0:subject:purposeofuse";
+	private static final String SAML_PURPOSEOFUSE_VALUE = "Treatment";
 	private static final String SAML_ORGID_STRING = "urn:oasis:names:tc:xspa:1.0:subject:organization-id";
 	private static final String SAML_HOMECOMMUNITYID_STRING = "urn:nhin:names:saml:homeCommunityId";
 	
@@ -313,8 +316,24 @@ public class SamlUtil{
         putAttributeInStatement(attributeStatement, SAML_SUBJECTID_STRING, user.getfull_name());
         putAttributeInStatement(attributeStatement, SAML_HOMECOMMUNITYID_STRING, pulseOID);
         putAttributeInStatement(attributeStatement, SAML_ORGID_STRING, pulseOID);
-        //putAttributeInStatement(attributeStatement, SAML_ROLE_STRING, ); TODO
-        //putAttributeInStatement(attributeStatement, SAML_PURPOSEOFUSE_STRING, ); TODO
+        
+        for(GrantedPermission role : user.getAuthorities()){	
+        	XSStringBuilder stringBuilder = (XSStringBuilder)XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(XSString.TYPE_NAME);
+    		Attribute attributeObject = buildSAMLObject(Attribute.class);
+        	XSString attrStrValue = stringBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, XSString.TYPE_NAME);
+            attrStrValue.setValue(role.getAuthority());
+        	attributeObject.getAttributeValues().add(attrStrValue);
+        	attributeObject.setName(SAML_ROLE_STRING);
+        	attributeStatement.getAttributes().add(attributeObject);
+        }
+        
+        XSStringBuilder stringBuilder = (XSStringBuilder)XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(XSString.TYPE_NAME);
+		Attribute attributeObject = buildSAMLObject(Attribute.class);
+    	XSString attrStrValue = stringBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, XSString.TYPE_NAME);
+        attrStrValue.setValue(SAML_PURPOSEOFUSE_VALUE);
+    	attributeObject.getAttributeValues().add(attrStrValue);
+    	attributeObject.setName(SAML_PURPOSEOFUSE_STRING);
+    	attributeStatement.getAttributes().add(attributeObject);
         
         return attributeStatement;
     }
