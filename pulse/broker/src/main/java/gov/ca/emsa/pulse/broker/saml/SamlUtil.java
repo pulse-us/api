@@ -308,7 +308,7 @@ public class SamlUtil{
         
     	AttributeStatement attributeStatement = buildSAMLObject(AttributeStatement.class);
         
-        putAttributeInStatement(attributeStatement, SAML_USER_ID_STRING, user.getId().toString());
+        putAttributeInStatement(attributeStatement, SAML_USER_ID_STRING, user.getuser_id());
         putAttributeInStatement(attributeStatement, SAML_USERNAME_STRING, user.getUsername());
         putAttributeInStatement(attributeStatement, SAML_EMAIL_STRING, user.getEmail());
         putAttributeInStatement(attributeStatement, SAML_AUTHSOURCE_STRING, SAML_AUTHSOURCE_STRING_VALUE);
