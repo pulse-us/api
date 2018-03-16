@@ -48,6 +48,7 @@ import org.opensaml.saml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 import org.opensaml.security.credential.BasicCredential;
 import org.opensaml.security.credential.impl.KeyStoreCredentialResolver;
+import org.opensaml.xml.security.SecurityException;
 import org.opensaml.xml.util.XMLHelper;
 import org.opensaml.xmlsec.keyinfo.KeyInfoGenerator;
 import org.opensaml.xmlsec.keyinfo.impl.X509KeyInfoGeneratorFactory;
@@ -200,9 +201,18 @@ public class SamlUtil{
         signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
         signature.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
 
+        X509KeyInfoGeneratorFactory kiFactory = new X509KeyInfoGeneratorFactory();
+        kiFactory.setEmitEntityCertificate(true);
+        
+        KeyInfo keyInfo = null;
+		try {
+			keyInfo = kiFactory.newInstance().generate(basicCredential);
+		} catch (org.opensaml.security.SecurityException e2) {
+			e2.printStackTrace();
+		}
         
         try {
-			signature.setKeyInfo(getKeyInfo(basicCredential));
+			signature.setKeyInfo(keyInfo);
 		} catch (Exception e1) {
 			throw new RuntimeException(e1);
 		}
@@ -307,7 +317,7 @@ public class SamlUtil{
         
     	AttributeStatement attributeStatement = buildSAMLObject(AttributeStatement.class);
         
-        putAttributeInStatement(attributeStatement, SAML_USER_ID_STRING, user.getId().toString());
+        putAttributeInStatement(attributeStatement, SAML_USER_ID_STRING, user.getuser_id());
         putAttributeInStatement(attributeStatement, SAML_USERNAME_STRING, user.getUsername());
         putAttributeInStatement(attributeStatement, SAML_EMAIL_STRING, user.getEmail());
         putAttributeInStatement(attributeStatement, SAML_AUTHSOURCE_STRING, SAML_AUTHSOURCE_STRING_VALUE);
