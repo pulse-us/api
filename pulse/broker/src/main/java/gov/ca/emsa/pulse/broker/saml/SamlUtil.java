@@ -200,14 +200,11 @@ public class SamlUtil{
         signature.setSigningCredential(basicCredential);
         signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
         signature.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
-
-        
         try {
 			signature.setKeyInfo(getKeyInfo(basicCredential));
 		} catch (Exception e1) {
 			throw new RuntimeException(e1);
 		}
-        
         assertion.setSignature(signature);
         
         try {
@@ -291,6 +288,7 @@ public class SamlUtil{
 
 
     private static SubjectConfirmation buildSubjectConfirmation() {
+    	
         SubjectConfirmation subjectConfirmation = buildSAMLObject(SubjectConfirmation.class);
         subjectConfirmation.setMethod(SubjectConfirmation.METHOD_HOLDER_OF_KEY);
 
@@ -298,9 +296,13 @@ public class SamlUtil{
         subjectConfirmationData.setInResponseTo("Made up ID");
         subjectConfirmationData.setNotBefore(new DateTime().minusMinutes(1));
         subjectConfirmationData.setNotOnOrAfter(new DateTime().plusMinutes(1));
+        try {
+			subjectConfirmationData.getUnknownXMLObjects().add(getKeyInfo(createCredential()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
         subjectConfirmation.setSubjectConfirmationData(subjectConfirmationData);
-
         return subjectConfirmation;
     }
     
