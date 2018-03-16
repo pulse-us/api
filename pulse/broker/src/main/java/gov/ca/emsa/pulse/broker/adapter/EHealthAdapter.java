@@ -182,7 +182,12 @@ public class EHealthAdapter implements Adapter {
 
 	@Override
 	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch, String assertion) throws Exception {
-		String orgOID = getOrganizationOID(endpoint.getManagingOrganization());
+		String orgOID = null;
+		if(endpoint.getManagingOrganization() != null){
+			orgOID = getOrganizationOID(endpoint.getManagingOrganization());
+		}else{
+			orgOID = HOME_COMMUNITY_ID;
+		}
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch, pulseOID, orgOID);
 		String requestBodyXml = null;
 		try {
