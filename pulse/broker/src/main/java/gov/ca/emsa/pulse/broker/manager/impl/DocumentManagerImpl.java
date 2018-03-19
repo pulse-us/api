@@ -129,9 +129,12 @@ public class DocumentManagerImpl implements DocumentManager {
 		if(StringUtils.isEmpty(resultDoc.getContents())) {
 			EndpointDTO documentContentsEndpoint = null;
 			EndpointDTO documentDiscoveryEndpoint = endpointDao.findById(patientEndpointMap.getEndpointId());
-			if(documentDiscoveryEndpoint != null) {
+			if(documentDiscoveryEndpoint != null && documentDiscoveryEndpoint.getManagingOrganization() != null) {
 				String managingOrganizationName = documentDiscoveryEndpoint.getManagingOrganization();
 				documentContentsEndpoint = endpointDao.findByManagingOrganizationAndType(managingOrganizationName, endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_RETRIEVE);
+			}else{
+				String organizationId = documentDiscoveryEndpoint.getOrganizationId();
+				documentContentsEndpoint = endpointDao.findByOrganizationIdAndType(organizationId, endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_RETRIEVE);
 			}
 			
 			if(documentContentsEndpoint != null) {
