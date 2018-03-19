@@ -1,12 +1,8 @@
 package gov.ca.emsa.pulse.service.security;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.sql.SQLException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,31 +29,15 @@ public class DocumentServiceSecurityTest extends BaseSecurityTest {
     }
 
     @Test
-    public void testSearchDocuments() throws Exception {
-        mockMvc.perform(get("/patients/1/documents")).andExpect(status().isUnauthorized());
-    }
+    public void testAllEndpoints() throws Exception {
+        String[] endpoints = {
+                "/patients/1/documents", "/patients/1/endpoints/1/cancel", "/patients/1/endpoints/1/requery",
+                "/patients/1/documents/1", "/patients/1/documents", "/patients/1/documents/1/cancel"
+        };
 
-    @Test
-    @Ignore
-    public void testCancelDocumentListQuery() throws Exception {
-        mockMvc.perform(get("/patients/1/endpoints/1/cancel")).andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @Ignore
-    public void testRedoDocumentListQuery() throws Exception {
-        mockMvc.perform(get("/patients/1/endpoints/1/requery")).andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    public void testGetDocumentContents() throws Exception {
-        mockMvc.perform(get("/patients/1/documents/1")).andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @Ignore
-    public void testCancelDocumentContentQuery() throws Exception {
-        mockMvc.perform(get("/patients/1/documents/1/cancel")).andExpect(status().isUnauthorized());
+        for (String endpoint : endpoints) {
+            testPatternProvider(endpoint, !endpoint.contains("endpoint") && !endpoint.contains("cancel"));
+        }
     }
 
 }

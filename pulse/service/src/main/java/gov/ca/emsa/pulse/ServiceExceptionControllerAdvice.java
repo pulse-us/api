@@ -7,6 +7,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -83,6 +84,13 @@ public class ServiceExceptionControllerAdvice {
     public ResponseEntity<ErrorJSONObject> exception(AuthenticationCredentialsNotFoundException ex) {
         logger.error(ex.getMessage(), ex);
         return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Access denied: " + ex.getMessage()),
+                HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorJSONObject> exception(AccessDeniedException e) {
+        e.printStackTrace();
+        return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Access denied: " + e.getMessage()),
                 HttpStatus.UNAUTHORIZED);
     }
 }

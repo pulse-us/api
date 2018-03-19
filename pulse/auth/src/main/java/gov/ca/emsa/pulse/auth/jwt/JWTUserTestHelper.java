@@ -19,4 +19,8 @@ public class JWTUserTestHelper {
     public static JWTAuthenticatedUser getCurrentUser() {
         return (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
     }
+
+    public static void setNullUser() {
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 }

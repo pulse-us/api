@@ -182,7 +182,12 @@ public class EHealthAdapter implements Adapter {
 
 	@Override
 	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch, String assertion) throws Exception {
-		String orgOID = getOrganizationOID(endpoint.getManagingOrganization());
+		String orgOID = null;
+		if(endpoint.getManagingOrganization() != null){
+			orgOID = getOrganizationOID(endpoint.getManagingOrganization());
+		}else{
+			orgOID = HOME_COMMUNITY_ID;
+		}
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch, pulseOID, orgOID);
 		String requestBodyXml = null;
 		try {
@@ -196,6 +201,7 @@ public class EHealthAdapter implements Adapter {
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
 		System.out.println("Query Patient Request--->"+requestBodyXml);
 		String searchResults = null;
+		logger.info("Request PD XML: " + requestBodyXml);
 		try {
 			logger.trace("Querying " + endpoint.getUrl() + " with timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class); // TODO: the request that is going out here mock does not like
@@ -249,6 +255,7 @@ public class EHealthAdapter implements Adapter {
 		String patientId = toSearch.getExternalPatientRecordId();
 		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientId);
 		String requestBodyXml = null;
+		logger.info("Request DQ XML: " + requestBodyXml);
 		try {
 			requestBodyXml = queryProducer.marshallDocumentQueryRequest(endpoint, assertion, requestBody);
 		} catch(JAXBException | WSSecurityException ex) {
@@ -322,6 +329,7 @@ public class EHealthAdapter implements Adapter {
 		}
 		RetrieveDocumentSetRequestType requestBody = jsonConverterService.convertToRetrieveDocumentSetRequest(docsToSearch);
 		String requestBodyXml = null;
+		logger.info("Request DR XML: " + requestBodyXml);
 		try {
 			requestBodyXml = queryProducer.marshallDocumentSetRequest(endpoint, assertion, requestBody);
 		} catch(JAXBException ex) {
