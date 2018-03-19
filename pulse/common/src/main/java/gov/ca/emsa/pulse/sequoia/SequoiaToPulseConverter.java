@@ -112,6 +112,7 @@ public class SequoiaToPulseConverter {
 		resultType.setCode(sequoiaResource.getConnectionType());
 		result.setEndpointType(resultType);
 		result.setExternalId(sequoiaResource.getId());
+		result.setOrganizationId(org.getId()); // instead of managing org we are setting just the org here
 		if(!StringUtils.isEmpty(org.getMeta().getLastUpdated())) {
 			SimpleDateFormat formatter = new SimpleDateFormat(lastUpdatedDateFormat);
 			try {
