@@ -9,8 +9,10 @@ import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.auth.user.JWTAuthenticatedUser;
 import gov.ca.emsa.pulse.broker.dto.AlternateCareFacilityDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
+import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.manager.QueryManager;
 
 public class PULSEBrokerSecurityExpressionRoot extends SecurityExpressionRoot
         implements MethodSecurityExpressionOperations {
@@ -19,12 +21,14 @@ public class PULSEBrokerSecurityExpressionRoot extends SecurityExpressionRoot
 
     private AlternateCareFacilityManager acfManager;
     private PatientManager patientManager;
+    private QueryManager queryManager;
 
     public PULSEBrokerSecurityExpressionRoot(Authentication authentication, AlternateCareFacilityManager acfManager,
-            PatientManager patientManager) {
+            PatientManager patientManager, QueryManager queryManager) {
         super(authentication);
         this.acfManager = acfManager;
         this.patientManager = patientManager;
+        this.queryManager = queryManager;
     }
 
     public boolean hasPermissionForPatient(Long patientId) {
@@ -66,6 +70,22 @@ public class PULSEBrokerSecurityExpressionRoot extends SecurityExpressionRoot
             }
         }
 
+        return hasPermission;
+    }
+
+    public boolean hasPermissionForQuery(Long queryId) {
+        JWTAuthenticatedUser jwtUser = (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication();
+        boolean hasPermission = false;
+
+        if (queryId != null) {
+            QueryDTO query = queryManager.getById(queryId);
+            if (query != null) {
+                if (CommonUser.userHasAuthority(jwtUser, CommonUser.ROLE_ADMIN)
+                        || CommonUser.userHasAuthority(jwtUser, CommonUser.ROLE_PROVIDER)) {
+                    hasPermission = query.getUserId() != null && query.getUserId().equals(jwtUser.getSubjectName());
+                }
+            }
+        }
         return hasPermission;
     }
 

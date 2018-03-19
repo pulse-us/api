@@ -23,6 +23,7 @@ import gov.ca.emsa.pulse.auth.jwt.JWTUserTestHelper;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
+import gov.ca.emsa.pulse.common.domain.Patient;
 import gov.ca.emsa.pulse.service.AlternateCareFacilityService;
 import gov.ca.emsa.pulse.service.PatientService;
 
@@ -47,6 +48,25 @@ public class PatientServiceSecurityTest extends BaseSecurityTest {
     @After
     public void restore() throws SQLException {
         super.restore();
+    }
+
+    @Test
+    public void testAllEndpoints() throws Exception {
+        String[] endpointsGet = {
+                "/patients",
+        };
+
+        String[] endpointsPost = {
+                "/patients/1/edit", "/patients/1/delete"
+
+        };
+
+        for (String endpoint : endpointsGet) {
+            JWTUserTestHelper.testPatternProvider(mockMvc, ow, endpoint, true);
+        }
+        for (String endpoint : endpointsPost) {
+            JWTUserTestHelper.testPatternProvider(mockMvc, ow, endpoint, false, new Patient());
+        }
     }
 
     @Test

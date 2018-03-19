@@ -13,6 +13,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.ServiceApplicationTestConfig;
+import gov.ca.emsa.pulse.auth.jwt.JWTUserTestHelper;
 import gov.ca.emsa.pulse.service.LocationService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -35,7 +36,7 @@ public class LocationServiceSecurityTest extends BaseSecurityTest {
         };
 
         for (String endpoint : endpoints) {
-            testPatternOrgAdmin(endpoint, true);
+            JWTUserTestHelper.testPatternOrgAdmin(mockMvc, ow, endpoint, true);
         }
     }
 }

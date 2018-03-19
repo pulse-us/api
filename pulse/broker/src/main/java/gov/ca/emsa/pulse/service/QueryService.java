@@ -10,6 +10,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,7 +28,6 @@ import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
-import gov.ca.emsa.pulse.broker.dto.PulseUserDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
@@ -81,9 +81,7 @@ public class QueryService {
 
     @ApiOperation(value = "Get the status of a query")
     @RequestMapping(value = "/{queryId}", method = RequestMethod.GET)
-    @Secured({
-            "ROLE_ADMIN", "ROLE_PROVIDER"
-    })
+    @PreAuthorize("hasPermissionForQuery(#queryId)")
     public Query getQueryStatus(@PathVariable(value = "queryId") Long queryId) {
         synchronized (queryManager) {
             QueryDTO initiatedQuery = queryManager.getById(queryId);
@@ -93,9 +91,7 @@ public class QueryService {
 
     @ApiOperation(value = "Cancel part of a query that's going to a specific endpoint")
     @RequestMapping(value = "/{queryId}/endpoint/{endpointId}/cancel", method = RequestMethod.POST)
-    @Secured({
-            "ROLE_ADMIN", "ROLE_PROVIDER"
-    })
+    @PreAuthorize("hasPermissionForQuery(#queryId)")
     public Query cancelPatientDiscoveryQuery(@PathVariable(value = "queryId") Long queryId,
             @PathVariable(value = "endpointId") Long endpointId) throws InvalidArgumentsException {
         synchronized (queryManager) {
@@ -124,9 +120,7 @@ public class QueryService {
             + "This runs asynchronously and returns a query object which can later be used to get the results.")
     @RequestMapping(path = "/{queryId}/endpoint/{endpointId}/requery", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    @Secured({
-            "ROLE_ADMIN", "ROLE_PROVIDER"
-    })
+    @PreAuthorize("hasPermissionForQuery(#queryId)")
     public @ResponseBody Query requeryPatients(@PathVariable("queryId") Long queryId,
             @PathVariable("endpointId") Long endpointId)
             throws JsonProcessingException, InvalidArgumentsException, IOException {
@@ -146,10 +140,14 @@ public class QueryService {
                 throw new InvalidArgumentsException("No endpoint with ID " + endpointId
                         + " was found for query with ID " + queryId + " that is not already closed.");
             }
-//            PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
-//            String assertion = userDto.getAssertion();
-//            Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(assertion, queryId, endpointId, user);
-            Long newQueryEndpointMapId = queryManager.requeryForPatientRecords("assertion TBD", queryId, endpointId, user);
+            // PulseUserDTO userDto =
+            // pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
+            // String assertion = userDto.getAssertion();
+            // Long newQueryEndpointMapId =
+            // queryManager.requeryForPatientRecords(assertion, queryId,
+            // endpointId, user);
+            Long newQueryEndpointMapId = queryManager.requeryForPatientRecords("assertion TBD", queryId, endpointId,
+                    user);
             if (newQueryEndpointMapId != null) {
                 QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(newQueryEndpointMapId);
                 initiatedQuery = queryManager.getById(dto.getQueryId());
@@ -160,9 +158,7 @@ public class QueryService {
 
     @ApiOperation(value = "Delete a query")
     @RequestMapping(value = "/{queryId}/delete", method = RequestMethod.POST)
-    @Secured({
-            "ROLE_ADMIN", "ROLE_PROVIDER"
-    })
+    @PreAuthorize("hasPermissionForQuery(#queryId)")
     public void deleteQuery(@PathVariable(value = "queryId") Long queryId) {
         synchronized (queryManager) {
             queryManager.close(queryId);
@@ -171,9 +167,7 @@ public class QueryService {
 
     @ApiOperation(value = "Create a Patient from multiple PatientRecords")
     @RequestMapping(value = "/{queryId}/stage", method = RequestMethod.POST)
-    @Secured({
-            "ROLE_ADMIN", "ROLE_PROVIDER"
-    })
+    @PreAuthorize("hasPermissionForQuery(#queryId)")
     public Patient stagePatientFromResults(@PathVariable(value = "queryId") Long queryId,
             @RequestBody CreatePatientRequest request)
             throws InvalidArgumentsException, SQLException, JsonProcessingException {
@@ -213,10 +207,11 @@ public class QueryService {
             for (Long patientRecordId : request.getPatientRecordIds()) {
                 PatientEndpointMapDTO patLocMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient,
                         patientRecordId);
-//                PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
-//                String assertion = userDto.getAssertion();
+                // PulseUserDTO userDto =
+                // pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
+                // String assertion = userDto.getAssertion();
                 patient.getEndpointMaps().add(patLocMapDto);
-//                docManager.queryForDocuments(user, assertion, patLocMapDto);
+                // docManager.queryForDocuments(user, assertion, patLocMapDto);
                 docManager.queryForDocuments(user, "assertion TBD", patLocMapDto);
                 // kick off document list retrieval service
 

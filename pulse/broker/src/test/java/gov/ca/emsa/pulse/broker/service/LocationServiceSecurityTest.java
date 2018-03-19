@@ -1,13 +1,9 @@
 package gov.ca.emsa.pulse.broker.service;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.sql.SQLException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +13,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.ca.emsa.pulse.auth.jwt.JWTUserTestHelper;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
 import gov.ca.emsa.pulse.service.LocationService;
 
@@ -42,8 +39,13 @@ public class LocationServiceSecurityTest extends BaseSecurityTest {
     }
 
     @Test
-    @Ignore
-    public void testLocations() throws Exception {
-        mockMvc.perform(get(locationUrlPrefix)).andExpect(status().isUnauthorized());
+    public void testAllEndpoints() throws Exception {
+        String[] endpoints = {
+                "/locations", "/locations/statistics"
+        };
+
+        for (String endpoint : endpoints) {
+            JWTUserTestHelper.testPatternOrgAdmin(mockMvc, ow, endpoint, true);
+        }
     }
 }

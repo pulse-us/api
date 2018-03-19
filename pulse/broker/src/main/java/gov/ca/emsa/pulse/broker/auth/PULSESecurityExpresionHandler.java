@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
+import gov.ca.emsa.pulse.broker.manager.QueryManager;
 
 @Component
 public class PULSESecurityExpresionHandler extends DefaultMethodSecurityExpressionHandler {
@@ -20,12 +21,15 @@ public class PULSESecurityExpresionHandler extends DefaultMethodSecurityExpressi
     @Autowired
     @Lazy
     private PatientManager patientManager;
+    @Autowired
+    @Lazy
+    private QueryManager queryManager;
 
     @Override
     protected MethodSecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication,
             MethodInvocation invocation) {
         PULSEBrokerSecurityExpressionRoot root = new PULSEBrokerSecurityExpressionRoot(authentication, acfManager,
-                patientManager);
+                patientManager, queryManager);
         root.setPermissionEvaluator(getPermissionEvaluator());
         root.setTrustResolver(new AuthenticationTrustResolverImpl());
         root.setRoleHierarchy(getRoleHierarchy());

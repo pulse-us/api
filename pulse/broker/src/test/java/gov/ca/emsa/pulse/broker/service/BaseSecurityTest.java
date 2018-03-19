@@ -63,6 +63,8 @@ public class BaseSecurityTest {
     protected String requestJsonPatientTest;
     protected AlternateCareFacility acfCreate;
 
+    ObjectWriter ow;
+
     protected MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
@@ -92,7 +94,7 @@ public class BaseSecurityTest {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        ow = mapper.writer().withDefaultPrettyPrinter();
         acfCreate = new AlternateCareFacility();
         acfCreate.setName("Test Create ACF");
         acfCreate.setLiferayAcfId(1001L);

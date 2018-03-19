@@ -39,19 +39,19 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
         mockMvc.perform(get("/acfs")).andExpect(status().isUnauthorized());
 
         // scenario 1: user=ROLE_ADMIN, gets all acfs.
-        setAdmin();
-        MvcResult result = mockMvc.perform(get("/acfs")).andExpect(authorized).andReturn();
+        JWTUserTestHelper.setAdmin();
+        MvcResult result = mockMvc.perform(get("/acfs")).andExpect(JWTUserTestHelper.authorized).andReturn();
         // scenario 2a: user=ROLE_ORG_ADMIN, state=9009 (arbitrary), gets none.
         // info
         // doesn't
         // matter for
         // role_admin
-        setOrgAdmin();
-        result = mockMvc.perform(get("/acfs")).andExpect(authorized).andReturn();
+        JWTUserTestHelper.setOrgAdmin();
+        result = mockMvc.perform(get("/acfs")).andExpect(JWTUserTestHelper.authorized).andReturn();
 
         // scenario 3b: user=ROLE_PROVIDER, state=10, gets only 1 acf.
-        setProvider();
-        result = mockMvc.perform(get("/acfs")).andExpect(authorized).andReturn();
+        JWTUserTestHelper.setProvider();
+        result = mockMvc.perform(get("/acfs")).andExpect(JWTUserTestHelper.authorized).andReturn();
     }
 
     @Test
@@ -61,7 +61,7 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
 
     @Test
     public void testCreate() throws Exception {
-        mockMvc.perform(post("/acfs/create").contentType(contentType).content(requestJsonAcf))
+        mockMvc.perform(post("/acfs/create").contentType(JWTUserTestHelper.contentType).content(requestJsonAcf))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -70,7 +70,7 @@ public class AlternateCareFacilityServiceSecurityTest extends BaseSecurityTest {
         acfIdUsedForTest = 1L;
         String testAcfEditUrl = "/acfs/" + acfIdUsedForTest + "/edit";
         // scenario 0: unauthorized
-        mockMvc.perform(post(testAcfEditUrl).contentType(contentType).content(requestJsonAcf))
+        mockMvc.perform(post(testAcfEditUrl).contentType(JWTUserTestHelper.contentType).content(requestJsonAcf))
                 .andExpect(status().isUnauthorized());
 
         // scenario : provider not allowed allowed

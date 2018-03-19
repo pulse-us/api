@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.auth.jwt.JWTUserTestHelper;
 import gov.ca.emsa.pulse.broker.BrokerApplicationTestConfig;
+import gov.ca.emsa.pulse.broker.dto.QueryDTO;
+import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.service.AlternateCareFacilityService;
 import gov.ca.emsa.pulse.service.QueryService;
 
@@ -30,6 +32,9 @@ public class QueryServiceSecurityTest extends BaseSecurityTest {
     AlternateCareFacilityService acfServiceController;
     @Autowired
     QueryService queryServiceController;
+    @Autowired
+    QueryManager queryManager;
+    QueryDTO query;
 
     protected String queryUrlPrefix;
 
@@ -37,6 +42,7 @@ public class QueryServiceSecurityTest extends BaseSecurityTest {
     public void setUp() throws JsonProcessingException, SQLException {
         super.setUp(queryServiceController);
         queryUrlPrefix = "/queries";
+        query = queryManager.getById(1L);
     }
 
     @Override
@@ -53,11 +59,37 @@ public class QueryServiceSecurityTest extends BaseSecurityTest {
      */
 
     @Test
-    @Ignore
     public void getQueries() throws Exception {
         mockMvc.perform(get(queryUrlPrefix)).andExpect(status().isUnauthorized());
 
         JWTUserTestHelper.setCurrentUser("ROLE_ORG_ADMIN", liferayStateIdUsedForTest + 1, 100L);
         mockMvc.perform(get(queryUrlPrefix)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void testAllEndpoints() throws Exception {
+        String[] endpointsGet = {
+                "/queries/1",
+        };
+
+        String[] endpointsPost = {
+                "/queries/1/endpoint/1/cancel", "/queries/1/endpoint/1/requery", "/queries/1/stage",
+                "/queries/1/delete",
+
+        };
+
+        // queries fetch based on the subjectname
+        JWTUserTestHelper.testPatternProvider(mockMvc, ow, "/queries", true);
+
+        if (query != null) { // we could create one for this test
+            for (String endpoint : endpointsGet) {
+                JWTUserTestHelper.testPatternProviderWithUser(mockMvc, ow, endpoint, true,
+                        query == null ? "" : query.getUserId());
+            }
+            for (String endpoint : endpointsPost) {
+                JWTUserTestHelper.testPatternProviderWithUser(mockMvc, ow, endpoint, false, new CreatePatientRequest(),
+                        query == null ? "" : query.getUserId());
+            }
+        }
     }
 }
