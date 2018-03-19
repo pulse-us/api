@@ -28,7 +28,7 @@ import gov.ca.emsa.pulse.cten.IheStatus;
  * @author alarned
  *
  */
-@Component("DocumentQueryManager")
+//@Component("DocumentQueryManager")
 public class DocumentQueryService implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger(DocumentQueryService.class);
 

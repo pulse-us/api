@@ -157,6 +157,12 @@ public class PatientManagerImpl implements PatientManager {
 				patientEndpointMapToCreate.setEndpointId(documentDiscoveryEndpoint.getId());	
 				result = patientDao.createPatientEndpointMap(patientEndpointMapToCreate);
 				result.setEndpoint(documentDiscoveryEndpoint);
+			}else{
+				documentDiscoveryEndpoint = endpointDao.findByOrganizationIdAndType(patientDiscoveryEndpoint.getOrganizationId(), 
+						endpointStatusesForQuery.getStatuses(), EndpointTypeEnum.DOCUMENT_DISCOVERY);
+				patientEndpointMapToCreate.setEndpointId(documentDiscoveryEndpoint.getId());	
+				result = patientDao.createPatientEndpointMap(patientEndpointMapToCreate);
+				result.setEndpoint(documentDiscoveryEndpoint);
 			}
 		}
 		return result;
@@ -218,8 +224,7 @@ public class PatientManagerImpl implements PatientManager {
 		if(patientEndpointMapForRequery != null) {
 			String assertion = SamlUtil.signAndBuildStringAssertion(user);
 			patient.getEndpointMaps().add(patientEndpointMapForRequery);
-//            docManager.queryForDocuments(user, assertion,  patientEndpointMapForRequery);
-            docManager.queryForDocuments(user, "assertion TBD",  patientEndpointMapForRequery);
+            docManager.queryForDocuments(user, assertion,  patientEndpointMapForRequery);
 		}
 		
 		return getPatientById(patientId);
