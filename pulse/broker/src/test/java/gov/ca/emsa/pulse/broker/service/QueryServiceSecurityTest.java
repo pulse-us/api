@@ -60,6 +60,7 @@ public class QueryServiceSecurityTest extends BaseSecurityTest {
      */
 
     @Test
+    @Ignore
     public void getQueries() throws Exception {
         mockMvc.perform(get(queryUrlPrefix)).andExpect(status().isUnauthorized());
 
