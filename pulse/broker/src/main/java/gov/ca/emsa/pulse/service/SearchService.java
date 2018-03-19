@@ -19,13 +19,12 @@ import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.domain.EndpointTypeEnum;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.EndpointDTO;
-import gov.ca.emsa.pulse.broker.dto.PulseUserDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.broker.manager.EndpointManager;
-import gov.ca.emsa.pulse.broker.manager.PulseUserManager;
 import gov.ca.emsa.pulse.broker.manager.QueryManager;
+import gov.ca.emsa.pulse.broker.saml.SamlUtil;
 import gov.ca.emsa.pulse.broker.util.JSONUtils;
 import gov.ca.emsa.pulse.broker.util.QueryableEndpointStatusUtil;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
@@ -39,21 +38,15 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 public class SearchService {
 
-    private static final Logger logger = LogManager.getLogger(SearchService.class);
-    @Autowired
-    private QueryManager queryManager;
-    @Autowired
-    private EndpointManager endpointManager;
-    public static String dobFormat = "yyyy-MM-dd";
-    @Autowired
-    private AuditEventManager auditManager;
-    @Autowired
-    private PulseUserManager pulseUserManager;
-    @Autowired
-    private QueryableEndpointStatusUtil endpointStatusesForQuery;
-
-    public SearchService() {
-    }
+	private static final Logger logger = LogManager.getLogger(SearchService.class);
+	@Autowired private QueryManager queryManager;
+	@Autowired private EndpointManager endpointManager;
+	public static String dobFormat = "yyyy-MM-dd";
+	@Autowired private AuditEventManager auditManager;
+	@Autowired private QueryableEndpointStatusUtil endpointStatusesForQuery;
+	
+	public SearchService() {
+	}
 
     @ApiOperation(value = "Query all locations for patients. This runs asynchronously and returns a query object"
             + "which can later be used to get the results.")
@@ -67,14 +60,10 @@ public class SearchService {
 
         CommonUser user = UserUtil.getCurrentUser();
 
-        // TODO: need to add jwt id to common user and put that id here
-//        PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
-//        String assertion = userDto != null ? userDto.getAssertion() : "";
-        String assertion = "assertion TBD";
-
         String queryTermsJson = JSONUtils.toJSON(toSearch);
         QueryDTO initiatedQuery = null;
-
+		
+		String assertion = SamlUtil.signAndBuildStringAssertion(user);
         synchronized (queryManager) {
             List<EndpointTypeEnum> relevantEndpointTypes = new ArrayList<EndpointTypeEnum>();
             relevantEndpointTypes.add(EndpointTypeEnum.PATIENT_DISCOVERY);
