@@ -35,7 +35,7 @@ public class SequoiaToPulseConverter {
 			result.add(convertLocation(entry));
 		}
 		return result;
-	} 
+	}
 	
 	public static Location convertLocation(SequoiaEntry entry) {
 		if(entry.getResource() == null) {
@@ -84,20 +84,20 @@ public class SequoiaToPulseConverter {
 		return result;
 	}
 	
-	public static List<Endpoint> convertSequoiaBundleToEndpoints(SequoiaBundle bundle) {
+	public static List<Endpoint> convertSequoiaBundleToEndpoints(SequoiaBundle bundle, String adapter) {
 		if(bundle.getBundle() == null || bundle.getBundle().getEntry() == null || bundle.getBundle().getEntry().size() == 0) {
 			return new ArrayList<Endpoint>();
 		}
 		List<Endpoint> result = new ArrayList<Endpoint>(bundle.getBundle().getEntry().size());
 		for(SequoiaEntry entry : bundle.getBundle().getEntry()) {
 			for(SequoiaEndpoint endpoint : entry.getResource().getOrganization().getEndpoint()){
-				result.add(convertEndpoints(entry, endpoint));
+				result.add(convertEndpoints(entry, endpoint, adapter));
 			}
 		}
 		return result;
 	}
 	
-	public static Endpoint convertEndpoints(SequoiaEntry entry, SequoiaEndpoint sequoiaEndpoint) {
+	public static Endpoint convertEndpoints(SequoiaEntry entry, SequoiaEndpoint sequoiaEndpoint, String adapter) {
 		if(sequoiaEndpoint == null) {
 			return null;
 		}
@@ -106,7 +106,7 @@ public class SequoiaToPulseConverter {
 		Endpoint result = new Endpoint();
 		SequoiaEndpointResource sequoiaResource = sequoiaEndpoint.getEndpoint();
 		result.setExternalId(sequoiaResource.getId());
-		result.setAdapter("eHealth");
+		result.setAdapter(adapter);
 		EndpointType resultType = new EndpointType();
 		resultType.setName(sequoiaResource.getName());
 		resultType.setCode(sequoiaResource.getConnectionType());

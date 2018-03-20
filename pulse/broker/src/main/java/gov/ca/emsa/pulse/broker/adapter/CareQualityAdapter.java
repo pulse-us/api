@@ -65,7 +65,7 @@ import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 @Component
-public class EHealthAdapter implements Adapter {
+public class CareQualityAdapter implements Adapter {
 	public static final String HOME_COMMUNITY_ID = "2.16.840.1.113883.9.224";
 	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
 

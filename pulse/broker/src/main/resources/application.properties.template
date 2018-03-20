@@ -24,7 +24,8 @@ ctenLocationDirectoryUrl=https://localhost:9080/mock/Location
 ctenEndpointDirectoryUrl=https://localhost:9080/mock/Endpoint
 #ctenEndpointDirectoryUrl=https://cten-staging.ca-hie.net:8443/fhir/Endpoint
 
-sequoiaOrganizationDirectoryUrl
+sequoiaCarequalityOrganizationDirectoryUrl
+sequoiaEHexOrganizationDirectoryUrl
 
 ctenDirectoryStatus=Inactive
 sequoiaDirectoryStatus=Active
