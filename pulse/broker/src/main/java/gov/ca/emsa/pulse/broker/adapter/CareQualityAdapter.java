@@ -4,31 +4,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.lang.management.ManagementFactory;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
 import javax.xml.bind.JAXBException;
-import javax.xml.soap.SOAPConnection;
-import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.attachment.AttachmentDeserializer;
@@ -45,38 +33,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.*;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
-import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
-import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartRequest;
-import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.DOMException;
-
-import com.google.common.collect.MultimapBuilder;
 
 import gov.ca.emsa.pulse.auth.user.CommonUser;
 import gov.ca.emsa.pulse.broker.adapter.service.EHealthQueryProducerService;
 import gov.ca.emsa.pulse.broker.dao.NameTypeDAO;
-import gov.ca.emsa.pulse.broker.dto.AuditDocumentDTO;
-import gov.ca.emsa.pulse.broker.dto.AuditEventDTO;
-import gov.ca.emsa.pulse.broker.dto.AuditHumanRequestorDTO;
-import gov.ca.emsa.pulse.broker.dto.AuditPatientDTO;
-import gov.ca.emsa.pulse.broker.dto.AuditQueryParametersDTO;
-import gov.ca.emsa.pulse.broker.dto.AuditRequestDestinationDTO;
-import gov.ca.emsa.pulse.broker.dto.AuditRequestSourceDTO;
-import gov.ca.emsa.pulse.broker.dto.AuditSourceDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentDTO;
 import gov.ca.emsa.pulse.broker.dto.DocumentQueryResults;
 import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
@@ -88,26 +55,21 @@ import gov.ca.emsa.pulse.broker.dto.PatientRecordDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientRecordResults;
 import gov.ca.emsa.pulse.broker.manager.AuditEventManager;
 import gov.ca.emsa.pulse.common.domain.Document;
-import gov.ca.emsa.pulse.common.domain.Patient;
-import gov.ca.emsa.pulse.common.domain.PatientEndpointMap;
 import gov.ca.emsa.pulse.common.domain.PatientRecord;
 import gov.ca.emsa.pulse.common.domain.PatientSearch;
 import gov.ca.emsa.pulse.common.soap.JSONToSOAPService;
 import gov.ca.emsa.pulse.common.soap.SOAPToJSONService;
 import gov.ca.emsa.pulse.cten.IheStatus;
-import gov.ca.emsa.pulse.service.AuditUtil;
-import gov.ca.emsa.pulse.service.UserUtil;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 
 @Component
-public class EHealthAdapter implements Adapter {
+public class CareQualityAdapter implements Adapter {
 	public static final String HOME_COMMUNITY_ID = "2.16.840.1.113883.9.224";
-	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
+	private static final Logger logger = LogManager.getLogger(CareQualityAdapter.class);
 
 	@Value("${mtomMutltipartRequest}")
 	private String mtomMutltipartRequest;
@@ -129,18 +91,6 @@ public class EHealthAdapter implements Adapter {
 
 	@Value("${ucdavisOID}")
 	private String ucdavisOID;
-	
-	@Value("${kaiserOID}")
-	private String kaiserOID;
-	
-	@Value("${cottageOID}")
-	private String cottageOID;
-	
-	@Value("${vaOID}")
-	private String vaOID;
-	
-	@Value("${cvsOID}")
-	private String cvsOID;
 
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
@@ -167,14 +117,6 @@ public class EHealthAdapter implements Adapter {
 			return ocprhioOID;
 		}else if(managingOrganization.contains("UC Davis")){
 			return ucdavisOID;
-		}else if(managingOrganization.contains("Kaiser Permanente")){
-			return kaiserOID;
-		}else if(managingOrganization.contains("Cottage")){
-			return cottageOID;
-		}else if(managingOrganization.contains("VA Veterans")){
-			return vaOID;
-		}else if(managingOrganization.contains("CVS")){
-			return cvsOID;
 		}else{
 			return HOME_COMMUNITY_ID;
 		}
@@ -182,12 +124,7 @@ public class EHealthAdapter implements Adapter {
 
 	@Override
 	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch, String assertion) throws Exception {
-		String orgOID = null;
-		if(endpoint.getManagingOrganization() != null){
-			orgOID = getOrganizationOID(endpoint.getManagingOrganization());
-		}else{
-			orgOID = HOME_COMMUNITY_ID;
-		}
+		String orgOID = getOrganizationOID(endpoint.getManagingOrganization());
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch, pulseOID, orgOID);
 		String requestBodyXml = null;
 		try {
@@ -199,9 +136,7 @@ public class EHealthAdapter implements Adapter {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Content-Type", "application/soap+xml; charset=utf-8");   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
-		System.out.println("Query Patient Request--->"+requestBodyXml);
 		String searchResults = null;
-		logger.info("Request PD XML: " + requestBodyXml);
 		try {
 			logger.trace("Querying " + endpoint.getUrl() + " with timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class); // TODO: the request that is going out here mock does not like
@@ -255,7 +190,6 @@ public class EHealthAdapter implements Adapter {
 		String patientId = toSearch.getExternalPatientRecordId();
 		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientId);
 		String requestBodyXml = null;
-		logger.info("Request DQ XML: " + requestBodyXml);
 		try {
 			requestBodyXml = queryProducer.marshallDocumentQueryRequest(endpoint, assertion, requestBody);
 		} catch(JAXBException | WSSecurityException ex) {
@@ -266,7 +200,7 @@ public class EHealthAdapter implements Adapter {
 		headers.set("Content-Type", "application/soap+xml");
 		headers.set("action", "urn:ihe:iti:2007:CrossGatewayQuery");
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
-		System.out.println("Query Document Request--->"+requestBodyXml);
+
 		String searchResults = null;
 		try {
 			logger.trace("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
@@ -329,7 +263,6 @@ public class EHealthAdapter implements Adapter {
 		}
 		RetrieveDocumentSetRequestType requestBody = jsonConverterService.convertToRetrieveDocumentSetRequest(docsToSearch);
 		String requestBodyXml = null;
-		logger.info("Request DR XML: " + requestBodyXml);
 		try {
 			requestBodyXml = queryProducer.marshallDocumentSetRequest(endpoint, assertion, requestBody);
 		} catch(JAXBException ex) {
@@ -353,7 +286,6 @@ public class EHealthAdapter implements Adapter {
 			headers.set("Content-Type", "application/soap+xml");
 			request = new HttpEntity<String>(requestBodyXml, headers);
 		}
-		System.out.println("Retrieve Document Request--->"+requestBodyXml);
 		ResponseEntity<String> searchResults = null;
 		String returnBody = null;
 		String returnEnvelope = null;
