@@ -13,6 +13,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.ServiceApplicationTestConfig;
+import gov.ca.emsa.pulse.auth.jwt.JWTUserTestHelper;
 import gov.ca.emsa.pulse.common.domain.CreatePatientRequest;
 import gov.ca.emsa.pulse.service.QueryService;
 
@@ -44,10 +45,10 @@ public class QueryServiceSecurityTest extends BaseSecurityTest {
         };
 
         for (String endpoint : endpointsGet) {
-            testPatternProvider(endpoint, true);
+            JWTUserTestHelper.testPatternProvider(mockMvc, ow, endpoint, true);
         }
         for (String endpoint : endpointsPost) {
-            testPatternProvider(endpoint, false, new CreatePatientRequest());
+            JWTUserTestHelper.testPatternProvider(mockMvc, ow, endpoint, false, new CreatePatientRequest());
         }
     }
 }

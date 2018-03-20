@@ -13,6 +13,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.ca.emsa.pulse.ServiceApplicationTestConfig;
+import gov.ca.emsa.pulse.auth.jwt.JWTUserTestHelper;
 import gov.ca.emsa.pulse.service.DocumentService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,7 +37,8 @@ public class DocumentServiceSecurityTest extends BaseSecurityTest {
         };
 
         for (String endpoint : endpoints) {
-            testPatternProvider(endpoint, !endpoint.contains("endpoint") && !endpoint.contains("cancel"));
+            JWTUserTestHelper.testPatternProvider(mockMvc, ow, endpoint,
+                    !endpoint.contains("endpoint") && !endpoint.contains("cancel"));
         }
     }
 
