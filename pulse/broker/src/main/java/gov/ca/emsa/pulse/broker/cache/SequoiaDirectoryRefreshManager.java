@@ -23,31 +23,41 @@ public class SequoiaDirectoryRefreshManager {
 
 	private LocationManager locationManager;
 	private EndpointManager endpointManager;
-	private String sequoiaOrganizationDirectoryUrl;
+	private String sequoiaCareQualityOrganizationDirectoryUrl;
+	private String sequoiaEHexOrganizationDirectoryUrl;
 	private String status;
+	private static final String CAREQUALITY = "carequality";
+	private static final String EHEALTH = "eHealth";
 	
 	public void getSequoiaLocationsAndEndpoints(){
 		//query locations
-		logger.info("Querying the organizations from " + sequoiaOrganizationDirectoryUrl);
+		logger.info("Querying the organizations from " + sequoiaCareQualityOrganizationDirectoryUrl);
 		RestTemplate restTemplate = new RestTemplate();
-		SequoiaBundle organizations = restTemplate.getForObject(sequoiaOrganizationDirectoryUrl, SequoiaBundle.class);
+		SequoiaBundle cqOrganizations = restTemplate.getForObject(sequoiaCareQualityOrganizationDirectoryUrl, SequoiaBundle.class);
+		SequoiaBundle eHexOrganizations = restTemplate.getForObject(sequoiaEHexOrganizationDirectoryUrl, SequoiaBundle.class);
 		//convert from sequoia bundle to internal location and endpoint objects
-		List<Location> locations = SequoiaToPulseConverter.convertSequoiaBundleToLocations(organizations);
-		List<Endpoint> endpoints = SequoiaToPulseConverter.convertSequoiaBundleToEndpoints(organizations);
-		logger.debug("Found " + locations.size() + " locations from " + sequoiaOrganizationDirectoryUrl);
-		logger.debug("Found " + endpoints.size() + " endpoints from " + sequoiaOrganizationDirectoryUrl);
-		locationManager.updateLocations(locations);
-		endpointManager.updateEndpoints(endpoints);
+		List<Location> cqLocations = SequoiaToPulseConverter.convertSequoiaBundleToLocations(cqOrganizations);
+		List<Endpoint> cqEndpoints = SequoiaToPulseConverter.convertSequoiaBundleToEndpoints(cqOrganizations, CAREQUALITY);
+		List<Location> eHexLocations = SequoiaToPulseConverter.convertSequoiaBundleToLocations(eHexOrganizations);
+		List<Endpoint> eHexEndpoints = SequoiaToPulseConverter.convertSequoiaBundleToEndpoints(eHexOrganizations, EHEALTH);
+		logger.debug("Found " + cqLocations.size() + " locations from " + sequoiaCareQualityOrganizationDirectoryUrl);
+		logger.debug("Found " + cqEndpoints.size() + " endpoints from " + sequoiaCareQualityOrganizationDirectoryUrl);
+		logger.debug("Found " + eHexLocations.size() + " locations from " + sequoiaEHexOrganizationDirectoryUrl);
+		logger.debug("Found " + eHexEndpoints.size() + " endpoints from " + sequoiaEHexOrganizationDirectoryUrl);
+		locationManager.updateLocations(cqLocations);
+		endpointManager.updateEndpoints(cqEndpoints);
+		locationManager.updateLocations(eHexLocations);
+		endpointManager.updateEndpoints(eHexEndpoints);
 		
 		//now update the mappings between locations and endpoints
 		//these mappings aren't referenced by other tables so it should be ok if any need to get deleted
 		List<LocationEndpointMapDTO> locationEndpointMappings = new ArrayList<LocationEndpointMapDTO>();
-		for(Location ctenLocation : locations) {
-			for(Endpoint ctenEndpoint : ctenLocation.getEndpoints()) {
+		for(Location seqLocation : cqLocations) {
+			for(Endpoint seqEndpoint : seqLocation.getEndpoints()) {
 				//find location with same external id
-				LocationDTO locationToMap = locationManager.getByExternalId(ctenLocation.getExternalId());
+				LocationDTO locationToMap = locationManager.getByExternalId(seqLocation.getExternalId());
 				//find the endpoint with the same external id
-				EndpointDTO endpointToMap = endpointManager.getByExternalId(ctenEndpoint.getExternalId());
+				EndpointDTO endpointToMap = endpointManager.getByExternalId(seqEndpoint.getExternalId());
 				if(locationToMap != null && endpointToMap != null) {
 					LocationEndpointMapDTO toMap = new LocationEndpointMapDTO();
 					toMap.setEndpointId(endpointToMap.getId());
@@ -75,14 +85,24 @@ public class SequoiaDirectoryRefreshManager {
 		this.endpointManager = endpointManager;
 	}
 
-	public String getSequoiaOrganizationDirectoryUrl() {
-		return sequoiaOrganizationDirectoryUrl;
+	public String getSequoiaCareQualityOrganizationDirectoryUrl() {
+		return sequoiaCareQualityOrganizationDirectoryUrl;
 	}
 
-	public void setSequoiaOrganizationDirectoryUrl(
+	public void setSequoiaCareQualityOrganizationDirectoryUrl(
 			String sequoiaOrganizationDirectoryUrl) {
-		this.sequoiaOrganizationDirectoryUrl = sequoiaOrganizationDirectoryUrl;
+		this.sequoiaCareQualityOrganizationDirectoryUrl = sequoiaOrganizationDirectoryUrl;
 	}
+	
+	public String getSequoiaEHexOrganizationDirectoryUrl() {
+		return sequoiaEHexOrganizationDirectoryUrl;
+	}
+
+	public void setSequoiaEHexOrganizationDirectoryUrl(
+			String sequoiaEHexOrganizationDirectoryUrl) {
+		this.sequoiaEHexOrganizationDirectoryUrl = sequoiaEHexOrganizationDirectoryUrl;
+	}
+
 	public String getStatus() {
 		return status;
 	}
