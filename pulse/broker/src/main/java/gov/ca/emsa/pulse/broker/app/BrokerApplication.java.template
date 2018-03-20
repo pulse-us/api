@@ -2,10 +2,10 @@ package gov.ca.emsa.pulse.broker.app;
 
 import gov.ca.emsa.pulse.broker.auth.AcfLastAccessFilter;
 import gov.ca.emsa.pulse.broker.cache.CacheCleanupJob;
-import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.cache.CtenDirectoryRefreshManager;
-import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
+import gov.ca.emsa.pulse.broker.cache.DirectoryRefreshManager;
 import gov.ca.emsa.pulse.broker.cache.SequoiaDirectoryRefreshManager;
+import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
 import gov.ca.emsa.pulse.broker.manager.EndpointManager;
 import gov.ca.emsa.pulse.broker.manager.LocationManager;
 import gov.ca.emsa.pulse.broker.manager.PatientManager;
@@ -14,9 +14,6 @@ import gov.ca.emsa.pulse.broker.manager.impl.DocumentQueryService;
 import gov.ca.emsa.pulse.broker.manager.impl.DocumentRetrievalService;
 import gov.ca.emsa.pulse.broker.manager.impl.PatientQueryService;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
-import java.util.List;
 import java.util.Timer;
 
 import org.apache.log4j.LogManager;
@@ -73,8 +70,10 @@ public class BrokerApplication {
 	private String ctenLocationDirectoryUrl;
 	@Value("${ctenEndpointDirectoryUrl}")
 	private String ctenEndpointDirectoryUrl;
-	@Value("${sequoiaOrganizationDirectoryUrl}")
-	private String sequoiaOrganizationDirectoryUrl;
+	@Value("${sequoiaCarequalityOrganizationDirectoryUrl}")
+	private String sequoiaCarequalityOrganizationDirectoryUrl;
+	@Value("${sequoiaEHexOrganizationDirectoryUrl}")
+	private String sequoiaEHexOrganizationDirectoryUrl;
 	@Value("${sequoiaDirectoryStatus}")
 	private String sequoiaDirectoryStatus;
 	@Value("${ctenDirectoryStatus}")
@@ -185,7 +184,8 @@ public class BrokerApplication {
 		qcTask = new SequoiaDirectoryRefreshManager();
 		qcTask.setLocationManager(locationManager);
 		qcTask.setEndpointManager(endpointManager);
-		qcTask.setSequoiaOrganizationDirectoryUrl(sequoiaOrganizationDirectoryUrl);
+		qcTask.setSequoiaCareQualityOrganizationDirectoryUrl(sequoiaCarequalityOrganizationDirectoryUrl);
+		qcTask.setSequoiaEHexOrganizationDirectoryUrl(sequoiaEHexOrganizationDirectoryUrl);
 		qcTask.setStatus(sequoiaDirectoryStatus);
 
 		return qcTask;
@@ -236,4 +236,5 @@ public class BrokerApplication {
 	public DocumentRetrievalService documentRetrievalService() {
 		return new DocumentRetrievalService();
 	}
+
 }
