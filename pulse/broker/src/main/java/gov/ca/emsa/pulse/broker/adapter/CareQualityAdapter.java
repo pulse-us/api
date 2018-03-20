@@ -14,10 +14,8 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
-import javax.mail.MessagingException;
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.SOAPException;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.attachment.AttachmentDeserializer;
 import org.apache.cxf.message.Message;
@@ -69,7 +67,7 @@ import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 @Component
 public class CareQualityAdapter implements Adapter {
 	public static final String HOME_COMMUNITY_ID = "2.16.840.1.113883.9.224";
-	private static final Logger logger = LogManager.getLogger(CareQualityAdapter.class);
+	private static final Logger logger = LogManager.getLogger(EHealthAdapter.class);
 
 	@Value("${mtomMutltipartRequest}")
 	private String mtomMutltipartRequest;
@@ -91,6 +89,18 @@ public class CareQualityAdapter implements Adapter {
 
 	@Value("${ucdavisOID}")
 	private String ucdavisOID;
+	
+	@Value("${kaiserOID}")
+	private String kaiserOID;
+	
+	@Value("${cottageOID}")
+	private String cottageOID;
+	
+	@Value("${vaOID}")
+	private String vaOID;
+	
+	@Value("${cvsOID}")
+	private String cvsOID;
 
 	@Autowired JSONToSOAPService jsonConverterService;
 	@Autowired SOAPToJSONService soapConverterService;
@@ -117,6 +127,14 @@ public class CareQualityAdapter implements Adapter {
 			return ocprhioOID;
 		}else if(managingOrganization.contains("UC Davis")){
 			return ucdavisOID;
+		}else if(managingOrganization.contains("Kaiser Permanente")){
+			return kaiserOID;
+		}else if(managingOrganization.contains("Cottage")){
+			return cottageOID;
+		}else if(managingOrganization.contains("VA Veterans")){
+			return vaOID;
+		}else if(managingOrganization.contains("CVS")){
+			return cvsOID;
 		}else{
 			return HOME_COMMUNITY_ID;
 		}
@@ -124,7 +142,12 @@ public class CareQualityAdapter implements Adapter {
 
 	@Override
 	public PatientRecordResults queryPatients(CommonUser user, EndpointDTO endpoint, PatientSearch toSearch, String assertion) throws Exception {
-		String orgOID = getOrganizationOID(endpoint.getManagingOrganization());
+		String orgOID = null;
+		if(endpoint.getManagingOrganization() != null){
+			orgOID = getOrganizationOID(endpoint.getManagingOrganization());
+		}else{
+			orgOID = HOME_COMMUNITY_ID;
+		}
 		PRPAIN201305UV02 requestBody = jsonConverterService.convertFromPatientSearch(toSearch, pulseOID, orgOID);
 		String requestBodyXml = null;
 		try {
@@ -136,7 +159,9 @@ public class CareQualityAdapter implements Adapter {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Content-Type", "application/soap+xml; charset=utf-8");   
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
+		System.out.println("Query Patient Request--->"+requestBodyXml);
 		String searchResults = null;
+		logger.info("Request PD XML: " + requestBodyXml);
 		try {
 			logger.trace("Querying " + endpoint.getUrl() + " with timeout " + defaultRequestTimeoutSeconds + " seconds");
 			searchResults = restTemplate.postForObject(endpoint.getUrl(), request, String.class); // TODO: the request that is going out here mock does not like
@@ -190,6 +215,7 @@ public class CareQualityAdapter implements Adapter {
 		String patientId = toSearch.getExternalPatientRecordId();
 		AdhocQueryRequest requestBody = jsonConverterService.convertToDocumentRequest(patientId);
 		String requestBodyXml = null;
+		logger.info("Request DQ XML: " + requestBodyXml);
 		try {
 			requestBodyXml = queryProducer.marshallDocumentQueryRequest(endpoint, assertion, requestBody);
 		} catch(JAXBException | WSSecurityException ex) {
@@ -200,7 +226,7 @@ public class CareQualityAdapter implements Adapter {
 		headers.set("Content-Type", "application/soap+xml");
 		headers.set("action", "urn:ihe:iti:2007:CrossGatewayQuery");
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyXml, headers);
-
+		System.out.println("Query Document Request--->"+requestBodyXml);
 		String searchResults = null;
 		try {
 			logger.trace("Querying " + endpoint.getUrl() + " with request " + request + " and timeout " + defaultRequestTimeoutSeconds + " seconds");
@@ -263,6 +289,7 @@ public class CareQualityAdapter implements Adapter {
 		}
 		RetrieveDocumentSetRequestType requestBody = jsonConverterService.convertToRetrieveDocumentSetRequest(docsToSearch);
 		String requestBodyXml = null;
+		logger.info("Request DR XML: " + requestBodyXml);
 		try {
 			requestBodyXml = queryProducer.marshallDocumentSetRequest(endpoint, assertion, requestBody);
 		} catch(JAXBException ex) {
@@ -286,6 +313,7 @@ public class CareQualityAdapter implements Adapter {
 			headers.set("Content-Type", "application/soap+xml");
 			request = new HttpEntity<String>(requestBodyXml, headers);
 		}
+		System.out.println("Retrieve Document Request--->"+requestBodyXml);
 		ResponseEntity<String> searchResults = null;
 		String returnBody = null;
 		String returnEnvelope = null;
