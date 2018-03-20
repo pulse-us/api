@@ -207,11 +207,9 @@ public class QueryService {
             for (Long patientRecordId : request.getPatientRecordIds()) {
                 PatientEndpointMapDTO patLocMapDto = patientManager.createEndpointMapForDocumentDiscovery(patient,
                         patientRecordId);
-//                PulseUserDTO userDto = pulseUserManager.getById(Long.parseLong(user.getPulseUserId()));
-//                String assertion = userDto.getAssertion();
+                String assertion = SamlUtil.signAndBuildStringAssertion(user);
                 patient.getEndpointMaps().add(patLocMapDto);
-//                docManager.queryForDocuments(user, assertion, patLocMapDto);
-                docManager.queryForDocuments(user, "assertion TBD", patLocMapDto);
+                docManager.queryForDocuments(user, assertion, patLocMapDto);
                 // kick off document list retrieval service
 
             }
