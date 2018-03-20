@@ -50,6 +50,7 @@ public class EndpointDTO {
 			this.endpointStatus.setId(entity.getEndpointStatusId());
 		}
 		this.managingOrganization = entity.getManagingOrganization();
+		this.organizationId = entity.getOrganizationId();
 		this.adapter = entity.getAdapter();
 		if(entity.getMimeTypes() != null && entity.getMimeTypes().size() > 0) {
 			for(EndpointMimeTypeEntity entityMimeType : entity.getMimeTypes()) {
