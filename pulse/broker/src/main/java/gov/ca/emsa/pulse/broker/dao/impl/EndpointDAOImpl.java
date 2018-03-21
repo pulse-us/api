@@ -272,7 +272,7 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 		EndpointTypeEntity result = null;
 		Query query = entityManager.createQuery("from EndpointTypeEntity where name LIKE :name",
 				EndpointTypeEntity.class);
-		query.setParameter("name", name);
+		query.setParameter("name", name.trim().replaceAll(" ", "").toUpperCase());
 		List<EndpointTypeEntity> results = query.getResultList();
 		if(results == null || results.size() == 0) {
 			return null;

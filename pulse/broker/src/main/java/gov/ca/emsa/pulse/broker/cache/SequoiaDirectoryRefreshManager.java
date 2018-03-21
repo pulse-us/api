@@ -11,11 +11,15 @@ import gov.ca.emsa.pulse.sequoia.SequoiaToPulseConverter;
 import gov.ca.emsa.pulse.sequoia.domain.SequoiaBundle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.TimerTask;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
 
 public class SequoiaDirectoryRefreshManager {
@@ -33,6 +37,11 @@ public class SequoiaDirectoryRefreshManager {
 		//query locations
 		logger.info("Querying the organizations from " + sequoiaCareQualityOrganizationDirectoryUrl);
 		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.getInterceptors().add((request, body, execution) -> {
+            ClientHttpResponse response = execution.execute(request,body);
+            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            return response;
+        });
 		SequoiaBundle cqOrganizations = restTemplate.getForObject(sequoiaCareQualityOrganizationDirectoryUrl, SequoiaBundle.class);
 		SequoiaBundle eHexOrganizations = restTemplate.getForObject(sequoiaEHexOrganizationDirectoryUrl, SequoiaBundle.class);
 		//convert from sequoia bundle to internal location and endpoint objects
