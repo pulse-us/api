@@ -11,13 +11,10 @@ import gov.ca.emsa.pulse.sequoia.SequoiaToPulseConverter;
 import gov.ca.emsa.pulse.sequoia.domain.SequoiaBundle;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
@@ -49,14 +46,14 @@ public class SequoiaDirectoryRefreshManager {
 		List<Endpoint> cqEndpoints = SequoiaToPulseConverter.convertSequoiaBundleToEndpoints(cqOrganizations, CAREQUALITY);
 		List<Location> eHexLocations = SequoiaToPulseConverter.convertSequoiaBundleToLocations(eHexOrganizations);
 		List<Endpoint> eHexEndpoints = SequoiaToPulseConverter.convertSequoiaBundleToEndpoints(eHexOrganizations, EHEALTH);
-		logger.debug("Found " + cqLocations.size() + " locations from " + sequoiaCareQualityOrganizationDirectoryUrl);
-		logger.debug("Found " + cqEndpoints.size() + " endpoints from " + sequoiaCareQualityOrganizationDirectoryUrl);
-		logger.debug("Found " + eHexLocations.size() + " locations from " + sequoiaEHexOrganizationDirectoryUrl);
-		logger.debug("Found " + eHexEndpoints.size() + " endpoints from " + sequoiaEHexOrganizationDirectoryUrl);
+		logger.info("Found " + cqLocations.size() + " locations from " + sequoiaCareQualityOrganizationDirectoryUrl);
+		logger.info("Found " + cqEndpoints.size() + " endpoints from " + sequoiaCareQualityOrganizationDirectoryUrl);
+		logger.info("Found " + eHexLocations.size() + " locations from " + sequoiaEHexOrganizationDirectoryUrl);
+		logger.info("Found " + eHexEndpoints.size() + " endpoints from " + sequoiaEHexOrganizationDirectoryUrl);
+		cqLocations.addAll(eHexLocations);
+		cqEndpoints.addAll(eHexEndpoints);
 		locationManager.updateLocations(cqLocations);
 		endpointManager.updateEndpoints(cqEndpoints);
-		locationManager.updateLocations(eHexLocations);
-		endpointManager.updateEndpoints(eHexEndpoints);
 		
 		//now update the mappings between locations and endpoints
 		//these mappings aren't referenced by other tables so it should be ok if any need to get deleted

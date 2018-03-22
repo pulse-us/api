@@ -156,6 +156,15 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 	}
 	
 	@Override
+	public EndpointDTO findByUrl(String url) {
+		EndpointEntity result = getByExternalId(url);
+		if(result == null) {
+			return null;
+		}
+		return new EndpointDTO(result);
+	}
+	
+	@Override
 	public EndpointDTO findByLocationIdAndType(Long locationId, List<EndpointStatusEnum> statuses, EndpointTypeEnum type) {
 		List<String> statusNames = new ArrayList<String>(statuses.size());
 		for(EndpointStatusEnum status : statuses) {
@@ -337,6 +346,24 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				+ "LEFT OUTER JOIN FETCH locMaps.location "
 				+ "WHERE endpoint.externalId = :externalId", EndpointEntity.class);
 		query.setParameter("externalId", externalId);
+		
+		List<EndpointEntity> result = query.getResultList();
+		if(result != null && result.size() > 0) {
+			return result.get(0);
+		}
+		return null;
+	}
+	
+	private EndpointEntity getByUrl(String url) {
+		Query query = entityManager.createQuery("SELECT DISTINCT endpoint "
+				+ "FROM EndpointEntity endpoint "
+				+ "JOIN FETCH endpoint.endpointStatus "
+				+ "JOIN FETCH endpoint.endpointType "
+				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes "
+				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
+				+ "LEFT OUTER JOIN FETCH locMaps.location "
+				+ "WHERE endpoint.endpointUrl = :url", EndpointEntity.class);
+		query.setParameter("url", url);
 		
 		List<EndpointEntity> result = query.getResultList();
 		if(result != null && result.size() > 0) {
