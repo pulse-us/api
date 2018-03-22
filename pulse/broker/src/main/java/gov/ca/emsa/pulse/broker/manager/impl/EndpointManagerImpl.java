@@ -65,14 +65,14 @@ public class EndpointManagerImpl implements EndpointManager {
 		
 		//look at the new endpoints for anything that should be created or updated
 		for(Endpoint newEndpoint : newEndpoints) {
-			String externalId = newEndpoint.getExternalId();
-			EndpointDTO existingEndpoint = endpointDao.findByExternalId(externalId);
+			String url = newEndpoint.getUrl();
+			EndpointDTO existingEndpoint = endpointDao.findByUrl(url);
 			if(existingEndpoint == null) {
 				try {
 					EndpointDTO toCreate = DomainToDtoConverter.convert(newEndpoint);
 					endpointDao.create(toCreate);
 				} catch(Exception ex) {
-					logger.error("Error creating endpoint with external id " + externalId, ex);
+					logger.error("Error creating endpoint with url " + url, ex);
 					ex.printStackTrace();
 				}
 			} else {
