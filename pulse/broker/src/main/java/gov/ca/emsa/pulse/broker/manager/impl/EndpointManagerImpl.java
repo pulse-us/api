@@ -53,7 +53,7 @@ public class EndpointManagerImpl implements EndpointManager {
 		for(EndpointDTO oldEndpoint : currentEndpoints) {
 			boolean stillExists = false;
 			for(Endpoint newEndpoint : newEndpoints) {
-				if(oldEndpoint.getExternalId().equals(newEndpoint.getExternalId())) {
+				if(oldEndpoint.getUrl().equals(newEndpoint.getUrl())) {
 					stillExists = true;
 				}
 			}
