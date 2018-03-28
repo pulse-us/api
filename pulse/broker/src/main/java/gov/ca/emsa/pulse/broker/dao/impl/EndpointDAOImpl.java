@@ -46,7 +46,7 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 	}
 
 	public EndpointDTO update(EndpointDTO dto){
-		EndpointEntity endpointEntity =  getByExternalId(dto.getExternalId());
+		EndpointEntity endpointEntity =  getByUrl(dto.getUrl());
 		if(endpointEntity == null) {
 			return create(dto);
 		} 
@@ -157,7 +157,7 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 	
 	@Override
 	public EndpointDTO findByUrl(String url) {
-		EndpointEntity result = getByExternalId(url);
+		EndpointEntity result = getByUrl(url);
 		if(result == null) {
 			return null;
 		}
@@ -281,7 +281,7 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 		EndpointTypeEntity result = null;
 		Query query = entityManager.createQuery("from EndpointTypeEntity where name LIKE :name",
 				EndpointTypeEntity.class);
-		query.setParameter("name", name.trim().replaceAll(" ", "").toUpperCase());
+		query.setParameter("name", name.trim().replaceAll(" ", "").replaceAll("XCA:", "").toUpperCase());
 		List<EndpointTypeEntity> results = query.getResultList();
 		if(results == null || results.size() == 0) {
 			return null;
@@ -362,7 +362,7 @@ public class EndpointDAOImpl extends BaseDAOImpl implements EndpointDAO {
 				+ "LEFT OUTER JOIN FETCH endpoint.mimeTypes "
 				+ "LEFT OUTER JOIN FETCH endpoint.locationEndpointMaps locMaps "
 				+ "LEFT OUTER JOIN FETCH locMaps.location "
-				+ "WHERE endpoint.endpointUrl = :url", EndpointEntity.class);
+				+ "WHERE endpoint.url LIKE :url", EndpointEntity.class);
 		query.setParameter("url", url);
 		
 		List<EndpointEntity> result = query.getResultList();
