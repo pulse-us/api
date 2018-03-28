@@ -27,7 +27,6 @@ import gov.ca.emsa.pulse.broker.dto.DomainToDtoConverter;
 import gov.ca.emsa.pulse.broker.dto.DtoToDomainConverter;
 import gov.ca.emsa.pulse.broker.dto.PatientDTO;
 import gov.ca.emsa.pulse.broker.dto.PatientEndpointMapDTO;
-import gov.ca.emsa.pulse.broker.dto.PulseUserDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryDTO;
 import gov.ca.emsa.pulse.broker.dto.QueryEndpointMapDTO;
 import gov.ca.emsa.pulse.broker.manager.AlternateCareFacilityManager;
@@ -58,6 +57,7 @@ public class QueryService {
     AlternateCareFacilityManager acfManager;
     @Autowired
     AuditEventManager auditManager;
+
     @Autowired
 
     @ApiOperation(value = "Get all queries for the logged-in user")
@@ -131,26 +131,29 @@ public class QueryService {
             throws JsonProcessingException, InvalidArgumentsException, IOException {
         CommonUser user = UserUtil.getCurrentUser();
         QueryDTO initiatedQuery = null;
-        synchronized(queryManager) {
-        	QueryDTO query = queryManager.getById(queryId);
-        	if(query == null) {
-        		throw new InvalidArgumentsException("No query was found with id " + queryId);
-        	} else if(query.getStatus() == null || query.getStatus() == QueryStatus.Closed) {
-        		throw new InvalidArgumentsException("Query with id " + queryId + " is already marked as Closed and cannot be requeried. Please start over with a new query.");
-        	}
-        	List<QueryEndpointMapDTO> queryEndpointMaps = queryManager.getQueryEndpointMapByQueryAndEndpoint(queryId, endpointId);
-        	if(queryEndpointMaps == null || queryEndpointMaps.size() == 0) {
-        		throw new InvalidArgumentsException("No endpoint with ID " + endpointId + " was found for query with ID " + queryId + " that is not already closed.");
-        	}
-    		String assertion = SamlUtil.signAndBuildStringAssertion(user);
-        	Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(assertion, queryId, endpointId, user);
-        	if(newQueryEndpointMapId != null) {
-	        	QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(newQueryEndpointMapId);
-	        	initiatedQuery = queryManager.getById(dto.getQueryId());
-        	}
+        synchronized (queryManager) {
+            QueryDTO query = queryManager.getById(queryId);
+            if (query == null) {
+                throw new InvalidArgumentsException("No query was found with id " + queryId);
+            } else if (query.getStatus() == null || query.getStatus() == QueryStatus.Closed) {
+                throw new InvalidArgumentsException("Query with id " + queryId
+                        + " is already marked as Closed and cannot be requeried. Please start over with a new query.");
+            }
+            List<QueryEndpointMapDTO> queryEndpointMaps = queryManager.getQueryEndpointMapByQueryAndEndpoint(queryId,
+                    endpointId);
+            if (queryEndpointMaps == null || queryEndpointMaps.size() == 0) {
+                throw new InvalidArgumentsException("No endpoint with ID " + endpointId
+                        + " was found for query with ID " + queryId + " that is not already closed.");
+            }
+            String assertion = SamlUtil.signAndBuildStringAssertion(user);
+            Long newQueryEndpointMapId = queryManager.requeryForPatientRecords(assertion, queryId, endpointId, user);
+            if (newQueryEndpointMapId != null) {
+                QueryEndpointMapDTO dto = queryManager.getQueryEndpointMapById(newQueryEndpointMapId);
+                initiatedQuery = queryManager.getById(dto.getQueryId());
+            }
         }
         return DtoToDomainConverter.convert(initiatedQuery);
-   }
+    }
 
     @ApiOperation(value = "Delete a query")
     @RequestMapping(value = "/{queryId}/delete", method = RequestMethod.POST)
@@ -183,14 +186,16 @@ public class QueryService {
         if (StringUtils.isEmpty(StringUtils.isEmpty(patientToCreate.getFullName()))) {
             throw new InvalidArgumentsException("Patient full name is required.");
         }
-        // if(user.getAcf() == null || user.getAcf().getId() == null) {
-        // AlternateCareFacilityDTO acfDto =
-        // acfManager.getById(user.getAcf().getId());
 
+        AlternateCareFacilityDTO acfDto = null;
         if (user.getLiferayAcfId() == null) {
-            throw new InvalidArgumentsException("There was no ACF supplied in the User header or the ACF ID was null.");
+            if (user.getAcf() != null && user.getAcf().getId() != null) {
+                acfDto = acfManager.getById(user.getAcf().getId());
+            }
+        } else {
+            acfDto = acfManager.getByLiferayAcfId(user.getLiferayAcfId());
         }
-        AlternateCareFacilityDTO acfDto = acfManager.getByLiferayAcfId(user.getLiferayAcfId());
+
         if (acfDto == null) {
             throw new InvalidParameterException(
                     "There was no ACF supplied in the User header, or the ACF had a null ID.");
