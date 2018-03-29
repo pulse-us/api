@@ -52,7 +52,7 @@ public class SequoiaToPulseConverter {
 		LocationStatus resultStatus = new LocationStatus();
 		resultStatus.setName(sequoiaResource.getActive());
 		result.setStatus(resultStatus);
-		if(sequoiaResource.getAddress() != null) {
+		/*if(sequoiaResource.getAddress() != null) {
 			Address locAddr = new Address();
 			if(sequoiaResource.getAddress().getLine() != null) {
 				locAddr.getLines().add(sequoiaResource.getAddress().getLine());
@@ -62,7 +62,7 @@ public class SequoiaToPulseConverter {
 			locAddr.setZipcode(sequoiaResource.getAddress().getPostalCode());
 			locAddr.setCountry(sequoiaResource.getAddress().getCountry());
 			result.setAddress(locAddr);
-		}
+		}*/
 		result.setDescription(sequoiaResource.getDescription());
 		if(!StringUtils.isEmpty(sequoiaResource.getMeta().getLastUpdated())) {
 			SimpleDateFormat formatter = new SimpleDateFormat(lastUpdatedDateFormat);
@@ -90,8 +90,10 @@ public class SequoiaToPulseConverter {
 		}
 		List<Endpoint> result = new ArrayList<Endpoint>(bundle.getBundle().getEntry().size());
 		for(SequoiaEntry entry : bundle.getBundle().getEntry()) {
-			for(SequoiaEndpoint endpoint : entry.getResource().getOrganization().getEndpoint()){
-				result.add(convertEndpoints(entry, endpoint, adapter));
+			if(entry.getResource().getOrganization().getEndpoint() != null){
+				for(SequoiaEndpoint endpoint : entry.getResource().getOrganization().getEndpoint()){
+					result.add(convertEndpoints(entry, endpoint, adapter));
+				}
 			}
 		}
 		return result;

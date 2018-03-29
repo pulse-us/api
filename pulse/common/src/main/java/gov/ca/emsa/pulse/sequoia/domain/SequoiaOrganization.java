@@ -14,7 +14,7 @@ public class SequoiaOrganization {
 	private SequoiaResourceType type;
 	private String name;
 	private List<SequoiaEndpoint> endpoint;
-	private SequoiaAddress address;
+	//private SequoiaAddress address;
 	private String id;
 	private String description;
 	private SequoiaPartOf partOf;
@@ -58,14 +58,6 @@ public class SequoiaOrganization {
 
 	public void setEndpoint(List<SequoiaEndpoint> endpoint) {
 		this.endpoint = endpoint;
-	}
-
-	public SequoiaAddress getAddress() {
-		return address;
-	}
-
-	public void setAddress(SequoiaAddress address) {
-		this.address = address;
 	}
 
 	public String getId() {
@@ -123,12 +115,6 @@ public class SequoiaOrganization {
 	@JsonProperty("name")
     private void unpackNestedName(Map<String,String> name) {
 		this.name = name.get("value");
-	}
-	
-	@SuppressWarnings("unchecked")
-	@JsonProperty("address")
-    private void unpackNestedAddress(SequoiaAddress address) {
-		this.address = address;
 	}
 	
 	@SuppressWarnings("unchecked")
