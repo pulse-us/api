@@ -73,10 +73,12 @@ public class SamlUtil{
 	private static final String SAML_ORG_STRING_VALUE = "PULSE-US";
 	private static final String SAML_SUBJECTID_STRING = "urn:oasis:names:tc:xspa:1.0:subject:subject-id";
 	private static final String SAML_ROLE_STRING = "urn:oasis:names:tc:xacml:2.0:subject:role";
+	private static final String SAML_ROLE_STRING_VALUE = "<Role xmlns=\"urn:hl7-org:v3\" code=\"112247003\" codeSystem=\"2.16.840.1.113883.6.96\" codeSystemName=\"SNOMED_CT\" displayName=\"Medical Doctor\" />";
 	private static final String SAML_PURPOSEOFUSE_STRING = "urn:oasis:names:tc:xspa:1.0:subject:purposeofuse";
-	private static final String SAML_PURPOSEOFUSE_VALUE = "Treatment";
+	private static final String SAML_PURPOSEOFUSE_VALUE = "<PurposeOfUse xmlns=\"urn:hl7-org:v3\" code=\"TREATMENT\" codeSystem=\"2.16.840.1.113883.3.18.7.1\" codeSystemName=\"nhin-purpose\" displayName=\"Treatment\" />";
 	private static final String SAML_ORGID_STRING = "urn:oasis:names:tc:xspa:1.0:subject:organization-id";
 	private static final String SAML_HOMECOMMUNITYID_STRING = "urn:nhin:names:saml:homeCommunityId";
+	private static final String SAML_FORMAT_BASIC = "urn:oasis:names:tc:SAML:2.0:attrname-format:basic";
 	
 	@Value("${saml.issuer}")
 	private static String samlIssuer;
@@ -324,7 +326,7 @@ public class SamlUtil{
         	XSStringBuilder stringBuilder = (XSStringBuilder)XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(XSString.TYPE_NAME);
     		Attribute attributeObject = buildSAMLObject(Attribute.class);
         	XSString attrStrValue = stringBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, XSString.TYPE_NAME);
-            attrStrValue.setValue(role.getAuthority());
+            attrStrValue.setValue(SAML_ROLE_STRING_VALUE);
         	attributeObject.getAttributeValues().add(attrStrValue);
         	attributeObject.setName(SAML_ROLE_STRING);
         	attributeStatement.getAttributes().add(attributeObject);
@@ -335,6 +337,7 @@ public class SamlUtil{
     	XSString attrStrValue = stringBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, XSString.TYPE_NAME);
         attrStrValue.setValue(SAML_PURPOSEOFUSE_VALUE);
     	attributeObject.getAttributeValues().add(attrStrValue);
+    	attributeObject.setNameFormat(SAML_FORMAT_BASIC);
     	attributeObject.setName(SAML_PURPOSEOFUSE_STRING);
     	attributeStatement.getAttributes().add(attributeObject);
         
